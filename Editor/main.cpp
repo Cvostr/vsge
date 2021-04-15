@@ -2,7 +2,7 @@
 #include "EditorLayers/EditorLayer.hpp"
 #include "EditorLayers/ImGuiLayer.hpp"
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
-#include "Graphics/OpenGL/OpenGL_RAPI.hpp"
+#include <Graphics/OpenGL/OpenGL_RAPI.hpp>
 
 #include "Windows/SceneWindow.hpp"
 #include "Windows/InspectorWindow.hpp"

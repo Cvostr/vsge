@@ -117,7 +117,7 @@ public:
         float A43 = -determinant(Values[0][0], Values[0][1], Values[0][3], Values[1][0], Values[1][1], Values[1][3], Values[2][0], Values[2][1], Values[2][3]);
         float A44 = +determinant(Values[0][0], Values[0][1], Values[0][2], Values[1][0], Values[1][1], Values[1][2], Values[2][0], Values[2][1], Values[2][2]);
         
-        Mat4 result = Mat4(A11, A21, A31, A41,
+        tMat4 result = tMat4(A11, A21, A31, A41,
                             A12, A22, A32, A42,
                             A13, A23, A33, A43,
                             A14, A24, A34, A44);

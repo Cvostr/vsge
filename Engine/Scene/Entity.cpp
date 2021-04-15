@@ -1,4 +1,5 @@
 #include "Entity.hpp"
+#include <algorithm>
 
 using namespace VSGE;
 
