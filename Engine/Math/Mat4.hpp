@@ -61,10 +61,11 @@ public:
         tMat4 Ret;
         for (uint8 i = 0; i < 4; i++) {
             for (uint8 b = 0; b < 4; b++) {
-                Ret.m[i][b] = l.m[i][0] * r.m[0][b] +
-                    l.m[i][1] * r.m[1][b] +
-                    l.m[i][2] * r.m[2][b] +
-                    l.m[i][3] * r.m[3][b];
+                Ret.m[i][b] =
+                    Values[i][0] * r.Values[0][b] +
+                    Values[i][1] * r.Values[1][b] +
+                    Values[i][2] * r.Values[2][b] +
+                    Values[i][3] * r.Values[3][b];
             }
         }
         return Ret;

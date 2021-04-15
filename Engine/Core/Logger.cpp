@@ -7,9 +7,9 @@
 using namespace VSGE;
 using namespace std;
 
-#define INFO_PREFIX "{INFO} "
-#define WARN_PREFIX "{WARNING} "
-#define ERROR_PREFIX "{ERROR} "
+#define INFO_PREFIX std::string("{INFO} ")
+#define WARN_PREFIX string("{WARNING} ")
+#define ERROR_PREFIX string("{ERROR} ")
 
 OpLogger Logger::mOpLogger = OpLogger();
 
@@ -38,7 +38,7 @@ void Logger::Log(const std::string& msg, LogType type) {
 		break;
 	}
 
-	SetConsoleColor(FOREGROUND_GREEN);
+    //SetConsoleColor(FOREGROUND_GREEN);
 	PrintText(msg + "\n");
 }
 
