@@ -22,6 +22,16 @@ namespace VSGEditor {
 			return _this;
 		}
 
+		template<class T>
+		void AddComponentButton(std::string Label) {
+			if (!mShowingEntity->HasComponent<T>()) {
+				if (ImGui::Selectable(Label.c_str()))
+				{
+					mShowingEntity->AddComponent<T>();
+				}
+			}
+		}
+
 		InspectorWindow() :
 			mShowingEntity(nullptr) 
 		{

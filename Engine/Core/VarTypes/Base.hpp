@@ -20,4 +20,5 @@ typedef char* BaseString;
 #define API_FIELD(...)
 
 #define MAX_INT32 0xFFFFFFF
+#define MAX_INT64 0xFFFFFFFFFFFFFFFF
 #define MAX_FLOAT (3.402823466e+38f)

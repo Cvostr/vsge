@@ -22,8 +22,12 @@ void VSGEditor::InspectorWindow::OnDrawWindow() {
 
 void VSGEditor::InspectorWindow::DrawEntityContents() {
     bool IsActive = mShowingEntity->IsActive();
+	bool IsStatic = mShowingEntity->IsStatic();
     ImGui::Checkbox("Active", &IsActive);
+	ImGui::SameLine();
+	ImGui::Checkbox("Static", &IsStatic);
     mShowingEntity->SetActive(IsActive);
+	mShowingEntity->SetStatic(IsStatic);
 
     ImGui::InputText("Entity Name", (std::string*)&mShowingEntity->GetName());
 
@@ -43,18 +47,11 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "--------------------- Components ---------------------");
 		// # Mesh  ---------------------------------------------------------------------------
 		//ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "# Mesh");
-		if (ImGui::Selectable("Mesh Renderer"))
-		{
-			mShowingEntity->AddComponent<MeshComponent>();
-		}
-		if (ImGui::Selectable("Material"))
-		{
-			mShowingEntity->AddComponent<MaterialComponent>();
-		}
-		if (ImGui::Selectable("Light"))
-		{
-			mShowingEntity->AddComponent<LightComponent>();
-		}
+		
+		AddComponentButton<VSGE::MeshComponent>("Mesh Renderer");
+		AddComponentButton<VSGE::MaterialComponent>("Material");
+		AddComponentButton<VSGE::LightComponent>("Light");
+
 		ImGui::EndPopup();
 	}
 }

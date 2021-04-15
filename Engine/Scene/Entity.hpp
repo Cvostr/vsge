@@ -4,10 +4,11 @@
 #include <Core/VarTypes/Guid.hpp>
 #include "IEntityComponent.hpp"
 #include <string>
-#include <type_traits>
+#include <typeinfo>
 #include "Math/Vec3.hpp"
 #include "Math/Mat4.hpp"
 #include "Math/AABB.hpp"
+#include "Camera.hpp"
 
 namespace VSGE {
 
@@ -21,6 +22,7 @@ namespace VSGE {
 
 		bool mActive;
 		bool mStatic;
+		ViewMask mViewMask;
 		std::string mName;
 		Guid mId;
 
@@ -45,7 +47,9 @@ namespace VSGE {
 					mScene(nullptr),
 					mActive(true),
 					mStatic(false),
-			mTransformDirty(false)
+					mTransformDirty(false),
+					mScale(1.f),
+					mViewMask(MAX_INT64)
 		{}
 		/// <summary>
 		/// get guid of entity
@@ -72,6 +76,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		bool IsActive() { return mActive; }
+
+		void SetStatic(bool _static) { mStatic = _static; }
+
+		bool IsStatic() { return mStatic; }
 		/// <summary>
 		/// Set new name string to entity
 		/// </summary>
@@ -161,14 +169,24 @@ namespace VSGE {
 			component->SetEntity(this);
 			mComponents.push_back(component);
 		}
+		/// <summary>
+		/// Get entity component with type
+		/// </summary>
+		/// <typeparam name="T">type of component</typeparam>
+		/// <returns></returns>
+		template<typename T>
+		T* GetComponent() {
+			for (auto component : mComponents) {
+				if (typeid(*component) == typeid(T)) {
+					return static_cast<T*>(component);
+				}
+			}
+			return nullptr;
+		}
 
 		template<typename T>
 		bool HasComponent() {
-			for (auto component : mComponents) {
-				if (std::is_same<component, T>::value) {
-					return true;
-				}
-			}
+			return GetComponent<T>() == nullptr ? false : true;
 		}
 
 		bool HasComponent(IEntityComponent* component);

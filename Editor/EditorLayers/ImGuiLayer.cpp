@@ -49,7 +49,6 @@ void ImGuiLayer::OnUpdate() {
         if (ImGui::MenuItem("Create Mesh Object", NULL)) {
         }
 		
-
 		ImGui::EndMenu();
 	}
 	
