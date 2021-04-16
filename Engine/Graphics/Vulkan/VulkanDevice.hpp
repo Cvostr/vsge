@@ -3,9 +3,9 @@
 #include <vulkan/vulkan.hpp>
 #include "VulkanInstance.hpp"
 
-namespace Engine {
+namespace VSGE {
 
-    class ZSVulkanDevice {
+    class VulkanDevice {
     private:
         VkPhysicalDevice mPhysicalDevice;
         VkDevice mDevice; //logical device, created from physical device
@@ -17,7 +17,7 @@ namespace Engine {
         int32_t PresentQueueFamilyIndex;
 
     public:
-        bool initDevice(VkPhysicalDevice Device, ZSVulkanInstance* instance);
+        bool initDevice(VkPhysicalDevice Device, VulkanInstance* instance);
 
         VkDevice getVkDevice() { return mDevice; }
         VkPhysicalDevice getPhysicalDevice() { return mPhysicalDevice; }
@@ -28,9 +28,8 @@ namespace Engine {
         int32_t GetGraphicsQueueFamilyIndex() { return GraphicsQueueFamilyIndex; }
         int32_t GetPresentQueueFamilyIndex() { return PresentQueueFamilyIndex; }
 
-        ZSVulkanDevice();
+        VulkanDevice();
     };
 
-    ZSVulkanDevice* CreatePrimaryDevice(ZSVulkanInstance* instance);
-
+    VulkanDevice* CreatePrimaryDevice(VulkanInstance* instance);
 }

@@ -20,6 +20,7 @@ void ImGuiLayer::OnAttach() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.DisplayFramebufferScale = ImVec2(1.25f, 1.25f);
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

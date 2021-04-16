@@ -4,7 +4,7 @@
 #include "VulkanDevice.hpp"
 #include "../GpuObject.hpp"
 
-namespace Engine {
+namespace VSGE {
 
     typedef struct SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities;
@@ -12,7 +12,7 @@ namespace Engine {
         std::vector<VkPresentModeKHR> presentModes;
     }SwapChainSupportDetails;
 
-    class ZSVulkanSwapChain : public VSGE::IGpuObject {
+    class VulkanSwapChain : public VSGE::IGpuObject {
     private:
         //Vulkan swapchain object
         VkSwapchainKHR mSwapChain;
@@ -26,11 +26,11 @@ namespace Engine {
 
         VkExtent2D swap_extend;
 
-        void CreateImages(ZSVulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat);
+        void CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat);
 
     public:
         VkSurfaceFormatKHR GetChosenSurfaceFormat() { return chosenSurfaceFormat; }
-        bool initSwapchain(ZSVulkanDevice* Device, ZSVulkanInstance* instance, int Width, int Height);
+        bool initSwapchain(VulkanDevice* Device, VulkanInstance* instance, int Width, int Height);
 
         void Destroy();
 
@@ -41,7 +41,7 @@ namespace Engine {
         VkImageView GetImageViewAtIndex(unsigned int Index);
         VkExtent2D GetExtent() { return swap_extend; }
 
-        ZSVulkanSwapChain();
+        VulkanSwapChain();
     };
 
 }

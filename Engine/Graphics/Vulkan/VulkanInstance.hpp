@@ -4,16 +4,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #include <vector>
+#include <Core/VarTypes/Base.hpp>
 
-//#include "../engine/Window.hpp"
+namespace VSGE {
 
-namespace Engine {
-
-    class ZSVulkanInstance {
+    class VulkanInstance {
     private:
         VkDebugUtilsMessengerEXT debugMessenger;
-
-        SDL_Window* window_ptr;
 
         VkInstance mInstance;
 
@@ -22,12 +19,12 @@ namespace Engine {
         VkSurfaceKHR mSurface;
 
     public:
-        bool init(bool validate, const char* app_name, int app_ver, SDL_Window* window);
+        bool init(bool validate, const char* app_name, int app_ver);
 
         VkInstance GetInstance() { return mInstance; }
         VkSurfaceKHR GetSurface() { return mSurface; }
 
-        ZSVulkanInstance();
+        VulkanInstance();
     };
 
 }

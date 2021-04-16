@@ -1,9 +1,9 @@
-
+#include <Engine/Application.hpp>
 #include "VulkanInstance.hpp"
 #include <iostream>
 
-Engine::ZSVulkanInstance::ZSVulkanInstance(){
-    this->window_ptr = nullptr;
+VSGE::VulkanInstance::VulkanInstance(){
+    //this->window_ptr = nullptr;
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -23,8 +23,10 @@ std::vector<const char*> extensions = {
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 };
 
-bool Engine::ZSVulkanInstance::init(bool validate, const char* app_name, int app_ver, SDL_Window* window){
-   
+bool VSGE::VulkanInstance::init(bool validate, const char* app_name, int app_ver){
+    Window* win = &Application::Get()->GetWindow();
+    SDL_Window* window = win->GetSdlWinPtr();
+
     unsigned int ext_count;
     if (!SDL_Vulkan_GetInstanceExtensions(window, &ext_count, nullptr)) return false;
 

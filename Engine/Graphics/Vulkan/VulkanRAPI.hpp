@@ -5,6 +5,7 @@
 #include "VulkanInstance.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanSwapchain.hpp"
+#include "VulkanMA.hpp"
 
 namespace VSGE {
 	class VulkanRAPI : public IRenderingAPI {
@@ -12,21 +13,26 @@ namespace VSGE {
 
 		static VulkanRAPI* _this;
 
-		Engine::ZSVulkanInstance* Instance;
-		Engine::ZSVulkanDevice* Device;
-		Engine::ZSVulkanSwapChain* SwapChain;
+		VulkanInstance* Instance;
+		VulkanDevice* Device;
+		VulkanSwapChain* SwapChain;
+		VulkanMA* Allocator;
 	public:
 
 		void Create(Window* window);
 
 		void Destroy(){}
 
-		Engine::ZSVulkanInstance* GetInstance() {
+		VulkanInstance* GetInstance() {
 			return Instance;
 		}
 
-		Engine::ZSVulkanDevice* GetDevice() {
+		VulkanDevice* GetDevice() {
 			return Device;
+		}
+
+		VulkanMA* GetAllocator() {
+			return Allocator;
 		}
 
 		VulkanRAPI(){

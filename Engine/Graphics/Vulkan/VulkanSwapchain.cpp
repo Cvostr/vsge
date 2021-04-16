@@ -3,17 +3,13 @@
 
 using namespace VSGE;
 
-//#include <game.h>
-
-//extern ZSGAME_DATA* game_data;
-
-VkImageView Engine::ZSVulkanSwapChain::GetImageViewAtIndex(unsigned int Index) {
+VkImageView VulkanSwapChain::GetImageViewAtIndex(unsigned int Index) {
     if (Index > this->mSwapChainImageViews.size())
         Index = static_cast<uint32_t>(mSwapChainImageViews.size());
     return mSwapChainImageViews[Index];
 }
 
-bool Engine::ZSVulkanSwapChain::initSwapchain(ZSVulkanDevice* Device, ZSVulkanInstance* instance, int Width, int Height) {
+bool VulkanSwapChain::initSwapchain(VulkanDevice* Device, VulkanInstance* instance, int Width, int Height) {
     SwapChainSupportDetails result;
     //Get surface capabilities
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Device->getPhysicalDevice(), instance->GetSurface(), &result.capabilities);
@@ -99,7 +95,7 @@ bool Engine::ZSVulkanSwapChain::initSwapchain(ZSVulkanDevice* Device, ZSVulkanIn
     return true;
 }
 
-void Engine::ZSVulkanSwapChain::Destroy() {
+void VulkanSwapChain::Destroy() {
     /*VkDevice device = game_data->vk_main->mDevice->getVkDevice();
     if (mCreated) {
         //Destroy created image views
@@ -116,7 +112,7 @@ void Engine::ZSVulkanSwapChain::Destroy() {
     }*/
 }
 
-void Engine::ZSVulkanSwapChain::CreateImages(ZSVulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) {
+void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) {
     uint32_t swc_images;
 
     vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, nullptr);
@@ -149,7 +145,7 @@ void Engine::ZSVulkanSwapChain::CreateImages(ZSVulkanDevice* Device, VkSurfaceFo
     }
 }
 
-Engine::ZSVulkanSwapChain::ZSVulkanSwapChain() :
+VulkanSwapChain::VulkanSwapChain() :
     mSwapChain(VK_NULL_HANDLE)
 {
 

@@ -12,7 +12,7 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
-Engine::ZSVulkanDevice* Engine::CreatePrimaryDevice(ZSVulkanInstance* instance) {
+VulkanDevice* CreatePrimaryDevice(VulkanInstance* instance) {
     std::vector<VkPhysicalDevice> phys_devices_list;
 
     uint32_t gpus_count;
@@ -27,7 +27,7 @@ Engine::ZSVulkanDevice* Engine::CreatePrimaryDevice(ZSVulkanInstance* instance) 
         vkGetPhysicalDeviceProperties(device, &DeviceProps);
         
         if (DeviceProps.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-            ZSVulkanDevice* ZsDevice = new ZSVulkanDevice;
+            VulkanDevice* ZsDevice = new VulkanDevice;
             Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan GPU " << DeviceProps.deviceName << "\n";
             ZsDevice->initDevice(device, instance);
             return ZsDevice;
@@ -36,11 +36,11 @@ Engine::ZSVulkanDevice* Engine::CreatePrimaryDevice(ZSVulkanInstance* instance) 
     return nullptr;
 }
 
-Engine::ZSVulkanDevice::ZSVulkanDevice() {
+VulkanDevice::VulkanDevice() {
 
 }
 
-bool Engine::ZSVulkanDevice::initDevice(VkPhysicalDevice Device, ZSVulkanInstance* instance) {
+bool VulkanDevice::initDevice(VkPhysicalDevice Device, VulkanInstance* instance) {
     mPhysicalDevice = Device;
     uint32_t vkQueueFamilyPropsCount = 0;
     std::vector<VkQueueFamilyProperties> vkQueueFamilyProps;
