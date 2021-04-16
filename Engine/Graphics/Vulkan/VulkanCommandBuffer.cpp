@@ -3,7 +3,7 @@
 
 using namespace VSGE;
 
-VkCommandPool beginCommandPool() {
+VkCommandPool VSGE::beginCommandPool() {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanDevice* device = vulkan_rapi->GetDevice();
     
@@ -18,7 +18,7 @@ VkCommandPool beginCommandPool() {
     return commandPool;
 }
 
-VkCommandBuffer CreateSingleTimeComdbuf(VkCommandPool commandPool) {
+VkCommandBuffer VSGE::CreateSingleTimeComdbuf(VkCommandPool commandPool) {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanDevice* device = vulkan_rapi->GetDevice();
 
@@ -33,7 +33,7 @@ VkCommandBuffer CreateSingleTimeComdbuf(VkCommandPool commandPool) {
 
     return commandBuffer;
 }
-void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool) {
+void VSGE::endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool) {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanDevice* device = vulkan_rapi->GetDevice();
 

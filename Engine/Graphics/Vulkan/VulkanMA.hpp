@@ -8,6 +8,11 @@ namespace VSGE {
 		void* _allocation;
 	};
 
+	struct VmaVkImage {
+		VkImage Image;
+		void* _allocation;
+	};
+
 	class VulkanMA {
 	private:
 		void* allocator;

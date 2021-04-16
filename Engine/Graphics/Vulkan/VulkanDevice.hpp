@@ -16,11 +16,16 @@ namespace VSGE {
         int32_t GraphicsQueueFamilyIndex;
         int32_t PresentQueueFamilyIndex;
 
+        VkPhysicalDeviceProperties DeviceProps;
+
     public:
-        bool initDevice(VkPhysicalDevice Device, VulkanInstance* instance);
+        bool initDevice(VkPhysicalDevice Device);
 
         VkDevice getVkDevice() { return mDevice; }
         VkPhysicalDevice getPhysicalDevice() { return mPhysicalDevice; }
+
+        const VkPhysicalDeviceProperties& GetProps() { return DeviceProps; }
+        void SetProperties(const VkPhysicalDeviceProperties& DeviceProps) { this->DeviceProps = DeviceProps; }
 
         VkQueue GetGraphicsQueue() { return mGraphicsQueue; }
         VkQueue GetPresentQueue() { return mPresentQueue;  }
@@ -31,5 +36,5 @@ namespace VSGE {
         VulkanDevice();
     };
 
-    VulkanDevice* CreatePrimaryDevice(VulkanInstance* instance);
+    VulkanDevice* CreatePrimaryDevice();
 }

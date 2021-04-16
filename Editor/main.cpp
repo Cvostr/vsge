@@ -18,6 +18,10 @@ Application* VSGEMain() {
 	OpenGL_RAPI* ogl = new OpenGL_RAPI;
 	ogl->Create(&app->GetWindow());
 
+	//VulkanRAPI* vk = new VulkanRAPI;
+	//svk->Create(&app->GetWindow());
+
+
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);
 

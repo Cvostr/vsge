@@ -30,11 +30,12 @@ namespace VSGE {
     };
 
 	class Texture : public IGpuObject{
-    private:
+    protected:
         uint32 mMaxWidth; //Width of best mip map
         uint32 mMaxHeight; //Height of best mip map
         uint32 mMipLevels; //Count of mip levels
         uint32 mLayers; //Count of layers in texture array
+        bool mIsRenderTarget;
 
         TextureFormat mFormat;
 
@@ -46,10 +47,24 @@ namespace VSGE {
             mMaxWidth(0),
             mMaxHeight(0),
             mMipLevels(0),
-            mLayers(1)
+            mLayers(1),
+            mIsRenderTarget(false)
         {}
 
-        virtual void Release(){}
+        TextureFormat GetFormat() { return mFormat; }
+        uint32 GetMipsCount() { return mMipLevels; }
+        uint32 GetLayersCount() { return mLayers; }
+        uint32 GetWidth() { return mMaxWidth; }
+        uint32 GetHeight() { return mMaxHeight; }
+        void SetRenderTargetFlag(bool renderTarget) {
+            mIsRenderTarget = renderTarget;
+        }
+        bool IsRenderTarget() { return mIsRenderTarget; }
+
+        /// <summary>
+        /// Destroy texture and release memory
+        /// </summary>
+        virtual void Destroy(){}
         /// <summary>
         /// Create texture from byte array. supported formats - DDS, PNG
         /// </summary>
@@ -65,5 +80,11 @@ namespace VSGE {
         /// <param name="format">- format of new texture</param>
         /// <param name="layers">- count of layers of new texture</param>
         virtual void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1) = 0;
-	};
+        /// <summary>
+        /// Recreate texture with new sizes but with existing format and layers count
+        /// </summary>
+        /// <param name="width">- new width of texture</param>
+        /// <param name="height">- new height of texture</param>
+        virtual void Resize(uint32 width, uint32 height) = 0;
+    };
 }

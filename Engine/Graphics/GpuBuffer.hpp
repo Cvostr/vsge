@@ -25,5 +25,6 @@ namespace VSGE {
 
 		virtual void Create(uint32 size) = 0;
 		virtual void WriteData(uint32 offset, uint32 size, void* data) = 0;
+		virtual void Destroy() = 0;
 	};
 }

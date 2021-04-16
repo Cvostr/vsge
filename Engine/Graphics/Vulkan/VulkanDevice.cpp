@@ -1,5 +1,6 @@
 #include "VulkanDevice.hpp"
 #include <Core/Logger.hpp>
+#include "VulkanRAPI.hpp"
 
 using namespace VSGE;
 
@@ -12,10 +13,13 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
-VulkanDevice* CreatePrimaryDevice(VulkanInstance* instance) {
+VulkanDevice* VSGE::CreatePrimaryDevice() {
+    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+    VulkanInstance* instance = vulkan_rapi->GetInstance();
+
     std::vector<VkPhysicalDevice> phys_devices_list;
 
-    uint32_t gpus_count;
+    uint32_t gpus_count = 0;
     vkEnumeratePhysicalDevices(instance->GetInstance(), &gpus_count, nullptr);
     //resize vectors
     phys_devices_list.resize(gpus_count);
@@ -25,12 +29,14 @@ VulkanDevice* CreatePrimaryDevice(VulkanInstance* instance) {
         VkPhysicalDevice device = phys_devices_list[gpu_i];
         VkPhysicalDeviceProperties DeviceProps;
         vkGetPhysicalDeviceProperties(device, &DeviceProps);
-        
+       
+
         if (DeviceProps.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-            VulkanDevice* ZsDevice = new VulkanDevice;
+            VulkanDevice* Device = new VulkanDevice;
+            Device->SetProperties(DeviceProps);
             Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan GPU " << DeviceProps.deviceName << "\n";
-            ZsDevice->initDevice(device, instance);
-            return ZsDevice;
+            Device->initDevice(device);
+            return Device;
         }
     }
     return nullptr;
@@ -40,7 +46,10 @@ VulkanDevice::VulkanDevice() {
 
 }
 
-bool VulkanDevice::initDevice(VkPhysicalDevice Device, VulkanInstance* instance) {
+bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
+    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+    VulkanInstance* instance = vulkan_rapi->GetInstance();
+
     mPhysicalDevice = Device;
     uint32_t vkQueueFamilyPropsCount = 0;
     std::vector<VkQueueFamilyProperties> vkQueueFamilyProps;
