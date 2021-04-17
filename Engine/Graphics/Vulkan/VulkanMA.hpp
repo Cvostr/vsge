@@ -31,7 +31,7 @@ namespace VSGE {
 
 		VkCommandBuffer GetSingleTimeCmdBuf() { return MemoryCommandBuffer; }
 		VkCommandPool GetSingleTimeCmdPool() { return MemoryCommandPool; }
-		//void createImage(VkImageCreateInfo* info, VkImage* Image, );
+		void createImage(VkImageCreateInfo* info, VmaVkImage* image);
 
 		void map(VmaVkBuffer* buf, void** mem);
 		void unmap(VmaVkBuffer* buf);

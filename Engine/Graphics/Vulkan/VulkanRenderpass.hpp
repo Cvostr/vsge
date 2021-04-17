@@ -12,11 +12,16 @@ namespace VSGE {
 		std::vector<VkAttachmentDescription> mAttachmentDescriptions;
 		std::vector<VkAttachmentReference> mAttachmentReferences;
 		VkAttachmentReference DepthDescriptionRef;
+		bool mHasDepthAttachment;
 
 		VkClearValue* mClearValues;
 		int mClearValuesCount;
 		VkExtent2D ClearExtent;
+
 	public:
+
+		VulkanRenderPass() : mHasDepthAttachment(false) {}
+
 		/// <summary>
 		/// Get vulkan descr to created render pass
 		/// </summary>
@@ -26,13 +31,13 @@ namespace VSGE {
 		/// Try to create renderpass object
 		/// </summary>
 		/// <returns></returns>
-		bool Create();
+		void Create();
 		/// <summary>
 		/// Destroy renderpass
 		/// </summary>
 		void Destroy();
-
-		void PushColorAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA);
+		void PushColorAttachment(VkFormat format, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		void PushColorAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorOutputAttachment();
 		void PushDepthAttachment(TextureFormat Format = TextureFormat::FORMAT_DEPTH_24_STENCIL_8);
 	};

@@ -35,6 +35,10 @@ namespace VSGE {
 			return Allocator;
 		}
 
+		VulkanSwapChain* GetSwapChain() {
+			return SwapChain;
+		}
+
 		VulkanRAPI(){
 			_this = this;
 		}

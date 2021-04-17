@@ -134,3 +134,11 @@ void VulkanMA::unmap(VmaVkBuffer* buf) {
 void VulkanMA::destroyBuffer(VmaVkBuffer* buf) {
     vmaDestroyBuffer(*((VmaAllocator*)allocator), buf->Buffer, (VmaAllocation)buf->_allocation);
 }
+
+void VulkanMA::createImage(VkImageCreateInfo* info, VmaVkImage* image) {
+    VmaAllocationCreateInfo vbAllocCreateInfo = {};
+    vbAllocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+    vbAllocCreateInfo.flags = 0;
+
+    vmaCreateImage(*((VmaAllocator*)allocator), info, &vbAllocCreateInfo, &image->Image, (VmaAllocation*)image->_allocation, nullptr);
+}

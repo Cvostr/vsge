@@ -7,7 +7,13 @@ namespace VSGE {
 	class VulkanFramebuffer : public Framebuffer {
 	private:
 		VkFramebuffer mFramebuffer;
+		uint32 mLayers;
+
+		std::vector<VkImageView> Views;
+		//ZSVulkanDescriptorSet* AttachmentsDescrSet;
 	public:
+		VulkanFramebuffer() : mLayers(1) {}
+
 		VkFramebuffer GetFramebuffer() { return mFramebuffer; }
 
 		/// <summary>

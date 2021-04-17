@@ -23,7 +23,7 @@ namespace VSGE {
 
 		SDL_Window* GetSdlWinPtr() { return mWindow; }
 
-		void SetWindowSize(int32 Width, int32 Height);
+		void SetWindowSize(int32 width, int32 height);
 		void SetPosition(int32 posX, int32 posY);
 		void SetWindowTitle(BaseString title);
 		void SetResizeable(bool resizeable);

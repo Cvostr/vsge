@@ -1,5 +1,6 @@
 #include "VulkanSwapchain.hpp"
 #include <Core/Logger.hpp>
+#include "VulkanRAPI.hpp"
 
 using namespace VSGE;
 
@@ -41,8 +42,8 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device, VulkanInstance* instan
             chosenPresentMode = pres_mode;
     }
 
-    swap_extend.width = static_cast<unsigned int>(Width);
-    swap_extend.height = static_cast<unsigned int>(Height);
+    swap_extend.width = static_cast<uint32>(Width);
+    swap_extend.height = static_cast<uint32>(Height);
 
     //Now fill the strcucture
     VkSwapchainCreateInfoKHR swc_create_info;
@@ -96,7 +97,7 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device, VulkanInstance* instan
 }
 
 void VulkanSwapChain::Destroy() {
-    /*VkDevice device = game_data->vk_main->mDevice->getVkDevice();
+    VkDevice device = VulkanRAPI::Get()->GetDevice()->getVkDevice();
     if (mCreated) {
         //Destroy created image views
         for (uint32_t img_i = 0; img_i < GetSwapChainImagesCount(); img_i++) {
@@ -109,7 +110,7 @@ void VulkanSwapChain::Destroy() {
         vkDestroySwapchainKHR(device, mSwapChain, nullptr);
 
         mCreated = false;
-    }*/
+    }
 }
 
 void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) {

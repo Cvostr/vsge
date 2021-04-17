@@ -2,15 +2,15 @@
 #include <Core/Logger.hpp>
 #include "../Core/Random.hpp"
 
-void VSGE::Window::SetWindowSize(int32 Width, int32 Height) {
-	if (Width < 1 && Height < 1) 
+void VSGE::Window::SetWindowSize(int32 width, int32 height) {
+	if (width < 1 && height < 1) 
 		return;
 
-	mWindowWidth = Width;
-	mWindowHeight = Height;
+	mWindowWidth = width;
+	mWindowHeight = height;
 
 	if (mWindow)
-		SDL_SetWindowSize(this->mWindow, Width, Height);
+		SDL_SetWindowSize(this->mWindow, width, height);
 }
 
 void VSGE::Window::SetPosition(int32 posX, int32 posY) {
@@ -37,6 +37,9 @@ void VSGE::Window::SetResizeable(bool resizeable) {
 }
 
 void VSGE::Window::CreateWindow(int32 Width, int32 Height, BaseString Title, uint32 sdl_win_mode) {
+	mWindowWidth = Width;
+	mWindowHeight = Height;
+	
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) //Trying to init SDL
 	{
 		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening window " << SDL_GetError() << "\n";

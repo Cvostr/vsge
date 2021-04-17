@@ -14,7 +14,7 @@ namespace VSGE {
 	#define TESSEVAL_SHADER 0x20
 
 	class Shader {
-	private:
+	protected:
 		ShaderTypesBits mTypes;
 	public:
 		virtual void AddShader(byte* shaderData, uint32 shaderSize, ShaderTypesBits type) = 0;
