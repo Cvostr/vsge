@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Framebuffer.hpp"
+#include "VulkanRenderpass.hpp"
 #include <vulkan/vulkan.hpp>
 
 namespace VSGE {
@@ -12,10 +13,13 @@ namespace VSGE {
 		std::vector<VkImageView> Views;
 		//ZSVulkanDescriptorSet* AttachmentsDescrSet;
 	public:
-		VulkanFramebuffer() : mLayers(1) {}
+		VulkanFramebuffer() : 
+			mFramebuffer(VK_NULL_HANDLE),
+			mLayers(1) {}
 
 		VkFramebuffer GetFramebuffer() { return mFramebuffer; }
 
+		void PushOutputAttachment(uint32_t Index);
 		/// <summary>
 		/// Add existing texture as attachment to framebuffer
 		/// </summary>
@@ -43,7 +47,7 @@ namespace VSGE {
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>
-		void Create();
+		bool Create(VulkanRenderPass* renderpass);
 		/// <summary>
 		/// Destroy created framebuffer
 		/// </summary>

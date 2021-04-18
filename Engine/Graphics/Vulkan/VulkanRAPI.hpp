@@ -21,7 +21,7 @@ namespace VSGE {
 
 		void Create(Window* window);
 
-		void Destroy(){}
+		void Destroy();
 
 		VulkanInstance* GetInstance() {
 			return Instance;

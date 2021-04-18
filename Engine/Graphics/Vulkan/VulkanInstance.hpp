@@ -5,10 +5,11 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vector>
 #include <Core/VarTypes/Base.hpp>
+#include "../GpuObject.hpp"
 
 namespace VSGE {
 
-    class VulkanInstance {
+    class VulkanInstance : public IGpuObject {
     private:
         VkDebugUtilsMessengerEXT debugMessenger;
 
@@ -20,6 +21,7 @@ namespace VSGE {
 
     public:
         bool init(bool validate, const char* app_name, int app_ver);
+        void Destroy();
 
         VkInstance GetInstance() { return mInstance; }
         VkSurfaceKHR GetSurface() { return mSurface; }

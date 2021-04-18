@@ -30,11 +30,15 @@ void VulkanBuffer::Create(uint32 size) {
 }
 
 void VulkanBuffer::Destroy() {
-	if (!mCreated) {
+	if (mCreated) {
 		VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 		VulkanMA* vulkan_ma = vulkan_rapi->GetAllocator();
 
 		vulkan_ma->destroyBuffer(&mBuffer);
 		mCreated = false;
 	}
+}
+
+void VulkanBuffer::WriteData(uint32 offset, uint32 size, void* data) {
+	memcpy(this->mCpuBuffer + offset, data, size);
 }

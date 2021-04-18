@@ -45,7 +45,7 @@ namespace VSGE {
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>
-		virtual void Create() = 0;
+		//virtual bool Create() = 0;
 		/// <summary>
 		/// Destroy created framebuffer
 		/// </summary>

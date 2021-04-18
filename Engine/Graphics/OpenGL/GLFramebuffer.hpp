@@ -31,6 +31,6 @@ namespace VSGE {
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>
-		void Create();
+		bool Create();
 	};
 }

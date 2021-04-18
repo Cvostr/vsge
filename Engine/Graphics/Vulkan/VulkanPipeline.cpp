@@ -23,7 +23,9 @@ VkFormat GetVertexLayoutFormatVK(VertexLayoutFormat format) {
 	return VK_FORMAT_R32G32B32_SFLOAT;
 }
 
-bool VulkanPipeline::Create(const VulkanPipelineConf& Conf, VulkanShader& shader, VulkanRenderPass& rpass, VertexLayout& vl, VulkanPipelineLayout& layout) {
+bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, VulkanRenderPass& rpass, VertexLayout& vl, VulkanPipelineLayout& layout) {
+	VulkanRAPI* vulkan = VulkanRAPI::Get();
+	//Array for shader stage create infos
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStagesInfo;
 
 	uint32 stages = shader.GetModulesCount();
@@ -60,12 +62,27 @@ bool VulkanPipeline::Create(const VulkanPipelineConf& Conf, VulkanShader& shader
 	rasterizer.depthBiasClamp = 0.0f; // Optional
 	rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
 
+	//If vulkan width and height are zero
+	//then set values from current swapchain
+	VulkanSwapChain* swchain = vulkan->GetSwapChain();
+	if (Conf.Viewport.width == 0) {
+		Conf.Viewport.width = (float)swchain->GetExtent().width;
+	}
+	if (Conf.Viewport.height == 0) {
+		Conf.Viewport.height = (float)swchain->GetExtent().height;
+	}
+
+	//Set scissor to cut nothing
+	VkRect2D scissor;
+	scissor.offset = { 0, 0};
+	scissor.extent = { (uint32)Conf.Viewport.width, (uint32)Conf.Viewport.height };
+
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	viewportState.viewportCount = 1;
-	//viewportState.pViewports = &Conf.Viewport;
+	viewportState.pViewports = &Conf.Viewport;
 	viewportState.scissorCount = 1;
-	//viewportState.pScissors = &scissor;
+	viewportState.pScissors = &scissor;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -80,7 +97,7 @@ bool VulkanPipeline::Create(const VulkanPipelineConf& Conf, VulkanShader& shader
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	depthStencil.depthTestEnable = Conf.DepthTest;
 	depthStencil.depthWriteEnable = Conf.DepthTest;
-	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+	depthStencil.depthCompareOp = Conf.DepthOp;
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.minDepthBounds = 0.0f; // Optional
 	depthStencil.maxDepthBounds = 1.0f; // Optional
@@ -162,10 +179,20 @@ bool VulkanPipeline::Create(const VulkanPipelineConf& Conf, VulkanShader& shader
 	pipeline_create_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
 	pipeline_create_info.basePipelineIndex = -1; // Optional
 	//Try to create pipeline
-	VulkanRAPI* vulkan = VulkanRAPI::Get();
+	
 	VulkanDevice* device = vulkan->GetDevice();
 	if (vkCreateGraphicsPipelines(device->getVkDevice(), VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &this->mPipeline) != VK_SUCCESS)
 		return false;
 
+	mCreated = true;
+
 	return true;
+}
+
+void VulkanPipeline::Destroy() {
+	if (mCreated) {
+		VulkanRAPI* vulkan = VulkanRAPI::Get();
+		VulkanDevice* device = vulkan->GetDevice();
+		vkDestroyPipeline(device->getVkDevice(), mPipeline, nullptr);
+	}
 }

@@ -19,5 +19,16 @@ bool VulkanPipelineLayout::Create() {
     if (vkCreatePipelineLayout(device->getVkDevice(), &pipeline_info, nullptr, &this->mPLayout) != VK_SUCCESS)
         return false;
 
+    mCreated = true;
+
     return true;
+}
+
+void VulkanPipelineLayout::Destroy() {
+    if (mCreated) {
+        VulkanRAPI* vulkan = VulkanRAPI::Get();
+        VulkanDevice* device = vulkan->GetDevice();
+        vkDestroyPipelineLayout(device->getVkDevice(), mPLayout, nullptr);
+        mCreated = false;
+    }
 }

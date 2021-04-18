@@ -49,3 +49,75 @@ void VSGE::endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool co
 
     vkFreeCommandBuffers(device->getVkDevice(), commandPool, 1, &commandBuffer);
 }
+
+bool VulkanCommandPool::Create(uint32 queueFamilyIndex) {
+    VkCommandPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.queueFamilyIndex = queueFamilyIndex;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
+
+    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+    VulkanDevice* device = vulkan_rapi->GetDevice();
+
+    if (vkCreateCommandPool(device->getVkDevice(), &poolInfo, nullptr, &mCommandPool) != VK_SUCCESS) {
+        return false;
+    }
+
+    mCreated = true;
+
+    return true;
+}
+
+void VulkanCommandPool::Destroy() {
+    if (mCreated) {
+        VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+        VulkanDevice* device = vulkan_rapi->GetDevice();
+
+        vkDestroyCommandPool(device->getVkDevice(), mCommandPool, nullptr);
+
+        mCreated = false;
+    }
+}
+
+bool VulkanCommandBuffer::Create(VulkanCommandPool& pool) {
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = pool.GetCommandPool();
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = (uint32_t)1;
+
+    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+    VulkanDevice* device = vulkan_rapi->GetDevice();
+
+    if (vkAllocateCommandBuffers(device->getVkDevice(), &allocInfo, &mCommandBuffer) != VK_SUCCESS) {
+        return false;
+    }
+
+    mCreated = true;
+
+    return true;
+}
+
+void VulkanCommandBuffer::Begin() {
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = 0; // Optional
+    beginInfo.pInheritanceInfo = nullptr; // Optional
+
+    vkBeginCommandBuffer(mCommandBuffer, &beginInfo);
+}
+
+void VulkanCommandBuffer::End() {
+    vkEndCommandBuffer(mCommandBuffer);
+}
+
+void VulkanCommandBuffer::Destroy() {
+    if (mCreated) {
+        VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+        VulkanDevice* device = vulkan_rapi->GetDevice();
+
+        
+
+        mCreated = false;
+    }
+}

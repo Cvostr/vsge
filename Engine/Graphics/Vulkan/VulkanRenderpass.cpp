@@ -1,11 +1,11 @@
-#include "VulkanRenderpass.hpp"
+#include "VulkanFramebuffer.hpp"
 #include <Core/VarTypes/Base.hpp>
 #include "VulkanRAPI.hpp"
 #include "VulkanTexture.hpp"
 
 using namespace VSGE;
 
-void VulkanRenderPass::Create() {
+bool VulkanRenderPass::Create() {
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();
 
@@ -50,7 +50,7 @@ void VulkanRenderPass::Create() {
 
 
     if (vkCreateRenderPass(device->getVkDevice(), &renderPassInfo, nullptr, &mRenderPass) != VK_SUCCESS) {
-        //return false;
+        return false;
     }
 
     mClearValuesCount = static_cast<int>(mAttachmentReferences.size() + mHasDepthAttachment);
@@ -62,11 +62,20 @@ void VulkanRenderPass::Create() {
         mClearValues[mClearValuesCount - 1].depthStencil = { 1.0f, 0 };
     //Set created flag to true
     mCreated = true;
-
+    return true;
 }
 
 void VulkanRenderPass::Destroy() {
+    if (mCreated) {
+        VulkanRAPI* vulkan = VulkanRAPI::Get();
+        VulkanDevice* device = vulkan->GetDevice();
 
+        vkDestroyRenderPass(device->getVkDevice(), mRenderPass, nullptr);
+
+        delete[] mClearValues;
+
+        mCreated = false;
+    }
 }
 
 void VulkanRenderPass::PushColorAttachment(VkFormat format, VkImageLayout Layout) {
@@ -108,6 +117,8 @@ void VulkanRenderPass::PushColorOutputAttachment() {
     VulkanSwapChain* swapchain = vulkan->GetSwapChain();
 
     PushColorAttachment(swapchain->GetChosenSurfaceFormat().format, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+    ClearExtent = swapchain->GetExtent();
 }
 void VulkanRenderPass::PushDepthAttachment(TextureFormat Format) {
     VkFormat vk_format = GetFormatVK(Format);
@@ -132,4 +143,21 @@ void VulkanRenderPass::PushDepthAttachment(TextureFormat Format) {
     //Push new attachment reference
     DepthDescriptionRef = colorAttachmentRef;
     mHasDepthAttachment = true;
+}
+
+void VulkanRenderPass::CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer) {
+    if (mCreated) {
+        VkRenderPassBeginInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = GetRenderPass();
+        renderPassInfo.framebuffer = framebuffer.GetFramebuffer();
+
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = ClearExtent;
+
+        renderPassInfo.clearValueCount = mClearValuesCount;
+        renderPassInfo.pClearValues = mClearValues;
+
+        vkCmdBeginRenderPass(cmdbuf.GetCommandBuffer(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    }
 }

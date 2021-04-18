@@ -15,5 +15,6 @@ namespace VSGE {
 		VkPipelineLayout GetPipelineLayout() { return mPLayout; }
 
 		bool Create();
+		void Destroy();
 	};
 }

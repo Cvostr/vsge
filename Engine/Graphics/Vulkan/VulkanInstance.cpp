@@ -83,5 +83,14 @@ bool VSGE::VulkanInstance::init(bool validate, const char* app_name, int app_ver
         }
     }
 
+    mCreated = true;
+
     return true;
+}
+
+void VSGE::VulkanInstance::Destroy() {
+    if (mCreated) {
+        vkDestroyInstance(mInstance, nullptr);
+        mCreated = false;
+    }
 }

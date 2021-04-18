@@ -14,6 +14,6 @@ void GLFramebuffer::AddDepth(TextureFormat Format, uint32 Layers) {
 
 }
 
-void GLFramebuffer::Create() {
-
+bool GLFramebuffer::Create() {
+	return false;
 }

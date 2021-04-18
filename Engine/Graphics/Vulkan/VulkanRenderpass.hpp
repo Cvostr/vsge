@@ -3,8 +3,12 @@
 #include "../GpuBuffer.hpp"
 #include "../Texture.hpp"
 #include <vulkan/vulkan.hpp>
+#include "VulkanCommandBuffer.hpp"
 
 namespace VSGE {
+
+	class VulkanFramebuffer;
+
 	class VulkanRenderPass : public IGpuObject {
 	private:
 		VkRenderPass mRenderPass;
@@ -31,11 +35,14 @@ namespace VSGE {
 		/// Try to create renderpass object
 		/// </summary>
 		/// <returns></returns>
-		void Create();
+		bool Create();
 		/// <summary>
 		/// Destroy renderpass
 		/// </summary>
 		void Destroy();
+
+		void CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer);
+
 		void PushColorAttachment(VkFormat format, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorOutputAttachment();

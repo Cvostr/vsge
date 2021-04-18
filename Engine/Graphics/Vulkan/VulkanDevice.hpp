@@ -2,10 +2,11 @@
 
 #include <vulkan/vulkan.hpp>
 #include "VulkanInstance.hpp"
+#include "../GpuObject.hpp"
 
 namespace VSGE {
 
-    class VulkanDevice {
+    class VulkanDevice : public IGpuObject {
     private:
         VkPhysicalDevice mPhysicalDevice;
         VkDevice mDevice; //logical device, created from physical device
@@ -20,6 +21,7 @@ namespace VSGE {
 
     public:
         bool initDevice(VkPhysicalDevice Device);
+        void Destroy();
 
         VkDevice getVkDevice() { return mDevice; }
         VkPhysicalDevice getPhysicalDevice() { return mPhysicalDevice; }

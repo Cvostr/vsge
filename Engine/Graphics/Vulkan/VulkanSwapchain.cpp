@@ -61,7 +61,10 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device, VulkanInstance* instan
     swc_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; //we'll render directly to images
 
     swc_create_info.queueFamilyIndexCount = 2;
-    uint32_t queueFamilyIndices[] = { Device->GetGraphicsQueueFamilyIndex(), Device->GetPresentQueueFamilyIndex() };
+    uint32 queueFamilyIndices[] = { 
+        (uint32)Device->GetGraphicsQueueFamilyIndex(), 
+        (uint32)Device->GetPresentQueueFamilyIndex() 
+    };
     swc_create_info.pQueueFamilyIndices = queueFamilyIndices;
 
     if (Device->GetGraphicsQueueFamilyIndex() != Device->GetPresentQueueFamilyIndex()) { //if indices are not equal

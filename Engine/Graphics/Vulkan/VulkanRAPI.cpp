@@ -18,3 +18,9 @@ void VSGE::VulkanRAPI::Create(Window* window) {
 	//Create vulkan memory allocator
 	Allocator = new VulkanMA(Instance, Device);
 }
+
+void VSGE::VulkanRAPI::Destroy() {
+	SwapChain->Destroy();
+	Device->Destroy();
+	Instance->Destroy();
+}

@@ -8,6 +8,9 @@ namespace VSGE {
 	private:
 		VmaVkBuffer mBuffer;
 	public:
+
+		VkBuffer GetBuffer() { return mBuffer.Buffer; }
+
 		VulkanBuffer(GpuBufferType type) {
 			mType = type;
 		}
@@ -15,5 +18,7 @@ namespace VSGE {
 		void Create(uint32 size);
 
 		void Destroy();
+
+		void WriteData(uint32 offset, uint32 size, void* data);
 	};
 }

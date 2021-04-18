@@ -122,5 +122,14 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     //get present queue
     vkGetDeviceQueue(mDevice, static_cast<uint32_t>(PresentQueueFamilyIndex), 0, &this->mPresentQueue);
 
+    mCreated = true;
+
     return true;
+}
+
+void VulkanDevice::Destroy() {
+    if (mCreated) {
+        vkDestroyDevice(mDevice, nullptr);
+        mCreated = false;
+    }
 }

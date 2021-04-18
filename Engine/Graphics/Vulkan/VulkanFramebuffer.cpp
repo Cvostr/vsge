@@ -30,18 +30,23 @@ void VulkanFramebuffer::AddDepth(TextureFormat Format, uint32 Layers) {
 	}
 }
 
-void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
-
+void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
+	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+	Views.push_back(vulkan_rapi->GetSwapChain()->GetImageViewAtIndex(Index));
 }
 
-void VulkanFramebuffer::Create() {
+void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
+	Framebuffer::SetSize(width, height);
+}
+
+bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan_rapi->GetDevice();
 
 	if (!mCreated) {
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		//framebufferInfo.renderPass = renderpass->GetRenderPass();
+		framebufferInfo.renderPass = renderpass->GetRenderPass();
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(Views.size());
 		framebufferInfo.pAttachments = Views.data();
 		framebufferInfo.width = mWidth;
@@ -49,7 +54,7 @@ void VulkanFramebuffer::Create() {
 		framebufferInfo.layers = mLayers;
 		//Try to create framebuffer
 		if (vkCreateFramebuffer(device->getVkDevice(), &framebufferInfo, nullptr, &mFramebuffer) != VK_SUCCESS) {
-			//return false;
+			return false;
 		}
 		//Store picked renderpass
 		//mPickedRenderPass = renderpass;
@@ -67,7 +72,7 @@ void VulkanFramebuffer::Create() {
 		mCreated = true;
 
 	}
-	//return true;
+	return true;
 }
 
 void VulkanFramebuffer::Destroy() {
