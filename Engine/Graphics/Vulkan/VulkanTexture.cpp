@@ -54,7 +54,14 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 }
 
 void VulkanTexture::Destroy() {
+	if (mCreated) {
+		VulkanRAPI* vulkan = VulkanRAPI::Get();
+		VulkanDevice* device = vulkan->GetDevice();
 
+		vkDestroyImageView(device->getVkDevice(), mImageView, nullptr);
+
+		mCreated = false;
+	}
 }
 
 void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, uint32 layers) {

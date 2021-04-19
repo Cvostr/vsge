@@ -24,6 +24,7 @@ void VulkanBuffer::Create(uint32 size) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanMA* vulkan_ma = vulkan_rapi->GetAllocator();
 
+	mSize = size;
 	vulkan_ma->allocateCpu(GetBufferTypeVK(mType), &mBuffer, size, (void**)&this->mCpuBuffer);
 
 	mCreated = true;

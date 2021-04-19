@@ -24,6 +24,7 @@ namespace VSGE {
         VulkanTexture() : Texture()
         {}
 
+        VkImage GetImage() { return mImage.Image; }
         VkImageView GetImageView() { return mImageView; }
 
         /// <summary>

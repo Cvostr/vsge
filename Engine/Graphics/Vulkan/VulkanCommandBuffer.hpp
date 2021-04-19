@@ -3,7 +3,8 @@
 #include <vulkan/vulkan.hpp>
 #include "../GpuObject.hpp"
 #include <Core/VarTypes/Base.hpp>
-//#include "VulkanPipeline.hpp"
+#include "VulkanPipelineLayout.hpp"
+#include "VulkanDescriptors.hpp"
 #include "VulkanBuffer.hpp"
 
 namespace VSGE {
@@ -46,6 +47,8 @@ namespace VSGE {
 		void Begin();
 
 		void BindPipeline(VulkanPipeline& pipeline);
+
+		void BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount = 0, const uint32* offsets = nullptr);
 
 		void BindVertexBuffer(VulkanBuffer& buffer);
 

@@ -4,11 +4,17 @@
 using namespace VSGE;
 
 bool VulkanPipelineLayout::Create() {
+    std::vector<VkDescriptorSetLayout> layouts;
+
+    for (auto set : mSets) {
+        layouts.push_back(set->GetDescriptorSetLayout());
+    }
+
     VkPipelineLayoutCreateInfo pipeline_info = {};
     pipeline_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
-    pipeline_info.setLayoutCount = 0;
-    pipeline_info.pSetLayouts = nullptr;
+    pipeline_info.setLayoutCount = static_cast<uint32>(layouts.size());
+    pipeline_info.pSetLayouts = layouts.data();
     pipeline_info.pushConstantRangeCount =
         static_cast<uint32_t>(mPushConstants.size());
     pipeline_info.pPushConstantRanges = mPushConstants.data();

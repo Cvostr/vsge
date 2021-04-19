@@ -7,6 +7,7 @@
 #include <Graphics/Vulkan/VulkanShaderCompiler.hpp>
 #include <Graphics/Vulkan/VulkanPipeline.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
+#include <Graphics/Vulkan/VulkanDescriptors.hpp>
 
 using namespace VSGE;
 
@@ -56,8 +57,11 @@ Application* VSGEMain() {
 layout(location = 0) in vec3 pos; \n \
 layout(location = 1) in vec2 uv; \n \
 layout(location = 2) in vec3 norm; \n \
+layout (binding = 0) uniform CamMatrices{ \n \
+float div; \n \
+}uni; \n \
 void main() { \n \
-vec4 v4pos = vec4(pos / 2, 1.0); \n \
+vec4 v4pos = vec4(pos * uni.div, 1.0); \n \
 gl_Position = v4pos; \n \
 }";
 
@@ -85,7 +89,29 @@ outColor = vec4(1, 1, 1, 1.0);\n \
 	vl.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 	vl.AddItem(2, offsetof(Vertex, normal), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
+	VulkanDescriptorPool* pool = new VulkanDescriptorPool;
+
+	VulkanDescriptorSet* set = new VulkanDescriptorSet(pool);
+	set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0);
+
+
+	pool->Create();
+
+	set->Create();
+
+	
+
+
+	VulkanBuffer* uniformBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
+	uniformBuffer->Create(16);
+	float data = 0.5f;
+	uniformBuffer->WriteData(0, 4, &data);
+
+	set->WriteDescriptorBuffer(0, uniformBuffer);
+
+
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
+	p_layout->PushDescriptorSet(set);
 	p_layout->Create();
 
 	VulkanPipeline* pipeline = new VulkanPipeline;
@@ -95,6 +121,7 @@ outColor = vec4(1, 1, 1, 1.0);\n \
 	rpass->CmdBegin(*cmdbuf, *fb);
 	
 	cmdbuf->BindPipeline(*pipeline);
+	cmdbuf->BindDescriptorSets(*p_layout, 0, 1, set);
 	cmdbuf->BindVertexBuffer(*vertBuffer);
 	cmdbuf->BindIndexBuffer(*indBuffer);
 	cmdbuf->DrawIndexed(6);

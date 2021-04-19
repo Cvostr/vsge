@@ -24,7 +24,10 @@ namespace VSGE {
 
 	public:
 
-		VulkanRenderPass() : mHasDepthAttachment(false) {}
+		VulkanRenderPass() : 
+			mHasDepthAttachment(false),
+			mRenderPass(VK_NULL_HANDLE)
+		{}
 
 		/// <summary>
 		/// Get vulkan descr to created render pass

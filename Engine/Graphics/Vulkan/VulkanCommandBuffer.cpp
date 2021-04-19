@@ -3,6 +3,8 @@
 
 using namespace VSGE;
 
+VkDescriptorSet temp_sets[4];
+
 VkCommandPool VSGE::beginCommandPool() {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanDevice* device = vulkan_rapi->GetDevice();
@@ -109,6 +111,13 @@ void VulkanCommandBuffer::Begin() {
 
 void VulkanCommandBuffer::BindPipeline(VulkanPipeline& pipeline) {
     vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.GetPipeline());
+}
+
+void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount, const uint32* offsets) {
+    for (uint32 set_i = 0; set_i < setsCount; set_i++) {
+        temp_sets[set_i] = sets[set_i].GetDescriptorSet();
+    }
+    vkCmdBindDescriptorSets(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout.GetPipelineLayout(), firstSet, setsCount, temp_sets, dynOffsetCount, offsets);
 }
 
 void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
