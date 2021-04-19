@@ -11,18 +11,25 @@ namespace VSGE {
 
 	struct VulkanPipelineConf {
 		VkPrimitiveTopology primitiveTopology;
+		VkBool32 primitiveRestartEnable;
+
 		VkPolygonMode polygonMode;
 		VkCullModeFlagBits cullFaceMode;
 		VkFrontFace frontFace;
-		bool DepthTest;
+		VkBool32 DepthTest;
+		VkBool32 StencilTest;
 		VkCompareOp DepthOp;
 		VkViewport Viewport;
 		
 		VulkanPipelineConf() {
 			primitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			primitiveRestartEnable = VK_FALSE;
+
+			frontFace = VK_FRONT_FACE_CLOCKWISE;
 			polygonMode = VK_POLYGON_MODE_FILL;
 			cullFaceMode = VK_CULL_MODE_NONE;
 			DepthTest = false;
+			StencilTest = false;
 			DepthOp = VK_COMPARE_OP_LESS;
 
 			Viewport.x = 0.0f;

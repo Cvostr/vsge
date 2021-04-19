@@ -2,6 +2,7 @@
 
 #include "../GpuObject.hpp"
 #include <vulkan/vulkan.hpp>
+#include "VulkanCommandBuffer.hpp"
 
 namespace VSGE {
 	class VulkanSemaphore : public IGpuObject {
@@ -14,4 +15,8 @@ namespace VSGE {
 		bool Create();
 		void Destroy();
 	};
+
+	void VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wait, VulkanSemaphore& signal);
+
+	void VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex);
 }

@@ -3,8 +3,13 @@
 #include <vulkan/vulkan.hpp>
 #include "../GpuObject.hpp"
 #include <Core/VarTypes/Base.hpp>
+//#include "VulkanPipeline.hpp"
+#include "VulkanBuffer.hpp"
 
 namespace VSGE {
+
+	class VulkanPipeline;
+
 	VkCommandPool beginCommandPool();
 	VkCommandBuffer CreateSingleTimeComdbuf(VkCommandPool commandPool);
 	void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool);
@@ -39,6 +44,19 @@ namespace VSGE {
 		bool Create(VulkanCommandPool& pool);
 
 		void Begin();
+
+		void BindPipeline(VulkanPipeline& pipeline);
+
+		void BindVertexBuffer(VulkanBuffer& buffer);
+
+		void BindIndexBuffer(VulkanBuffer& buffer);
+
+		void Draw(uint32 vertices, uint32 instances = 1, uint32 firstVertex = 0, uint32 firstInstance = 0);
+
+		void DrawIndexed(uint32 indices, uint32 instances = 1, uint32 firstIndex = 0, uint32 firstInstance = 0);
+
+		void EndRenderPass();
+
 		void End();
 
 		void Destroy();

@@ -35,5 +35,15 @@ namespace VSGE {
 
 			items.push_back(item);
 		}
+
+		VertexLayout()
+		{
+		}
+
+		VertexLayout(uint32 vertexSize) :
+			vertexSize(vertexSize)
+		{
+
+		}
 	};
 }

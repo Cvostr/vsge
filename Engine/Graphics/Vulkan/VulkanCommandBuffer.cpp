@@ -1,4 +1,4 @@
-#include "VulkanCommandBuffer.hpp"
+#include "VulkanPipeline.hpp"
 #include "VulkanRAPI.hpp"
 
 using namespace VSGE;
@@ -105,6 +105,32 @@ void VulkanCommandBuffer::Begin() {
     beginInfo.pInheritanceInfo = nullptr; // Optional
 
     vkBeginCommandBuffer(mCommandBuffer, &beginInfo);
+}
+
+void VulkanCommandBuffer::BindPipeline(VulkanPipeline& pipeline) {
+    vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.GetPipeline());
+}
+
+void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
+    VkDeviceSize offsets[] = { 0 };
+    VkBuffer _buffer = buffer.GetBuffer();
+    vkCmdBindVertexBuffers(mCommandBuffer, 0, 1, &_buffer, offsets);
+}
+
+void VulkanCommandBuffer::BindIndexBuffer(VulkanBuffer& buffer) {
+    vkCmdBindIndexBuffer(mCommandBuffer, buffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
+}
+
+void VulkanCommandBuffer::Draw(uint32 vertices, uint32 instances, uint32 firstVertex, uint32 firstInstance) {
+    vkCmdDraw(mCommandBuffer, vertices, instances, firstVertex, firstInstance);
+}
+
+void VulkanCommandBuffer::DrawIndexed(uint32 indices, uint32 instances, uint32 firstIndex, uint32 firstInstance) {
+    vkCmdDrawIndexed(mCommandBuffer, indices, instances, firstIndex, 0, firstInstance);
+}
+
+void VulkanCommandBuffer::EndRenderPass() {
+    vkCmdEndRenderPass(mCommandBuffer);
 }
 
 void VulkanCommandBuffer::End() {

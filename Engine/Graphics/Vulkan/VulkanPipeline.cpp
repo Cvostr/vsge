@@ -47,7 +47,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	inputAssembly.topology = Conf.primitiveTopology;
-	inputAssembly.primitiveRestartEnable = VK_FALSE;
+	inputAssembly.primitiveRestartEnable = Conf.primitiveRestartEnable;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer = {};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -101,13 +101,13 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.minDepthBounds = 0.0f; // Optional
 	depthStencil.maxDepthBounds = 1.0f; // Optional
-	depthStencil.stencilTestEnable = VK_FALSE;
+	depthStencil.stencilTestEnable = Conf.StencilTest;
 	depthStencil.front = {}; // Optional
 	depthStencil.back = {}; // Optional
 
 	VkVertexInputBindingDescription bindingDescription{};
 	bindingDescription.binding = 0;
-	bindingDescription.stride = sizeof(vl.vertexSize);
+	bindingDescription.stride = vl.vertexSize;
 	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
@@ -133,6 +133,12 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	VkPipelineColorBlendAttachmentState colorBlendAttachments[6];
 	colorBlendAttachments[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachments[0].blendEnable = VK_FALSE;
+	colorBlendAttachments[0].srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+	colorBlendAttachments[0].dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+	colorBlendAttachments[0].colorBlendOp = VK_BLEND_OP_ADD; // Optional
+	colorBlendAttachments[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+	colorBlendAttachments[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+	colorBlendAttachments[0].alphaBlendOp = VK_BLEND_OP_ADD; // Optional
 	for (int i = 1; i < 6; i++) {
 		colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 		colorBlendAttachments[i].blendEnable = VK_FALSE;
@@ -141,7 +147,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	VkPipelineColorBlendStateCreateInfo colorBlending = {};
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlending.logicOpEnable = VK_FALSE;
-	colorBlending.attachmentCount = 6;
+	colorBlending.attachmentCount = 1;
 	colorBlending.pAttachments = colorBlendAttachments;
 
 	VkDynamicState dynamicStates[] = {
@@ -153,7 +159,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 
 	VkPipelineDynamicStateCreateInfo dynamicState{};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = 4;
+	dynamicState.dynamicStateCount = 0;
 	dynamicState.pDynamicStates = dynamicStates;
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {};
@@ -170,7 +176,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	pipeline_create_info.pDepthStencilState = &depthStencil;
 
 	pipeline_create_info.pColorBlendState = &colorBlending;
-	pipeline_create_info.pDynamicState = nullptr;
+	pipeline_create_info.pDynamicState = &dynamicState;
 	pipeline_create_info.layout = layout.GetPipelineLayout();
 	//Bind render pass
 	pipeline_create_info.renderPass = rpass.GetRenderPass();

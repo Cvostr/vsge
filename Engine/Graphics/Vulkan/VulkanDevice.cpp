@@ -98,6 +98,8 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     VkPhysicalDeviceFeatures features = {};
     features.geometryShader = true;
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT eds_features = {};
+    eds_features.extendedDynamicState = true;
 
     VkDeviceCreateInfo logical_gpu_create_info = {};
     logical_gpu_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

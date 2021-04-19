@@ -25,6 +25,21 @@ set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/win)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/SDL2.lib)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/SDL2main.lib)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
+
+#target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/glslang.lib)
+
+#if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+      target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/glslangd.lib)
+     target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/SPIRVd.lib)
+        target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/SPVRemapperd.lib)
+ target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/MachineIndependentd.lib)
+      target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/OGLCompilerd.lib)
+    target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/OSDependentd.lib)
+     target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/GenericCodeGend.lib)
+
+#endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+#target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/SPIRV.lib)
+
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glew/glew32s.lib)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glew/glew32.lib)
 target_link_libraries(EngineTest OpenGL32.lib)
