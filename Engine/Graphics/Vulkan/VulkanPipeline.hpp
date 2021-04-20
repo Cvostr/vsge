@@ -51,6 +51,10 @@ namespace VSGE {
 		VertexLayout vert_layout;
 	public:
 
+		VulkanPipeline() : 
+			mPipeline(VK_NULL_HANDLE)
+		{}
+
 		VkPipeline GetPipeline() { return mPipeline; }
 
 		bool Create(VulkanPipelineConf& Conf, VulkanShader& shader, VulkanRenderPass& rpass, VertexLayout& vl, VulkanPipelineLayout& layout);

@@ -95,6 +95,7 @@ bool VulkanCommandBuffer::Create(VulkanCommandPool& pool) {
         return false;
     }
 
+    mPoolPtr = &pool;
     mCreated = true;
 
     return true;
@@ -138,6 +139,15 @@ void VulkanCommandBuffer::DrawIndexed(uint32 indices, uint32 instances, uint32 f
     vkCmdDrawIndexed(mCommandBuffer, indices, instances, firstIndex, 0, firstInstance);
 }
 
+void VulkanCommandBuffer::SetViewports(uint32 firstViewport, uint32 count, VkViewport* viewports) {
+    vkCmdSetViewport(mCommandBuffer, firstViewport, count, viewports);
+}
+
+void VulkanCommandBuffer::SetViewport(float x, float y, float width, float height, float depthMin, float depthMax, uint32 index) {
+    VkViewport viewport = {x, y, width, height, depthMin, depthMax };
+    SetViewports(0, 1, &viewport);
+}
+
 void VulkanCommandBuffer::EndRenderPass() {
     vkCmdEndRenderPass(mCommandBuffer);
 }
@@ -151,7 +161,7 @@ void VulkanCommandBuffer::Destroy() {
         VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
         VulkanDevice* device = vulkan_rapi->GetDevice();
 
-        
+        vkFreeCommandBuffers(device->getVkDevice(), mPoolPtr->GetCommandPool(), 1, &mCommandBuffer);
 
         mCreated = false;
     }

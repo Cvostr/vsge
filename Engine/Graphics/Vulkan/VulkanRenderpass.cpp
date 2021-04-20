@@ -74,6 +74,8 @@ void VulkanRenderPass::Destroy() {
 
         delete[] mClearValues;
 
+        mColorAttachmentsCount = 0;
+
         mCreated = false;
     }
 }
@@ -106,6 +108,8 @@ void VulkanRenderPass::PushColorAttachment(VkFormat format, VkImageLayout Layout
     colorAttachmentRef.layout = Layout;
     //Push new attachment reference
     mAttachmentReferences.push_back(colorAttachmentRef);
+
+    mColorAttachmentsCount++;
 }
 
 void VulkanRenderPass::PushColorAttachment(TextureFormat Format, VkImageLayout Layout) {

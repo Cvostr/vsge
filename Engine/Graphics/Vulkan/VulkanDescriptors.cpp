@@ -52,6 +52,8 @@ void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, V
     this->descriptors.push_back(samplerLayoutBinding);
     //register this binding in descriptor pool
     pool_ptr->AddLayoutBinding(type);
+
+    bindings_types.insert({binding, type});
 }
 
 void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer) {
@@ -66,7 +68,7 @@ void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* bu
     descriptorWrite.dstBinding = binding;
     descriptorWrite.dstArrayElement = 0;
 
-    VkDescriptorType DescrType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    VkDescriptorType DescrType = bindings_types.at(binding);
 
     descriptorWrite.descriptorType = DescrType;
     descriptorWrite.descriptorCount = 1;
@@ -92,7 +94,7 @@ void VulkanDescriptorSet::WriteDescriptorImage(uint32 binding, VulkanTexture* te
     descriptorWrite.dstBinding = binding;
     descriptorWrite.dstArrayElement = 0;
 
-    VkDescriptorType DescrType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    VkDescriptorType DescrType = bindings_types.at(binding);
 
     descriptorWrite.descriptorType = DescrType;
     descriptorWrite.descriptorCount = 1;

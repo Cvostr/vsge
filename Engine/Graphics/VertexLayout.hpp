@@ -38,6 +38,7 @@ namespace VSGE {
 
 		VertexLayout()
 		{
+			vertexSize = 32;
 		}
 
 		VertexLayout(uint32 vertexSize) :

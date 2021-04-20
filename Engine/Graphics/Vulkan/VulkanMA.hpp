@@ -6,11 +6,23 @@ namespace VSGE {
 	struct VmaVkBuffer {
 		VkBuffer Buffer;
 		void* _allocation;
+
+		VmaVkBuffer() :
+			Buffer(VK_NULL_HANDLE),
+			_allocation(nullptr)
+		{
+		}
 	};
 
 	struct VmaVkImage {
 		VkImage Image;
 		void* _allocation;
+		VmaVkImage() :
+			Image(VK_NULL_HANDLE),
+			_allocation(nullptr)
+		{
+			
+		}
 	};
 
 	class VulkanMA {

@@ -34,6 +34,7 @@ namespace VSGE {
 	class VulkanCommandBuffer : public IGpuObject {
 	private:
 		VkCommandBuffer mCommandBuffer;
+		VulkanCommandPool* mPoolPtr;
 	public:
 
 		VulkanCommandBuffer() : 
@@ -57,6 +58,10 @@ namespace VSGE {
 		void Draw(uint32 vertices, uint32 instances = 1, uint32 firstVertex = 0, uint32 firstInstance = 0);
 
 		void DrawIndexed(uint32 indices, uint32 instances = 1, uint32 firstIndex = 0, uint32 firstInstance = 0);
+
+		void SetViewports(uint32 firstViewport, uint32 count, VkViewport* viewports);
+
+		void SetViewport(float x, float y, float width, float height, float depthMin = 0.f, float depthMax = 1.f, uint32 index = 0);
 
 		void EndRenderPass();
 

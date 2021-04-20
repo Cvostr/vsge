@@ -3,7 +3,7 @@
 
 #include "stdio.h"
 
-bool VSGE::LoadFile(const std::string& FilePath, char** out, size_t* Size, bool Terminate) {
+bool VSGE::LoadFile(const std::string& FilePath, char** out, uint32* Size, bool Terminate) {
 	FILE* pFile = nullptr;
 	//Try to open file with read binary
 	fopen_s(&pFile, FilePath.c_str(), "rb");
@@ -14,7 +14,7 @@ bool VSGE::LoadFile(const std::string& FilePath, char** out, size_t* Size, bool 
 	}
 	//Seek to end
 	fseek(pFile, 0, SEEK_END);
-	size_t FileSize = ftell(pFile);
+	uint32 FileSize = ftell(pFile);
 	if (Terminate)
 		FileSize++;
 	//Seek to begin
@@ -34,7 +34,7 @@ bool VSGE::LoadFile(const std::string& FilePath, char** out, size_t* Size, bool 
 	return true;
 }
 
-bool VSGE::LoadFilePartially(const std::string& FilePath, char** out, size_t Offset, size_t Size) {
+bool VSGE::LoadFilePartially(const std::string& FilePath, char** out, uint32 Offset, uint32 Size) {
 	FILE* pFile = nullptr;
 	//Try to open file with read binary
 	fopen_s(&pFile, FilePath.c_str(), "rb");

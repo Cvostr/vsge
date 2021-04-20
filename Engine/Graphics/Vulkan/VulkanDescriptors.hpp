@@ -4,6 +4,7 @@
 #include <Core/VarTypes/Base.hpp>
 #include <vulkan/vulkan.hpp>
 #include <vector>
+#include <map>
 
 #include "VulkanBuffer.hpp"
 #include "VulkanTexture.hpp"
@@ -37,6 +38,7 @@ namespace VSGE {
 		VkDescriptorSetLayout Layout;
 
 		std::vector<VkDescriptorSetLayoutBinding> descriptors;
+		std::map<uint32, VkDescriptorType> bindings_types;
 
 		VulkanDescriptorPool* pool_ptr;
 

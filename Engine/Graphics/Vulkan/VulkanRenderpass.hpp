@@ -17,6 +17,7 @@ namespace VSGE {
 		std::vector<VkAttachmentReference> mAttachmentReferences;
 		VkAttachmentReference DepthDescriptionRef;
 		bool mHasDepthAttachment;
+		uint32 mColorAttachmentsCount;
 
 		VkClearValue* mClearValues;
 		int mClearValuesCount;
@@ -26,7 +27,9 @@ namespace VSGE {
 
 		VulkanRenderPass() : 
 			mHasDepthAttachment(false),
-			mRenderPass(VK_NULL_HANDLE)
+			mRenderPass(VK_NULL_HANDLE),
+			mColorAttachmentsCount(0),
+			mClearValuesCount(0)
 		{}
 
 		/// <summary>
@@ -34,6 +37,11 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		VkRenderPass GetRenderPass() { return mRenderPass; }
+		/// <summary>
+		/// Get count of color attachments on this renderpass
+		/// </summary>
+		/// <returns></returns>
+		uint32 GetColorAttachmentsCount() { return mColorAttachmentsCount; }
 		/// <summary>
 		/// Try to create renderpass object
 		/// </summary>
@@ -43,7 +51,11 @@ namespace VSGE {
 		/// Destroy renderpass
 		/// </summary>
 		void Destroy();
-
+		/// <summary>
+		/// Begin renderpass on specified command buffer
+		/// </summary>
+		/// <param name="cmdbuf"></param>
+		/// <param name="framebuffer"></param>
 		void CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer);
 
 		void PushColorAttachment(VkFormat format, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);

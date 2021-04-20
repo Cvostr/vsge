@@ -21,7 +21,11 @@ namespace VSGE {
 		byte* mCpuBuffer;
 	public:
 		GpuBuffer() : mType(GPU_BUFFER_TYPE_NONE) {}
-		GpuBuffer(GpuBufferType type) : mType(type) {}
+		GpuBuffer(GpuBufferType type) : 
+			mType(type), 
+			mSize(0), 
+			mCpuBuffer(nullptr) 
+		{}
 
 		uint32 GetSize() { return mSize; }
 

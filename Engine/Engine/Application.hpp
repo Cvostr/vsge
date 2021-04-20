@@ -40,7 +40,10 @@ namespace VSGE {
 		/// Removes all registered application layers
 		/// </summary>
 		void RemoveAllLayers();
-
+		/// <summary>
+		/// Get object of window
+		/// </summary>
+		/// <returns></returns>
 		Window& GetWindow() { return *mWindow; }
 		/// <summary>
 		/// Calls OnUpdate on all registered application layers
