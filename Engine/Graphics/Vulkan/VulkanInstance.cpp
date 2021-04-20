@@ -1,5 +1,6 @@
 #include <Engine/Application.hpp>
 #include "VulkanInstance.hpp"
+#include <Core/Logger.hpp>
 #include <iostream>
 
 VSGE::VulkanInstance::VulkanInstance(){

@@ -4,7 +4,7 @@
 #include <Scene/Entity.hpp>
 
 namespace VSGEditor {
-	class InspectorWindow : public ImGuiWindow {
+	class InspectorWindow : public EditorWindow {
 	private:
 		static InspectorWindow* _this;
 		

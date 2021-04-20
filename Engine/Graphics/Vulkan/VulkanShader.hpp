@@ -19,6 +19,8 @@ namespace VSGE {
 		uint32 GetModulesCount() { return static_cast<uint32>(mModules.size()); }
 		VulkanShaderPair* GetModules() { return mModules.data(); }
 
+		void Destroy();
+
 		VulkanShader(){}
 	};
 

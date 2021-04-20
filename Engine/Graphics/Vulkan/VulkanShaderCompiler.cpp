@@ -179,7 +179,7 @@ bool VSGE::CompileFromGLSL(const char* shader_data, ShaderStagesBits stage, byte
 		Logger::Log(LogType::LOG_TYPE_ERROR) << glslang_program_SPIRV_get_messages(program);
 	}
 
-	spv_size = glslang_program_SPIRV_get_size(program) * 4;
+	spv_size = (uint32)glslang_program_SPIRV_get_size(program) * 4;
 	*out = new byte[spv_size];
 	memcpy((*out), glslang_program_SPIRV_get_ptr(program), spv_size);
 

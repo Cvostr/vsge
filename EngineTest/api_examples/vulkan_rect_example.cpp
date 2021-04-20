@@ -156,8 +156,6 @@ void VulkanRectTestLayer::OnUpdate() {
 		//return;
 	}
 
-	VkSemaphore pres = presentBegin.GetSemaphore();
-
 	VulkanGraphicsSubmit(*cmdbuf, imageAvailable, presentBegin);
 
 	VulkanPresent(presentBegin, _imageIndex);

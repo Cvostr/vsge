@@ -15,7 +15,7 @@ namespace VSGEditor {
 
 		ImGuiIO io;
 
-		tImGuiWindowList mWindows;
+		tEditorWindowList mWindows;
 		tImGuiMenuList mMenus;
 	public:
 
@@ -28,7 +28,7 @@ namespace VSGEditor {
 		void OnDetach();
 		void OnSDL2Event(void* event_ptr);
 
-		void AddWindow(ImGuiWindow* window);
+		void AddWindow(EditorWindow* window);
 		void AddMenu(ImGuiMenu* menu);
 
 		static ImGuiLayer* Get() {

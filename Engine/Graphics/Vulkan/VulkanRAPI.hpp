@@ -41,6 +41,11 @@ namespace VSGE {
 
 		VulkanRAPI(){
 			_this = this;
+
+			Instance = nullptr;
+			Device = nullptr;
+			SwapChain = nullptr;
+			Allocator = nullptr;
 		}
 
 		static VulkanRAPI* Get() {

@@ -7,7 +7,7 @@
 #include <imgui_internal.h>
 
 namespace VSGEditor {
-	class ImGuiWindow {
+	class EditorWindow {
 	protected:
 		ImVec2 mSize;
 		ImVec2 mPos;
@@ -24,5 +24,5 @@ namespace VSGEditor {
 		virtual void OnDrawWindow() = 0;
 	};
 
-	typedef std::vector<ImGuiWindow*> tImGuiWindowList;
+	typedef std::vector<EditorWindow*> tEditorWindowList;
 }

@@ -40,3 +40,13 @@ void VulkanShader::AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBi
 
     mStages = (ShaderStagesBits)(mStages | type);
 }
+
+void VulkanShader::Destroy() {
+    VulkanRAPI* vulkan = VulkanRAPI::Get();
+    VulkanDevice* device = vulkan->GetDevice();
+
+    for (auto shaderPair : mModules) {
+        VkShaderModule shader_module = shaderPair.first;
+        vkDestroyShaderModule(device->getVkDevice(), shader_module, nullptr);
+    }
+}

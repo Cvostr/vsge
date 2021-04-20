@@ -6,6 +6,7 @@
 
 #include "Windows/SceneWindow.hpp"
 #include "Windows/InspectorWindow.hpp"
+#include "Windows/BrowserWindow.hpp"
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -27,6 +28,7 @@ Application* VSGEMain() {
 
 	ImGuiLayer::Get()->AddWindow(new SceneWindow);
 	ImGuiLayer::Get()->AddWindow(new InspectorWindow);
+	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow("C:/"));
 
 	return app;
 }

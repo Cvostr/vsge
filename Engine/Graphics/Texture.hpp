@@ -48,7 +48,8 @@ namespace VSGE {
             mMaxHeight(0),
             mMipLevels(0),
             mLayers(1),
-            mIsRenderTarget(false)
+            mIsRenderTarget(false),
+            mFormat(FORMAT_RGBA)
         {}
 
         TextureFormat GetFormat() { return mFormat; }

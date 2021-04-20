@@ -81,7 +81,7 @@ void ImGuiLayer::OnSDL2Event(void* event_ptr) {
     ImGui_ImplSDL2_ProcessEvent(event);
 }
 
-void ImGuiLayer::AddWindow(ImGuiWindow* window) {
+void ImGuiLayer::AddWindow(EditorWindow* window) {
     mWindows.push_back(window);
 }
 void ImGuiLayer::AddMenu(ImGuiMenu* menu) {

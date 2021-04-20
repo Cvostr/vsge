@@ -11,6 +11,18 @@ VkDescriptorPoolSize getVkDescrPoolSize(VkDescriptorType type, unsigned int desc
     return poolSize;
 }
 
+void VulkanDescriptorPool::SetPoolSizes(VkDescriptorPoolSize* poolSizes, uint32 poolSizesCount) {
+    this->mSizes.clear();
+
+    for (uint32 size_i = 0; size_i < poolSizesCount; size_i++) {
+        mSizes.push_back(poolSizes[size_i]);
+    }
+}
+
+void VulkanDescriptorPool::SetDescriptorSetsCount(uint32 descriptorSets) {
+    mDescriptorSetsCount = descriptorSets;
+}
+
 bool VulkanDescriptorPool::Create() {
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();
@@ -21,7 +33,9 @@ bool VulkanDescriptorPool::Create() {
     poolInfo.pPoolSizes = mSizes.data();
     poolInfo.maxSets = mDescriptorSetsCount;
 
-    vkCreateDescriptorPool(device->getVkDevice(), &poolInfo, nullptr, &mDescriptorPool);
+    if (vkCreateDescriptorPool(device->getVkDevice(), &poolInfo, nullptr, &mDescriptorPool) != VK_SUCCESS) {
+        return false;
+    }
 
     return true;
 }

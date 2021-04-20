@@ -28,6 +28,9 @@ namespace VSGE {
 		bool Create();
 		void Destroy();
 
+		void SetPoolSizes(VkDescriptorPoolSize* poolSizes, uint32 poolSizesCount);
+		void SetDescriptorSetsCount(uint32 descriptorSets);
+
 		void AddLayoutBinding(VkDescriptorType type);
 		void IncDescriptorSet() { mDescriptorSetsCount++; }
 	};

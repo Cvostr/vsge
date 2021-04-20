@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/VarTypes/Base.hpp>
+#include "GpuObject.hpp"
 
 namespace VSGE {
 
@@ -14,11 +15,12 @@ namespace VSGE {
 		SHADER_STAGE_TESSELATION_EVAL = 0x20
 	};
 
-	class Shader {
+	class Shader : public IGpuObject {
 	protected:
 		ShaderStagesBits mStages;
 	public:
 		virtual void AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type) = 0;
+		virtual void Destroy() = 0;
 
 		Shader() : mStages(SHADER_STAGE_NULL)
 		{}
