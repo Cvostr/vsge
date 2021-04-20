@@ -14,13 +14,13 @@ using namespace VSGEditor;
 Application* VSGEMain() {
 	auto app = new Application;
 	
-	app->GetWindow().CreateWindow(1280, 720, "Editor", SDL_WINDOW_OPENGL);
+	app->GetWindow().CreateWindow(1280, 720, "Editor", SDL_WINDOW_VULKAN);
 
-	OpenGL_RAPI* ogl = new OpenGL_RAPI;
-	ogl->Create(&app->GetWindow());
+	//OpenGL_RAPI* ogl = new OpenGL_RAPI;
+	//ogl->Create(&app->GetWindow());
 
-	//VulkanRAPI* vk = new VulkanRAPI;
-	//svk->Create(&app->GetWindow());
+	VulkanRAPI* vk = new VulkanRAPI;
+	vk->Create(&app->GetWindow());
 
 
 	app->AddLayer(new EditorLayer);
