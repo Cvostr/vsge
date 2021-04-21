@@ -38,7 +38,8 @@ namespace VSGE {
 	public:
 
 		VulkanCommandBuffer() : 
-			mCommandBuffer(VK_NULL_HANDLE)
+			mCommandBuffer(VK_NULL_HANDLE),
+			mPoolPtr(nullptr)
 		{}
 
 		VkCommandBuffer GetCommandBuffer() { return mCommandBuffer; }

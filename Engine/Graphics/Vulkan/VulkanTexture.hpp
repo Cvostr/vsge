@@ -19,6 +19,10 @@ namespace VSGE {
         }
         bool CreateFromBufferDDS(byte* data, uint32 size) { return false; }
 
+        bool CreateImageView();
+        // NOT FULLY IMPLEMENTED
+        void Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width, uint32 Height);
+
     public:
 
         VulkanTexture() : Texture()

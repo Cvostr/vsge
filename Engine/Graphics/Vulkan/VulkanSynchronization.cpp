@@ -51,6 +51,20 @@ void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wa
 	vkQueueWaitIdle(device->GetGraphicsQueue());
 }
 
+void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf) {
+	VkCommandBuffer cmd = cmdbuf.GetCommandBuffer();
+
+	VkSubmitInfo end_info = {};
+	end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	end_info.commandBufferCount = 1;
+	end_info.pCommandBuffers = &cmd;
+
+	VulkanRAPI* vulkan = VulkanRAPI::Get();
+	VulkanDevice* device = vulkan->GetDevice();
+
+	vkQueueSubmit(device->GetGraphicsQueue(), 1, &end_info, VK_NULL_HANDLE);
+}
+
 void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();

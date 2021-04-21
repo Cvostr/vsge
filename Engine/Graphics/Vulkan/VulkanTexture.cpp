@@ -88,14 +88,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 		imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
 	}
 
-	//Calculate image aspect
-	VkImageAspectFlagBits aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-
-	if (format == TextureFormat::FORMAT_DEPTH_32)
-		aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
-	if (format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
-		aspect = (VkImageAspectFlagBits)(VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-
+	
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.flags = 0; // Optional
@@ -118,20 +111,114 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 
 	ma->createImage(&imageInfo, &this->mImage);
 
+	
+	CreateImageView();
+	
+}
+
+bool VulkanTexture::CreateImageView() {
 	VkImageViewType ImageViewType = VK_IMAGE_VIEW_TYPE_2D;
-	if (layers > 1)
+	if (mLayers > 1)
 		ImageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+
+	//Calculate image aspect
+	VkImageAspectFlagBits aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+
+	if (mFormat == TextureFormat::FORMAT_DEPTH_32)
+		aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
+	if (mFormat == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
+		aspect = (VkImageAspectFlagBits)(VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
+
 
 	VkImageViewCreateInfo textureImageViewInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
 	textureImageViewInfo.image = mImage.Image;
 	textureImageViewInfo.viewType = ImageViewType;
-	textureImageViewInfo.format = TexFormat;
+	textureImageViewInfo.format = GetFormatVK(mFormat);
 	textureImageViewInfo.subresourceRange.aspectMask = aspect;
 	textureImageViewInfo.subresourceRange.baseMipLevel = 0;
 	textureImageViewInfo.subresourceRange.levelCount = 1;
 	textureImageViewInfo.subresourceRange.baseArrayLayer = 0;
-	textureImageViewInfo.subresourceRange.layerCount = layers;
+	textureImageViewInfo.subresourceRange.layerCount = mLayers;
+
+	VulkanRAPI* rapi = VulkanRAPI::Get();
+	VulkanDevice* device = rapi->GetDevice();
+
 	vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &mImageView);
+
+	return true;
+}
+
+void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width, uint32 Height) {
+	VulkanRAPI* rapi = VulkanRAPI::Get();
+	VulkanDevice* device = rapi->GetDevice();
+	VulkanMA* ma = rapi->GetAllocator();
+
+	VkCommandBuffer cmdbuf = ma->GetSingleTimeCmdBuf();
+
+	VkImageMemoryBarrier imgMemBarrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+	imgMemBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	imgMemBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	imgMemBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imgMemBarrier.subresourceRange.baseMipLevel = 0;
+	imgMemBarrier.subresourceRange.levelCount = 1;
+	imgMemBarrier.subresourceRange.baseArrayLayer = 0;
+	imgMemBarrier.subresourceRange.layerCount = 1;
+	imgMemBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	imgMemBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	imgMemBarrier.image = mImage.Image;
+	imgMemBarrier.srcAccessMask = 0;
+	imgMemBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(cmdbuf, &beginInfo);
+
+	vkCmdPipelineBarrier(
+		cmdbuf,
+		VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		VK_PIPELINE_STAGE_TRANSFER_BIT,
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &imgMemBarrier);
+
+	VkBufferImageCopy region = {};
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.layerCount = 1;
+	region.imageSubresource.mipLevel = MipLevel;
+	region.imageExtent.width = Width;
+	region.imageExtent.height = Height;
+	region.imageExtent.depth = 1;
+
+	vkCmdCopyBufferToImage(cmdbuf, buffer.Buffer, mImage.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+	imgMemBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	imgMemBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	imgMemBarrier.image = mImage.Image;
+	imgMemBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+	imgMemBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+	vkCmdPipelineBarrier(
+		cmdbuf,
+		VK_PIPELINE_STAGE_TRANSFER_BIT,
+		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &imgMemBarrier);
+
+
+	//Run command
+	vkEndCommandBuffer(cmdbuf);
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &cmdbuf;
+
+	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(device->GetGraphicsQueue());
 }
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {
