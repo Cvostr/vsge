@@ -4,8 +4,6 @@ project ("Engine")
 set(HEADER_DIR "")
 set(SRC_DIR "")
 
-add_compile_definitions(GLEW_STATIC)
-
 include_directories("../vendor/headers/" REQUIRED)
 include_directories("./" REQUIRED)
 

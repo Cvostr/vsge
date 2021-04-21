@@ -145,6 +145,17 @@ void ImGuiLayer::OnUpdate() {
 }
 
 void ImGuiLayer::OnDetach() {
+    cmdbuf.Destroy();
+    cmdpool.Destroy();
+
+    presentBegin.Destroy();
+    imageAvailable.Destroy();
+
+    imgui_fb.Destroy();
+    imgui_rpass.Destroy();
+    imgui_pool.Destroy();
+
+
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();

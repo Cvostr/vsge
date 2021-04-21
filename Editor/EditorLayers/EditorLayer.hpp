@@ -5,6 +5,11 @@
 
 namespace VSGEditor {
 
+	class ProjectMenuItem {
+		std::string name;
+		std::string rootDirectory;
+	};
+
 	class EditorSettings {
 
 	};

@@ -40,10 +40,6 @@ target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 #endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 #target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/SPIRV.lib)
 
-target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glew/glew32s.lib)
-target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glew/glew32.lib)
-target_link_libraries(EngineTest OpenGL32.lib)
-
 #Win32 libs
 target_link_libraries(EngineTest winmm.lib)
 target_link_libraries(EngineTest Setupapi.lib)
@@ -56,13 +52,10 @@ IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glew/libGLEW.a)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
-target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/libSDL2.lib)
-target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/libSDL2main.lib)
 
 target_link_libraries(EngineTest ${CMAKE_DL_LIBS})
 target_link_libraries(EngineTest pthread)
 
-target_link_libraries(EngineTest GL)
 
 ENDIF()
 
