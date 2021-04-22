@@ -22,6 +22,10 @@ namespace VSGE {
 		void Destroy();
 
 		VulkanShader(){}
+
+		~VulkanShader() {
+			Destroy();
+		}
 	};
 
 }

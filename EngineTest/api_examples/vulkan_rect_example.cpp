@@ -12,6 +12,8 @@
 #include <Graphics/Vulkan/VulkanPipeline.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 #include <Graphics/Vulkan/VulkanDescriptors.hpp>
+#include <Core/FileLoader.hpp>
+
 
 using namespace VSGETest;
 using namespace VSGE;
@@ -61,19 +63,23 @@ void VulkanRectTestLayer::OnAttach() {
 layout(location = 0) in vec3 pos; \n \
 layout(location = 1) in vec2 uv; \n \
 layout(location = 2) in vec3 norm; \n \
+layout(location = 0) out vec2 UVCoord;\n \
 layout (binding = 0) uniform CamMatrices{ \n \
 float div; \n \
 }uni; \n \
 void main() { \n \
 vec4 v4pos = vec4(pos * uni.div, 1.0); \n \
 gl_Position = v4pos; \n \
+UVCoord = uv;\n \
 }";
 
 	const char* frag_source = "#version 450\n \
 #extension GL_ARB_separate_shader_objects : enable \n \
 layout(location = 0) out vec4 outColor;\n \
+layout(location = 0) in vec2 UVCoord;\n \
+layout(binding = 2) uniform sampler2D diffuse;\n \
 void main() {\n \
-outColor = vec4(1, 1, 1, 1.0);\n \
+outColor = texture(diffuse, UVCoord);\n \
 }";
 
 	byte* vs_spv_out = nullptr;
@@ -97,14 +103,24 @@ outColor = vec4(1, 1, 1, 1.0);\n \
 
 	VulkanDescriptorSet* set = new VulkanDescriptorSet(pool);
 	set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0);
-
+	set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1);
+	set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2);
 
 	pool->Create();
-
 	set->Create();
 
 
+	byte* texture_data;
+	uint32 size;
+	VSGE::LoadFile("test_pic.png", (char**)&texture_data, &size);
+	test_texture.CreateFromBuffer(texture_data, size);
 
+	byte* bc_texture_data;
+	uint32 bc_size;
+	VSGE::LoadFile("test_bc.dds", (char**)&bc_texture_data, &bc_size);
+	test_texture_bc.CreateFromBuffer(bc_texture_data, bc_size);
+
+	sampler.Create();
 
 	VulkanBuffer* uniformBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 	uniformBuffer->Create(16);
@@ -112,6 +128,8 @@ outColor = vec4(1, 1, 1, 1.0);\n \
 	uniformBuffer->WriteData(0, 4, &data);
 
 	set->WriteDescriptorBuffer(0, uniformBuffer);
+	set->WriteDescriptorImage(1, &test_texture, &sampler);
+	set->WriteDescriptorImage(2, &test_texture_bc, &sampler);
 
 
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
@@ -139,6 +157,8 @@ outColor = vec4(1, 1, 1, 1.0);\n \
 
 	
 	presentBegin.Create();
+
+	
 
 }
 void VulkanRectTestLayer::OnUpdate() {

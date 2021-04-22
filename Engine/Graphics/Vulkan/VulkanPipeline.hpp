@@ -61,5 +61,8 @@ namespace VSGE {
 
 		void Destroy();
 
+		~VulkanPipeline() {
+			Destroy();
+		}
 	};
 }

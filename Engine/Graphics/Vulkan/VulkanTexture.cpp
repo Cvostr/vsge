@@ -48,6 +48,16 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 	case TextureFormat::FORMAT_DEPTH_32:
 		vk_format = VK_FORMAT_D32_SFLOAT;
 		break;
+
+	case FORMAT_BC1_UNORM:
+		vk_format = VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
+		break;
+	case FORMAT_BC2_UNORM:
+		vk_format = VK_FORMAT_BC2_UNORM_BLOCK;
+		break;
+	case FORMAT_BC3_UNORM:
+		vk_format = VK_FORMAT_BC3_UNORM_BLOCK;
+		break;
 	}
 
 	return vk_format;
@@ -57,19 +67,21 @@ void VulkanTexture::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan->GetDevice();
+		VulkanMA* ma = vulkan->GetAllocator();
 
+		ma->destroyImage(&mImage);
 		vkDestroyImageView(device->getVkDevice(), mImageView, nullptr);
 
 		mCreated = false;
 	}
 }
 
-void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, uint32 layers) {
+void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, uint32 layers, uint32 mipLevels) {
 	mMaxWidth = width;
 	mMaxHeight = height;
 	mFormat = format;
 	mLayers = layers;
-	mMipLevels = 1;
+	mMipLevels = mipLevels;
 
 	//Convert format from universal to vulkan
 	VkFormat TexFormat = GetFormatVK(format);
@@ -88,6 +100,9 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 		imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
 	}
 
+	if (!mIsRenderTarget) {
+		usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	}
 	
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -110,10 +125,25 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VulkanDevice* device = rapi->GetDevice();
 
 	ma->createImage(&imageInfo, &this->mImage);
+}
 
+void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) {
+	VulkanRAPI* rapi = VulkanRAPI::Get();
+	VulkanMA* ma = rapi->GetAllocator();
 	
-	CreateImageView();
+	VmaVkBuffer temp_buf;
+	void* temp_map;
+	ma->allocateCpu(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &temp_buf, size, &temp_map);
 	
+	ma->map(&temp_buf, &temp_map);
+	memcpy(temp_map, data, size);
+	ma->unmap(&temp_buf);
+	//Copy temporary buffer to image
+	Transition(temp_buf, level, width, height);
+
+	ma->unmap(&temp_buf);
+	//Free temporary buffer
+	ma->destroyBuffer(&temp_buf);
 }
 
 bool VulkanTexture::CreateImageView() {
@@ -143,7 +173,8 @@ bool VulkanTexture::CreateImageView() {
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();
 
-	vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &mImageView);
+	if (vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &mImageView) != VK_SUCCESS)
+		return false;
 
 	return true;
 }
@@ -222,5 +253,6 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 }
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {
-
+	Destroy();
+	Create(width, height, mFormat, mLayers);
 }

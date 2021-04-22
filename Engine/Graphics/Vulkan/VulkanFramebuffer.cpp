@@ -14,7 +14,8 @@ void VulkanFramebuffer::AddAttachment(Texture* attachment) {
 void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers) {
 	VulkanTexture* new_attachment = new VulkanTexture;
 	new_attachment->SetRenderTargetFlag(true);
-	new_attachment->Create(mWidth, mHeight, Format, layers);
+	new_attachment->Create(mWidth, mHeight, Format, layers, 1);
+	new_attachment->CreateImageView();
 	
 	AddAttachment(new_attachment);
 }
@@ -23,7 +24,8 @@ void VulkanFramebuffer::AddDepth(TextureFormat Format, uint32 Layers) {
 	if (Format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8 || Format == TextureFormat::FORMAT_DEPTH_32) {
 		VulkanTexture* new_attachment = new VulkanTexture;
 		new_attachment->SetRenderTargetFlag(true);
-		new_attachment->Create(mWidth, mHeight, Format, Layers);
+		new_attachment->Create(mWidth, mHeight, Format, Layers, 1);
+		new_attachment->CreateImageView();
 
 		mDepthAttachment = new_attachment;
 		Views.push_back(((VulkanTexture*)new_attachment)->GetImageView());

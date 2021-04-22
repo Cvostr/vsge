@@ -15,6 +15,15 @@ namespace VSGE {
 		std::vector<VulkanDescriptorSet*> mSets;
 	public:
 
+		VulkanPipelineLayout() :
+			mPLayout(VK_NULL_HANDLE),
+			mPushConstantBuffersSize(0)
+		{}
+
+		~VulkanPipelineLayout() {
+			Destroy();
+		}
+
 		VkPipelineLayout GetPipelineLayout() { return mPLayout; }
 		void PushDescriptorSet(VulkanDescriptorSet* set) { mSets.push_back(set); }
 

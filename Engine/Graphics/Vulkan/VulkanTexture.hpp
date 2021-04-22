@@ -13,13 +13,7 @@ namespace VSGE {
         VkImageView mImageView;
 
         VkImageUsageFlagBits usage;
-        
-        bool CreateFromBufferPNG(byte* data, uint32 size) {
-            return false;
-        }
-        bool CreateFromBufferDDS(byte* data, uint32 size) { return false; }
 
-        bool CreateImageView();
         // NOT FULLY IMPLEMENTED
         void Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width, uint32 Height);
 
@@ -27,6 +21,10 @@ namespace VSGE {
 
         VulkanTexture() : Texture()
         {}
+
+        ~VulkanTexture() {
+            Destroy();
+        }
 
         VkImage GetImage() { return mImage.Image; }
         VkImageView GetImageView() { return mImageView; }
@@ -42,12 +40,17 @@ namespace VSGE {
         /// <param name="height">- height of new texture</param>
         /// <param name="format">- format of new texture</param>
         /// <param name="layers">- count of layers of new texture</param>
-        void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1);
+        void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1, uint32 mipLevels = 1);
+        
+        void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level);
+
         /// <summary>
         /// Recreate texture with new sizes but with existing format and layers count
         /// </summary>
         /// <param name="width">- new width of texture</param>
         /// <param name="height">- new height of texture</param>
         void Resize(uint32 width, uint32 height);
+
+        bool CreateImageView();
 	};
 }

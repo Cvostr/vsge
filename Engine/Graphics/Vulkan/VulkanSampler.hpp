@@ -1,9 +1,10 @@
-#include "../Sampler.hpp"
+#pragma once
 
+#include "../Sampler.hpp"
 #include <vulkan/vulkan.hpp>
 
 namespace VSGE {
-	class VulkanSampler : public Sampler {
+	class VulkanSampler : public TextureSampler {
 	private:
 		VkSampler mSampler;
 	public:
@@ -12,5 +13,13 @@ namespace VSGE {
 		bool Create();
 
 		void Destroy();
+
+		VulkanSampler() :
+			mSampler(VK_NULL_HANDLE)
+		{}
+
+		~VulkanSampler() {
+			Destroy();
+		}
 	};
 }

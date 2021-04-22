@@ -23,6 +23,10 @@ namespace VSGE {
 			mDescriptorPool(VK_NULL_HANDLE)
 		{}
 
+		~VulkanDescriptorPool() {
+			Destroy();
+		}
+
 		VkDescriptorPool GetDescriptorPool() { return mDescriptorPool; }
 
 		bool Create();
@@ -51,6 +55,10 @@ namespace VSGE {
 			mDescriptorSet(VK_NULL_HANDLE),
 			Layout(VK_NULL_HANDLE),
 			pool_ptr(nullptr) {}
+
+		~VulkanDescriptorSet() {
+			Destroy();
+		}
 
 		VkDescriptorSet GetDescriptorSet() { return mDescriptorSet; }
 		VkDescriptorSetLayout GetDescriptorSetLayout() { return Layout; }

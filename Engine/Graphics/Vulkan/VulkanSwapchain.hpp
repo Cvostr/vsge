@@ -42,6 +42,10 @@ namespace VSGE {
         VkExtent2D GetExtent() { return swap_extend; }
 
         VulkanSwapChain();
+
+        ~VulkanSwapChain() {
+            Destroy();
+        }
     };
 
 }

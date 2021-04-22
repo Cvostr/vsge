@@ -18,6 +18,7 @@ namespace VSGEditor {
 	private:
 		static EditorLayer* _this;
 		VSGE::Scene* mScene;
+		std::vector<ProjectMenuItem> projects;
 	public:
 
 		EditorLayer() {

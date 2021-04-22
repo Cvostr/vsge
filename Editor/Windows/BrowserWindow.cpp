@@ -1,6 +1,7 @@
 #include "BrowserWindow.hpp"
 #include <filesystem>
 #include <SDL2/SDL.h>
+#include <ImageBtnText.h>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -109,8 +110,8 @@ void FileBrowserWindow::OnDrawWindow() {
     }
 
     float width = w->Size.x;
-    //if (ImGui::ImageButton((void*)(FileIcons.mBackBtnIcon.GetShaderResourceView()), ImVec2(64, 64)))
-    //    cd_up();
+    if (ImGui::ImageButton(nullptr, ImVec2(64, 64)))
+        cd_up();
     unsigned int drawn_pix = 0;
     for (unsigned int f_i = 0; f_i < mFiles.size(); f_i++) {
         FileEntry* e = &mFiles[f_i];
@@ -137,8 +138,7 @@ void FileBrowserWindow::OnDrawWindow() {
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
-        bool clicked = false;
-        // clicked = ImageButtonWithText((void*)icon->GetShaderResourceView(), e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
+        bool clicked = ImageButtonWithText(nullptr, e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
         {

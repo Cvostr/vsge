@@ -17,6 +17,11 @@ namespace VSGE {
 			mFramebuffer(VK_NULL_HANDLE),
 			mLayers(1) {}
 
+
+		~VulkanFramebuffer() {
+			Destroy();
+		}
+
 		VkFramebuffer GetFramebuffer() { return mFramebuffer; }
 
 		void PushOutputAttachment(uint32_t Index);

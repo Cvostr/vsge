@@ -7,12 +7,15 @@
 namespace VSGE {
 	class Mesh {
 	private:
+		AABB mMeshBoundingBox;
+
 		uint32 mVerticesCount;
 		uint32 mIndexCount;
 	public:
 		virtual void Create(Vertex* vertices, uint32 vertex_count) = 0;
 		virtual void Create(Vertex* vertices, uint32* indices, uint32 vertex_count, uint32 index_count) = 0;
-	
+
+
 		Mesh() : 
 			mVerticesCount(0),
 			mIndexCount(0) 

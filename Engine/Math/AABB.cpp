@@ -1,6 +1,7 @@
 #include "AABB.hpp"
 #include "Vec4.hpp"
 #include <Core/VarTypes/Base.hpp>
+#include "Math/MatrixTransform.hpp"
 
 void AABB::Extend(const AABB& box) {
 	if (box.mMin.x < mMin.x)
@@ -78,6 +79,5 @@ Vec3 AABB::GetSize() {
 }
 
 Mat4 AABB::GetMatrix() {
-	return Mat4(0);
-	//return getScaleMat(GetSize()) * getTranslationMat(GetCenter());
+	return GetScaleMatrix(GetSize()) * GetTranslationMatrix(GetCenter());
 }

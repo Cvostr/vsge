@@ -3,6 +3,8 @@
 #include <Engine/ApplicationLayer.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
+#include <Graphics/Vulkan/VulkanTexture.hpp>
+#include <Graphics/Vulkan/VulkanSampler.hpp>
 
 namespace VSGETest {
 
@@ -11,6 +13,10 @@ namespace VSGETest {
 		VSGE::VulkanSemaphore imageAvailable;
 		VSGE::VulkanSemaphore presentBegin;
 		VSGE::VulkanCommandBuffer* cmdbuf;
+
+		VSGE::VulkanTexture test_texture;
+		VSGE::VulkanTexture test_texture_bc;
+		VSGE::VulkanSampler sampler;
 	public:
 
 		VulkanRectTestLayer() {

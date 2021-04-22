@@ -32,6 +32,10 @@ namespace VSGE {
 			mClearValuesCount(0)
 		{}
 
+		~VulkanRenderPass() {
+			Destroy();
+		}
+
 		/// <summary>
 		/// Get vulkan descr to created render pass
 		/// </summary>

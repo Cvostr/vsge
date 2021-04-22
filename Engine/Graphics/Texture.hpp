@@ -3,6 +3,10 @@
 #include <Core/VarTypes/Base.hpp>
 #include "GpuObject.hpp"
 
+#define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
+#define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
+#define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
+
 namespace VSGE {
 
     enum TextureFormat {
@@ -21,9 +25,9 @@ namespace VSGE {
         FORMAT_RGB16F,
         FORMAT_RGBA16F,
 
-        FORMAT_BC1_UNORM,
-        FORMAT_BC2_UNORM,
-        FORMAT_BC3_UNORM,
+        FORMAT_BC1_UNORM = 0x31545844,
+        FORMAT_BC2_UNORM = 0x33545844,
+        FORMAT_BC3_UNORM = 0x35545844,
 
         FORMAT_DEPTH_24_STENCIL_8 = 120,
         FORMAT_DEPTH_32
@@ -38,9 +42,6 @@ namespace VSGE {
         bool mIsRenderTarget;
 
         TextureFormat mFormat;
-
-        virtual bool CreateFromBufferPNG(byte* data, uint32 size) = 0;
-        virtual bool CreateFromBufferDDS(byte* data, uint32 size) = 0;
     public:
 
         Texture() : 
@@ -80,7 +81,21 @@ namespace VSGE {
         /// <param name="height">- height of new texture</param>
         /// <param name="format">- format of new texture</param>
         /// <param name="layers">- count of layers of new texture</param>
-        virtual void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1) = 0;
+        virtual void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1, uint32 mipLevels = 1) = 0;
+        /// <summary>
+        /// Finish texture creation and prepare it to work by creating ImageView
+        /// </summary>
+        /// <returns></returns>
+        virtual bool CreateImageView() = 0;
+        /// <summary>
+        /// Add mip map level to early created texture
+        /// </summary>
+        /// <param name="data">input bytes</param>
+        /// <param name="size">size of input data in bytes</param>
+        /// <param name="width">width of mip map level</param>
+        /// <param name="height">height of mip map level</param>
+        /// <param name="level">index of mip map level</param>
+        virtual void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) = 0;
         /// <summary>
         /// Recreate texture with new sizes but with existing format and layers count
         /// </summary>

@@ -17,7 +17,7 @@ namespace VSGE {
 		SAMPLER_WRAP_CLAMP_TO_EDGE
 	};
 
-	class Sampler : public IGpuObject {
+	class TextureSampler : public IGpuObject {
 	protected:
 		TextureFilteringMode mMinFiltering;
 		TextureFilteringMode mMagFiltering;
@@ -50,7 +50,7 @@ namespace VSGE {
 
 		virtual bool Create() = 0;
 
-		explicit Sampler() :
+		explicit TextureSampler() :
 			mMinFiltering(SAMPLER_FILTERING_LINEAR),
 			mMagFiltering(SAMPLER_FILTERING_LINEAR),
 

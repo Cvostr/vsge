@@ -78,7 +78,10 @@ namespace VSGE {
 		bool IsActive() { return mActive; }
 
 		void SetStatic(bool _static) { mStatic = _static; }
-
+		/// <summary>
+		/// Return whether entity is static.
+		/// </summary>
+		/// <returns></returns>
 		bool IsStatic() { return mStatic; }
 		/// <summary>
 		/// Set new name string to entity

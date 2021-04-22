@@ -8,6 +8,7 @@ struct Vertex {
 	Vec2 uv;
 	Vec3 normal;
 
+	Vertex() {}
 	Vertex(Vec3 pos) : pos(pos) {}
 	Vertex(Vec3 pos, Vec2 uv) : pos(pos), uv(uv) {}
 	Vertex(Vec3 pos, Vec2 uv, Vec3 normal) : pos(pos), uv(uv), normal(normal) {}
