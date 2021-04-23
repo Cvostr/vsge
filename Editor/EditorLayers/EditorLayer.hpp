@@ -5,11 +5,6 @@
 
 namespace VSGEditor {
 
-	class ProjectMenuItem {
-		std::string name;
-		std::string rootDirectory;
-	};
-
 	class EditorSettings {
 
 	};
@@ -18,7 +13,6 @@ namespace VSGEditor {
 	private:
 		static EditorLayer* _this;
 		VSGE::Scene* mScene;
-		std::vector<ProjectMenuItem> projects;
 	public:
 
 		EditorLayer() {
@@ -34,6 +28,8 @@ namespace VSGEditor {
 		VSGE::Scene* GetScene() {
 			return mScene;
 		}
+
+		void OpenProjectDirectory(const std::string& dir_path);
 
 		void OnAttach();
 		void OnUpdate();

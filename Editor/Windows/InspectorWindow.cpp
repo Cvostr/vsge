@@ -5,10 +5,47 @@
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
 
+#include "../InspectorInterfaces/EntityComponents/Lighsource.hpp"
+
 using namespace VSGEditor;
 using namespace VSGE;
 
 InspectorWindow* InspectorWindow:: _this = nullptr;
+
+template<class T>
+void VSGEditor::InspectorWindow::DrawComponent(std::string Label) {
+	if (mShowingEntity->HasComponent<T>()) {
+		bool is_down = ImGui::CollapsingHeader(Label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+		if (!is_down)
+			return;
+
+		if (ImGui::IsItemClicked(1))
+		{
+			ImGui::OpenPopup(Label.c_str());
+		}
+
+		T* component = mShowingEntity->GetComponent<T>();
+
+		bool removeComponent = false;
+		if (ImGui::BeginPopup(Label.c_str()))
+		{
+			if (ImGui::MenuItem("Remove component"))
+				removeComponent = true;
+
+			ImGui::EndPopup();
+		}
+
+		if (removeComponent) {
+			mShowingEntity->RemoveComponent(component);
+			return;
+		}
+
+		if (typeid(T) == typeid(LightsourceComponent)) {
+			DrawLightsourceComponent((LightsourceComponent*)component);
+		}
+	}
+}
 
 void VSGEditor::InspectorWindow::OnDrawWindow() {
     ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoCollapse);
@@ -37,6 +74,10 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
     ImGui::InputFloat3("Rotation", (float*)&mShowingEntity->GetRotation().x);
     ImGui::Separator();
 
+	DrawComponent<VSGE::MeshComponent>("Mesh Renderer");
+	DrawComponent<VSGE::MaterialComponent>("Material");
+	DrawComponent<VSGE::LightsourceComponent>("Light");
+
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.45f, 0.5f, 1));
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetWindowWidth(), 0)))
 		ImGui::OpenPopup("add_com");
@@ -45,12 +86,10 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	if (ImGui::BeginPopup("add_com"))
 	{
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "--------------------- Components ---------------------");
-		// # Mesh  ---------------------------------------------------------------------------
-		//ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "# Mesh");
 		
 		AddComponentButton<VSGE::MeshComponent>("Mesh Renderer");
 		AddComponentButton<VSGE::MaterialComponent>("Material");
-		AddComponentButton<VSGE::LightComponent>("Light");
+		AddComponentButton<VSGE::LightsourceComponent>("Light");
 
 		ImGui::EndPopup();
 	}

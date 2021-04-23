@@ -20,13 +20,17 @@ VkBufferUsageFlags GetBufferTypeVK(GpuBufferType type) {
 }
 
 
-void VulkanBuffer::Create(uint32 size) {
+void VulkanBuffer::Create(uint32 size, BufferDeviceLocation location) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanMA* vulkan_ma = vulkan_rapi->GetAllocator();
 
+	mDeviceLocation = location;
 	mSize = size;
-	vulkan_ma->allocateCpu(GetBufferTypeVK(mType), &mBuffer, size, (void**)&this->mCpuBuffer);
 
+	if (location == LOCATION_CPU_GPU)
+		vulkan_ma->allocateCpu(GetBufferTypeVK(mType), &mBuffer, size, (void**)&this->mCpuBuffer);
+	if (location == LOCATION_GPU)
+		vulkan_ma->allocate(VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &mBuffer, nullptr, size);
 	mCreated = true;
 }
 

@@ -4,6 +4,10 @@
 #include "Application.hpp"
 #include <System/PlatformSpecific.hpp>
 
+using namespace VSGE;
+
+Window* Window::_this = nullptr;
+
 void VSGE::Window::SetWindowSize(int32 width, int32 height) {
 	if (width < 1 && height < 1) 
 		return;

@@ -13,7 +13,7 @@ namespace VSGE {
 		LIGHT_TYPE_SPOT
 	};
 
-	class LightComponent : public IEntityComponent {
+	class LightsourceComponent : public IEntityComponent {
 	private:
 		LightType mLightType;
 		Color mLightColor;
@@ -21,5 +21,16 @@ namespace VSGE {
 		float mRange;
 	public:
 
+		LightsourceComponent() : 
+			mIntensity(1.f),
+			mRange(5.5f),
+			mLightType(LIGHT_TYPE_DIRECTIONAL)
+		{}
+
+		LightType& GetLightType() { return mLightType; }
+		Color& GetColor() { return mLightColor; }
+
+		float& GetIntensity() { return mIntensity; }
+		float& GetRange() { return mRange; }
 	};
 }

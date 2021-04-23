@@ -5,13 +5,13 @@
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 
 #include <Math/Vertex.hpp>
-#include <Graphics/Vulkan/VulkanBuffer.hpp>
-#include <Graphics/Vulkan/VulkanFramebuffer.hpp>
+
+
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanShaderCompiler.hpp>
-#include <Graphics/Vulkan/VulkanPipeline.hpp>
+
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
-#include <Graphics/Vulkan/VulkanDescriptors.hpp>
+
 #include <Core/FileLoader.hpp>
 
 
@@ -35,19 +35,19 @@ void VulkanRectTestLayer::OnAttach() {
 
 	unsigned int plane_inds[] = { 0,1,2, 0,2,3 };
 
-	VulkanBuffer* vertBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
+	vertBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
 	vertBuffer->Create(sizeof(plane_verts));
 	vertBuffer->WriteData(0, sizeof(plane_verts), plane_verts);
 
-	VulkanBuffer* indBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_INDEX);
+	indBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_INDEX);
 	indBuffer->Create(sizeof(plane_inds));
 	indBuffer->WriteData(0, sizeof(plane_inds), plane_inds);
 
-	VulkanRenderPass* rpass = new VulkanRenderPass;
+	rpass = new VulkanRenderPass;
 	rpass->PushColorOutputAttachment();
 	rpass->Create();
 
-	VulkanFramebuffer* fb = new VulkanFramebuffer;
+	fb = new VulkanFramebuffer;
 	fb->SetSize(1280, 720);
 	fb->PushOutputAttachment(0);
 	fb->Create(rpass);
@@ -101,7 +101,7 @@ outColor = texture(diffuse, UVCoord);\n \
 
 	VulkanDescriptorPool* pool = new VulkanDescriptorPool;
 
-	VulkanDescriptorSet* set = new VulkanDescriptorSet(pool);
+	set = new VulkanDescriptorSet(pool);
 	set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0);
 	set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1);
 	set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2);
@@ -124,37 +124,41 @@ outColor = texture(diffuse, UVCoord);\n \
 	set->WriteDescriptorImage(2, &test_texture_bc, &sampler);
 
 
-	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
+	p_layout = new VulkanPipelineLayout;
 	p_layout->PushDescriptorSet(set);
 	p_layout->Create();
 
-	VulkanPipeline* pipeline = new VulkanPipeline;
+	pipeline = new VulkanPipeline;
 	pipeline->Create(conf, *shader, *rpass, vl, *p_layout);
 
-	cmdbuf->Begin();
-	rpass->CmdBegin(*cmdbuf, *fb);
-
-	cmdbuf->BindPipeline(*pipeline);
-	cmdbuf->SetViewport(0, 0, 1280, 720);
-	cmdbuf->BindDescriptorSets(*p_layout, 0, 1, set);
-	cmdbuf->BindVertexBuffer(*vertBuffer);
-	cmdbuf->BindIndexBuffer(*indBuffer);
-	cmdbuf->DrawIndexed(6);
-
-	cmdbuf->EndRenderPass();
-	cmdbuf->End();
-
+	
+	RecordCmdbuf();
 	
 	imageAvailable.Create();
 
 	
 	presentBegin.Create();
-
-	
-
 }
+
+void VulkanRectTestLayer::RecordCmdbuf() {
+	cmdbuf->Begin();
+	rpass->CmdBegin(*cmdbuf, *fb);
+
+	Window* win = Window::Get();
+
+	cmdbuf->BindPipeline(*pipeline);
+	cmdbuf->SetViewport(0, 0, win->GetWindowWidth(), win->GetWindowHeight());
+	cmdbuf->BindDescriptorSets(*p_layout, 0, 1, set);
+	cmdbuf->BindVertexBuffer(*vertBuffer);
+	cmdbuf->BindIndexBuffer(*indBuffer);
+	cmdbuf->DrawIndexed(6);
+	cmdbuf->EndRenderPass();
+	cmdbuf->End();
+}
+
 void VulkanRectTestLayer::OnUpdate() {
 	VulkanRAPI* vk = VulkanRAPI::Get();
+	Window* win = &Application::Get()->GetWindow();
 
 	uint32_t _imageIndex;
 	VkResult imageResult = vkAcquireNextImageKHR(vk->GetDevice()->getVkDevice(),
@@ -163,9 +167,21 @@ void VulkanRectTestLayer::OnUpdate() {
 	_imageIndex = 0;
 
 	if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
-		//this->PresentInfrastructure.RecreateSwapchain();
-		//_imageIndex = 0;
-		//return;
+		vkDeviceWaitIdle(vk->GetDevice()->getVkDevice());
+
+		Window* win = Window::Get();
+		fb->Destroy();
+		fb->SetSize(win->GetWindowWidth(), win->GetWindowHeight());
+		rpass->SetClearSize(win->GetWindowWidth(), win->GetWindowHeight());
+
+		vk->GetSwapChain()->Destroy();
+		vk->GetSwapChain()->initSwapchain(vk->GetDevice());
+
+		fb->PushOutputAttachment(0);
+		fb->Create(rpass);
+
+		RecordCmdbuf();
+
 	}
 
 	VulkanGraphicsSubmit(*cmdbuf, imageAvailable, presentBegin);
@@ -176,10 +192,13 @@ void VulkanRectTestLayer::OnUpdate() {
 void VulkanRectTestLayer::OnWindowEvent(IWindowEvent& event) {
 	if (event.type == EventType::EventWindowClose) {
 		Application::Get()->Stop();
+		//Window::Get()->SetWindowSize(1920, 1080);
 	}
 	if (event.type == EventType::EventMouseScrolled) {
 		scale_factor += ((EventMouseScrolled*)&event)->yOffset / 100.f;
 		uniformBuffer->WriteData(0, 4, &scale_factor);
+	}
+	if (event.type == EventType::EventMouseButtonDown) {
 	}
 }
 

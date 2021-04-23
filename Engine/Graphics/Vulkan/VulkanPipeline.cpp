@@ -65,24 +65,13 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	//If vulkan width and height are zero
 	//then set values from current swapchain
 	VulkanSwapChain* swchain = vulkan->GetSwapChain();
-	if (Conf.Viewport.width == 0) {
-		Conf.Viewport.width = (float)swchain->GetExtent().width;
-	}
-	if (Conf.Viewport.height == 0) {
-		Conf.Viewport.height = (float)swchain->GetExtent().height;
-	}
-
-	//Set scissor to cut nothing
-	VkRect2D scissor;
-	scissor.offset = { 0, 0};
-	scissor.extent = { (uint32)Conf.Viewport.width, (uint32)Conf.Viewport.height };
 
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportState.viewportCount = 1;
-	viewportState.pViewports = &Conf.Viewport;
-	viewportState.scissorCount = 1;
-	viewportState.pScissors = &scissor;
+	viewportState.viewportCount = 0;
+	viewportState.pViewports = nullptr;
+	viewportState.scissorCount = 0;
+	viewportState.pScissors = nullptr;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -154,6 +143,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 
 	VkDynamicState dynamicStates[] = {
 		VK_DYNAMIC_STATE_VIEWPORT,
+		VK_DYNAMIC_STATE_SCISSOR,
 		VK_DYNAMIC_STATE_LINE_WIDTH,
 		VK_DYNAMIC_STATE_FRONT_FACE_EXT,
 		VK_DYNAMIC_STATE_CULL_MODE_EXT
@@ -161,7 +151,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 
 	VkPipelineDynamicStateCreateInfo dynamicState{};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = 2;
+	dynamicState.dynamicStateCount = 3;
 	dynamicState.pDynamicStates = dynamicStates;
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {};

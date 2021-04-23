@@ -75,6 +75,16 @@ namespace VSGE {
 		void OnSDL2Event(void* event);
 		void OnEvent(IWindowEvent& event);
 
+		template<typename T>
+		T* GetLayer() {
+			for (auto layer : mLayers) {
+				if (typeid(*layer) == typeid(T)) {
+					return static_cast<T*>(layer);
+				}
+			}
+			return nullptr;
+		}
+
 		static Application* Get() {
 			return _this;
 		}

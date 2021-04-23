@@ -64,19 +64,7 @@ bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 		if (vkCreateFramebuffer(device->getVkDevice(), &framebufferInfo, nullptr, &mFramebuffer) != VK_SUCCESS) {
 			return false;
 		}
-		//Store picked renderpass
-		//mPickedRenderPass = renderpass;
-
-
-		//AttachmentsDescrSet = new ZSVulkanDescriptorSet(DESCR_SET_TYPE::DESCR_SET_TYPE_TEXTURE);
-		//for (unsigned int attachment_i = 0; attachment_i < Views.size(); attachment_i++)
-		//	AttachmentsDescrSet->pushImageSampler(attachment_i);
-
-		//AttachmentsDescrSet->getDescriptorSetLayout();
-
-		//for (unsigned int attachment_i = 0; attachment_i < Views.size(); attachment_i++)
-		//	AttachmentsDescrSet->setTexture(attachment_i, Views[attachment_i], game_data->vk_main->mDefaultTextureSampler);
-
+	
 		mCreated = true;
 
 	}
@@ -85,6 +73,11 @@ bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 
 void VulkanFramebuffer::Destroy() {
 	if (mCreated) {
+		VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+		VulkanDevice* device = vulkan_rapi->GetDevice();
 
+		vkDestroyFramebuffer(device->getVkDevice(), mFramebuffer, nullptr);
+		Views.clear();
+		mCreated = false;
 	}
 }

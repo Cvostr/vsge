@@ -1,6 +1,7 @@
 #include "VulkanSwapchain.hpp"
 #include <Core/Logger.hpp>
 #include "VulkanRAPI.hpp"
+#include <Engine/Window.hpp>
 
 using namespace VSGE;
 
@@ -10,7 +11,11 @@ VkImageView VulkanSwapChain::GetImageViewAtIndex(unsigned int Index) {
     return mSwapChainImageViews[Index];
 }
 
-bool VulkanSwapChain::initSwapchain(VulkanDevice* Device, VulkanInstance* instance, int Width, int Height) {
+bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
+    VulkanRAPI* vulkan = VulkanRAPI::Get();
+    VulkanInstance* instance = vulkan->GetInstance();
+    
+    
     SwapChainSupportDetails result;
     //Get surface capabilities
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(Device->getPhysicalDevice(), instance->GetSurface(), &result.capabilities);
@@ -42,8 +47,10 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device, VulkanInstance* instan
             chosenPresentMode = pres_mode;
     }
 
-    swap_extend.width = static_cast<uint32>(Width);
-    swap_extend.height = static_cast<uint32>(Height);
+    Window* win = Window::Get();
+
+    swap_extend.width = static_cast<uint32>(win->GetWindowWidth());
+    swap_extend.height = static_cast<uint32>(win->GetWindowHeight());
 
     //Now fill the strcucture
     VkSwapchainCreateInfoKHR swc_create_info;
@@ -109,6 +116,7 @@ void VulkanSwapChain::Destroy() {
         //Clear image view array
         mSwapChainImageViews.clear();
         mSwapChainImages.clear();
+        SW_Details.Clear();
         //Destroy Swapchain
         vkDestroySwapchainKHR(device, mSwapChain, nullptr);
 

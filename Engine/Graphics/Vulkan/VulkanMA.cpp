@@ -31,7 +31,7 @@ void VulkanMA::allocate(const VkBufferCreateInfo createInfo, VkBuffer* buffer) {
     vmaCreateBuffer(*((VmaAllocator*)allocator), &createInfo, &allocInfo, buffer, &allocation, nullptr);
 }
 
-void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, unsigned int size) {
+void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size) {
     VkBufferCreateInfo vbInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
     vbInfo.size = size;
     vbInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
@@ -45,7 +45,7 @@ void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, unsigned 
     vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, &stagingVertexBufferAllocInfo);
 }
 
-void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, unsigned int size, void** mapped) {
+void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size, void** mapped) {
     VkBufferCreateInfo vbInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
     vbInfo.size = size;
     vbInfo.usage = flags;
@@ -64,7 +64,7 @@ void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, unsign
     map(buffer, mapped);
 }
 
-void VulkanMA::copy(VkBuffer buffer, unsigned int offset, void* data, unsigned int size) {
+void VulkanMA::copy(VkBuffer buffer, uint32 offset, void* data, uint32 size) {
     VkBufferCreateInfo vbInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
     vbInfo.size = size;
     vbInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
@@ -109,7 +109,7 @@ void VulkanMA::copy(VkBuffer buffer, unsigned int offset, void* data, unsigned i
     vkDestroyBuffer(device->getVkDevice(), tempBuffer, nullptr);
 }
 
-void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* data, unsigned int size) {
+void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* data, uint32 size) {
     VkBufferCreateInfo vbInfo = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
     vbInfo.size = size;
     vbInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -122,7 +122,8 @@ void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* dat
     //Create GPU buffer
     vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, nullptr);
     //Copy data to GPU buffer
-    copy(buffer->Buffer, 0, data, size);
+    if(data != nullptr)
+        copy(buffer->Buffer, 0, data, size);
 }
 
 void VulkanMA::map(VmaVkBuffer* buf, void** mem) {

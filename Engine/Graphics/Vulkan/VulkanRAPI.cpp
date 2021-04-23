@@ -15,9 +15,7 @@ void VSGE::VulkanRAPI::Create(Window* window) {
 
 
 	SwapChain = new VulkanSwapChain;
-	SwapChain->initSwapchain(Device,
-		Instance,
-		window->GetWindowWidth(), window->GetWindowHeight());
+	SwapChain->initSwapchain(Device);
 	//Create vulkan memory allocator
 	Allocator = new VulkanMA(Instance, Device);
 }

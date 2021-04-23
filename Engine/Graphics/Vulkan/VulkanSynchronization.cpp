@@ -85,7 +85,14 @@ void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 
-
-
 	vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
+}
+
+VkResult VSGE::AcquireNextImage(VulkanSemaphore& signal, uint32& imageIndex) {
+	VulkanRAPI* vulkan = VulkanRAPI::Get();
+	VulkanDevice* device = vulkan->GetDevice();
+	VulkanSwapChain* swapchain = vulkan->GetSwapChain();
+
+	return vkAcquireNextImageKHR(device->getVkDevice(),
+		swapchain->GetSwapChain(), UINT64_MAX, signal.GetSemaphore(), VK_NULL_HANDLE, &imageIndex);
 }

@@ -14,26 +14,34 @@ namespace VSGE {
 		GPU_BUFFER_TYPE_DYNBUFFER
 	};
 
+	enum BufferDeviceLocation {
+		LOCATION_CPU_GPU,
+		LOCATION_GPU
+	};
+
 	class GpuBuffer : public IGpuObject {
 	protected:
 		uint32 mSize;
 		GpuBufferType mType;
 		byte* mCpuBuffer;
+		BufferDeviceLocation mDeviceLocation;
 	public:
 		GpuBuffer() : 
 			mType(GPU_BUFFER_TYPE_NONE),
 			mSize(0),
-			mCpuBuffer(nullptr)
+			mCpuBuffer(nullptr),
+			mDeviceLocation(LOCATION_CPU_GPU)
 		{}
 		GpuBuffer(GpuBufferType type) : 
 			mType(type), 
 			mSize(0), 
-			mCpuBuffer(nullptr) 
+			mCpuBuffer(nullptr),
+			mDeviceLocation(LOCATION_CPU_GPU)
 		{}
 
 		uint32 GetSize() { return mSize; }
 
-		virtual void Create(uint32 size) = 0;
+		virtual void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU) = 0;
 		virtual void WriteData(uint32 offset, uint32 size, void* data) = 0;
 		virtual void Destroy() = 0;
 	};

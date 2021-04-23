@@ -36,10 +36,10 @@ namespace VSGE {
 
 		VulkanMA(VulkanInstance* inst, VulkanDevice* device);
 		void allocate(const VkBufferCreateInfo createInfo, VkBuffer* buffer);
-		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, unsigned int size);
-		void allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, unsigned int size, void** mapped);
-		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* data, unsigned int size);
-		void copy(VkBuffer buffer, unsigned int offset, void* data, unsigned int size);
+		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size);
+		void allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size, void** mapped);
+		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* data, uint32 size);
+		void copy(VkBuffer buffer, uint32 offset, void* data, uint32 size);
 
 		VkCommandBuffer GetSingleTimeCmdBuf() { return MemoryCommandBuffer; }
 		VkCommandPool GetSingleTimeCmdPool() { return MemoryCommandPool; }

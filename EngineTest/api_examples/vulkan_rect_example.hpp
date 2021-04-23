@@ -6,11 +6,19 @@
 #include <Graphics/Vulkan/VulkanTexture.hpp>
 #include <Graphics/Vulkan/VulkanSampler.hpp>
 #include <Graphics/Vulkan/VulkanBuffer.hpp>
+#include <Graphics/Vulkan/VulkanFramebuffer.hpp>
+
+#include <Graphics/Vulkan/VulkanDescriptors.hpp>
+#include <Graphics/Vulkan/VulkanPipeline.hpp>
+#include <Graphics/Vulkan/VulkanBuffer.hpp>
 
 namespace VSGETest {
 
 	class VulkanRectTestLayer : public VSGE::IApplicationLayer {
 	private:
+		VSGE::VulkanRenderPass* rpass;
+		VSGE::VulkanFramebuffer* fb;
+
 		VSGE::VulkanSemaphore imageAvailable;
 		VSGE::VulkanSemaphore presentBegin;
 		VSGE::VulkanCommandBuffer* cmdbuf;
@@ -21,11 +29,20 @@ namespace VSGETest {
 
 		VSGE::VulkanBuffer* uniformBuffer;
 		float scale_factor;
+
+		VSGE::VulkanPipeline* pipeline;
+		VSGE::VulkanPipelineLayout* p_layout;
+		VSGE::VulkanDescriptorSet* set;
+
+		VSGE::VulkanBuffer* vertBuffer;
+		VSGE::VulkanBuffer* indBuffer;
 	public:
 
 		VulkanRectTestLayer() {
 			
 		}
+
+		void RecordCmdbuf();
 
 		void OnAttach();
 		void OnUpdate();

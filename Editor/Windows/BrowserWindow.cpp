@@ -114,6 +114,18 @@ void FileBrowserWindow::OnDrawWindow() {
         if (ImGui::MenuItem("Refresh")) {
             UpdateDirectoryContent();
         }
+        if (ImGui::BeginMenu("Create")) {
+            if (ImGui::MenuItem("Scene")) {
+
+            }
+            if (ImGui::MenuItem("Material")) {
+
+            }
+            if (ImGui::MenuItem("Render target")) {
+
+            }
+            ImGui::EndMenu();
+        }
         ImGui::EndPopup();
     }
 

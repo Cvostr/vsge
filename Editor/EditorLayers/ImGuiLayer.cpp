@@ -93,15 +93,13 @@ void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
 
     uint32_t _imageIndex;
-    VkResult imageResult = vkAcquireNextImageKHR(vk->GetDevice()->getVkDevice(),
-        vk->GetSwapChain()->GetSwapChain(), UINT64_MAX, imageAvailable.GetSemaphore(), VK_NULL_HANDLE, &_imageIndex);
+
+    VkResult imageResult = AcquireNextImage(imageAvailable, _imageIndex);
 
     _imageIndex = 0;
 
     if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
-        //this->PresentInfrastructure.RecreateSwapchain();
-        //_imageIndex = 0;
-        //return;
+        //vk->GetSwapChain()->Destroy();
     }
 
     VulkanGraphicsSubmit(cmdbuf, imageAvailable, presentBegin);

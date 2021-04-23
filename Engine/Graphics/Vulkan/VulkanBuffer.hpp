@@ -15,7 +15,7 @@ namespace VSGE {
 			mType = type;
 		}
 
-		void Create(uint32 size);
+		void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU);
 
 		void Destroy();
 

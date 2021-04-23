@@ -15,7 +15,7 @@ void Application::OnUpdate() {
 
 void Application::OnSDL2Event(void* event) {
     for (auto layer : mLayers) {
-        layer->OnSDL2Event(&event);
+        layer->OnSDL2Event(event);
     }
 }
 void Application::OnEvent(IWindowEvent& event) {

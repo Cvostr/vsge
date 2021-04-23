@@ -21,4 +21,6 @@ namespace VSGE {
 	void VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf);
 
 	void VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex);
+
+	VkResult AcquireNextImage(VulkanSemaphore& signal, uint32& imageIndex);
 }

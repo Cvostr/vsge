@@ -6,6 +6,8 @@
 namespace VSGE {
 	class Window {
 	private:
+		static Window* _this;
+
 		int32 mWindowWidth;
 		int32 mWindowHeight;
 		int32 mWindowPosX;
@@ -19,7 +21,13 @@ namespace VSGE {
 
 					mWindowWidth(1024),
 					mWindowHeight(768)
-		{}
+		{
+			_this = this;
+		}
+
+		static Window* Get() {
+			return _this;
+		}
 
 		SDL_Window* GetSdlWinPtr() { return mWindow; }
 

@@ -196,6 +196,13 @@ namespace VSGE {
 
 		void RemoveComponent(IEntityComponent* component);
 
+		template<class T>
+		void RemoveComponent() {
+			T* component = GetComponent<T>();
+			if (component)
+				RemoveComponent(component);
+		}
+
 		void RemoveAllComponents();
 	};
 }

@@ -10,6 +10,11 @@ namespace VSGE {
         VkSurfaceCapabilitiesKHR capabilities;
         std::vector<VkSurfaceFormatKHR> formats;
         std::vector<VkPresentModeKHR> presentModes;
+
+        void Clear() {
+            formats.clear();
+            presentModes.clear();
+        }
     }SwapChainSupportDetails;
 
     class VulkanSwapChain : public VSGE::IGpuObject {
@@ -30,7 +35,7 @@ namespace VSGE {
 
     public:
         VkSurfaceFormatKHR GetChosenSurfaceFormat() { return chosenSurfaceFormat; }
-        bool initSwapchain(VulkanDevice* Device, VulkanInstance* instance, int Width, int Height);
+        bool initSwapchain(VulkanDevice* Device);
 
         void Destroy();
 

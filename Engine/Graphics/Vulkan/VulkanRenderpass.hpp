@@ -62,6 +62,8 @@ namespace VSGE {
 		/// <param name="framebuffer"></param>
 		void CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer);
 
+		void SetClearSize(uint32 width, uint32 height);
+
 		void PushColorAttachment(VkFormat format, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorOutputAttachment();

@@ -11,7 +11,6 @@ namespace VSGE {
 		uint32 mLayers;
 
 		std::vector<VkImageView> Views;
-		//ZSVulkanDescriptorSet* AttachmentsDescrSet;
 	public:
 		VulkanFramebuffer() : 
 			mFramebuffer(VK_NULL_HANDLE),

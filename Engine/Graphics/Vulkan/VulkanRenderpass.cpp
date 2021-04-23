@@ -76,6 +76,9 @@ void VulkanRenderPass::Destroy() {
 
         mColorAttachmentsCount = 0;
 
+        mAttachmentDescriptions.clear();
+        mAttachmentReferences.clear();
+
         mCreated = false;
     }
 }
@@ -147,6 +150,11 @@ void VulkanRenderPass::PushDepthAttachment(TextureFormat Format) {
     //Push new attachment reference
     DepthDescriptionRef = colorAttachmentRef;
     mHasDepthAttachment = true;
+}
+
+void VulkanRenderPass::SetClearSize(uint32 width, uint32 height) {
+    ClearExtent.width = width;
+    ClearExtent.height = height;
 }
 
 void VulkanRenderPass::CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer) {

@@ -32,6 +32,9 @@ namespace VSGEditor {
 			}
 		}
 
+		template<class T>
+		void DrawComponent(std::string Label);
+
 		InspectorWindow() :
 			mShowingEntity(nullptr) 
 		{

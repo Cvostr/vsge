@@ -1,12 +1,15 @@
 #pragma once
 
-namespace VSGE {
-	class Material {
+#include "Texture.hpp"
 
+namespace VSGE {
+
+	class MaterialTemplate {
+	public:
+		
 	};
 
-
-	class PBRMaterial : public Material {
+	class Material {
 
 	};
 }
