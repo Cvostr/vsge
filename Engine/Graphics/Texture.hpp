@@ -2,6 +2,7 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include "GpuObject.hpp"
+#include <string>
 
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
@@ -74,6 +75,7 @@ namespace VSGE {
         /// <param name="size">Size of byte array</param>
         /// <returns>true if successful</returns>
         bool CreateFromBuffer(byte* data, uint32 size);
+        bool CreateFromFile(std::string filePath);
         /// <summary>
         /// Create blank texture with specified parameters
         /// </summary>

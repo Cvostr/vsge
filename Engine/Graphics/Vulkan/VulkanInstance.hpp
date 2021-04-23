@@ -20,13 +20,17 @@ namespace VSGE {
         VkSurfaceKHR mSurface;
 
     public:
-        bool init(bool validate, const char* app_name, int app_ver);
+        bool init(bool validate, const char* app_name, uint32 app_ver);
         void Destroy();
 
         VkInstance GetInstance() { return mInstance; }
         VkSurfaceKHR GetSurface() { return mSurface; }
 
-        VulkanInstance();
+        VulkanInstance() :
+            mInstance(VK_NULL_HANDLE),
+            mSurface(VK_NULL_HANDLE)
+        {
+        }
     };
 
 }

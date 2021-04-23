@@ -3,10 +3,6 @@
 #include <Core/Logger.hpp>
 #include <iostream>
 
-VSGE::VulkanInstance::VulkanInstance(){
-    //this->window_ptr = nullptr;
-}
-
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
@@ -24,7 +20,7 @@ std::vector<const char*> extensions = {
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 };
 
-bool VSGE::VulkanInstance::init(bool validate, const char* app_name, int app_ver){
+bool VSGE::VulkanInstance::init(bool validate, const char* app_name, uint32 app_ver){
     Window* win = &Application::Get()->GetWindow();
     SDL_Window* window = win->GetSdlWinPtr();
 
@@ -44,7 +40,7 @@ bool VSGE::VulkanInstance::init(bool validate, const char* app_name, int app_ver
     vk_app_info.pEngineName = "VSGE";
     vk_app_info.engineVersion = 1;
     vk_app_info.pApplicationName = app_name;
-    vk_app_info.applicationVersion = static_cast<unsigned int>(app_ver);
+    vk_app_info.applicationVersion = app_ver;
 
     VkInstanceCreateInfo vk_inst_create_info = {};
     vk_inst_create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -57,7 +53,7 @@ bool VSGE::VulkanInstance::init(bool validate, const char* app_name, int app_ver
         vk_inst_create_info.ppEnabledLayerNames = validationLayers.data();
     }
 
-    std::cout << "Creating Vulkan Instance" << std::endl;
+    Logger::Log() << "Creating Vulkan Instance\n";
     if (vkCreateInstance(&vk_inst_create_info, nullptr, &this->mInstance) != VK_SUCCESS) {
         std::cout << "Can't create Vulkan Instance. Terminating" << std::endl;
         return false;

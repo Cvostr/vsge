@@ -1,9 +1,20 @@
 #include "Texture.hpp"
-
+#include "Core/FileLoader.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 using namespace VSGE;
+
+bool Texture::CreateFromFile(std::string filePath) {
+    byte* texture_data;
+    uint32 size;
+    if (!LoadFile(filePath, (char**)&texture_data, &size))
+        return false;
+    if (!CreateFromBuffer(texture_data, size))
+        return false;
+    delete[] texture_data;
+    return true;
+}
 
 bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
 	int maxHeight = *(reinterpret_cast<int*>(&(data[12]))); //Getting height of texture in px info
@@ -63,14 +74,8 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
         return true;
     }
     else if (data[0] == 'R' && data[1] == 'T' && data[2] == 'B') {
-        /*if (engine_ptr->engine_info->graphicsApi == VULKAN) {
-            vkTexture* vkt = static_cast<vkTexture*>(this);
-
-            vkt->usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-            vkt->aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-        }*/
-        //Create(512, 512, TextureFormat::FORMAT_RGBA);
-        //SetRenderTargetFlag(true, true);
+        SetRenderTargetFlag(true);
+        Create(512, 512);
     }
     return false;
 }

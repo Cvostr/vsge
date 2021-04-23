@@ -14,6 +14,10 @@ namespace VSGEditor {
 		bool mInFocus;
 	public:
 
+		EditorWindow() :
+			mInFocus(false)
+		{}
+
 		void UpdateWindowData() {
 			mPos = ImGui::GetWindowPos();
 			mSize = ImGui::GetWindowSize();

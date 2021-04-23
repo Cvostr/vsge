@@ -19,6 +19,8 @@ void ImGuiLayer::OnAttach() {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.DisplayFramebufferScale = ImVec2(1.25f, 1.25f);
+    io.DisplaySize = ImVec2(win->GetWindowWidth(), win->GetWindowWidth());
+    //io.DisplayFramebufferScale = ImVec2(1.25f, 1.25f);
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -46,7 +48,6 @@ void ImGuiLayer::OnAttach() {
     imgui_rpass.PushColorOutputAttachment();
     imgui_rpass.Create();
 
-    imgui_fb.SetSize(1280, 720);
     imgui_fb.PushOutputAttachment(0);
     imgui_fb.Create(&imgui_rpass);
 
@@ -68,9 +69,11 @@ void ImGuiLayer::OnAttach() {
     init_info.Allocator = NULL;
     init_info.MinImageCount = 2;
     init_info.ImageCount = 2;
-   // init_info.CheckVkResultFn = check_vk_result;
-    ImGui_ImplVulkan_Init(&init_info, imgui_rpass.GetRenderPass());
 
+    ImGui_ImplVulkan_Init(&init_info, imgui_rpass.GetRenderPass());
+#ifdef _WIN32
+    ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+#endif
     cmdbuf.Begin();
     ImGui_ImplVulkan_CreateFontsTexture(cmdbuf.GetCommandBuffer());
     cmdbuf.End();

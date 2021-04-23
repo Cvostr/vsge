@@ -254,5 +254,5 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {
 	Destroy();
-	Create(width, height, mFormat, mLayers);
+	Create(width, height, mFormat, mLayers, mMipLevels);
 }

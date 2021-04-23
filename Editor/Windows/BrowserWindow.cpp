@@ -49,6 +49,14 @@ void FileBrowserWindow::UpdateDirectoryContent() {
 FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
     mRootDir = RootDir;
     SetDirectory(RootDir);
+
+    sampler.Create();
+
+    FileIcons.mBackBtnIcon.CreateFromFile("res/icons/dir_back.png", sampler);
+    FileIcons.mDirIcon.CreateFromFile("res/icons/dir.png", sampler);
+    FileIcons.mUnknownFile.CreateFromFile("res/icons/unknown.png", sampler);
+    FileIcons.m3DModelIcon.CreateFromFile("res/icons/3dmodel.png", sampler);
+    FileIcons.mSceneIcon.CreateFromFile("res/icons/3d_scene.png", sampler);
 }
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
@@ -110,16 +118,16 @@ void FileBrowserWindow::OnDrawWindow() {
     }
 
     float width = w->Size.x;
-    if (ImGui::ImageButton(nullptr, ImVec2(64, 64)))
+    if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(64, 64)))
         cd_up();
     unsigned int drawn_pix = 0;
     for (unsigned int f_i = 0; f_i < mFiles.size(); f_i++) {
         FileEntry* e = &mFiles[f_i];
-        //Engine::D3D11Texture2D* icon = &FileIcons.mUnknownFile;
+        ImguiVulkanTexture* icon = &FileIcons.mUnknownFile;
         //if file is directory, then set directory icon
-       // if (e->isDir) icon = &FileIcons.mDirIcon;
-       // if (e->is3dModel()) icon = &FileIcons.m3DModelIcon;
-       // if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
+        if (e->isDir) icon = &FileIcons.mDirIcon;
+        if (e->is3dModel()) icon = &FileIcons.m3DModelIcon;
+        if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
         /*if (e->isMaterial()) {
             PbrMaterial* mat = resources->getMaterialByRelPath(e->rel_path);
             if (mat != nullptr) {
@@ -138,7 +146,7 @@ void FileBrowserWindow::OnDrawWindow() {
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
-        bool clicked = ImageButtonWithText(nullptr, e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
+        bool clicked = ImageButtonWithText(icon->imtexture, e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
         {

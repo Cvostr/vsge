@@ -2,10 +2,29 @@
 
 #include "ApplicationLayer.hpp"
 #include "Window.hpp"
+#include <string>
 
 namespace VSGE {
+
+	struct ApplicationDescription {
+		std::string ApplicationName;
+		uint32 ApplicationVersion;
+
+		ApplicationDescription(std::string name, uint32 version) {
+			ApplicationName = name;
+			ApplicationVersion = version;
+		}
+	};
+
+	enum GraphicsApi {
+		GRAPHICS_API_VULKAN,
+		GRAPHICS_API_D3D12
+	};
+
 	class Application {
 	private:
+
+		ApplicationDescription description;
 
 		tApplicationLayerList mLayers;
 
@@ -16,12 +35,15 @@ namespace VSGE {
 
 		static Application* _this;
 
-		Application() :
+		Application(ApplicationDescription descr) :
 						mRunning(false),
-						mWindow(new Window())
+						mWindow(new Window()),
+						description(descr)
 		{
 			_this = this;
 		}
+
+		const ApplicationDescription& GetDescription() { return description; }
 
 		void Run();
 		void Stop();
@@ -49,6 +71,9 @@ namespace VSGE {
 		/// Calls OnUpdate on all registered application layers
 		/// </summary>
 		void OnUpdate();
+
+		void OnSDL2Event(void* event);
+		void OnEvent(IWindowEvent& event);
 
 		static Application* Get() {
 			return _this;

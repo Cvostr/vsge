@@ -109,23 +109,15 @@ outColor = texture(diffuse, UVCoord);\n \
 	pool->Create();
 	set->Create();
 
-
-	byte* texture_data;
-	uint32 size;
-	VSGE::LoadFile("test_pic.png", (char**)&texture_data, &size);
-	test_texture.CreateFromBuffer(texture_data, size);
-
-	byte* bc_texture_data;
-	uint32 bc_size;
-	VSGE::LoadFile("test_bc.dds", (char**)&bc_texture_data, &bc_size);
-	test_texture_bc.CreateFromBuffer(bc_texture_data, bc_size);
+	test_texture.CreateFromFile("test_pic.png");
+	test_texture_bc.CreateFromFile("test_bc.dds");
 
 	sampler.Create();
 
-	VulkanBuffer* uniformBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
+	uniformBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 	uniformBuffer->Create(16);
-	float data = 0.5f;
-	uniformBuffer->WriteData(0, 4, &data);
+	scale_factor = 0.5f;
+	uniformBuffer->WriteData(0, 4, &scale_factor);
 
 	set->WriteDescriptorBuffer(0, uniformBuffer);
 	set->WriteDescriptorImage(1, &test_texture, &sampler);
@@ -180,6 +172,17 @@ void VulkanRectTestLayer::OnUpdate() {
 
 	VulkanPresent(presentBegin, _imageIndex);
 }
+
+void VulkanRectTestLayer::OnWindowEvent(IWindowEvent& event) {
+	if (event.type == EventType::EventWindowClose) {
+		Application::Get()->Stop();
+	}
+	if (event.type == EventType::EventMouseScrolled) {
+		scale_factor += ((EventMouseScrolled*)&event)->yOffset / 100.f;
+		uniformBuffer->WriteData(0, 4, &scale_factor);
+	}
+}
+
 void VulkanRectTestLayer::OnDetach() {
 
 }

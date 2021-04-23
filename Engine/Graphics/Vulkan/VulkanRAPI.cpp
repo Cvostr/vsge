@@ -1,12 +1,15 @@
 #include "VulkanRAPI.hpp"
+#include "Engine/Application.hpp"
 
 using namespace VSGE;
 
 VulkanRAPI* VulkanRAPI::_this = 0;
 
 void VSGE::VulkanRAPI::Create(Window* window) {
+	Application* app = Application::Get();
+
 	Instance = new VulkanInstance;
-	Instance->init(true, "XUI", 1);
+	Instance->init(true, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion);
 
 	Device = CreatePrimaryDevice();
 

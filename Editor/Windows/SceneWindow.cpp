@@ -35,7 +35,6 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
     if (!entity->IsActive()) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
     }
-    
     //Draw Tree Node
     bool tree_open = ImGui::TreeNodeEx(entity->GetName().c_str(), flags);
     if (!isRoot) {

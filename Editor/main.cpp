@@ -7,12 +7,17 @@
 #include "Windows/InspectorWindow.hpp"
 #include "Windows/BrowserWindow.hpp"
 
+#include <System/PlatformSpecific.hpp>
+
 using namespace VSGE;
 using namespace VSGEditor;
 
 Application* VSGEMain() {
-	auto app = new Application;
-	
+
+	ApplicationDescription descr = {"Editor", 1};
+
+	auto app = new Application(descr);
+
 	app->GetWindow().CreateWindow(1280, 720, "Editor", SDL_WINDOW_VULKAN);
 
 	VulkanRAPI* vk = new VulkanRAPI;

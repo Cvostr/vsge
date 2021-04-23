@@ -5,6 +5,7 @@
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanTexture.hpp>
 #include <Graphics/Vulkan/VulkanSampler.hpp>
+#include <Graphics/Vulkan/VulkanBuffer.hpp>
 
 namespace VSGETest {
 
@@ -17,6 +18,9 @@ namespace VSGETest {
 		VSGE::VulkanTexture test_texture;
 		VSGE::VulkanTexture test_texture_bc;
 		VSGE::VulkanSampler sampler;
+
+		VSGE::VulkanBuffer* uniformBuffer;
+		float scale_factor;
 	public:
 
 		VulkanRectTestLayer() {
@@ -26,6 +30,6 @@ namespace VSGETest {
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
-
+		void OnWindowEvent(VSGE::IWindowEvent& event);
 	};
 }

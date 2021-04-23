@@ -3,6 +3,7 @@
 #include "../Base/ImGuiWindow.hpp"
 #include <vector>
 #include <string>
+#include "../Base/ImVulkanTexture.hpp"
 
 namespace VSGEditor {
 
@@ -33,6 +34,20 @@ namespace VSGEditor {
 		tFileEntryList mFiles;
 		std::string mCurrentDir;
 		std::string mRootDir;
+
+		VSGE::VulkanSampler sampler;
+		struct {
+			
+
+			ImguiVulkanTexture mBackBtnIcon;
+			ImguiVulkanTexture mDirIcon;
+			ImguiVulkanTexture mUnknownFile;
+			ImguiVulkanTexture m3DModelIcon;
+			ImguiVulkanTexture mSceneIcon;
+
+			
+		}FileIcons;
+
 	public:
 
 		FileBrowserWindow(std::string RootDir);

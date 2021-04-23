@@ -70,3 +70,18 @@ Mat4 GetRotationZMatrixEuler(float angle) {
     
     return mat;
 }
+
+Mat4 GetRotationMatrix(const Vec3 Rotation) {
+    return
+        GetRotationXMatrixEuler(Rotation.x) *
+        GetRotationYMatrixEuler(Rotation.y) *
+        GetRotationZMatrixEuler(Rotation.z);
+}
+
+Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation) {
+    Mat4 Result = 
+        GetScaleMatrix(scale) * 
+        GetTranslationMatrix(pos) * 
+        GetRotationMatrix(rotation);
+    return Result;
+}

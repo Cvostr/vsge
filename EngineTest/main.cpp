@@ -5,7 +5,9 @@
 using namespace VSGE;
 
 Application* VSGEMain() {
-	auto app = new Application;
+	ApplicationDescription descr = { "Development testing", 1 };
+
+	auto app = new Application(descr);
 
 	app->GetWindow().CreateWindow(1280, 720, "Test", SDL_WINDOW_VULKAN);
 

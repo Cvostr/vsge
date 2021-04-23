@@ -13,19 +13,22 @@ void Application::OnUpdate() {
 	}
 }
 
+void Application::OnSDL2Event(void* event) {
+    for (auto layer : mLayers) {
+        layer->OnSDL2Event(&event);
+    }
+}
+void Application::OnEvent(IWindowEvent& event) {
+    for (auto layer : mLayers) {
+        layer->OnWindowEvent(event);
+    }
+}
+
 void Application::Run() {
 	mRunning = true;
 
 	while (mRunning) {
-
-		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		{
-			for (auto layer : mLayers) {
-				layer->OnSDL2Event(&event);
-			}
-		}
-
+		this->mWindow->PollEvents();
 		OnUpdate();
 	}
 }

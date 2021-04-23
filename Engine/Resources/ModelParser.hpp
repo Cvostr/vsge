@@ -9,16 +9,15 @@
 
 namespace VSGE {
     class SceneNode {
-
-    public:
-        //Node name string
-        std::string node_label;
+    private:
+        std::string mNodeLabel;
         //Transform matrix
-        Mat4 node_transform;
+        Mat4 mNodeTransform;
 
         Vec3 node_translation;
         Vec3 node_scaling;
         Quat node_rotation;
+    public:
 
         std::vector<std::string> child_node_labels;
         std::vector<SceneNode*> children;

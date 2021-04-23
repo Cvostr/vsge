@@ -34,11 +34,17 @@ void VulkanFramebuffer::AddDepth(TextureFormat Format, uint32 Layers) {
 
 void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+	VulkanSwapChain* swapchain = vulkan_rapi->GetSwapChain();
+
+	Framebuffer::SetSize(swapchain->GetExtent().width, swapchain->GetExtent().height);
+	
 	Views.push_back(vulkan_rapi->GetSwapChain()->GetImageViewAtIndex(Index));
 }
 
 void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
-	Framebuffer::SetSize(width, height);
+	if (mWidth != width || mHeight != height) {
+		Framebuffer::SetSize(width, height);
+	}
 }
 
 bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {

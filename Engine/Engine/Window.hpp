@@ -34,5 +34,6 @@ namespace VSGE {
 
 		void CreateWindow(int32 Width, int32 Height, BaseString Title, uint32 sdl_win_mode = SDL_WINDOW_OPENGL);
 		void DestroyWindow();
+		void PollEvents();
 	};
 }
