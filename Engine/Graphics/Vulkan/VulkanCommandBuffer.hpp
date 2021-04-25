@@ -54,6 +54,8 @@ namespace VSGE {
 
 		void BindVertexBuffer(VulkanBuffer& buffer);
 
+		void BindVertexBuffers(VulkanBuffer* buffer, uint32 size = 1, uint32 start = 0);
+
 		void BindIndexBuffer(VulkanBuffer& buffer);
 
 		void Draw(uint32 vertices, uint32 instances = 1, uint32 firstVertex = 0, uint32 firstInstance = 0);

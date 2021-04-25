@@ -2,6 +2,7 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include "GpuObject.hpp"
+#include <string>
 
 namespace VSGE {
 
@@ -20,6 +21,7 @@ namespace VSGE {
 		ShaderStagesBits mStages;
 	public:
 		virtual void AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type) = 0;
+		void AddShaderFromFile(std::string file_path, ShaderStagesBits type);
 		virtual void Destroy() = 0;
 
 		Shader() : mStages(SHADER_STAGE_NULL)

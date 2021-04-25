@@ -3,7 +3,8 @@
 
 using namespace VSGE;
 
-VkDescriptorSet temp_sets[4];
+VkDescriptorSet temp_sets[6];
+VkBuffer temp_bufs[6];
 
 VkCommandPool VSGE::beginCommandPool() {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
@@ -127,6 +128,14 @@ void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
     vkCmdBindVertexBuffers(mCommandBuffer, 0, 1, &_buffer, offsets);
 }
 
+void VulkanCommandBuffer::BindVertexBuffers(VulkanBuffer* buffer, uint32 size, uint32 start) {
+    VkDeviceSize offsets[] = { 0 };
+    for (uint32 buf_i = 0; buf_i < size; buf_i++) {
+        temp_bufs[buf_i] = buffer[buf_i].GetBuffer();
+    }
+    vkCmdBindVertexBuffers(mCommandBuffer, start, size, temp_bufs, offsets);
+}
+
 void VulkanCommandBuffer::BindIndexBuffer(VulkanBuffer& buffer) {
     vkCmdBindIndexBuffer(mCommandBuffer, buffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 }
@@ -146,6 +155,8 @@ void VulkanCommandBuffer::SetViewports(uint32 firstViewport, uint32 count, VkVie
 void VulkanCommandBuffer::SetViewport(float x, float y, float width, float height, float depthMin, float depthMax, uint32 index) {
     VkViewport viewport = {x, y, width, height, depthMin, depthMax };
     SetViewports(0, 1, &viewport);
+    VkRect2D scissor = { 0, 0, width, height };
+    vkCmdSetScissor(mCommandBuffer, 0, 1, &scissor);
 }
 
 void VulkanCommandBuffer::EndRenderPass() {

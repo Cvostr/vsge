@@ -94,7 +94,8 @@ outColor = texture(diffuse, UVCoord);\n \
 
 	VulkanPipelineConf conf = {};
 
-	VertexLayout vl(sizeof(Vertex));
+	VertexLayout vl;
+	vl.AddBinding(sizeof(Vertex));
 	vl.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 	vl.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 	vl.AddItem(2, offsetof(Vertex, normal), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);

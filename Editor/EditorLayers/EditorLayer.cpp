@@ -8,6 +8,8 @@
 #include "../Windows/BrowserWindow.hpp"
 #include "../Windows/SceneViewWindow.hpp"
 
+#include "../Menus/File_Menu.hpp"
+
 using namespace VSGEditor;
 using namespace VSGE;
 
@@ -28,4 +30,6 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddWindow(new InspectorWindow);
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(dir_path));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
+
+	ImGuiLayer::Get()->AddMenu(new File_Menu);
 }

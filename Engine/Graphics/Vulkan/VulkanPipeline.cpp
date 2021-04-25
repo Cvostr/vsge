@@ -66,12 +66,23 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	//then set values from current swapchain
 	VulkanSwapChain* swchain = vulkan->GetSwapChain();
 
+	VkViewport Viewport;
+	Viewport.x = 0.0f;
+	Viewport.y = 0.0f;
+	Viewport.width = (float)swchain->GetExtent().width;
+	Viewport.height = (float)swchain->GetExtent().height;
+	Viewport.minDepth = 0.0f;
+	Viewport.maxDepth = 1.0f;
+	VkRect2D scissor;
+	scissor.offset = { 0, 0 };
+	scissor.extent = { swchain->GetExtent().width, swchain->GetExtent().height };
+
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportState.viewportCount = 0;
-	viewportState.pViewports = nullptr;
-	viewportState.scissorCount = 0;
-	viewportState.pScissors = nullptr;
+	viewportState.viewportCount = 1;
+	viewportState.pViewports = &Viewport;
+	viewportState.scissorCount = 1;
+	viewportState.pScissors = &scissor;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -94,15 +105,21 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	depthStencil.front = {}; // Optional
 	depthStencil.back = {}; // Optional
 
-	VkVertexInputBindingDescription bindingDescription{};
-	bindingDescription.binding = 0;
-	bindingDescription.stride = vl.vertexSize;
-	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescrs;
+
+	for (uint32 vertexBinding = 0; vertexBinding < vl.vertexBindingsCount; vertexBinding ++) {
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = vertexBinding;
+		bindingDescription.stride = vl.vertexSizes[vertexBinding];
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		vertexInputBindingDescrs.push_back(bindingDescription);
+	}
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 1;
-	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription; // Optional
+	vertexInputInfo.vertexBindingDescriptionCount = vertexInputBindingDescrs.size();
+	vertexInputInfo.pVertexBindingDescriptions = vertexInputBindingDescrs.data(); // Optional
 	vertexInputInfo.vertexAttributeDescriptionCount = 
 		static_cast<uint32>(vl.items.size());
 

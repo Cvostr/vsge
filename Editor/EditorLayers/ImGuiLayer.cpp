@@ -123,15 +123,6 @@ void ImGuiLayer::OnUpdate() {
         menu->OnDrawMenu();
     }
 
-    if (ImGui::BeginMenu("World"))
-    {
-        if (ImGui::MenuItem("Create Mesh Object", NULL)) {
-        }
-		
-		ImGui::EndMenu();
-	}
-	
-
 	ImGui::EndMainMenuBar();
 
 

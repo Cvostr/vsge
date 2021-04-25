@@ -3,6 +3,9 @@
 #include "../Core/Random.hpp"
 #include "Application.hpp"
 #include <System/PlatformSpecific.hpp>
+#include <SDL2/SDL_syswm.h>
+
+#undef CreateWindow
 
 using namespace VSGE;
 
@@ -42,9 +45,9 @@ void VSGE::Window::SetResizeable(bool resizeable) {
 		SDL_SetWindowResizable(mWindow, SDL_bool(resizeable));
 }
 
-void VSGE::Window::CreateWindow(int32 Width, int32 Height, BaseString Title, uint32 sdl_win_mode) {
-	mWindowWidth = Width;
-	mWindowHeight = Height;
+void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title, uint32 sdl_win_mode) {
+	mWindowWidth = width;
+	mWindowHeight = height;
 	
 	WIN32_DisableHIDPIWindowScale();
 
@@ -58,7 +61,7 @@ void VSGE::Window::CreateWindow(int32 Width, int32 Height, BaseString Title, uin
 	SDL_DisplayMode current;
 	SDL_GetCurrentDisplayMode(0, &current);
 	Logger::Log() << "Opening SDL2 window\n";
-	mWindow = SDL_CreateWindow(Title, mWindowPosX, mWindowPosY, Width, Height, sdl_win_mode); //Create window
+	mWindow = SDL_CreateWindow(title, mWindowPosX, mWindowPosY, width, height, sdl_win_mode); //Create window
 }
 
 void VSGE::Window::PollEvents() {
@@ -121,4 +124,11 @@ void VSGE::Window::DestroyWindow() {
 		SDL_DestroyWindow(mWindow);
 		mWindow = nullptr;
 	}
+}
+
+void* VSGE::Window::GetHWND() {
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWindowWMInfo(this->mWindow, &wmInfo);
+    return wmInfo.info.win.window;
 }

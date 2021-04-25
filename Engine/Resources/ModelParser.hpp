@@ -7,8 +7,25 @@
 #include <string>
 #include <vector>
 #include <Graphics/Mesh.hpp>
+#include <Graphics/Bone.hpp>
 
 namespace VSGE {
+
+    class MeshContainer {
+    public:
+        std::string meshName;
+
+        Vertex* vertexArray;
+        VertexSkinningData* vertexSkinningArray;
+
+        uint32* indexArray;
+        Bone* bonesArray;
+
+        uint32 vertexCount;
+        uint32 indexCount;
+        uint32 bonesCount;
+    };
+
     class SceneNode {
     private:
         std::string mNodeLabel;
@@ -19,6 +36,20 @@ namespace VSGE {
         Vec3 node_scaling;
         Quat node_rotation;
     public:
+
+        void SetNodeLabel(const std::string& label) {
+            mNodeLabel = label;
+        }
+
+        void SetNodeTransform(const Mat4& matrix) {
+            mNodeTransform = matrix;
+        }
+
+        void SetTranslationScalingRotation(const Vec3& t, const Vec3& s, const Quat& r) {
+            node_translation = t;
+            node_scaling = s;
+            node_rotation = r;
+        }
 
         std::vector<std::string> child_node_labels;
         std::vector<SceneNode*> children;
@@ -38,7 +69,7 @@ namespace VSGE {
         void setRootNode(SceneNode* node);
         void write(std::string output_file);
        // void writeNode(ZsStream* stream, SceneNode* node);
-        //void getNodesNum(unsigned int* nds_ptr, SceneNode* node);
+        void getNodesNum(uint32* nds_ptr, SceneNode* node);
 
         SceneFileExport();
     };
@@ -47,7 +78,7 @@ namespace VSGE {
     private:
         std::vector<SceneNode*> nodes_list;
     public:
-        std::vector<Mesh*> meshes_toRead;
+        std::vector<MeshContainer*> mReadedMeshes;
         SceneNode* rootNode;
 
         SceneNode* getSceneNodeWithName(std::string label);

@@ -2,6 +2,7 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include <vector>
+#include <Math/Vertex.hpp>
 
 namespace VSGE {
 
@@ -22,9 +23,17 @@ namespace VSGE {
 		VertexLayoutFormat format;
 	};
 
+
+
 	struct VertexLayout {
-		uint32 vertexSize;
+		uint32 vertexBindingsCount;
+		std::vector<uint32> vertexSizes;
 		std::vector<VertexLayoutItem> items;
+
+		void AddBinding(uint32 vertexSize) {
+			vertexSizes.push_back(vertexSize);
+			vertexBindingsCount++;
+		}
 
 		void AddItem(uint32 location, uint32 offset, VertexLayoutFormat format, uint32 binding = 0) {
 			VertexLayoutItem item = {};
@@ -38,13 +47,8 @@ namespace VSGE {
 
 		VertexLayout()
 		{
-			vertexSize = 32;
+			vertexBindingsCount = 0;
 		}
 
-		VertexLayout(uint32 vertexSize) :
-			vertexSize(vertexSize)
-		{
-
-		}
 	};
 }

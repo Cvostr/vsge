@@ -75,6 +75,11 @@ namespace VSGE {
         /// <param name="size">Size of byte array</param>
         /// <returns>true if successful</returns>
         bool CreateFromBuffer(byte* data, uint32 size);
+        /// <summary>
+        /// Create texture from file. supported formats - DDS, PNG
+        /// </summary>
+        /// <param name="filePath">path to file</param>
+        /// <returns>true if successful</returns>
         bool CreateFromFile(std::string filePath);
         /// <summary>
         /// Create blank texture with specified parameters

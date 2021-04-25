@@ -19,7 +19,6 @@ namespace VSGE {
 		VkBool32 DepthTest;
 		VkBool32 StencilTest;
 		VkCompareOp DepthOp;
-		VkViewport Viewport;
 		
 		VulkanPipelineConf() {
 			primitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -31,13 +30,6 @@ namespace VSGE {
 			DepthTest = false;
 			StencilTest = false;
 			DepthOp = VK_COMPARE_OP_LESS;
-
-			Viewport.x = 0.0f;
-			Viewport.y = 0.0f;
-			Viewport.width = 0.f;
-			Viewport.height = 0.f;
-			Viewport.minDepth = 0.0f;
-			Viewport.maxDepth = 1.0f;
 		}
 
 	};

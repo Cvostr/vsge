@@ -14,7 +14,7 @@ namespace VSGE {
         uint32 mVerticesAffected;
     public:
 
-        uint32 GetAffectedVerticesCount() { return vertices_affected; }
+        uint32 GetAffectedVerticesCount() { return mVerticesAffected; }
 
         void SetOffsetMatrix(const Mat4& offsetMatrix){
             mOffsetMatrix = offsetMatrix;
@@ -23,6 +23,13 @@ namespace VSGE {
         const Mat4& GetOffsetMatrix() { return mOffsetMatrix; }
 
         const std::string GetName() { return mBoneName; }
+
+        Bone() :
+            mBoneName(""),
+            mVerticesAffected(0)
+        {
+
+        }
 
         Bone(const std::string& name, uint32 vertices) :
             mBoneName(name),

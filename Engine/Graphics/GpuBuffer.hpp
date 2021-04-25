@@ -40,8 +40,18 @@ namespace VSGE {
 		{}
 
 		uint32 GetSize() { return mSize; }
-
+		/// <summary>
+		/// Create buffer and allocate memory for it
+		/// </summary>
+		/// <param name="size">size of buffer to allocate in bytes</param>
+		/// <param name="location"></param>
 		virtual void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU) = 0;
+		/// <summary>
+		/// Write data to buffer
+		/// </summary>
+		/// <param name="offset"></param>
+		/// <param name="size"></param>
+		/// <param name="data"></param>
 		virtual void WriteData(uint32 offset, uint32 size, void* data) = 0;
 		virtual void Destroy() = 0;
 	};

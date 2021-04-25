@@ -20,5 +20,9 @@ namespace VSGE {
 		void Destroy();
 
 		void WriteData(uint32 offset, uint32 size, void* data);
+
+		~VulkanBuffer() {
+			Destroy();
+		}
 	};
 }
