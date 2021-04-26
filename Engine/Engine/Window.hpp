@@ -79,7 +79,6 @@ namespace VSGE {
 		/// <param name="width">width of new window</param>
 		/// <param name="height">height of new window</param>
 		/// <param name="title">title of new window</param>
-		/// <param name="sdl_win_mode"></param>
 		void CreateWindow(int32 width, int32 height, BaseString title);
 		/// <summary>
 		/// Close created window

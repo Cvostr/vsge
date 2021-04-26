@@ -5,8 +5,7 @@
 #include <windows.h>
 #undef CreateWindow
 #include <d3d12.h>
-#include <dxgi.h>
-#include <dxgi1_4.h>
+#include <dxgi1_6.h>
 
 #include <Core/VarTypes/Base.hpp>
 #include "../GpuObject.hpp"
@@ -16,7 +15,7 @@
 namespace VSGE {
 	class D3D12SwapChain : public IGpuObject {
 	private:
-		IDXGISwapChain* mSwapChain;
+		IDXGISwapChain4* mSwapChain;
 	public:
 
 		bool Create(D3D12Device* device);

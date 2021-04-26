@@ -19,6 +19,15 @@ VkFormat GetVertexLayoutFormatVK(VertexLayoutFormat format) {
 		return VK_FORMAT_R32G32B32_SINT;
 	case VL_FORMAT_RGBA32_SINT:
 		return VK_FORMAT_R32G32B32A32_SINT;
+
+	case VL_FORMAT_R32_UINT:
+		return VK_FORMAT_R32_UINT;
+	case VL_FORMAT_RG32_UINT:
+		return VK_FORMAT_R32G32_UINT;
+	case VL_FORMAT_RGB32_UINT:
+		return VK_FORMAT_R32G32B32_UINT;
+	case VL_FORMAT_RGBA32_UINT:
+		return VK_FORMAT_R32G32B32A32_UINT;
 	}
 	return VK_FORMAT_R32G32B32_SFLOAT;
 }
@@ -118,10 +127,9 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = vertexInputBindingDescrs.size();
+	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescrs.size());
 	vertexInputInfo.pVertexBindingDescriptions = vertexInputBindingDescrs.data(); // Optional
-	vertexInputInfo.vertexAttributeDescriptionCount = 
-		static_cast<uint32>(vl.items.size());
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(vl.items.size());
 
 	std::vector<VkVertexInputAttributeDescription> attrDescriptions;
 

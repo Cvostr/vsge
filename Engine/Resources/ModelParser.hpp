@@ -8,6 +8,7 @@
 #include <vector>
 #include <Graphics/Mesh.hpp>
 #include <Graphics/Bone.hpp>
+#include "Core/ByteSerialize.hpp"
 
 namespace VSGE {
 
@@ -41,14 +42,34 @@ namespace VSGE {
             mNodeLabel = label;
         }
 
+        const std::string GetLabel() {
+            return mNodeLabel;
+        }
+
         void SetNodeTransform(const Mat4& matrix) {
             mNodeTransform = matrix;
+        }
+
+        const Mat4& GetNodeTransform() {
+            return mNodeTransform;
         }
 
         void SetTranslationScalingRotation(const Vec3& t, const Vec3& s, const Quat& r) {
             node_translation = t;
             node_scaling = s;
             node_rotation = r;
+        }
+
+        const Vec3& GetTranslation() {
+            return node_translation;
+        }
+
+        const Vec3& GetScale() {
+            return node_scaling;
+        }
+
+        const Quat& GetRotation() {
+            return node_rotation;
         }
 
         std::vector<std::string> child_node_labels;
@@ -61,17 +82,19 @@ namespace VSGE {
 
     class SceneFileExport {
     private:
-        std::vector<Mesh*> mMeshes;
+        std::vector<MeshContainer*> mMeshes;
         SceneNode* mRootNode;
     public:
 
-        void pushMesh(Mesh* mesh);
+        void pushMesh(MeshContainer* mesh);
         void setRootNode(SceneNode* node);
         void write(std::string output_file);
-       // void writeNode(ZsStream* stream, SceneNode* node);
+        void writeNode(ByteSerialize* stream, SceneNode* node);
         void getNodesNum(uint32* nds_ptr, SceneNode* node);
 
-        SceneFileExport();
+        SceneFileExport() {
+            mRootNode = nullptr;
+        }
     };
 
     class ImportedSceneFile {

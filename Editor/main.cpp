@@ -10,11 +10,12 @@ using namespace VSGEditor;
 
 Application* VSGEMain() {
 
-	ApplicationDescription descr = {"Editor", 1};
+	ApplicationCreateInfo descr = {"Editor", 1};
+	descr.graphicsApi = GRAPHICS_API_VULKAN;
 
 	auto app = new Application(descr);
 
-	app->GetWindow().CreateWindow(1366, 768, "Editor", SDL_WINDOW_VULKAN);
+	app->GetWindow().CreateWindow(1366, 768, "Editor");
 
 	VulkanRAPI* vk = new VulkanRAPI;
 	vk->Create(&app->GetWindow());

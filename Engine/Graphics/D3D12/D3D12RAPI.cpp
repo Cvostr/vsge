@@ -10,6 +10,7 @@ void D3D12RAPI::Create(Window* window) {
 
 	device = CreatePreferredDevice();
 
+	swapchain = new D3D12SwapChain;
 	swapchain->Create(device);
 }
 
