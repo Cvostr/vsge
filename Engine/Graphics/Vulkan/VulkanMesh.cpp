@@ -2,30 +2,32 @@
 
 using namespace VSGE;
 
-void VulkanMesh::Create(Vertex* vertices, uint32 vertex_count) {
-	mVerticesCount = vertex_count;
+bool VulkanMesh::Create() {
+	for (auto vbd : mVertexBuffers) {
+		VulkanBuffer* vertexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
+		vertexBuffer->Create(vbd.mVertexSize * mVerticesCount);
+		vertexBuffer->WriteData(0, vbd.mVertexSize * mVerticesCount, vbd.mVertices);
+		vertexBuffers.push_back(vertexBuffer);
+	}
+	if (mIndexCount > 0) {
+		indexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_INDEX);
+		indexBuffer->Create(sizeof(uint32) * mIndexCount);
+		indexBuffer->WriteData(0, sizeof(uint32) * mIndexCount, mIndexArray);
+	}
 
-	vertexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
-	vertexBuffer->Create(sizeof(Vertex) * vertex_count);
-	vertexBuffer->WriteData(0, sizeof(Vertex) * vertex_count, vertices);
+	mCreated = true;
 
-	mMeshBoundingBox.CreateFromVertexArray(vertices, vertex_count);
-
+	return true;
 }
-void VulkanMesh::Create(Vertex* vertices, uint32* indices, uint32 vertex_count, uint32 index_count) {
-	mIndexCount = index_count;
-	
-	Create(vertices, vertex_count);
 
-	indexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_INDEX);
-	indexBuffer->Create(sizeof(uint32) * index_count);
-	indexBuffer->WriteData(0, sizeof(uint32) * index_count, indices);
-}
 void VulkanMesh::Destroy() {
-	//if (mCreated) {
-	if(vertexBuffer)
-		vertexBuffer->Destroy();
-	if(indexBuffer)
-		indexBuffer->Destroy();
-	//}
+	if (mCreated) {
+		for (auto vertbuffer : vertexBuffers) {
+			vertbuffer->Destroy();
+		}
+		if(indexBuffer)
+			indexBuffer->Destroy();
+
+		mCreated = false;
+	}
 }

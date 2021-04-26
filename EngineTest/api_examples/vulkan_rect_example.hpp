@@ -11,6 +11,7 @@
 #include <Graphics/Vulkan/VulkanDescriptors.hpp>
 #include <Graphics/Vulkan/VulkanPipeline.hpp>
 #include <Graphics/Vulkan/VulkanBuffer.hpp>
+#include <Graphics/Vulkan/VulkanMesh.hpp>
 
 namespace VSGETest {
 
@@ -34,8 +35,7 @@ namespace VSGETest {
 		VSGE::VulkanPipelineLayout* p_layout;
 		VSGE::VulkanDescriptorSet* set;
 
-		VSGE::VulkanBuffer* vertBuffer;
-		VSGE::VulkanBuffer* indBuffer;
+		VSGE::VulkanMesh* mesh;
 	public:
 
 		VulkanRectTestLayer() {

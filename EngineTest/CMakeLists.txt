@@ -46,6 +46,10 @@ target_link_libraries(EngineTest Setupapi.lib)
 target_link_libraries(EngineTest Version.lib)
 target_link_libraries(EngineTest Imm32.lib)
 
+target_link_libraries(EngineTest d3d12.lib)
+target_link_libraries(EngineTest dxgi.lib)
+#target_link_libraries(EngineTest d3dcompiler.lib)
+
 ENDIF()
 
 IF(UNIX)

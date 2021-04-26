@@ -13,9 +13,14 @@
 namespace VSGE {
 	class D3D12Device : public IGpuObject {
 		ID3D12Device* mDevice;
+		ID3D12CommandQueue* mCommandQueue;
 	public:
 		bool Create(IDXGIAdapter1* adapter);
 		void Destroy();
+
+		ID3D12CommandQueue* GetCommandQueue() {
+			return mCommandQueue;
+		}
 	};
 
 	D3D12Device* CreatePreferredDevice();

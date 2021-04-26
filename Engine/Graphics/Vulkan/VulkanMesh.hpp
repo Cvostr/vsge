@@ -1,23 +1,39 @@
+#pragma once
+
 #include "../Mesh.hpp"
 #include "VulkanBuffer.hpp"
 
 namespace VSGE {
 	class VulkanMesh : public Mesh {
 	private:
-		VulkanBuffer* vertexBuffer;
+		std::vector<VulkanBuffer*> vertexBuffers;
 		VulkanBuffer* indexBuffer;
 	public:
 
 		VulkanMesh() :
-			vertexBuffer(nullptr),
 			indexBuffer(nullptr) {}
 
 		~VulkanMesh() {
 			Destroy();
 		}
 
-		void Create(Vertex* vertices, uint32 vertex_count);
-		void Create(Vertex* vertices, uint32* indices, uint32 vertex_count, uint32 index_count);
+		VulkanBuffer* GetVertexBuffers() {
+			return *vertexBuffers.data();
+		}
+
+		VulkanBuffer* GetIndexBuffer() {
+			return indexBuffer;
+		}
+
+		VkBuffer GetVertexBufferVk(uint32 i = 0) {
+			return vertexBuffers[i]->GetBuffer();
+		}
+
+		VkBuffer GetIndexBufferVk() {
+			return indexBuffer->GetBuffer();
+		}
+
+		bool Create();
 		void Destroy();
 	};
 }

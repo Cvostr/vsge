@@ -12,9 +12,8 @@ D3D12Device* VSGE::CreatePreferredDevice() {
         return nullptr;
     }
 
-    IDXGIAdapter1* adapter; // adapters are the graphics card (this includes the embedded graphics on the motherboard)
-
-    uint32 adapterIndex = 0; // we'll start looking for directx 12  compatible graphics devices starting at index 0
+    IDXGIAdapter1* adapter;
+    uint32 adapterIndex = 0;
 
     D3D12Device* device = new D3D12Device;
 
@@ -32,6 +31,8 @@ D3D12Device* VSGE::CreatePreferredDevice() {
             break;
     }
 
+    dxgiFactory->Release();
+
     return device;
 }
 
@@ -42,11 +43,17 @@ bool D3D12Device::Create(IDXGIAdapter1* adapter) {
     if (SUCCEEDED(hr))
         mCreated = true;
 
+    D3D12_COMMAND_QUEUE_DESC commandQueueDesc = {};
+    commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    hr = mDevice->CreateCommandQueue(&commandQueueDesc, __uuidof(ID3D12CommandQueue), (void**)&mCommandQueue);
+
+
 	return SUCCEEDED(hr);
 }
 void D3D12Device::Destroy() {
     if (mCreated) {
         mDevice->Release();
+        mCommandQueue->Release();
         mCreated = false;
     }
 }

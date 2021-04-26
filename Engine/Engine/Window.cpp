@@ -45,23 +45,32 @@ void VSGE::Window::SetResizeable(bool resizeable) {
 		SDL_SetWindowResizable(mWindow, SDL_bool(resizeable));
 }
 
-void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title, uint32 sdl_win_mode) {
-	mWindowWidth = width;
-	mWindowHeight = height;
-	
-	WIN32_DisableHIDPIWindowScale();
+void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title) {
+    mWindowWidth = width;
+    mWindowHeight = height;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) //Trying to init SDL
-	{
-		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening window " << SDL_GetError() << "\n";
-	}
+    WIN32_DisableHIDPIWindowScale();
 
-	SetRandomSeed(SDL_GetTicks());
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) //Trying to init SDL
+    {
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening window " << SDL_GetError() << "\n";
+    }
 
-	SDL_DisplayMode current;
-	SDL_GetCurrentDisplayMode(0, &current);
-	Logger::Log() << "Opening SDL2 window\n";
-	mWindow = SDL_CreateWindow(title, mWindowPosX, mWindowPosY, width, height, sdl_win_mode); //Create window
+    SetRandomSeed(SDL_GetTicks());
+
+    Application* app = Application::Get();
+    ApplicationCreateInfo desc = app->GetDescription();
+    if (!desc.headless) {
+        SDL_DisplayMode current;
+        SDL_GetCurrentDisplayMode(0, &current);
+        Logger::Log() << "Opening SDL2 window\n";
+
+        uint32 winMode = 0;
+        if (desc.graphicsApi == GRAPHICS_API_VULKAN)
+            winMode = SDL_WINDOW_VULKAN;
+
+        mWindow = SDL_CreateWindow(title, mWindowPosX, mWindowPosY, width, height, winMode); //Create window
+    }
 }
 
 void VSGE::Window::PollEvents() {

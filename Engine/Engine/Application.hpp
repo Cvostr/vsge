@@ -6,25 +6,30 @@
 
 namespace VSGE {
 
-	struct ApplicationDescription {
-		std::string ApplicationName;
-		uint32 ApplicationVersion;
-
-		ApplicationDescription(std::string name, uint32 version) {
-			ApplicationName = name;
-			ApplicationVersion = version;
-		}
-	};
-
 	enum GraphicsApi {
 		GRAPHICS_API_VULKAN,
 		GRAPHICS_API_D3D12
 	};
 
+	struct ApplicationCreateInfo {
+		std::string ApplicationName;
+		uint32 ApplicationVersion;
+
+		bool headless;
+		GraphicsApi graphicsApi;
+
+		ApplicationCreateInfo(std::string name, uint32 version) {
+			ApplicationName = name;
+			ApplicationVersion = version;
+			headless = false;
+			graphicsApi = GRAPHICS_API_VULKAN;
+		}
+	};
+
 	class Application {
 	private:
 
-		ApplicationDescription description;
+		ApplicationCreateInfo description;
 
 		tApplicationLayerList mLayers;
 
@@ -35,7 +40,7 @@ namespace VSGE {
 
 		static Application* _this;
 
-		Application(ApplicationDescription descr) :
+		Application(ApplicationCreateInfo descr) :
 						mRunning(false),
 						mWindow(new Window()),
 						description(descr)
@@ -43,7 +48,7 @@ namespace VSGE {
 			_this = this;
 		}
 
-		const ApplicationDescription& GetDescription() { return description; }
+		const ApplicationCreateInfo& GetDescription() { return description; }
 
 		void Run();
 		void Stop();

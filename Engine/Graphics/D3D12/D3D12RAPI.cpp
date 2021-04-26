@@ -7,6 +7,10 @@ D3D12RAPI* D3D12RAPI::_this = 0;
 
 void D3D12RAPI::Create(Window* window) {
 	Application* app = Application::Get();
+
+	device = CreatePreferredDevice();
+
+	swapchain->Create(device);
 }
 
 void D3D12RAPI::Destroy() {

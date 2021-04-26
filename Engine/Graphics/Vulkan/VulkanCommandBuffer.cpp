@@ -140,6 +140,12 @@ void VulkanCommandBuffer::BindIndexBuffer(VulkanBuffer& buffer) {
     vkCmdBindIndexBuffer(mCommandBuffer, buffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 }
 
+void VulkanCommandBuffer::BindMesh(VulkanMesh& mesh, uint32 firstSlot) {
+    BindVertexBuffers(mesh.GetVertexBuffers(), mesh.GetVertexBuffersCount(), firstSlot);
+    if(mesh.GetIndexBuffer())
+        BindIndexBuffer(*mesh.GetIndexBuffer());
+}
+
 void VulkanCommandBuffer::Draw(uint32 vertices, uint32 instances, uint32 firstVertex, uint32 firstInstance) {
     vkCmdDraw(mCommandBuffer, vertices, instances, firstVertex, firstInstance);
 }

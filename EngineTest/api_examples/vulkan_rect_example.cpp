@@ -35,13 +35,10 @@ void VulkanRectTestLayer::OnAttach() {
 
 	unsigned int plane_inds[] = { 0,1,2, 0,2,3 };
 
-	vertBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
-	vertBuffer->Create(sizeof(plane_verts));
-	vertBuffer->WriteData(0, sizeof(plane_verts), plane_verts);
-
-	indBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_INDEX);
-	indBuffer->Create(sizeof(plane_inds));
-	indBuffer->WriteData(0, sizeof(plane_inds), plane_inds);
+	mesh = new VulkanMesh;
+	mesh->SetVertexBuffer(plane_verts, 4);
+	mesh->SetIndexBuffer(plane_inds, 6);
+	mesh->Create();
 
 	rpass = new VulkanRenderPass;
 	rpass->PushColorOutputAttachment();
@@ -150,8 +147,7 @@ void VulkanRectTestLayer::RecordCmdbuf() {
 	cmdbuf->BindPipeline(*pipeline);
 	cmdbuf->SetViewport(0, 0, win->GetWindowWidth(), win->GetWindowHeight());
 	cmdbuf->BindDescriptorSets(*p_layout, 0, 1, set);
-	cmdbuf->BindVertexBuffer(*vertBuffer);
-	cmdbuf->BindIndexBuffer(*indBuffer);
+	cmdbuf->BindMesh(*mesh);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
 	cmdbuf->End();

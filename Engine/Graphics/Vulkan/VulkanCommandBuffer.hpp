@@ -6,6 +6,7 @@
 #include "VulkanPipelineLayout.hpp"
 #include "VulkanDescriptors.hpp"
 #include "VulkanBuffer.hpp"
+#include "VulkanMesh.hpp"
 
 namespace VSGE {
 
@@ -57,6 +58,8 @@ namespace VSGE {
 		void BindVertexBuffers(VulkanBuffer* buffer, uint32 size = 1, uint32 start = 0);
 
 		void BindIndexBuffer(VulkanBuffer& buffer);
+
+		void BindMesh(VulkanMesh& mesh, uint32 firstSlot = 0);
 
 		void Draw(uint32 vertices, uint32 instances = 1, uint32 firstVertex = 0, uint32 firstInstance = 0);
 
