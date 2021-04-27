@@ -10,6 +10,8 @@ void File_Menu::OnDrawMenu() {
 		}
 		if (ImGui::MenuItem("Save As..", NULL)) {
 		}
+		if (ImGui::MenuItem("Import", NULL)) {
+		}
 
 		ImGui::EndMenu();
 	}

@@ -74,6 +74,11 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
     ImGui::InputFloat3("Rotation", (float*)&mShowingEntity->GetRotation().x);
     ImGui::Separator();
 
+	//for (uint32 comp_i = 0; comp_i < mShowingEntity->GetComponentsCount(); comp_i) {
+	//	auto component = mShowingEntity->GetComponents()[comp_i];
+		//DrawComponent(component, "Mesh Renderer");
+	//}
+
 	DrawComponent<VSGE::MeshComponent>("Mesh Renderer");
 	DrawComponent<VSGE::MaterialComponent>("Material");
 	DrawComponent<VSGE::LightsourceComponent>("Light");
@@ -87,6 +92,8 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	{
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "--------------------- Components ---------------------");
 		
+		
+
 		AddComponentButton<VSGE::MeshComponent>("Mesh Renderer");
 		AddComponentButton<VSGE::MaterialComponent>("Material");
 		AddComponentButton<VSGE::LightsourceComponent>("Light");

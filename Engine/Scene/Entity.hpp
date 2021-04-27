@@ -54,8 +54,13 @@ namespace VSGE {
 		/// <summary>
 		/// get guid of entity
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>entity's guid</returns>
 		const Guid& GetGuid() { return mId; }
+		/// <summary>
+		/// Set new guid to entity
+		/// </summary>
+		/// <param name="id"></param>
+		void SetGuid(Guid& id) { mId = id; }
 		/// <summary>
 		/// Stores pointer to scene in entity class
 		/// </summary>
@@ -76,7 +81,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		bool IsActive() { return mActive; }
-
+		/// <summary>
+		/// Set static/dynamic param of entity
+		/// </summary>
+		/// <param name="static"></param>
 		void SetStatic(bool _static) { mStatic = _static; }
 		/// <summary>
 		/// Return whether entity is static.
@@ -185,6 +193,10 @@ namespace VSGE {
 				}
 			}
 			return nullptr;
+		}
+
+		IEntityComponent** GetComponents() {
+			return mComponents.data();
 		}
 
 		template<typename T>
