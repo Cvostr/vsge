@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include <algorithm>
+#include "Graphics/Shader.hpp"
 
 using namespace VSGE;
 
@@ -62,6 +63,8 @@ void Application::RemoveAllLayers() {
 }
 
 int main(int argc, char* argv[]) {
+	//Create singleton
+	ShaderStorage storage;
 	Application* app = VSGEMain();
 
 	app->Run();

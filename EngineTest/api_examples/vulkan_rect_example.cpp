@@ -6,9 +6,7 @@
 
 #include <Math/Vertex.hpp>
 
-
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
-#include <Graphics/Vulkan/VulkanShaderCompiler.hpp>
 
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
@@ -55,39 +53,17 @@ void VulkanRectTestLayer::OnAttach() {
 	cmdbuf = new VulkanCommandBuffer;
 	cmdbuf->Create(*cmdpool);
 
-	const char* vert_source = "#version 450 core \n \
-#extension GL_ARB_separate_shader_objects : enable \n \
-layout(location = 0) in vec3 pos; \n \
-layout(location = 1) in vec2 uv; \n \
-layout(location = 2) in vec3 norm; \n \
-layout(location = 0) out vec2 UVCoord;\n \
-layout (binding = 0) uniform CamMatrices{ \n \
-float div; \n \
-}uni; \n \
-void main() { \n \
-vec4 v4pos = vec4(pos * uni.div, 1.0); \n \
-gl_Position = v4pos; \n \
-UVCoord = uv;\n \
-}";
-
-	const char* frag_source = "#version 450\n \
-#extension GL_ARB_separate_shader_objects : enable \n \
-layout(location = 0) out vec4 outColor;\n \
-layout(location = 0) in vec2 UVCoord;\n \
-layout(binding = 2) uniform sampler2D diffuse;\n \
-void main() {\n \
-outColor = texture(diffuse, UVCoord);\n \
-}";
+	ShaderStorage::Get()->LoadShaderBundle("shaders/shaders.bundle", "shaders/shaders.map");
 
 	byte* vs_spv_out = nullptr;
 	byte* fs_spv_out = nullptr;
 	uint32 vs_size = 0, fs_size = 0;
-	CompileFromGLSL(vert_source, SHADER_STAGE_VERTEX, &vs_spv_out, vs_size);
-	CompileFromGLSL(frag_source, SHADER_STAGE_FRAGMENT, &fs_spv_out, fs_size);
+	//CompileFromGLSL(vert_source, SHADER_STAGE_VERTEX, &vs_spv_out, vs_size);
+	//CompileFromGLSL(frag_source, SHADER_STAGE_FRAGMENT, &fs_spv_out, fs_size);
 
 	VulkanShader* shader = new VulkanShader;
-	shader->AddShader(vs_spv_out, vs_size, SHADER_STAGE_VERTEX);
-	shader->AddShader(fs_spv_out, fs_size, SHADER_STAGE_FRAGMENT);
+	shader->AddShaderFromFile("glsl_test.vert", SHADER_STAGE_VERTEX);
+	shader->AddShaderFromFile("glsl_test.frag", SHADER_STAGE_FRAGMENT);
 
 	VulkanPipelineConf conf = {};
 
@@ -107,8 +83,8 @@ outColor = texture(diffuse, UVCoord);\n \
 	pool->Create();
 	set->Create();
 
-	test_texture.CreateFromFile("test_pic.png");
-	test_texture_bc.CreateFromFile("test_bc.dds");
+	test_texture.CreateFromFile("res/test_pic.png");
+	test_texture_bc.CreateFromFile("res/test_bc.dds");
 
 	sampler.Create();
 

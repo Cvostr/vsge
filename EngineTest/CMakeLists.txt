@@ -2,7 +2,8 @@ cmake_minimum_required (VERSION 3.14)
 
 project ("EngineTest")
 
-#file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR}/CommonEditor)
+file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR}/EngineTest)
+file(COPY "shaders" DESTINATION ${CMAKE_BINARY_DIR}/EngineTest)
 
 set(SRC_DIR "")
 set(HEADER_DIR "")
@@ -26,15 +27,6 @@ target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/SDL2.lib)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/SDL2main.lib)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/freetype/freetype.lib)
-
-#if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-      target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/glslangd.lib)
-     target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/SPIRVd.lib)
-        target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/SPVRemapperd.lib)
- target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/MachineIndependentd.lib)
-      target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/OGLCompilerd.lib)
-    target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/OSDependentd.lib)
-     target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glslang/dbg/GenericCodeGend.lib)
 
 
 #Win32 libs

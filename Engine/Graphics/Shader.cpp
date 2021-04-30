@@ -1,12 +1,63 @@
 #include "Shader.hpp"
 #include <Core/FileLoader.hpp>
+#include <fstream>
+#include <Core/ByteSolver.hpp>
 
 using namespace VSGE;
 
-void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
-	char* data = nullptr;
-	uint32 size = 0;
-	LoadFile(file_path, &data, &size);
+ShaderStorage* ShaderStorage::_this = nullptr;
 
-	AddShader((byte*)data, size, type);
+void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
+	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
+
+	byte* data = nullptr;
+	uint32 size = 0;
+
+	if (item == nullptr) {
+		LoadFile(file_path, (char**)&data, &size);
+	}
+	else {
+		data = item->shaderData;
+		size = item->shaderDataSize;
+	}
+
+	AddShader(data, size, type);
+}
+
+ShaderStorageItem* ShaderStorage::GetItemByName(std::string& name) {
+	for (ShaderStorageItem& shader : shaders) {
+		if (shader.name == name)
+			return &shader;
+	}
+	return nullptr;
+}
+
+void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::string& map_path) {
+	std::ifstream bundle_stream;
+	std::ifstream map_stream;
+
+	map_stream.open(map_path);
+
+	bundle_stream.open(bundle_path, std::ifstream::binary);
+
+	map_stream.seekg(0, std::ios::end); 
+	unsigned int map_size = map_stream.tellg();  
+	map_stream.seekg(0, std::ios::beg);
+	byte* data = new byte[map_size];
+	map_stream.read((char*)data, map_size);
+
+	ByteSolver solver(data, map_size);
+
+	while (!solver.end()) {
+		ShaderStorageItem item;
+
+		item.name = solver.ReadNextString();
+		uint32 offset = 0;
+		solver.Copy(offset);
+		solver.Copy(item.shaderDataSize);
+		item.shaderData = new byte[item.shaderDataSize];
+		bundle_stream.read((char*)item.shaderData, item.shaderDataSize);
+
+		this->shaders.push_back(item);
+	}
 }

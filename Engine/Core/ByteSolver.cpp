@@ -13,6 +13,9 @@ std::string ByteSolver::ReadNextString() {
 	while (*bt != '\0') {
 		result.push_back(*bt);
 		bt++;
+		mOffset++;
 	}
+	mOffset++;
+
 	return result;
 }

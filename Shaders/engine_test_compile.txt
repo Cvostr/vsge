@@ -1,0 +1,5 @@
+outputFile shaders.bundle
+mapFile shaders.map
+
+shader engine_test/glsl_test.vert
+shader engine_test/glsl_test.frag

@@ -1,0 +1,5 @@
+outputFile ../Engine/shaders.bundle
+mapFile ../Engine/shaders.map
+
+shader pbr/pbr.vert
+shader pbr/pbr.frag
