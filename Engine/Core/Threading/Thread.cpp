@@ -6,7 +6,7 @@
 #include <pthread.h> //Include POSIX thread implementation
 #endif
 
-using namespace Engine;
+using namespace VSGE;
 
 #ifdef _WIN32
 static DWORD WINAPI CallThreadFuncton(VOID* data)
@@ -15,9 +15,7 @@ static DWORD WINAPI CallThreadFuncton(VOID* data)
 	thread->THRFunc();
 	return 0;
 }
-#endif
-
-#ifdef __linux__
+#elif __linux__
 static void* CallThreadFuncton(void* data)
 {
 	Thread* thread = static_cast<Thread*>(data);
@@ -32,7 +30,7 @@ bool Thread::Run() {
 		return false;
 #ifdef _WIN32
 	mThreadHandle = CreateThread(nullptr, 0, CallThreadFuncton, this, 0, nullptr);
-#else
+#elif __linux__
 	mThreadHandle = new pthread_t;
 	pthread_attr_t type;
 	pthread_attr_init(&type);
@@ -62,6 +60,9 @@ void Thread::SetThreadPriority_(int priority) {
 		return;
 #ifdef _WIN32
 	SetThreadPriority((HANDLE)mThreadHandle, priority);
-#else
+#elif __linux__
+	pthread_t* thread = (pthread_t*)mThreadHandle;
+	if (thread)
+		pthread_setschedprio(*thread, priority);
 #endif
 }

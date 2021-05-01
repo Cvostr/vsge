@@ -2,6 +2,7 @@
 
 #include <Engine/ApplicationLayer.hpp>
 #include <Scene/Scene.hpp>
+#include <System/FileWatcher.hpp>
 
 namespace VSGEditor {
 
@@ -13,12 +14,14 @@ namespace VSGEditor {
 	private:
 		static EditorLayer* _this;
 		VSGE::Scene* mScene;
+		VSGE::FileWatcher* mResourcesWatcher;
 	public:
 
 		EditorLayer() {
 			mScene = new VSGE::Scene;
 			mScene->NewScene();
 			_this = this;
+			mResourcesWatcher = new VSGE::FileWatcher;
 		}
 
 		static EditorLayer* Get() {

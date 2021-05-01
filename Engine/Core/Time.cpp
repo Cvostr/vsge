@@ -3,12 +3,19 @@
 
 using namespace VSGE;
 
+TimePerf* TimePerf::_this = nullptr;
+
 TimePerf::TimePerf() :
 	mNow(SDL_GetTicks()),
 	mLast(0),
 	mFramesCount(0),
 	DeltaTime(0.f)
 {
+	_this = this;
+}
+
+TimePerf* TimePerf::Get() {
+	return _this;
 }
 void TimePerf::Tick() {
 	mFramesCount++;

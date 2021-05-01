@@ -38,7 +38,7 @@ void FileBrowserWindow::UpdateDirectoryContent() {
         e.name = entry.path().filename().string();
         e.ext = entry.path().extension().string();
         //Calculating relative path
-        for (unsigned int s = mRootDir.size() + 1; s < e.abs_path.size(); s++) {
+        for (uint32 s = (uint32)mRootDir.size() + 1; s < (uint32)e.abs_path.size(); s++) {
             e.rel_path += e.abs_path[s];
         }
         //Push new entry to array

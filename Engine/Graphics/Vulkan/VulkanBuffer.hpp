@@ -11,8 +11,8 @@ namespace VSGE {
 
 		VkBuffer GetBuffer() { return mBuffer.Buffer; }
 
-		VulkanBuffer(GpuBufferType type) {
-			mType = type;
+		VulkanBuffer(GpuBufferType type) : GpuBuffer(type) 
+		{
 		}
 
 		void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU);

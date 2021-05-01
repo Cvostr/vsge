@@ -55,12 +55,6 @@ void VulkanRectTestLayer::OnAttach() {
 
 	ShaderStorage::Get()->LoadShaderBundle("shaders/shaders.bundle", "shaders/shaders.map");
 
-	byte* vs_spv_out = nullptr;
-	byte* fs_spv_out = nullptr;
-	uint32 vs_size = 0, fs_size = 0;
-	//CompileFromGLSL(vert_source, SHADER_STAGE_VERTEX, &vs_spv_out, vs_size);
-	//CompileFromGLSL(frag_source, SHADER_STAGE_FRAGMENT, &fs_spv_out, fs_size);
-
 	VulkanShader* shader = new VulkanShader;
 	shader->AddShaderFromFile("glsl_test.vert", SHADER_STAGE_VERTEX);
 	shader->AddShaderFromFile("glsl_test.frag", SHADER_STAGE_FRAGMENT);

@@ -6,7 +6,9 @@
 #include <pthread.h> //Include POSIX thread implementation
 #endif
 
-Engine::Mutex::Mutex() {
+using namespace VSGE;
+
+Mutex::Mutex() {
 #ifdef _WIN32
 	mMutexHandle = new CRITICAL_SECTION;
 	InitializeCriticalSection((CRITICAL_SECTION*)this->mMutexHandle);
@@ -14,7 +16,7 @@ Engine::Mutex::Mutex() {
 	mMutexHandle = new pthread_mutex_t;
 #endif
 }
-Engine::Mutex::~Mutex() {
+Mutex::~Mutex() {
 #ifdef _WIN32
 	DeleteCriticalSection((CRITICAL_SECTION*)this->mMutexHandle);
 #else
@@ -23,14 +25,14 @@ Engine::Mutex::~Mutex() {
 	delete mMutexHandle;
 }
 
-void Engine::Mutex::Lock() {
+void Mutex::Lock() {
 #ifdef _WIN32
 	EnterCriticalSection((CRITICAL_SECTION*)mMutexHandle);
 #else
 	pthread_mutex_lock((pthread_mutex_t*)mMutexHandle);
 #endif
 }
-void Engine::Mutex::Release() {
+void Mutex::Release() {
 #ifdef _WIN32
 	LeaveCriticalSection((CRITICAL_SECTION*)mMutexHandle);
 #else

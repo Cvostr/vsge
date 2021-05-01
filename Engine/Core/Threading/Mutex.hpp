@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Engine {
+namespace VSGE {
 	class Mutex {
 	public:
 		Mutex();

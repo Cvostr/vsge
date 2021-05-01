@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Engine {
+namespace VSGE {
 	class Thread {
 	protected:
 		bool mShouldRun;

@@ -26,6 +26,7 @@ set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/win)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/SDL2.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/SDL2main.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/freetype.lib)
 
 #Win32 libs
 target_link_libraries(Editor winmm.lib)

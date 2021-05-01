@@ -1,6 +1,8 @@
 #include "Application.hpp"
 #include <algorithm>
 #include "Graphics/Shader.hpp"
+#include "Graphics/Fonts.hpp"
+#include <Core/Time.hpp>
 
 using namespace VSGE;
 
@@ -9,6 +11,7 @@ Application* Application::_this = nullptr;
 extern Application* VSGEMain();
 
 void Application::OnUpdate() {
+	TimePerf::Get()->Tick();
 	for (auto Layer : mLayers) {
 		Layer->OnUpdate();
 	}
@@ -65,6 +68,9 @@ void Application::RemoveAllLayers() {
 int main(int argc, char* argv[]) {
 	//Create singleton
 	ShaderStorage storage;
+	GlyphManager glyphs;
+	TimePerf time;
+
 	Application* app = VSGEMain();
 
 	app->Run();
