@@ -1,22 +1,33 @@
 #include "ResourceCache.hpp"
 #include <filesystem>
+#include <fstream>
+#include <Core/ByteSolver.hpp>
 
 namespace fs = std::filesystem;
-
 using namespace VSGE;
 
-IResource* ResourceCache::GetResource(const std::string& name) {
+Resource* ResourceCache::GetResource(const std::string& name) {
+    for (Resource* resource : resources) {
+        if (resource->GetName() == name)
+            return resource;
+    }
     return nullptr;
 }
+
+ResourceType GetTypeByFileExt(const std::string& ext) {
+    if (ext == ".png" || ext == ".dds")
+        return RESOURCE_TYPE_TEXTURE;
+    return RESOURCE_TYPE_NONE;
+}
+
 void ResourceCache::AddResourceDir(const std::string& path) {
     for (const auto& entry : fs::directory_iterator(path)) {
         //if file starts with "." then don't show it
         if (entry.path().filename().string()[0] == '.')
             continue;
         if (entry.is_directory())
-            AddResourceDir(entry.path().string());
+            AddResourceDir(entry.path().string()); 
         /*FileEntry e;
-        e.isDir = entry.is_directory();
         e.abs_path = entry.path().string();
         e.name = entry.path().filename().string();
         e.ext = entry.path().extension().string();
@@ -28,6 +39,26 @@ void ResourceCache::AddResourceDir(const std::string& path) {
         mFiles.push_back(e);*/
     }
 }
-void ResourceCache::AddResourceBundle(ResourceBundle* bundle) {
+bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
+    std::ifstream stream;
+    stream.open(bundle_path, std::ios::binary | std::ios::ate);
 
+    if (stream.fail()) {
+        return false;
+    }
+
+    uint32 size = static_cast<uint32>(stream.tellg());
+    stream.seekg(0, std::ios::beg);
+    byte* data = new byte[size];
+    stream.read((char*)data, size);
+    stream.close();
+
+    uint32 resources_count = 0;
+    ByteSolver solver(data, size);
+    solver.Copy(resources_count);
+    while (!solver.end()) {
+
+    }
+
+    return true;
 }

@@ -13,11 +13,30 @@ void SceneWindow::OnDrawWindow() {
     //Draw hierarchy from root object
     DrawObjectTreeHierarchy(scene->GetRootEntity());
 
+
     if (ImGui::BeginPopupContextWindow(0, 1, false))
     {
-        if (ImGui::MenuItem("New Entity")) {
-            Entity* newEntity = scene->AddNewEntity();
+
+        if (ImGui::BeginMenu("Create")) {
+            if (ImGui::MenuItem("Empty Entity")) {
+                Entity* newEntity = scene->AddNewEntity("Entity");
+            }
+            if (ImGui::MenuItem("Cube")) {
+                Entity* newEntity = scene->AddNewEntity("Cube");
+            }
+            if (ImGui::MenuItem("Point Light")) {
+                Entity* newEntity = scene->AddNewEntity("Point Light");
+            }
+            if (ImGui::MenuItem("Spot light")) {
+                Entity* newEntity = scene->AddNewEntity("Spot Light");
+            }
+            ImGui::EndMenu();
         }
+
+        if (ImGui::MenuItem("Clear")) {
+            scene->NewScene();
+        }
+
         ImGui::EndPopup();
     }    
     ImGui::End();

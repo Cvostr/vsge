@@ -16,7 +16,15 @@ namespace VSGE {
 		TimePerf();
 		static TimePerf* Get();
 		void Tick();
+		/// <summary>
+		/// Time in seconds, spent to draw last frame
+		/// </summary>
+		/// <returns></returns>
 		float GetDeltaTime();
+		/// <summary>
+		/// Count of drawn frames
+		/// </summary>
+		/// <returns></returns>
 		uint64 GetFramesCount();
 	};
 }

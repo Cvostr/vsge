@@ -1,16 +1,19 @@
 #pragma once
 
-#include "IResource.hpp"
-#include "ResourceBundle.hpp"
+#include "Resource.hpp"
+#include <vector>
 
 namespace VSGE {
 	class ResourceCache {
 	private:
-		std::vector<IResource*> resources;
+		std::vector<Resource*> resources;
 	public:
 
-		IResource* GetResource(const std::string& name);
+		ResourceCache() {
+		}
+
+		Resource* GetResource(const std::string& name);
 		void AddResourceDir(const std::string& path);
-		void AddResourceBundle(ResourceBundle* bundle);
+		bool AddResourceBundle(const std::string& bundle_path);
 	};
 }

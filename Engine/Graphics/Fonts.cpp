@@ -23,7 +23,7 @@ GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     //Load font by freetype
     FT_New_Memory_Face(GlyphManager::Get()->getFreetypeLibraryInstance(), data, bsize, 0, &this->font);
     FT_Set_Pixel_Sizes(this->font, 0, size);
-    //mGlyphTexture = Engine::allocTexture();
+    mGlyphTexture = CreateTexture();
     //Allocate temporary buffer
     mGlyphTextureBuffer = new byte[texSize * texSize];
     memset(mGlyphTextureBuffer, 0, texSize * texSize);

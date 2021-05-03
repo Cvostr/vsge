@@ -161,7 +161,7 @@ void VulkanCommandBuffer::SetViewports(uint32 firstViewport, uint32 count, VkVie
 void VulkanCommandBuffer::SetViewport(float x, float y, float width, float height, float depthMin, float depthMax, uint32 index) {
     VkViewport viewport = {x, y, width, height, depthMin, depthMax };
     SetViewports(0, 1, &viewport);
-    VkRect2D scissor = { 0, 0, width, height };
+    VkRect2D scissor = { 0, 0, (uint32)width, (uint32)height };
     vkCmdSetScissor(mCommandBuffer, 0, 1, &scissor);
 }
 

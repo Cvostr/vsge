@@ -4,26 +4,26 @@
 using namespace VSGE;
 
 void Scene::NewScene() {
+	if (mRootEntity) {
+		mRootEntity->Destroy();
+	}
 	mRootEntity = new Entity;
-	mRootEntity->SetName("Root");
 	mRootEntity->SetScene(this);
+	mRootEntity->SetName("Root");
 }
 
-Entity* Scene::AddNewEntity() {
+Entity* Scene::AddNewEntity(const std::string& name) {
 	int addition = 0;
-	std::string name_to_test = "Entity";
+	std::string name_to_test = name;
 	while (GetEntityWithName(name_to_test)) {
 		addition++;
-		name_to_test = "Entity (" + std::to_string(addition) + ")";
+		name_to_test = name + " (" + std::to_string(addition) + ")";
 	}
 
-	return AddNewEntity(name_to_test);
-}
-
-Entity* Scene::AddNewEntity(std::string name) {
 	auto entity = new Entity;
-	entity->SetName(name);
 	entity->SetScene(this);
+	entity->SetName(name_to_test);
+
 	if (mRootEntity)
 		mRootEntity->AddChild(entity);
 	return entity;

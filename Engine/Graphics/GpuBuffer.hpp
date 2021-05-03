@@ -50,9 +50,12 @@ namespace VSGE {
 		/// Write data to buffer
 		/// </summary>
 		/// <param name="offset"></param>
-		/// <param name="size"></param>
-		/// <param name="data"></param>
+		/// <param name="size">- size of data to write</param>
+		/// <param name="data">- data to write</param>
 		virtual void WriteData(uint32 offset, uint32 size, void* data) = 0;
+		/// <summary>
+		/// Free buffer
+		/// </summary>
 		virtual void Destroy() = 0;
 	};
 }

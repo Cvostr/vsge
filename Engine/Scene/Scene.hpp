@@ -8,19 +8,16 @@ namespace VSGE {
 		Entity* mRootEntity;
 
 	public:
-		
-		void NewScene();
 		/// <summary>
-		/// Create and add new entity to scene and assign name "Entity"
+		/// Clear all objects and setup new empty scene
 		/// </summary>
-		/// <returns></returns>
-		Entity* AddNewEntity();
+		void NewScene();
 		/// <summary>
 		/// Create and add new entity to scene and assign its name
 		/// </summary>
 		/// <param name="name">name to set for new entity</param>
 		/// <returns>pointer to new entity</returns>
-		Entity* AddNewEntity(std::string name);
+		Entity* AddNewEntity(const std::string& name);
 		/// <summary>
 		/// Returns pointer to root entity of scene
 		/// </summary>

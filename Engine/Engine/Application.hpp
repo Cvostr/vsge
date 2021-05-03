@@ -90,6 +90,10 @@ namespace VSGE {
 			return nullptr;
 		}
 
+		GraphicsApi GetGraphicsApi() {
+			return description.graphicsApi;
+		}
+
 		static Application* Get() {
 			return _this;
 		}

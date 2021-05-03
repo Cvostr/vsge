@@ -51,6 +51,11 @@ namespace VSGE {
 					mScale(1.f),
 					mViewMask(MAX_INT64)
 		{}
+
+		~Entity() {
+
+		}
+
 		/// <summary>
 		/// get guid of entity
 		/// </summary>
@@ -66,6 +71,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="scene"> - pointer to scene</param>
 		void SetScene(Scene* scene) { mScene = scene; }
+		Scene* GetScene() { return mScene; }
 		/// <summary>
 		/// Stores pointer to parent entity in entity class
 		/// </summary>
@@ -95,7 +101,7 @@ namespace VSGE {
 		/// Set new name string to entity
 		/// </summary>
 		/// <param name="name">- new name string</param>
-		void SetName(const std::string& name) { mName = name; }
+		void SetName(const std::string& name);
 		/// <summary>
 		/// get name of entity
 		/// </summary>

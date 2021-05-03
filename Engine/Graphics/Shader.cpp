@@ -41,7 +41,7 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 	bundle_stream.open(bundle_path, std::ifstream::binary);
 
 	map_stream.seekg(0, std::ios::end); 
-	unsigned int map_size = map_stream.tellg();  
+	uint32 map_size = static_cast<uint32>(map_stream.tellg());  
 	map_stream.seekg(0, std::ios::beg);
 	byte* data = new byte[map_size];
 	map_stream.read((char*)data, map_size);

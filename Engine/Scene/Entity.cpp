@@ -1,4 +1,5 @@
 #include "Entity.hpp"
+#include "Scene.hpp"
 #include <algorithm>
 
 using namespace VSGE;
@@ -53,16 +54,26 @@ Entity* Entity::GetEntityWithGuid(const Guid& id) {
 	return nullptr;
 }
 
+void Entity::SetName(const std::string& name) {
+	int addition = 0;
+	std::string name_to_test = name;
+	Entity* ent = nullptr;
+	while ((ent = mScene->GetEntityWithName(name_to_test)) && ent != this) {
+		addition++;
+		name_to_test = name + " (" + std::to_string(addition) + ")";
+	}
+	mName = name_to_test;
+}
+
 void Entity::Destroy() {
 	//Remove child from entity's parent
 	if (mParent) {
 		mParent->RemoveChild(this);
 	}
 	//Call Destroy() on each child
-	for (auto child : mChildren) {
-		child->Destroy();
+	while(GetChildrenCount() > 0){
+		mChildren[0]->Destroy();
 	}
-	mChildren.clear();
 	//Destroy all entity components
 	RemoveAllComponents();
 
@@ -88,7 +99,7 @@ void Entity::RemoveComponent(IEntityComponent* component) {
 }
 
 void Entity::RemoveAllComponents() {
-	for (uint32 i = 0; i < GetComponentsCount(); i++) {
+	while(GetComponentsCount() > 0){
 		RemoveComponent(mComponents[0]);
 	}
 }

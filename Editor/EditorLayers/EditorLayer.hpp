@@ -3,6 +3,7 @@
 #include <Engine/ApplicationLayer.hpp>
 #include <Scene/Scene.hpp>
 #include <System/FileWatcher.hpp>
+#include <Resources/ResourceCache.hpp>
 
 namespace VSGEditor {
 
@@ -15,6 +16,7 @@ namespace VSGEditor {
 		static EditorLayer* _this;
 		VSGE::Scene* mScene;
 		VSGE::FileWatcher* mResourcesWatcher;
+		VSGE::ResourceCache* mResourceCache;
 	public:
 
 		EditorLayer() {
@@ -22,6 +24,7 @@ namespace VSGEditor {
 			mScene->NewScene();
 			_this = this;
 			mResourcesWatcher = new VSGE::FileWatcher;
+			mResourceCache = new VSGE::ResourceCache;
 		}
 
 		static EditorLayer* Get() {
@@ -30,6 +33,10 @@ namespace VSGEditor {
 
 		VSGE::Scene* GetScene() {
 			return mScene;
+		}
+
+		VSGE::ResourceCache* GetResourceCache() {
+			return mResourceCache;
 		}
 
 		void OpenProjectDirectory(const std::string& dir_path);

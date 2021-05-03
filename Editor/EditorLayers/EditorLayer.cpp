@@ -27,6 +27,7 @@ void EditorLayer::OnDetach() {
 
 void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	mResourcesWatcher->WatchDirectory(dir_path);
+	mResourceCache->AddResourceDir(dir_path);
 
 	ImGuiLayer::Get()->AddWindow(new SceneWindow);
 	ImGuiLayer::Get()->AddWindow(new InspectorWindow);

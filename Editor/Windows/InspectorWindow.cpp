@@ -1,6 +1,8 @@
 #include "InspectorWindow.hpp"
 #include <imgui_stdlib.h>
 
+#include "Scene/Scene.hpp"
+
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
@@ -66,7 +68,9 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
     mShowingEntity->SetActive(IsActive);
 	mShowingEntity->SetStatic(IsStatic);
 
-    ImGui::InputText("Entity Name", (std::string*)&mShowingEntity->GetName());
+	std::string new_name = mShowingEntity->GetName();
+    ImGui::InputText("Entity Name", &new_name);
+	mShowingEntity->SetName(new_name);
 
     ImGui::Separator();
     ImGui::InputFloat3("Translation", (float*)&mShowingEntity->GetPosition().x);

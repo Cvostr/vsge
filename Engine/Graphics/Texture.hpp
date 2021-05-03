@@ -110,4 +110,6 @@ namespace VSGE {
         /// <param name="height">- new height of texture</param>
         virtual void Resize(uint32 width, uint32 height) = 0;
     };
+
+    Texture* CreateTexture();
 }
