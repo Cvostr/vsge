@@ -18,11 +18,13 @@ void ByteSerialize::Serialize(void* data, uint32 size) {
 		Reallocate(mAllocatedSize * 2);
 	}
 	memcpy(mOutputBytes + mSerializedSize, data, size);
+	mSerializedSize += size;
 }
 
 void ByteSerialize::Serialize(std::string str) {
 	for (uint32 s = 0; s < str.size(); s++) {
 		Serialize(str[s]);
 	}
-	Serialize("\0");
+	char zero = '\0';
+	Serialize(&zero, 1);
 }

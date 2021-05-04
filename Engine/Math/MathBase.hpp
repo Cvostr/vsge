@@ -4,9 +4,7 @@
 
 #define REAL_NUM_EQ(x, y) (fabs((x) - (y)) < 0.000001f)
 
-float to_radians(float deg) {
-	return deg * PI_FLOAT / 180.f;
-}
+float to_radians(float deg);
 
 template <typename T, typename U>
 T lerp(T v1, T v2, U factor) {

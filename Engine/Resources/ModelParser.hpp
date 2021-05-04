@@ -25,6 +25,24 @@ namespace VSGE {
         uint32 vertexCount;
         uint32 indexCount;
         uint32 bonesCount;
+
+        MeshContainer() {
+            vertexArray = nullptr;
+            vertexSkinningArray = nullptr;
+            indexArray = nullptr;
+            bonesArray = nullptr;
+        }
+
+        ~MeshContainer() {
+            if (vertexArray)
+                delete[] vertexArray;
+            if (vertexSkinningArray)
+                delete[] vertexSkinningArray;
+            if (indexArray)
+                delete[] indexArray;
+            if (bonesArray)
+                delete[] bonesArray;
+        }
     };
 
     class SceneNode {
@@ -110,8 +128,12 @@ namespace VSGE {
         void clearMeshes();
 
         void makeNodeHierarchy(SceneNode* node);
-        ImportedSceneFile();
-        ~ImportedSceneFile();
+        ImportedSceneFile() {
+            rootNode = nullptr;
+        }
+        ~ImportedSceneFile() {
+
+        }
     };
 
 }

@@ -3,20 +3,20 @@
 #include "../Resource.hpp"
 #include <Graphics/Mesh.hpp>
 #include <vector>
+#include <map>
+#include <string>
 
 namespace VSGE {
-	class MeshResource : public Resource {
+	class MeshGroupResource : public Resource {
 	private:
-		Mesh* _mesh;
+		std::vector<std::pair<std::string, Mesh*>> _meshes;
 	public:
 
-		MeshResource() {
+		MeshGroupResource() {
 
 		}
 
-		void PostLoad(byte* data, uint32 size) {
-
-		}
+		void PostLoad(byte* data, uint32 size);
 
 	};
 }

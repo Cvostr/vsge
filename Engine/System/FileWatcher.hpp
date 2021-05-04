@@ -43,6 +43,10 @@ namespace VSGE {
 
 		}
 
+		~FileWatcher() {
+			delete mMutex;
+		}
+
 		void WatchDirectory(const std::string& directory);
 
 		void WatchWin32();

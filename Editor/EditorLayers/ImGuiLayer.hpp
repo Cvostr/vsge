@@ -45,6 +45,16 @@ namespace VSGEditor {
 		void OnSDL2Event(void* event_ptr);
 
 		void AddWindow(EditorWindow* window);
+		template<typename T>
+		T* GetWindow() {
+			for (auto window : mWindows) {
+				if (typeid(*window) == typeid(T)) {
+					return static_cast<T*>(window);
+				}
+			}
+			return nullptr;
+		}
+
 		void AddMenu(ImGuiMenu* menu);
 
 		void VulkanComputeAndPresent(ImDrawData* draw_data);

@@ -1,15 +1,25 @@
 #pragma once
 
-#include "Resource.hpp"
+#include "AsyncLoader.hpp"
 #include <vector>
 
 namespace VSGE {
 	class ResourceCache {
 	private:
+		AsyncLoader* loader;
 		std::vector<Resource*> resources;
+
+		void CreateResource(DataDescription& descr, ResourceType type);
+
 	public:
 
 		ResourceCache() {
+			loader = new AsyncLoader;
+			loader->Run();
+		}
+
+		~ResourceCache() {
+			delete loader;
 		}
 
 		Resource* GetResource(const std::string& name);

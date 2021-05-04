@@ -37,8 +37,7 @@ namespace VSGEditor {
 
 		VSGE::VulkanSampler sampler;
 		struct {
-			
-
+		
 			ImguiVulkanTexture mBackBtnIcon;
 			ImguiVulkanTexture mDirIcon;
 			ImguiVulkanTexture mUnknownFile;
@@ -60,5 +59,8 @@ namespace VSGEditor {
 		void UpdateDirectoryContent();
 		void OpenFile(const FileEntry& Entry);
 		void DeleteFile(const FileEntry& Entry);
+		const std::string& GetCurrentDir() {
+			return mCurrentDir;
+		}
 	};
 }

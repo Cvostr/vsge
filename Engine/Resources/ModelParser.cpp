@@ -1,10 +1,28 @@
 #include "ModelParser.hpp"
 #include <Core/ByteSolver.hpp>
+#include <fstream>
 
 using namespace VSGE;
 
+void ImportedSceneFile::clearMeshes() {
+    for (uint32 i = 0; i < mReadedMeshes.size(); i++) {
+        delete mReadedMeshes[i];
+    }
+    mReadedMeshes.clear();
+}
+
+SceneNode* ImportedSceneFile::getSceneNodeWithName(std::string label) {
+    for (unsigned int i = 0; i < this->nodes_list.size(); i++) {
+        SceneNode* node = nodes_list[i];
+        if (node->GetLabel().compare(label) == false) {
+            return node;
+        }
+    }
+    return nullptr;
+}
+
 void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
-    ByteSolver solver(buffer);
+    ByteSolver solver(buffer, buf_size);
 
     char header[10];
     solver.Copy(header, 9);
@@ -29,12 +47,11 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
 
     char prefix[5];
     
-    while (solver.end()) {
+    while (!solver.end()) {
         solver.move(1);
         solver.Copy(prefix, 5);
 
         if (prefix[0] == '_' && prefix[1] == 'N' && prefix[2] == 'O' && prefix[3] == 'D' && prefix[4] == 'E') {
-            solver.move(1);
             SceneNode* node = new SceneNode;
 
             
@@ -83,7 +100,6 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
 
         //We reached mesh
         if (prefix[0] == '_' && prefix[1] == 'M' && prefix[2] == 'E' && prefix[3] == 'S' && prefix[4] == 'H') {
-            solver.move(1);
 
             std::string mesh_label = solver.ReadNextString();
             //Read mesh label string
@@ -178,7 +194,6 @@ void ImportedSceneFile::makeNodeHierarchy(SceneNode* node) {
     }
 }
 
-
 void SceneFileExport::pushMesh(MeshContainer* mesh) {
     this->mMeshes.push_back(mesh);
 }
@@ -188,7 +203,7 @@ void SceneFileExport::setRootNode(SceneNode* node) {
 void SceneFileExport::write(std::string output_file) {
     ByteSerialize* serializer = new ByteSerialize;
 
-    serializer->Serialize("zs3mscene\n", 11);
+    serializer->Serialize("zs3mscene", 9);
     uint32 model_ver = 1000;
     uint32 meshes_num = static_cast<uint32>(this->mMeshes.size());
     uint32 nodes_num = 0;
@@ -205,7 +220,7 @@ void SceneFileExport::write(std::string output_file) {
     for (uint32 mesh_i = 0; mesh_i < meshes_num; mesh_i++) {
         MeshContainer* mesh_ptr = this->mMeshes[mesh_i];
         //std::cout << "ZS3M: Writing Mesh " << mesh_ptr->mesh_label << std::endl;
-        serializer->Serialize("_MESH ", 7);
+        serializer->Serialize("_MESH ", 5);
         serializer->Serialize(mesh_ptr->meshName);
 
         //Write base numbers
@@ -254,12 +269,17 @@ void SceneFileExport::write(std::string output_file) {
         }
         serializer->Serialize("\n");
     }
-    //stream.close();
+    
+    std::ofstream stream(output_file, std::ios::binary);
+
+    stream.write((const char*)serializer->GetBytes(), serializer->GetSerializedSize());
+
+    stream.close();
 }
 
 void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
     //Write node header
-    stream->Serialize("_NODE ", 7);
+    stream->Serialize("_NODE ", 5);
     stream->Serialize(node->GetLabel());
 
     uint32 meshesNum = static_cast<uint32>(node->mesh_names.size());
@@ -304,7 +324,7 @@ void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
     }
 }
 
-void SceneFileExport::getNodesNum(unsigned int* nds_ptr, SceneNode* node) {
+void SceneFileExport::getNodesNum(uint32* nds_ptr, SceneNode* node) {
     *nds_ptr += 1;
     //Write all children
     for (unsigned int ch_i = 0; ch_i < node->children.size(); ch_i++) {

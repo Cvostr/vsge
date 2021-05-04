@@ -2,8 +2,6 @@ cmake_minimum_required (VERSION 3.14)
 
 project ("Editor")
 
-#file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR}/CommonEditor)
-
 set(SRC_DIR "")
 set(HEADER_DIR "")
 
@@ -20,13 +18,16 @@ include_directories("../vendor/headers/" REQUIRED)
 
 add_executable (Editor ${SRC_FILES} ${HEADER_FILES})
 IF (WIN32)
-#Static Libs linkage
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/win)
+#Static Libs linkage
+#copy assimp shared lib
+file(COPY ${STATIC_LIBS_DIR}/assimp/assimp-vc142-mt.dll DESTINATION ${CMAKE_BINARY_DIR}/Editor)
 
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/SDL2.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/SDL2main.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/freetype.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/assimp/assimp.lib)
 
 #Win32 libs
 target_link_libraries(Editor winmm.lib)

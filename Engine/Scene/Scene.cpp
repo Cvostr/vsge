@@ -29,7 +29,7 @@ Entity* Scene::AddNewEntity(const std::string& name) {
 	return entity;
 }
 
-Entity* Scene::GetEntityWithName(std::string name) {
+Entity* Scene::GetEntityWithName(const std::string& name) {
 	return mRootEntity->GetEntityWithName(name);
 }
 
