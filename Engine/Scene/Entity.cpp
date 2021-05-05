@@ -17,6 +17,11 @@ void Entity::RemoveChild(Entity* entityToRemove) {
 void Entity::AddChild(Entity* entityToAdd) {
 	if (entityToAdd) {
 		if (!HasChild(entityToAdd)) {
+
+			if (entityToAdd->GetParent()) {
+				entityToAdd->GetParent()->RemoveChild(entityToAdd);
+			}
+
 			mChildren.push_back(entityToAdd);
 			entityToAdd->SetParent(this);
 		}

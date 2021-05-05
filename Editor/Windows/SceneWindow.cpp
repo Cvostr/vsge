@@ -2,6 +2,10 @@
 #include "../EditorLayers/EditorLayer.hpp"
 #include "InspectorWindow.hpp"
 
+#include "Scene/EntityComponents/MeshComponent.hpp"
+#include "Scene/EntityComponents/MaterialComponent.hpp"
+#include "Scene/EntityComponents/LightComponent.hpp"
+
 using namespace VSGEditor;
 using namespace VSGE;
 
@@ -23,12 +27,18 @@ void SceneWindow::OnDrawWindow() {
             }
             if (ImGui::MenuItem("Cube")) {
                 Entity* newEntity = scene->AddNewEntity("Cube");
+                newEntity->AddComponent<MeshComponent>();
+                newEntity->AddComponent<MaterialComponent>();
             }
             if (ImGui::MenuItem("Point Light")) {
                 Entity* newEntity = scene->AddNewEntity("Point Light");
+                LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
+                light->GetLightType() = LIGHT_TYPE_POINT;
             }
             if (ImGui::MenuItem("Spot light")) {
                 Entity* newEntity = scene->AddNewEntity("Spot Light");
+                LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
+                light->GetLightType() = LIGHT_TYPE_SPOT;
             }
             ImGui::EndMenu();
         }

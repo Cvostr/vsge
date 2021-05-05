@@ -38,6 +38,13 @@ public:
                 Values[i][i] = a;
     }
 
+    tMat4(tVec4<T> v1, tVec4<T> v2, tVec4<T> v3, tVec4<T> v4) {
+        Values[0][0] = v1.x; Values[0][1] = v1.y; Values[0][2] = v1.z; Values[0][3] = v1.w;
+        Values[1][0] = v2.x; Values[1][1] = v2.y; Values[1][2] = v2.z; Values[1][3] = v2.w;
+        Values[2][0] = v3.x; Values[2][1] = v3.y; Values[2][2] = v3.z; Values[2][3] = v3.w;
+        Values[3][0] = v4.x; Values[3][1] = v4.y; Values[3][2] = v4.z; Values[3][3] = v4.w;
+    }
+
     tMat4 operator*(T r) const {
         tMat4 result = *this;
         for (uint8 i = 0; i < 4; i++) {

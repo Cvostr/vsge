@@ -2,6 +2,8 @@
 #include <filesystem>
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
+#include "../EditorLayers/EditorLayer.hpp"
+#include "../Misc/SceneExt.hpp"
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -162,6 +164,14 @@ void FileBrowserWindow::OnDrawWindow() {
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
         {
+
+            if (e->ext.compare(".vs3m") == 0) {
+                if (ImGui::MenuItem("Add to scene")) {
+                    EditorLayer* el = EditorLayer::Get();
+                    AddSubSceneVS3M(el->GetScene(), e->abs_path);
+                    //addRP3MtoWorld(mWorld, FileContextMenu.file->abs_path);
+                }
+            }
             if (ImGui::MenuItem("Open")) {
                 OpenFile(*e);
             }

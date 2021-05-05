@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include "MathBase.hpp"
 
 class Quat {
 public:
@@ -52,4 +53,21 @@ public:
 
         return result.GetNormalized();
 	}
+
+    float GetRoll() {
+        float _y = 2.f * (x * y + w * z);
+        float _x = w * w + x * x - y * y - z * z;
+        return std::atan2(_y, _x);
+    }
+
+    float GetPitch() {
+        float _y = 2.f * (y * z + w * x);
+        float _x = w * w - x * x - y * y + z * z;
+        return std::atan2(_y, _x);
+    }
+
+    float GetYaw() {
+        
+        return asin(clamp(-2.f * (x * z - w * y), -1.f, 1.f));
+    }
 };

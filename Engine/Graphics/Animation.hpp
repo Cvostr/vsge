@@ -60,6 +60,7 @@ namespace VSGE {
         TimedValues() {
             values = nullptr;
             times = nullptr;
+            keysCount = 0;
         }
 
         ~TimedValues() {

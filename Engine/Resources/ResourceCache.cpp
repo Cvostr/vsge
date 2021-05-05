@@ -39,7 +39,7 @@ void ResourceCache::AddResourceDir(const std::string& path) {
                 DataDescription ddescr = {};
                 ddescr.file_path = entry.path().string();
                 ddescr.offset = 0;
-                ddescr.size = entry.file_size();
+                ddescr.size = static_cast<uint32>(entry.file_size());
                 CreateResource(ddescr, type);
             }
         }
@@ -103,6 +103,9 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
     ByteSolver solver(data, size);
     solver.Copy(resources_count);
     while (!solver.end()) {
+        ResourceType type = RESOURCE_TYPE_NONE;;
+        DataDescription ddescr = {};
+        solver.Copy(&type);
 
     }
 

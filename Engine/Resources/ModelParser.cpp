@@ -21,6 +21,22 @@ SceneNode* ImportedSceneFile::getSceneNodeWithName(std::string label) {
     return nullptr;
 }
 
+void ImportedSceneFile::loadFromFile(std::string file) {
+    std::ifstream stream;
+    stream.open(file, std::iostream::binary | std::iostream::ate);
+    //Get size of file
+    unsigned int zs3m_size = static_cast<unsigned int>(stream.tellg());
+    //Seek to start
+    stream.seekg(0, std::ifstream::beg);
+    //Allocate memory for file
+    byte* file_buffer = new byte[zs3m_size];
+    stream.read((char*)file_buffer, zs3m_size);
+
+    loadFromBuffer(file_buffer, zs3m_size);
+    //free memory
+    delete[] file_buffer;
+}
+
 void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
     ByteSolver solver(buffer, buf_size);
 

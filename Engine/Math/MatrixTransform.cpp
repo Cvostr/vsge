@@ -78,6 +78,25 @@ Mat4 GetRotationMatrix(const Vec3 Rotation) {
         GetRotationZMatrixEuler(Rotation.z);
 }
 
+Mat4 GetRotationMatrix(const Quat Rotation) {
+    float x2 = Rotation.x * Rotation.x;
+    float y2 = Rotation.y * Rotation.y;
+    float z2 = Rotation.z * Rotation.z;
+    float xy = Rotation.x * Rotation.y;
+    float xz = Rotation.x * Rotation.z;
+    float yz = Rotation.y * Rotation.z;
+    float wx = Rotation.w * Rotation.x;
+    float wy = Rotation.w * Rotation.y;
+    float wz = Rotation.w * Rotation.z;
+
+    Mat4 rot = Mat4(
+        Vec4(1.0f - 2.0f * (y2 + z2), 2.0f * (xy - wz), 2.0f * (xz + wy), 0.0f),
+        Vec4(2.0f * (xy + wz), 1.0f - 2.0f * (x2 + z2), 2.0f * (yz - wx), 0.0f),
+        Vec4(2.0f * (xz - wy), 2.0f * (yz + wx), 1.0f - 2.0f * (x2 + y2), 0.0f),
+        Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    return rot;
+}
+
 Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation) {
     Mat4 Result = 
         GetScaleMatrix(scale) * 

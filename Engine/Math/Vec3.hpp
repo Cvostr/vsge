@@ -44,6 +44,10 @@
 			return tVec3(x * d, y * d, z * d);
 		}
 
+		tVec3 operator/(float d) const {
+			return tVec3(x / d, y / d, z / d);
+		}
+
 		bool operator ==(const tVec3& r) const {
 			return x == r.x && y == r.y && z == r.z;
 		}

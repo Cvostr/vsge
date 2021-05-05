@@ -32,15 +32,15 @@ void VSGE::Animation::SetNumChannels(uint32 num_channels) {
 }
 
 VSGE::AnimationChannel* VSGE::Animation::getChannelByNodeName(std::string node_name) {
-    for (unsigned int i = 0; i < this->mNumChannels; i++) {
+    for (uint32 i = 0; i < this->mNumChannels; i++) {
         AnimationChannel* cha = &this->channels[i];
         if (cha->GetBoneName().compare(node_name) == false) return cha;
     }
     return nullptr;
 }
 
-unsigned int VSGE::AnimationChannel::getPositionIndex(double Time) {
-    for (unsigned int i = 0; i < this->pos.keysCount - 1; i++) {
+uint32 VSGE::AnimationChannel::getPositionIndex(double Time) {
+    for (uint32 i = 0; i < this->pos.keysCount - 1; i++) {
         double _time = pos.times[i + 1];
         if (_time > Time) {
             return i;
@@ -49,8 +49,8 @@ unsigned int VSGE::AnimationChannel::getPositionIndex(double Time) {
     //assert(0);
     return 0;
 }
-unsigned int VSGE::AnimationChannel::getScaleIndex(double Time) {
-    for (unsigned int i = 0; i < this->scale.keysCount - 1; i++) {
+uint32 VSGE::AnimationChannel::getScaleIndex(double Time) {
+    for (uint32 i = 0; i < this->scale.keysCount - 1; i++) {
         double _time = scale.times[i + 1];
         if (_time > Time)
             return i;
@@ -58,8 +58,8 @@ unsigned int VSGE::AnimationChannel::getScaleIndex(double Time) {
     //assert(0);
     return 0;
 }
-unsigned int VSGE::AnimationChannel::getRotationIndex(double Time) {
-    for (unsigned int i = 0; i < this->rot.keysCount - 1; i++) {
+uint32 VSGE::AnimationChannel::getRotationIndex(double Time) {
+    for (uint32 i = 0; i < this->rot.keysCount - 1; i++) {
         double _time = rot.times[i + 1];
         if (_time > Time) {
             return i;
@@ -70,8 +70,8 @@ unsigned int VSGE::AnimationChannel::getRotationIndex(double Time) {
 }
 
 Vec3 VSGE::AnimationChannel::getPostitionInterpolated(double Time) {
-    unsigned int index1 = getPositionIndex(Time);
-    unsigned int index2 = index1 + 1;
+    uint32 index1 = getPositionIndex(Time);
+    uint32 index2 = index1 + 1;
 
     double delta = Time - pos.times[index1];
     delta /= anim_ptr->GetTPS();
@@ -83,8 +83,8 @@ Vec3 VSGE::AnimationChannel::getPostitionInterpolated(double Time) {
 }
 
 Vec3 VSGE::AnimationChannel::getScaleInterpolated(double Time) {
-    unsigned int index1 = getScaleIndex(Time);
-    unsigned int index2 = index1 + 1;
+    uint32 index1 = getScaleIndex(Time);
+    uint32 index2 = index1 + 1;
 
     double delta = Time - scale.times[index1];
     delta /= anim_ptr->GetTPS();
@@ -96,8 +96,8 @@ Vec3 VSGE::AnimationChannel::getScaleInterpolated(double Time) {
 }
 
 Quat VSGE::AnimationChannel::getRotationInterpolated(double Time) {
-    unsigned int index1 = getRotationIndex(Time);
-    unsigned int index2 = index1 + 1;
+    uint32 index1 = getRotationIndex(Time);
+    uint32 index2 = index1 + 1;
 
     double delta = Time - rot.times[index1];
     delta /= anim_ptr->GetTPS();

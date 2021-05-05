@@ -50,7 +50,7 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
     mesh_ptr->vertexArray = new Vertex[mesh_ptr->vertexCount];
     mesh_ptr->vertexSkinningArray = new VertexSkinningData[mesh_ptr->vertexCount];
     mesh_ptr->bonesArray = new Bone[mesh_ptr->bonesCount];
-    mesh_ptr->indexArray = new unsigned int[mesh_ptr->indexCount * 3];
+    mesh_ptr->indexArray = new uint32[mesh_ptr->indexCount * 3];
 
     //Iterate over all vertices, read data and write to array
     for (uint32 v = 0; v < mesh_ptr->vertexCount; v++) {
@@ -109,7 +109,7 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
     for (uint32 i = 0; i < mesh_ptr->indexCount; i++)
     {
         aiFace face = mesh->mFaces[i];
-        for (unsigned int j = 0; j < face.mNumIndices; j++)
+        for (uint32 j = 0; j < face.mNumIndices; j++)
             mesh_ptr->indexArray[i * 3 + j] = face.mIndices[j];
     }
 }
@@ -213,7 +213,7 @@ void VSGEditor::processNodeForTree(SceneNode* node, aiNode* node_assimp, const a
     Vec3 node_translation = Vec3(translation.x, translation.y, translation.z);
     Vec3 node_scaling = Vec3(scale.x, scale.y, scale.z);
     Quat node_rotation = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
-
+    
     node->SetTranslationScalingRotation(node_translation, node_scaling, node_rotation);
 
     //iterate over all meshes in this node
@@ -236,11 +236,11 @@ void VSGEditor::processNodeForTree(SceneNode* node, aiNode* node_assimp, const a
 }
 
 bool VSGEditor::isBoneAvailable(std::string bone_label, const aiScene* scene){
-    unsigned int mesh_num = scene->mNumMeshes;
-    for(unsigned int i = 0; i < mesh_num; i ++){
+    uint32 mesh_num = scene->mNumMeshes;
+    for(uint32 i = 0; i < mesh_num; i ++){
         aiMesh* mesh = scene->mMeshes[i];
-        unsigned int bones_num = mesh->mNumBones;
-        for(unsigned int b_i = 0; b_i < bones_num; b_i ++){
+        uint32 bones_num = mesh->mNumBones;
+        for(uint32 b_i = 0; b_i < bones_num; b_i ++){
             aiBone* bn = mesh->mBones[b_i];
             if(bone_label.compare(bn->mName.C_Str()) == false)
                 return true;
