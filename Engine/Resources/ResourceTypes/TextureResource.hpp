@@ -15,8 +15,8 @@ namespace VSGE {
 
 		Texture* GetTexture() { return _texture; }
 
-		void PostLoad(byte* data, uint32 size) {
-			_texture->CreateFromBuffer(data, size);
+		void PostLoad() {
+			_texture->CreateFromBuffer(mLoadedData, description.size);
 		}
 
 	};

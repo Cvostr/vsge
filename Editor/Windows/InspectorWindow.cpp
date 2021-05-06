@@ -6,6 +6,7 @@
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
+#include <Scene/EntityComponents/AnimatorComponent.hpp>
 
 #include "../InspectorInterfaces/EntityComponents/Lighsource.hpp"
 
@@ -86,6 +87,7 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::MeshComponent>("Mesh Renderer");
 	DrawComponent<VSGE::MaterialComponent>("Material");
 	DrawComponent<VSGE::LightsourceComponent>("Light");
+	DrawComponent<VSGE::AnimatorComponent>("Animator");
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.45f, 0.5f, 1));
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetWindowWidth(), 0)))
@@ -96,11 +98,10 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	{
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "--------------------- Components ---------------------");
 		
-		
-
 		AddComponentButton<VSGE::MeshComponent>("Mesh Renderer");
 		AddComponentButton<VSGE::MaterialComponent>("Material");
 		AddComponentButton<VSGE::LightsourceComponent>("Light");
+		AddComponentButton<VSGE::AnimatorComponent>("Animator");
 
 		ImGui::EndPopup();
 	}

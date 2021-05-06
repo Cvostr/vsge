@@ -5,6 +5,8 @@
 
 namespace VSGE {
 	
+	class ResourceCache;
+
 	enum ResourceState {
 		RESOURCE_STATE_UNLOADED = 0,
 		RESOURCE_STATE_QUEUED,
@@ -18,7 +20,10 @@ namespace VSGE {
 		RESOURCE_TYPE_NONE = 0,
 		RESOURCE_TYPE_TEXTURE,
 		RESOURCE_TYPE_MESHGROUP,
-		RESOURCE_TYPE_AUDIOCLIP
+		RESOURCE_TYPE_MESH,
+		RESOURCE_TYPE_AUDIOCLIP,
+		RESOURCE_TYPE_ANIMATION,
+		RESOURCE_TYPE_MATERIAL
 	};
 
 	struct DataDescription {
@@ -30,14 +35,12 @@ namespace VSGE {
 	class Resource {
 	protected:
 		ResourceState mResourceState;
-		Guid mId;
 		uint32 mMemoryUse;
 		std::string mName;
-		
+
+		byte* mLoadedData;
 		DataDescription description;
 	public:
-		const Guid& GetId() { return mId; }
-		void SetId(Guid& id) { mId = id; }
 		/// <summary>
 		/// Get name of this resource
 		/// </summary>
@@ -73,13 +76,38 @@ namespace VSGE {
 			return description;
 		}
 
-		virtual void PostLoad(byte* data, uint32 size) {}
+		void SetLoadedData(byte* data) {
+			mLoadedData = data;
+		}
 
+		void FreeLoadedData();
+
+		byte* GetLoadedData() {
+			return mLoadedData;
+		}
+
+		virtual void Load();
+		virtual void Prepare() {}
+		virtual void PostLoad() {}
+		 
 		//virtual ResourceType GetResourceType() = 0;
 
 		Resource() :
 			mResourceState(RESOURCE_STATE_UNLOADED),
-			mMemoryUse(0)
+			mMemoryUse(0),
+			mLoadedData(nullptr)
 		{}
+	};
+
+	template<class T>
+	class ResourceReference {
+	public:
+		T* mResourcePointer;
+		std::string mResourceName;
+
+		void UpdateResourcePointer(const std::string& resourceName) {
+			mResourceName = resourceName;
+			mResourcePointer = (T*)ResourceCache::Get()->GetResource(mResourceName);
+		}
 	};
 }

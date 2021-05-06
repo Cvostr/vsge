@@ -42,6 +42,9 @@ namespace VSGE {
 			mWidth = width;
 			mHeight = height;
 		}
+		Texture** GetColorAttachments() {
+			return mAttachments.data();
+		}
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>

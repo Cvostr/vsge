@@ -32,8 +32,13 @@ namespace VSGE {
 		/// </summary>
 		/// <typeparam name="T">- type of vertex</typeparam>
 		/// <param name="vertices">- Array of vertices</param>
-		template <typename T>
-		void AddVertexBuffer(T* vertices);
+		template <class T>
+		void AddVertexBuffer(T* vertices) {
+			VertexBufferData vbd;
+			vbd.mVertices = (byte*)vertices;
+			vbd.mVertexSize = sizeof(T);
+			mVertexBuffers.push_back(vbd);
+		}
 		/// <summary>
 		/// Set index buffer
 		/// </summary>

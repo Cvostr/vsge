@@ -3,6 +3,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Fonts.hpp"
 #include <Core/Time.hpp>
+#include <Resources/ResourceCache.hpp>
 
 using namespace VSGE;
 
@@ -70,6 +71,7 @@ int main(int argc, char* argv[]) {
 	ShaderStorage storage;
 	GlyphManager glyphs;
 	TimePerf time;
+	ResourceCache cache;
 
 	Application* app = VSGEMain();
 

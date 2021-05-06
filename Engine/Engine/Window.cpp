@@ -108,17 +108,25 @@ void VSGE::Window::PollEvents() {
             EventKeyButtonUp keyboard_btnup_event(event.key.keysym.sym);
             app->OnEvent(keyboard_btnup_event);
         }
-        if (event.type == SDL_WINDOWEVENT_RESIZED) {
-            EventWindowResized event_win_resized(event.window.data1, event.window.data2);
-            app->OnEvent(event_win_resized);
-        }
-        if (event.type == SDL_WINDOWEVENT_MINIMIZED) {
-            EventWindowMinimized event_win_minimized;
-            app->OnEvent(event_win_minimized);
-        }
-        if (event.type == SDL_WINDOWEVENT_RESTORED) {
-            EventWindowRestored event_win_restored;
-            app->OnEvent(event_win_restored);
+        if (event.type == SDL_WINDOWEVENT) {
+            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                mWindowWidth = event.window.data1;
+                mWindowHeight = event.window.data2;
+
+                EventWindowResized event_win_resized(event.window.data1, event.window.data2);
+                app->OnEvent(event_win_resized);
+            }
+            if (event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+                EventWindowMinimized event_win_minimized;
+                app->OnEvent(event_win_minimized);
+            }
+            if (event.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
+
+            }
+            if (event.window.event == SDL_WINDOWEVENT_RESTORED) {
+                EventWindowRestored event_win_restored;
+                app->OnEvent(event_win_restored);
+            }
         }
         if (event.type == SDL_QUIT) {
             EventWindowClose event_win_close;

@@ -82,10 +82,10 @@ void VulkanCommandPool::Destroy() {
     }
 }
 
-bool VulkanCommandBuffer::Create(VulkanCommandPool& pool) {
+bool VulkanCommandBuffer::Create(VulkanCommandPool* pool) {
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = pool.GetCommandPool();
+    allocInfo.commandPool = pool->GetCommandPool();
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = (uint32_t)1;
 

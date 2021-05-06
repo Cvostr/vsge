@@ -2,6 +2,7 @@
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
+#include <Scene/EntityComponents/AnimatorComponent.hpp>
 
 #include <Math/MatrixTransform.hpp>
 
@@ -13,7 +14,9 @@ void VSGEditor::AddSubSceneVS3M(Scene* scn, const std::string& file) {
 	isf.loadFromFile(file);
 	SceneNode* node = isf.rootNode;
 
-	addObjectFromNode(scn, node);
+	Entity* rootEntity = addObjectFromNode(scn, node);
+	rootEntity->AddComponent<AnimatorComponent>();
+
 	isf.clearMeshes();
 }
 
@@ -24,7 +27,7 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	result->SetPosition(node->GetTranslation());
 	result->SetScale(node->GetScale());
 	Quat node_rotation = node->GetRotation();
-	result->SetRotation(Vec3(node_rotation.GetPitch(), node_rotation.GetYaw(), node_rotation.GetRoll()) * 3.14159f / 180.f);
+	result->SetRotation(Vec3(node_rotation.GetPitch(), node_rotation.GetYaw(), node_rotation.GetRoll()));
 
 	//Mat4 node_tr = GetTranslationMatrix(result->GetPosition()) * GetScaleMatrix(result->GetScale()) * GetRotationMatrix(node_rotation);
 	//Mat4 node_tr = GetTransform(result->GetPosition(), result->GetScale(), result->GetRotation());
@@ -40,9 +43,9 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	for (uint32 node_i = 0; node_i < node->mesh_names.size(); node_i++) {
 		std::string mesh_label = node->mesh_names[node_i];
 		Entity* object = w->AddNewEntity(mesh_label);
-		object->AddComponent<MeshComponent>();
+		MeshComponent* meshc = object->AddComponent<MeshComponent>();
+		meshc->SetMeshName(mesh_label);
 		object->AddComponent<MaterialComponent>();
-		//strcpy(object->meshInfo.mesh_label, mesh_label.c_str());
 		result->AddChild(object);
 	}
 	return result;

@@ -7,16 +7,52 @@
 #include <string>
 
 namespace VSGE {
+
+	class MeshResource;
+
 	class MeshGroupResource : public Resource {
 	private:
-		std::vector<std::pair<std::string, Mesh*>> _meshes;
+		bool mPrepared;
+		std::vector<MeshResource*> _meshes;
 	public:
 
 		MeshGroupResource() {
-
+			mPrepared = false;
 		}
 
-		void PostLoad(byte* data, uint32 size);
+		void Prepare();
 
+		//void PostLoad(byte* data, uint32 size);
+
+	};
+
+	class MeshResource : public Resource {
+	private:
+		MeshGroupResource* mGroup;
+		Mesh* mesh;
+	public:
+
+		MeshResource() {
+			mesh = CreateMesh();
+			mGroup = nullptr;
+		}
+
+		~MeshResource() {
+			delete mesh;
+		}
+
+		Mesh* GetMesh() {
+			return mesh;
+		}
+
+		void SetGroup(MeshGroupResource* group) {
+			mGroup = group;
+		}
+
+		MeshGroupResource* GetGroup() {
+			return mGroup;
+		}
+
+		void Load();
 	};
 }

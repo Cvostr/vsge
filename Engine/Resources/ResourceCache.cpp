@@ -9,6 +9,8 @@
 namespace fs = std::filesystem;
 using namespace VSGE;
 
+ResourceCache* ResourceCache::_this = nullptr;
+
 Resource* ResourceCache::GetResource(const std::string& name) {
     for (Resource* resource : resources) {
         if (resource->GetName() == name)
@@ -77,10 +79,10 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     }
 
     res->SetName(res_name);
-
-    loader->AddToQueue(res);
-    loader->WaitForLoading(res);
-    //res->PostLoad();
+    
+    if (type == RESOURCE_TYPE_MESHGROUP) {
+        loader->AddToQueue(res);
+    }
 
     resources.push_back(res);
 }
@@ -110,4 +112,8 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
     }
 
     return true;
+}
+
+void ResourceCache::PushResource(Resource* res) {
+    resources.push_back(res);
 }

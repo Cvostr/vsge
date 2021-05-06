@@ -1,6 +1,7 @@
 #include "ImGuiLayer.hpp"
 #include <Graphics/Vulkan/VulkanRAPI.hpp>
 #include <Engine/Application.hpp>
+#include <Engine/Window.hpp>
 
 using namespace VSGEditor;
 
@@ -24,6 +25,8 @@ void ImGuiLayer::OnAttach() {
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
+
+    win->SetResizeable(true);
 
     VkDescriptorPoolSize pool_sizes[] =
     {
@@ -80,7 +83,7 @@ void ImGuiLayer::OnAttach() {
    
 }
 
-void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
+void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data) {
     cmdbuf.Begin();
     imgui_rpass.CmdBegin(cmdbuf, imgui_fb);
 
@@ -88,8 +91,13 @@ void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
 
     cmdbuf.EndRenderPass();
     cmdbuf.End();
+}
+
+void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
+    VulkanRecordCmdBuf(draw_data);
 
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
+    VSGE::Window* win = &VSGE::Application::Get()->GetWindow();
 
     uint32_t _imageIndex;
 
@@ -97,8 +105,22 @@ void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
 
     _imageIndex = 0;
 
+    //Check, if swapchain is no more suitable
     if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
-        //vk->GetSwapChain()->Destroy();
+        //Swapchain is no more suitable
+        vkDeviceWaitIdle(vk->GetDevice()->getVkDevice());
+        //Destroy output framebuffer
+        imgui_fb.Destroy();
+        imgui_fb.SetSize(win->GetWindowWidth(), win->GetWindowHeight());
+        imgui_rpass.SetClearSize(win->GetWindowWidth(), win->GetWindowHeight());
+        //Recreate swapchain
+        vk->GetSwapChain()->Destroy();
+        vk->GetSwapChain()->initSwapchain(vk->GetDevice());
+
+        imgui_fb.PushOutputAttachment(0);
+        imgui_fb.Create(&imgui_rpass);
+
+        VulkanRecordCmdBuf(draw_data);
     }
 
     VulkanGraphicsSubmit(cmdbuf, imageAvailable, presentBegin);

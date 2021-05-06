@@ -7,8 +7,8 @@
 namespace VSGE {
 	class MeshComponent : public IEntityComponent {
 	private:
+		ResourceReference<MeshResource> mMeshResource;
 	public:
-		void SetMeshResource();
-		void SetMesnName(const std::string& mesh);
+		void SetMeshName(const std::string& mesh);
 	};
 }

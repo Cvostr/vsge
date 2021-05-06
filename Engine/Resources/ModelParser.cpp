@@ -12,7 +12,7 @@ void ImportedSceneFile::clearMeshes() {
 }
 
 SceneNode* ImportedSceneFile::getSceneNodeWithName(std::string label) {
-    for (unsigned int i = 0; i < this->nodes_list.size(); i++) {
+    for (uint32 i = 0; i < this->nodes_list.size(); i++) {
         SceneNode* node = nodes_list[i];
         if (node->GetLabel().compare(label) == false) {
             return node;
@@ -25,7 +25,7 @@ void ImportedSceneFile::loadFromFile(std::string file) {
     std::ifstream stream;
     stream.open(file, std::iostream::binary | std::iostream::ate);
     //Get size of file
-    unsigned int zs3m_size = static_cast<unsigned int>(stream.tellg());
+    uint32 zs3m_size = static_cast<uint32>(stream.tellg());
     //Seek to start
     stream.seekg(0, std::ifstream::beg);
     //Allocate memory for file
@@ -64,7 +64,7 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
     char prefix[5];
     
     while (!solver.end()) {
-        solver.move(1);
+        //solver.move(1);
         solver.Copy(prefix, 5);
 
         if (prefix[0] == '_' && prefix[1] == 'N' && prefix[2] == 'O' && prefix[3] == 'D' && prefix[4] == 'E') {
@@ -81,7 +81,6 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
             //Read data
             solver.Copy(&meshesNum);
             solver.Copy(&childrenNum);
-            solver.move(1);
 
             //iterate over all meshes, connected to this node
             for (uint32 mesh_i = 0; mesh_i < meshesNum; mesh_i++) {
@@ -128,7 +127,6 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
             solver.Copy(vertexNum);
             solver.Copy(indexNum);
             solver.Copy(bonesNum);
-            //solver.move(1);
 
             MeshContainer* mesh = new MeshContainer;
             mesh->meshName = mesh_label;
@@ -170,7 +168,6 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
             for (uint32 in_i = 0; in_i < static_cast<uint32>(indexNum); in_i++) {
                 solver.Copy(mesh->indexArray[in_i]);
             }
-            solver.move(1);
 
             for (uint32 b_i = 0; b_i < bonesNum; b_i++) {
                 //Read mesh label string
@@ -196,7 +193,7 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
 }
 
 void ImportedSceneFile::makeNodeHierarchy(SceneNode* node) {
-    for (unsigned int i = 0; i < node->child_node_labels.size(); i++) {
+    for (uint32 i = 0; i < node->child_node_labels.size(); i++) {
         std::string child_name = node->child_node_labels[i];
 
         SceneNode* nn = getSceneNodeWithName(child_name);
@@ -228,7 +225,6 @@ void SceneFileExport::write(std::string output_file) {
     serializer->Serialize(model_ver);
     serializer->Serialize(meshes_num);
     serializer->Serialize(nodes_num);
-    serializer->Serialize("\n"); //Write divider
     //Write all nodes
     writeNode(serializer, mRootNode);
 
@@ -236,14 +232,13 @@ void SceneFileExport::write(std::string output_file) {
     for (uint32 mesh_i = 0; mesh_i < meshes_num; mesh_i++) {
         MeshContainer* mesh_ptr = this->mMeshes[mesh_i];
         //std::cout << "ZS3M: Writing Mesh " << mesh_ptr->mesh_label << std::endl;
-        serializer->Serialize("_MESH ", 5);
+        serializer->Serialize("_MESH", 5);
         serializer->Serialize(mesh_ptr->meshName);
 
         //Write base numbers
         serializer->Serialize(mesh_ptr->vertexCount);
         serializer->Serialize(mesh_ptr->indexCount);
         serializer->Serialize(mesh_ptr->bonesCount);
-        //stream << "\n"; //Write divider
         //Write all vertices
         for (uint32 v_i = 0; v_i < mesh_ptr->vertexCount; v_i++) {
             Vertex* v_ptr = &mesh_ptr->vertexArray[v_i];
@@ -268,7 +263,6 @@ void SceneFileExport::write(std::string output_file) {
         for (uint32 ind_i = 0; ind_i < mesh_ptr->indexCount; ind_i++) {
             serializer->Serialize(mesh_ptr->indexArray[ind_i]);
         }
-        serializer->Serialize("\n"); //Write divider
 
         for (uint32 b_i = 0; b_i < mesh_ptr->bonesCount; b_i++) {
             Bone* bone = &mesh_ptr->bonesArray[b_i];
@@ -283,7 +277,6 @@ void SceneFileExport::write(std::string output_file) {
             }
             serializer->Serialize("\n");
         }
-        serializer->Serialize("\n");
     }
     
     std::ofstream stream(output_file, std::ios::binary);
@@ -295,7 +288,7 @@ void SceneFileExport::write(std::string output_file) {
 
 void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
     //Write node header
-    stream->Serialize("_NODE ", 5);
+    stream->Serialize("_NODE", 5);
     stream->Serialize(node->GetLabel());
 
     uint32 meshesNum = static_cast<uint32>(node->mesh_names.size());
@@ -303,8 +296,6 @@ void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
 
     stream->Serialize(meshesNum);
     stream->Serialize(childrenNum);
-
-    stream->Serialize("\n"); //Write divider
 
     for (uint32 mesh_i = 0; mesh_i < meshesNum; mesh_i++) {
         //Write mesh name
@@ -333,7 +324,6 @@ void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
     stream->Serialize(node->GetRotation().y); //Writing rotation Y
     stream->Serialize(node->GetRotation().z); //Writing rotation Z
     stream->Serialize(node->GetRotation().w); //Writing rotation W
-    stream->Serialize("\n"); //Write divider
     //Write all children
     for (uint32 ch_i = 0; ch_i < (uint32)node->children.size(); ch_i++) {
         writeNode(stream, node->children[ch_i]);
@@ -343,7 +333,7 @@ void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
 void SceneFileExport::getNodesNum(uint32* nds_ptr, SceneNode* node) {
     *nds_ptr += 1;
     //Write all children
-    for (unsigned int ch_i = 0; ch_i < node->children.size(); ch_i++) {
+    for (uint32 ch_i = 0; ch_i < node->children.size(); ch_i++) {
         getNodesNum(nds_ptr, node->children[ch_i]);
     }
 }

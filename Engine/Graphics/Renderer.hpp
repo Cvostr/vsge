@@ -5,14 +5,19 @@
 
 namespace VSGE {
 	class IRenderer {
-	private:
+	protected:
+		uint32 mOutputWidth;
+		uint32 mOutputHeight;
+		
 		Scene* mScene;
 		Texture* mOutput;
 	public:
 
 		IRenderer() : 
 			mScene(nullptr),
-			mOutput(nullptr)
+			mOutput(nullptr),
+			mOutputWidth(1280),
+			mOutputHeight(720)
 		{}
 
 		void SetScene(Scene* scene) { mScene = scene; }

@@ -1,5 +1,6 @@
 #include "AsyncLoader.hpp"
 #include <fstream>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -26,14 +27,17 @@ void _LDR_load(Resource* resource) {
 
     if (!stream.is_open()) {
         resource->SetState(RESOURCE_STATE_LOADING_FAILED);
-        //std::cout << "Error loading resource " << req->file_path << std::endl;
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Error loading resource " << resource->GetName() << "\n";
+        return;
     }
 
     byte* data = new byte[desc.size];
     stream.read(reinterpret_cast<char*>(data), desc.size);
     stream.close();
 
-    resource->PostLoad(data, desc.size);
+    resource->SetLoadedData(data);
+    //Do some specific work (on MeshGroupResource as example)
+    resource->Prepare();
 
     resource->SetState(RESOURCE_STATE_LOADED);
 }

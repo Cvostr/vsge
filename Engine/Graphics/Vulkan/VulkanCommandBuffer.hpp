@@ -45,7 +45,7 @@ namespace VSGE {
 
 		VkCommandBuffer GetCommandBuffer() { return mCommandBuffer; }
 
-		bool Create(VulkanCommandPool& pool);
+		bool Create(VulkanCommandPool* pool);
 
 		void Begin();
 
