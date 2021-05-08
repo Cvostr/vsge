@@ -109,5 +109,13 @@ namespace VSGE {
 			mResourceName = resourceName;
 			mResourcePointer = (T*)ResourceCache::Get()->GetResource(mResourceName);
 		}
+
+		bool IsResourceSpecified() {
+			return !mResourceName.empty();
+		}
+
+		ResourceReference() {
+			mResourcePointer = nullptr;
+		}
 	};
 }

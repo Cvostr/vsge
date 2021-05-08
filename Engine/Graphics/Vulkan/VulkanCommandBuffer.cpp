@@ -96,7 +96,7 @@ bool VulkanCommandBuffer::Create(VulkanCommandPool* pool) {
         return false;
     }
 
-    mPoolPtr = &pool;
+    mPoolPtr = pool;
     mCreated = true;
 
     return true;

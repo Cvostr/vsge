@@ -126,7 +126,7 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
     if (tree_open) {
         //Da all chlden
         for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i++) {
-            Entity* child_entity = entity->GetChild(child_i);
+            Entity* child_entity = entity->GetChildren()[child_i];
             DrawObjectTreeHierarchy(child_entity);
         }
         ImGui::TreePop();

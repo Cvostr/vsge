@@ -2,6 +2,7 @@
 #include "EditorLayers/EditorLayer.hpp"
 #include "EditorLayers/ImGuiLayer.hpp"
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
+#include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
 #include <System/PlatformSpecific.hpp>
 
@@ -20,6 +21,7 @@ Application* VSGEMain() {
 	VulkanRAPI* vk = new VulkanRAPI;
 	vk->Create(&app->GetWindow());
 
+	VulkanRenderer* renderer = new VulkanRenderer;
 
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);

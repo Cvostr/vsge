@@ -2,6 +2,7 @@
 
 project ("VSGE")
 
+add_subdirectory("Shaders")
 add_subdirectory("Engine")
 add_subdirectory("ImGui")
 add_subdirectory("Editor")

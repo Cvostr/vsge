@@ -13,3 +13,5 @@ file(GLOB_RECURSE SRC_FILES "*.cpp")
 file(GLOB_RECURSE HEADER_FILES "*.hpp")
 
 add_library (Engine ${SRC_FILES} ${HEADER_FILES})
+
+add_dependencies(Engine shaders)

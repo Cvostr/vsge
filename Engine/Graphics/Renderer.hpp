@@ -11,6 +11,8 @@ namespace VSGE {
 		
 		Scene* mScene;
 		Texture* mOutput;
+
+		tEntityList mEntitiesToRender;
 	public:
 
 		IRenderer() : 
@@ -27,5 +29,8 @@ namespace VSGE {
 		}
 
 		virtual void DrawScene() = 0;
+
+		void CreateRenderList();
+		void ProcessEntity(Entity* entity);
 	};
 }

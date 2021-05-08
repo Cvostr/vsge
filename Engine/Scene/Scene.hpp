@@ -35,7 +35,7 @@ namespace VSGE {
 		/// <param name="id">- guid to find</param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
-		
+
 		Scene() : mRootEntity(nullptr) {}
 	};
 }

@@ -90,16 +90,18 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	if (mIsRenderTarget)
 	{
 		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
 	if (mIsRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
 		imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
 	if (mIsRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
 	{
 		imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-
 	if (!mIsRenderTarget) {
 		usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}

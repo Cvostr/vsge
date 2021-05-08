@@ -51,7 +51,7 @@ void VulkanRectTestLayer::OnAttach() {
 	cmdpool->Create(vk->GetDevice()->GetGraphicsQueueFamilyIndex());
 
 	cmdbuf = new VulkanCommandBuffer;
-	cmdbuf->Create(*cmdpool);
+	cmdbuf->Create(cmdpool);
 
 	ShaderStorage::Get()->LoadShaderBundle("shaders/shaders.bundle", "shaders/shaders.map");
 

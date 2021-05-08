@@ -10,6 +10,8 @@
 
 #include "../Menus/File_Menu.hpp"
 
+#include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+
 using namespace VSGEditor;
 using namespace VSGE;
 
@@ -35,4 +37,6 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
+
+	VulkanRenderer::Get()->SetScene(this->mScene);
 }

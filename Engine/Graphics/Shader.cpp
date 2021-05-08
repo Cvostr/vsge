@@ -6,6 +6,7 @@
 using namespace VSGE;
 
 ShaderStorage* ShaderStorage::_this = nullptr;
+ShaderCache* ShaderCache::_this = nullptr;
 
 void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
 	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
@@ -60,4 +61,17 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 
 		this->shaders.push_back(item);
 	}
+}
+
+void ShaderCache::AddShader(Shader* shader, const std::string& shader_name) {
+	ShaderStringPair pair = ShaderStringPair(shader_name, shader);
+	mShaders.push_back(pair);
+}
+
+Shader* ShaderCache::GetShader(const std::string& name) {
+	for (ShaderStringPair shader : mShaders) {
+		if (shader.first == name)
+			return shader.second;
+	}
+	return nullptr;
 }

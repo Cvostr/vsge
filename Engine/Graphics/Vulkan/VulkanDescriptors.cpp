@@ -65,15 +65,19 @@ void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, V
     //Push description
     this->descriptors.push_back(samplerLayoutBinding);
     //register this binding in descriptor pool
-    pool_ptr->AddLayoutBinding(type);
+    mDescriptorPool->AddLayoutBinding(type);
 
     bindings_types.insert({binding, type});
 }
 
-void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer) {
+void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer, uint32 offset, uint32 range) {
+    VkDeviceSize _range = range;
+    if (range == 65535)
+        _range = buffer->GetSize();
+
     VkDescriptorBufferInfo bufferInfo{};
-    bufferInfo.offset = 0;
-    bufferInfo.range = buffer->GetSize();
+    bufferInfo.offset = offset;
+    bufferInfo.range = _range;
     bufferInfo.buffer = buffer->GetBuffer();
 
     VkWriteDescriptorSet descriptorWrite{};
@@ -138,7 +142,7 @@ bool VulkanDescriptorSet::Create() {
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = pool_ptr->GetDescriptorPool();
+    allocInfo.descriptorPool = mDescriptorPool->GetDescriptorPool();
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &Layout;
 

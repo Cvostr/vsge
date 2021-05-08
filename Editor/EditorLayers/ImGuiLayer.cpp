@@ -3,6 +3,8 @@
 #include <Engine/Application.hpp>
 #include <Engine/Window.hpp>
 
+#include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+
 using namespace VSGEditor;
 
 ImGuiLayer* ImGuiLayer::_this = nullptr;
@@ -57,7 +59,7 @@ void ImGuiLayer::OnAttach() {
     presentBegin.Create();
 
     cmdpool.Create(device->GetGraphicsQueueFamilyIndex());
-    cmdbuf.Create(cmdpool);
+    cmdbuf.Create(&cmdpool);
 
     ImGui_ImplSDL2_InitForVulkan(win->GetSdlWinPtr());
     ImGui_ImplVulkan_InitInfo init_info = {};
@@ -93,7 +95,7 @@ void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data) {
     cmdbuf.End();
 }
 
-void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
+void ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore) {
     VulkanRecordCmdBuf(draw_data);
 
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
@@ -123,11 +125,10 @@ void ImGuiLayer::VulkanComputeAndPresent(ImDrawData* draw_data) {
         VulkanRecordCmdBuf(draw_data);
     }
 
-    VulkanGraphicsSubmit(cmdbuf, imageAvailable, presentBegin);
-
-    VulkanPresent(presentBegin, _imageIndex);
+    VulkanGraphicsSubmit(cmdbuf, imageAvailable, *endSemaphore);
 
 }
+
 
 void ImGuiLayer::OnUpdate() {
     VSGE::Application* app = VSGE::Application::Get();
@@ -154,7 +155,15 @@ void ImGuiLayer::OnUpdate() {
 
     ImGui::Render();
     ImDrawData* draw_data = ImGui::GetDrawData();
-    VulkanComputeAndPresent(draw_data);
+
+    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+
+    VulkanRender(draw_data, renderer->GetBeginSemaphore());
+
+    renderer->DrawScene();
+
+    VulkanPresent(*renderer->GetEndSemaphore(), 0);
+
 }
 
 void ImGuiLayer::OnDetach() {

@@ -63,4 +63,26 @@ namespace VSGE {
 		Shader() : mStages(SHADER_STAGE_NULL)
 		{}
 	};
+
+	typedef std::pair<std::string, Shader*> ShaderStringPair;
+
+	class ShaderCache {
+	private:
+		static ShaderCache* _this;
+		std::vector<ShaderStringPair> mShaders;
+	public:
+
+		ShaderCache() {
+			_this = this;
+		}
+
+		static ShaderCache* Get() {
+			return _this;
+		}
+
+		void AddShader(Shader* shader, const std::string& shader_name);
+
+		Shader* GetShader(const std::string& name);
+
+	};
 }

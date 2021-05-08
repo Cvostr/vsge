@@ -10,5 +10,6 @@ namespace VSGE {
 		ResourceReference<MeshResource> mMeshResource;
 	public:
 		void SetMeshName(const std::string& mesh);
+		MeshResource* GetMeshResource() { return mMeshResource.mResourcePointer; }
 	};
 }

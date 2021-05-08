@@ -57,7 +57,7 @@ namespace VSGEditor {
 
 		void AddMenu(ImGuiMenu* menu);
 
-		void VulkanComputeAndPresent(ImDrawData* draw_data);
+		void VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore);
 		void VulkanRecordCmdBuf(ImDrawData* draw_data);
 
 		static ImGuiLayer* Get() {

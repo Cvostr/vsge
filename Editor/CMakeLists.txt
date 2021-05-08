@@ -49,4 +49,4 @@ target_link_libraries(Editor pthread)
 ENDIF()
 
 target_link_libraries(Editor Engine)	
-target_link_libraries(Editor ImGui)	
+target_link_libraries(Editor ImGui)

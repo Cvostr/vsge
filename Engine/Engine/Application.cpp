@@ -69,6 +69,7 @@ void Application::RemoveAllLayers() {
 int main(int argc, char* argv[]) {
 	//Create singleton
 	ShaderStorage storage;
+	ShaderCache shaderCache;
 	GlyphManager glyphs;
 	TimePerf time;
 	ResourceCache cache;

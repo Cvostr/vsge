@@ -40,15 +40,18 @@ namespace VSGE {
 		Vec3 mScale;
 		Vec3 mRotation;
 		Mat4 LocalTransform;
+		Mat4 WorldTransform;
 		bool mTransformDirty;
 	public:
 
-		Entity() : mParent(nullptr),
+		Entity() :	mParent(nullptr),
 					mScene(nullptr),
 					mActive(true),
 					mStatic(false),
 					mTransformDirty(false),
 					mScale(1.f),
+					LocalTransform(1.f),
+					WorldTransform(1.f),
 					mViewMask(MAX_INT64)
 		{}
 
@@ -71,6 +74,10 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="scene"> - pointer to scene</param>
 		void SetScene(Scene* scene) { mScene = scene; }
+		/// <summary>
+		/// Get pointer to scene in entity class
+		/// </summary>
+		/// <returns>pointer to scene</returns>
 		Scene* GetScene() { return mScene; }
 		/// <summary>
 		/// Stores pointer to parent entity in entity class
@@ -125,9 +132,8 @@ namespace VSGE {
 		/// <summary>
 		/// Return child entity by index.
 		/// </summary>
-		/// <param name="child_index">- index of child to return</param>
 		/// <returns></returns>
-		Entity* GetChild(uint32 child_index) { return mChildren[child_index]; }
+		Entity** GetChildren() { return mChildren.data(); }
 		/// <summary>
 		/// Does this entity contain child entity with pointer
 		/// </summary>
@@ -159,6 +165,13 @@ namespace VSGE {
 		void SetPosition(const Vec3& position);
 		void SetScale(const Vec3& scale);
 		void SetRotation(const Vec3& rotation);
+
+		const Mat4& GetLocalTransform() { return LocalTransform; }
+		void SetLocalTransform(const Mat4& transform) { LocalTransform = transform; }
+
+		const Mat4& GetWorldTransform() { return WorldTransform; }
+		void SetWorldTransform(const Mat4& transform) { WorldTransform = transform; }
+
 		/// <summary>
 		/// Destroy this object and all it's children
 		/// </summary>

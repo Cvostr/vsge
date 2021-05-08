@@ -47,14 +47,21 @@ namespace VSGE {
 		std::vector<VkDescriptorSetLayoutBinding> descriptors;
 		std::map<uint32, VkDescriptorType> bindings_types;
 
-		VulkanDescriptorPool* pool_ptr;
-
+		VulkanDescriptorPool* mDescriptorPool;
 	public:
+
+		VulkanDescriptorSet(VulkanDescriptorPool* pool) :
+			mDescriptorPool(pool),
+			mDescriptorSet(VK_NULL_HANDLE),
+			Layout(VK_NULL_HANDLE)
+		{
+			pool->IncDescriptorSet();
+		}
 
 		VulkanDescriptorSet() : 
 			mDescriptorSet(VK_NULL_HANDLE),
 			Layout(VK_NULL_HANDLE),
-			pool_ptr(nullptr) {}
+			mDescriptorPool(nullptr) {}
 
 		~VulkanDescriptorSet() {
 			Destroy();
@@ -65,18 +72,18 @@ namespace VSGE {
 
 		void AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS);
 
-		void WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer);
+		/// <summary>
+		/// Bind buffer to descriptor at specified binding
+		/// </summary>
+		/// <param name="binding">- binding of descriptor</param>
+		/// <param name="buffer">- buffer to bind to descriptor</param>
+		/// <param name="offset">- offset of buffer</param>
+		/// <param name="range">- size of buffer region to bind, default is whole buffer size</param>
+		void WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer, uint32 offset = 0, uint32 range = 65535);
 		void WriteDescriptorImage(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler);
 
 		bool Create();
 		void Destroy();
 
-		VulkanDescriptorSet(VulkanDescriptorPool* pool) :
-			pool_ptr(pool),
-			mDescriptorSet(VK_NULL_HANDLE),
-			Layout(VK_NULL_HANDLE)
-		{  
-			pool->IncDescriptorSet();
-		}
 	};
 }
