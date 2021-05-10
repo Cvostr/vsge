@@ -14,12 +14,12 @@ namespace VSGE {
 	class Mesh : public IGpuObject {
 	protected:
 		std::vector<VertexBufferData> mVertexBuffers;
-		uint32* mIndexArray;
+		uint32* _indexArray;
 
-		AABB mMeshBoundingBox;
+		AABB _meshBoundingBox;
 
-		uint32 mVerticesCount;
-		uint32 mIndexCount;
+		uint32 _verticesCount;
+		uint32 _indicesCount;
 	public:
 		/// <summary>
 		/// Set main vertex buffer and calculate AABB
@@ -51,18 +51,25 @@ namespace VSGE {
 		/// <summary>
 		/// Get count of mesh vertices
 		/// </summary>
-		uint32 GetVerticesCount() { return mVerticesCount; }
+		uint32 GetVerticesCount() { return _verticesCount; }
 		/// <summary>
 		/// Get count of mesh indices
 		/// </summary>
-		uint32 GetIndexCount() { return mIndexCount; }
+		uint32 GetIndexCount() { return _indicesCount; }
+		/// <summary>
+		/// Get count of mesh indices
+		/// </summary>
+		/// <returns></returns>
 		uint32 GetVertexBuffersCount() { return (uint32)mVertexBuffers.size(); }
-		const AABB& GetBoundingBox() { return mMeshBoundingBox; }
+		/// <summary>
+		/// get aabb of this mesh
+		/// </summary>
+		const AABB& GetBoundingBox() { return _meshBoundingBox; }
 
 		Mesh() : 
-			mIndexArray(nullptr),
-			mVerticesCount(0),
-			mIndexCount(0) 
+			_indexArray(nullptr),
+			_verticesCount(0),
+			_indicesCount(0)
 		{}
 	};
 

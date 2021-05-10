@@ -148,8 +148,9 @@ void ImGuiLayer::OnUpdate() {
 	ImGui::EndMainMenuBar();
 
 
-    for (auto window : mWindows) {
-        window->OnDrawWindow();
+    for (uint32 win_i = 0; win_i < mWindows.size(); win_i ++) {
+        EditorWindow* win = mWindows[win_i];
+        win->OnDrawWindow();
     }
 
 
@@ -191,6 +192,12 @@ void ImGuiLayer::OnSDL2Event(void* event_ptr) {
 void ImGuiLayer::AddWindow(EditorWindow* window) {
     mWindows.push_back(window);
 }
+
+void ImGuiLayer::RemoveWindow(EditorWindow* window) {
+    tEditorWindowList::iterator it = std::remove(mWindows.begin(), mWindows.end(), window);
+    mWindows.pop_back();
+}
+
 void ImGuiLayer::AddMenu(ImGuiMenu* menu) {
     mMenus.push_back(menu);
 }

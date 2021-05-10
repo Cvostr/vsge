@@ -97,7 +97,7 @@ void VulkanRectTestLayer::OnAttach() {
 	p_layout->Create();
 
 	pipeline = new VulkanPipeline;
-	pipeline->Create(conf, *shader, *rpass, vl, *p_layout);
+	pipeline->Create(conf, shader, rpass, vl, p_layout);
 
 	
 	RecordCmdbuf();

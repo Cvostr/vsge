@@ -77,32 +77,32 @@ void VulkanTexture::Destroy() {
 }
 
 void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, uint32 layers, uint32 mipLevels) {
-	mMaxWidth = width;
-	mMaxHeight = height;
-	mFormat = format;
-	mLayers = layers;
-	mMipLevels = mipLevels;
+	_maxWidth = width;
+	_maxHeight = height;
+	_format = format;
+	_layers = layers;
+	_mipLevels = mipLevels;
 
 	//Convert format from universal to vulkan
 	VkFormat TexFormat = GetFormatVK(format);
 	//Calculate image layout
 	VkImageLayout imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	if (mIsRenderTarget)
+	if (_isRenderTarget)
 	{
 		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
-	if (mIsRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
+	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
 		imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-	if (mIsRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
+	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
 	{
 		imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-	if (!mIsRenderTarget) {
+	if (!_isRenderTarget) {
 		usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}
 	
@@ -113,7 +113,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	imageInfo.extent.width = width;
 	imageInfo.extent.height = height;
 	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = mMipLevels;
+	imageInfo.mipLevels = _mipLevels;
 	imageInfo.arrayLayers = layers;
 	imageInfo.format = TexFormat;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -150,27 +150,27 @@ void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 he
 
 bool VulkanTexture::CreateImageView() {
 	VkImageViewType ImageViewType = VK_IMAGE_VIEW_TYPE_2D;
-	if (mLayers > 1)
+	if (_layers > 1)
 		ImageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 
 	//Calculate image aspect
 	VkImageAspectFlagBits aspect = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	if (mFormat == TextureFormat::FORMAT_DEPTH_32)
+	if (_format == TextureFormat::FORMAT_DEPTH_32)
 		aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
-	if (mFormat == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
+	if (_format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 		aspect = (VkImageAspectFlagBits)(VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
 
 
 	VkImageViewCreateInfo textureImageViewInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
 	textureImageViewInfo.image = mImage.Image;
 	textureImageViewInfo.viewType = ImageViewType;
-	textureImageViewInfo.format = GetFormatVK(mFormat);
+	textureImageViewInfo.format = GetFormatVK(_format);
 	textureImageViewInfo.subresourceRange.aspectMask = aspect;
 	textureImageViewInfo.subresourceRange.baseMipLevel = 0;
 	textureImageViewInfo.subresourceRange.levelCount = 1;
 	textureImageViewInfo.subresourceRange.baseArrayLayer = 0;
-	textureImageViewInfo.subresourceRange.layerCount = mLayers;
+	textureImageViewInfo.subresourceRange.layerCount = _layers;
 
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();
@@ -256,5 +256,5 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {
 	Destroy();
-	Create(width, height, mFormat, mLayers, mMipLevels);
+	Create(width, height, _format, _layers, _mipLevels);
 }

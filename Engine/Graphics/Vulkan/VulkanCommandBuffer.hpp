@@ -55,7 +55,7 @@ namespace VSGE {
 
 		void BindVertexBuffer(VulkanBuffer& buffer);
 
-		void BindVertexBuffers(VulkanBuffer* buffer, uint32 size = 1, uint32 start = 0);
+		void BindVertexBuffers(VulkanBuffer** buffer, uint32 size = 1, uint32 start = 0);
 
 		void BindIndexBuffer(VulkanBuffer& buffer);
 

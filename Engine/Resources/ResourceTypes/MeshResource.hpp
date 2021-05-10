@@ -22,6 +22,10 @@ namespace VSGE {
 
 		void Prepare();
 
+		ResourceType GetResourceType() {
+			return RESOURCE_TYPE_MESHGROUP;
+		}
+
 		//void PostLoad(byte* data, uint32 size);
 
 	};
@@ -51,6 +55,10 @@ namespace VSGE {
 
 		MeshGroupResource* GetGroup() {
 			return mGroup;
+		}
+
+		ResourceType GetResourceType() {
+			return RESOURCE_TYPE_MESH;
 		}
 
 		void Load();

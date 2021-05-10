@@ -79,7 +79,7 @@ namespace VSGE {
 		/// <param name="buffer">- buffer to bind to descriptor</param>
 		/// <param name="offset">- offset of buffer</param>
 		/// <param name="range">- size of buffer region to bind, default is whole buffer size</param>
-		void WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer, uint32 offset = 0, uint32 range = 65535);
+		void WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer, uint32 offset = 0, uint32 range = INT32_MAX);
 		void WriteDescriptorImage(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler);
 
 		bool Create();

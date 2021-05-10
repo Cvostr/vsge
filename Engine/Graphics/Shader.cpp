@@ -2,11 +2,15 @@
 #include <Core/FileLoader.hpp>
 #include <fstream>
 #include <Core/ByteSolver.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
 ShaderStorage* ShaderStorage::_this = nullptr;
 ShaderCache* ShaderCache::_this = nullptr;
+
+ShaderStorage storage;
+ShaderCache shaderCache;
 
 void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
 	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
@@ -39,6 +43,12 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 
 	map_stream.open(map_path);
 
+	if (map_stream.fail())
+	{
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error openging shader map file " << map_path << '\n';
+		return;
+	}
+
 	bundle_stream.open(bundle_path, std::ifstream::binary);
 
 	map_stream.seekg(0, std::ios::end); 
@@ -65,11 +75,11 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 
 void ShaderCache::AddShader(Shader* shader, const std::string& shader_name) {
 	ShaderStringPair pair = ShaderStringPair(shader_name, shader);
-	mShaders.push_back(pair);
+	_shaders.push_back(pair);
 }
 
 Shader* ShaderCache::GetShader(const std::string& name) {
-	for (ShaderStringPair shader : mShaders) {
+	for (ShaderStringPair shader : _shaders) {
 		if (shader.first == name)
 			return shader.second;
 	}

@@ -17,8 +17,8 @@ namespace VSGE {
 			Destroy();
 		}
 
-		VulkanBuffer* GetVertexBuffers() {
-			return *vertexBuffers.data();
+		VulkanBuffer** GetVertexBuffers() {
+			return vertexBuffers.data();
 		}
 
 		VulkanBuffer* GetIndexBuffer() {

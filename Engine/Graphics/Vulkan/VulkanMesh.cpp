@@ -5,14 +5,14 @@ using namespace VSGE;
 bool VulkanMesh::Create() {
 	for (auto vbd : mVertexBuffers) {
 		VulkanBuffer* vertexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
-		vertexBuffer->Create(vbd.mVertexSize * mVerticesCount);
-		vertexBuffer->WriteData(0, vbd.mVertexSize * mVerticesCount, vbd.mVertices);
+		vertexBuffer->Create(vbd.mVertexSize * _verticesCount);
+		vertexBuffer->WriteData(0, vbd.mVertexSize * _verticesCount, vbd.mVertices);
 		vertexBuffers.push_back(vertexBuffer);
 	}
-	if (mIndexCount > 0) {
+	if (_indicesCount > 0) {
 		indexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_INDEX);
-		indexBuffer->Create(sizeof(uint32) * mIndexCount);
-		indexBuffer->WriteData(0, sizeof(uint32) * mIndexCount, mIndexArray);
+		indexBuffer->Create(sizeof(uint32) * _indicesCount);
+		indexBuffer->WriteData(0, sizeof(uint32) * _indicesCount, _indexArray);
 	}
 
 	mCreated = true;

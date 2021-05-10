@@ -21,6 +21,7 @@ namespace VSGE {
 
 		Mat4 ProjectionMatrix;
 		Mat4 ViewMatrix;
+		Mat4 ProjectionViewMatrix;
 
 	public:
 

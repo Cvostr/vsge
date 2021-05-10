@@ -12,7 +12,7 @@ using namespace VSGE;
 ResourceCache* ResourceCache::_this = nullptr;
 
 Resource* ResourceCache::GetResource(const std::string& name) {
-    for (Resource* resource : resources) {
+    for (Resource* resource : _resources) {
         if (resource->GetName() == name)
             return resource;
     }
@@ -81,10 +81,10 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     res->SetName(res_name);
     
     if (type == RESOURCE_TYPE_MESHGROUP) {
-        loader->AddToQueue(res);
+        _loader->AddToQueue(res);
     }
 
-    resources.push_back(res);
+    _resources.push_back(res);
 }
 
 bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
@@ -115,5 +115,5 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
 }
 
 void ResourceCache::PushResource(Resource* res) {
-    resources.push_back(res);
+    _resources.push_back(res);
 }

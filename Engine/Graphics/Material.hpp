@@ -3,6 +3,7 @@
 #include <Resources/ResourceTypes/TextureResource.hpp>
 #include <Core/VarTypes/MultitypeValue.hpp>
 #include "Shader.hpp"
+#include <Core/VarTypes/Guid.hpp>
 #include "VertexLayout.hpp"
 #include <vector>
 
@@ -16,36 +17,71 @@ namespace VSGE {
 
 	class MaterialTexture {
 		std::string name;
-		ResourceReference<TextureResource> resource;
+		ResourceReference resource;
+
+		MaterialTexture() {
+			resource.SetResourceType(RESOURCE_TYPE_TEXTURE);
+		}
 	};
+
+	typedef std::vector<MaterialTexture> tMaterialTexturesList;
+	typedef std::vector<MaterialParameter> tMaterialParamsList;
 
 	class MaterialTemplate {
 	private:
-		std::vector<MaterialTexture> _materialTextures;
-		std::vector<MaterialParameter> _materialParams;
+		Guid _templateGuid;
+
+		tMaterialTexturesList _materialTextures;
+		tMaterialParamsList _materialParams;
 
 		Shader* _shader;
-		VertexLayout vl;
+		VertexLayout _vertexLayout;
+
+		void SetupDefaultVertexLayout();
 	public:
 		
+		tMaterialTexturesList& GetTextures() {
+			return _materialTextures;
+		}
+
+		tMaterialParamsList& GetParams() {
+			return _materialParams;
+		}
+
 		Shader* GetShader() {
 			return _shader;
 		}
 
-		VertexLayout& GetLayout() {
-			return vl;
+		const Guid& GetGuid() {
+			return _templateGuid;
 		}
 
-		MaterialTemplate() {
+		void SetShader(Shader* shader) {
+			_shader = shader;
+		}
 
+		void SetShader(const std::string& shader_name);
+
+		VertexLayout& GetLayout() {
+			return _vertexLayout;
+		}
+
+		MaterialTemplate() : 
+			_shader(nullptr)
+		{
+			SetupDefaultVertexLayout();
 		}
 	};
 
 	class Material {
 	private:
-		std::vector<MaterialTexture> _materialTextures;
-		std::vector<MaterialParameter> _materialParams;
+		tMaterialTexturesList _materialTextures;
+		tMaterialParamsList _materialParams;
+		MaterialTemplate* _template;
 	public:
 		void SetTemplate(MaterialTemplate* mat_template);
+		MaterialTemplate* GetTemplate() {
+			return _template;
+		}
 	};
 }

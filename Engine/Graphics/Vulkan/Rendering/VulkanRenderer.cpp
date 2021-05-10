@@ -2,6 +2,8 @@
 #include "../VulkanRAPI.hpp"
 #include "../VulkanShader.hpp"
 
+#include <Scene/EntityComponents/MeshComponent.hpp>
+
 using namespace VSGE;
 
 VulkanRenderer* VulkanRenderer::_this = nullptr;
@@ -56,10 +58,10 @@ void VulkanRenderer::SetupRenderer() {
 
 	//---------------------Buffers--------------------------------
 	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mCameraShaderBuffer->Create(32);
+	mCameraShaderBuffer->Create(UNI_ALIGN);
 
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_OBJECTS_RENDER);
+	mTransformsShaderBuffer->Create(UNI_ALIGN * MAX_OBJECTS_RENDER);
 
 	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
@@ -83,7 +85,7 @@ void VulkanRenderer::SetupRenderer() {
 		set->Create();
 
 		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
-		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, 0, 64);
+		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * UNI_ALIGN, sizeof(Mat4));
 		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64);
 	}
 
@@ -97,7 +99,14 @@ void VulkanRenderer::SetupRenderer() {
 	mLightsCmdbuf = new VulkanCommandBuffer;
 	mLightsCmdbuf->Create(mCmdPool);
 
-	
+	//---Material test ----
+	pbr_template = new MaterialTemplate;
+	pbr_template->SetShader("PBR");
+
+	pbr_material = new Material;
+	pbr_material->SetTemplate(pbr_template);
+
+	test = CreatePipelineFromMaterialTemplate(pbr_template);
 }
 
 void VulkanRenderer::DestroyRenderer() {
@@ -114,8 +123,20 @@ void VulkanRenderer::StoreWorldObjects() {
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
+	mGBufferCmdbuf->BindPipeline(*test);
+	mGBufferCmdbuf->SetViewport(0, 0, mOutputWidth, mOutputHeight);
+
 	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i++) {
-		
+		Entity* entity = mEntitiesToRender[e_i];
+		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		if (mresource->GetState() == RESOURCE_STATE_LOADED) {
+			VulkanMesh* mesh = (VulkanMesh*)mresource->GetMesh();
+			
+			VulkanPipelineLayout* ppl = test->GetPipelineLayout();
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[e_i]);
+			mGBufferCmdbuf->BindMesh(*mesh);
+			mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
+		}
 	}
 
 	mGBufferCmdbuf->EndRenderPass();
@@ -127,4 +148,21 @@ void VulkanRenderer::DrawScene() {
 	StoreWorldObjects();
 
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mBeginSemaphore, *mEndSemaphore);
+}
+
+void VulkanRenderer::BindMaterial(Material* mat) {
+
+}
+
+VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
+	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
+	p_layout->PushDescriptorSet(mVertexDescriptorSets[0]);
+	p_layout->Create();
+
+	VulkanPipelineConf conf = {};
+
+	VulkanPipeline* pipeline = new VulkanPipeline;
+	pipeline->Create(conf, (VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
+
+	return pipeline;
 }

@@ -6,6 +6,10 @@
 
 namespace VSGE {
 
+    struct DeviceProps {
+        uint32 _uniformBufferMinAlingment;
+    };
+
     class VulkanDevice : public IGpuObject {
     private:
         VkPhysicalDevice mPhysicalDevice;

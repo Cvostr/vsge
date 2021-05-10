@@ -8,8 +8,8 @@ namespace VSGE {
 	private:
 		static ResourceCache* _this;
 		
-		AsyncLoader* loader;
-		std::vector<Resource*> resources;
+		AsyncLoader* _loader;
+		std::vector<Resource*> _resources;
 
 		void CreateResource(DataDescription& descr, ResourceType type);
 
@@ -20,22 +20,44 @@ namespace VSGE {
 		}
 
 		AsyncLoader* GetAsyncLoader() {
-			return loader;
+			return _loader;
 		}
 
 		ResourceCache() {
 			_this = this;
-			loader = new AsyncLoader;
-			loader->Run();
+			_loader = new AsyncLoader;
+			_loader->Run();
 		}
 
 		~ResourceCache() {
-			delete loader;
+			delete _loader;
+		}
+
+		uint32 GetResourcesCount() {
+			return static_cast<uint32>(_resources.size());
+		}
+
+		Resource** GetResources() {
+			return _resources.data();
 		}
 
 		void PushResource(Resource* res);
+		/// <summary>
+		/// Get resource with specified name
+		/// </summary>
+		/// <param name="name">- name of resource to find</param>
+		/// <returns>pointer to resource</returns>
 		Resource* GetResource(const std::string& name);
+		/// <summary>
+		/// Add all resource in specified directory and its subdirectories
+		/// </summary>
+		/// <param name="path">- path to directory on disk</param>
 		void AddResourceDir(const std::string& path);
+		/// <summary>
+		/// Add all resources from bundle file
+		/// </summary>
+		/// <param name="bundle_path">- path to resource bundle file on disk</param>
+		/// <returns></returns>
 		bool AddResourceBundle(const std::string& bundle_path);
 	};
 }

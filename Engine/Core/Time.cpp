@@ -5,6 +5,8 @@ using namespace VSGE;
 
 TimePerf* TimePerf::_this = nullptr;
 
+TimePerf time;
+
 TimePerf::TimePerf() :
 	mNow(SDL_GetTicks()),
 	mLast(0),

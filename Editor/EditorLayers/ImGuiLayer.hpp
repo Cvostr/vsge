@@ -45,6 +45,8 @@ namespace VSGEditor {
 		void OnSDL2Event(void* event_ptr);
 
 		void AddWindow(EditorWindow* window);
+		void RemoveWindow(EditorWindow* window);
+
 		template<typename T>
 		T* GetWindow() {
 			for (auto window : mWindows) {

@@ -20,3 +20,8 @@ void Resource::FreeLoadedData() {
 		mLoadedData = nullptr;
 	}
 }
+
+void ResourceReference::UpdateResourcePointer(const std::string& resourceName) {
+	_resourceName = resourceName;
+	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName);
+}

@@ -38,6 +38,7 @@ namespace VSGE {
 	class VulkanPipeline : public IGpuObject {
 	private:
 		VkPipeline mPipeline;
+		VulkanPipelineLayout* _pipelineLayout;
 
 		VulkanPipelineConf conf;
 		VertexLayout vert_layout;
@@ -49,7 +50,11 @@ namespace VSGE {
 
 		VkPipeline GetPipeline() { return mPipeline; }
 
-		bool Create(VulkanPipelineConf& Conf, VulkanShader& shader, VulkanRenderPass& rpass, VertexLayout& vl, VulkanPipelineLayout& layout);
+		VulkanPipelineLayout* GetPipelineLayout() {
+			return _pipelineLayout;
+		}
+
+		bool Create(VulkanPipelineConf& Conf, VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout);
 
 		void Destroy();
 

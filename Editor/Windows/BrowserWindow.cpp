@@ -106,9 +106,8 @@ void FileBrowserWindow::DeleteFile(const FileEntry& Entry) {
 }
 
 void FileBrowserWindow::OnDrawWindow() {
-    ImGui::Begin("File Browser", nullptr, ImGuiWindowFlags_NoCollapse);
-    //update current window pos and size
-    UpdateWindowData();
+    Draw("File Browser");
+
     ImGuiWindow* w = ImGui::GetCurrentWindow(); //Newly created window
 
     if (ImGui::BeginPopupContextWindow(0, 1, false))

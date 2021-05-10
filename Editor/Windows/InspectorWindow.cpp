@@ -8,7 +8,7 @@
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
 
-#include "../InspectorInterfaces/EntityComponents/Lighsource.hpp"
+#include "../InspectorInterfaces/EntityComponents/EntityComponents.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -46,6 +46,9 @@ void VSGEditor::InspectorWindow::DrawComponent(std::string Label) {
 
 		if (typeid(T) == typeid(LightsourceComponent)) {
 			DrawLightsourceComponent((LightsourceComponent*)component);
+		}
+		if (typeid(T) == typeid(MeshComponent)) {
+			DrawMeshComponent((MeshComponent*)component);
 		}
 	}
 }

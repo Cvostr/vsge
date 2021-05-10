@@ -32,14 +32,15 @@ VkFormat GetVertexLayoutFormatVK(VertexLayoutFormat format) {
 	return VK_FORMAT_R32G32B32_SFLOAT;
 }
 
-bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, VulkanRenderPass& rpass, VertexLayout& vl, VulkanPipelineLayout& layout) {
+bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout) {
+	_pipelineLayout = layout;
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	//Array for shader stage create infos
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStagesInfo;
 
-	uint32 stages = shader.GetModulesCount();
+	uint32 stages = shader->GetModulesCount();
 	for (uint32 stage = 0; stage < stages; stage++) {
-		VulkanShaderPair stage_pair = shader.GetModules()[stage];
+		VulkanShaderPair stage_pair = shader->GetModules()[stage];
 		VkShaderStageFlagBits stageName = GetShaderStageVK(stage_pair.second);
 
 		VkPipelineShaderStageCreateInfo stageCreateInfo = {};
@@ -146,7 +147,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 
 	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
 
-	for (uint32 attachment_i = 0; attachment_i < rpass.GetColorAttachmentsCount(); attachment_i++) {
+	for (uint32 attachment_i = 0; attachment_i < rpass->GetColorAttachmentsCount(); attachment_i++) {
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 		colorBlendAttachment.blendEnable = VK_FALSE;
@@ -163,7 +164,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 	VkPipelineColorBlendStateCreateInfo colorBlending = {};
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlending.logicOpEnable = VK_FALSE;
-	colorBlending.attachmentCount = rpass.GetColorAttachmentsCount();
+	colorBlending.attachmentCount = rpass->GetColorAttachmentsCount();
 	colorBlending.pAttachments = colorBlendAttachments.data();
 
 	VkDynamicState dynamicStates[] = {
@@ -194,9 +195,9 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader& shader, Vulk
 
 	pipeline_create_info.pColorBlendState = &colorBlending;
 	pipeline_create_info.pDynamicState = &dynamicState;
-	pipeline_create_info.layout = layout.GetPipelineLayout();
+	pipeline_create_info.layout = layout->GetPipelineLayout();
 	//Bind render pass
-	pipeline_create_info.renderPass = rpass.GetRenderPass();
+	pipeline_create_info.renderPass = rpass->GetRenderPass();
 	pipeline_create_info.subpass = 0;
 	//For future recreation
 	pipeline_create_info.basePipelineHandle = VK_NULL_HANDLE; // Optional

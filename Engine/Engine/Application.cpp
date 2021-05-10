@@ -1,6 +1,5 @@
 #include "Application.hpp"
 #include <algorithm>
-#include "Graphics/Shader.hpp"
 #include "Graphics/Fonts.hpp"
 #include <Core/Time.hpp>
 #include <Resources/ResourceCache.hpp>
@@ -68,10 +67,7 @@ void Application::RemoveAllLayers() {
 
 int main(int argc, char* argv[]) {
 	//Create singleton
-	ShaderStorage storage;
-	ShaderCache shaderCache;
 	GlyphManager glyphs;
-	TimePerf time;
 	ResourceCache cache;
 
 	Application* app = VSGEMain();

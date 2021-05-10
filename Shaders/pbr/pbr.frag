@@ -7,10 +7,10 @@ layout(location = 1) in vec3 InNormal;
 layout(location = 2) in vec2 UVCoord;
 layout(location = 3) in mat3 TBN;
 
-layout(set = 1, binding = 0) uniform sampler2D diffuse;
-layout(set = 1, binding = 1) uniform sampler2D normal;
+//layout(set = 1, binding = 0) uniform sampler2D diffuse;
+//layout(set = 1, binding = 1) uniform sampler2D normal;
 
 void main() {
-    tColor = texture(diffuse, UVCoord);
-    vec3 normal = texture(normal, UVCoord).rgb;
+  //  tColor = texture(diffuse, UVCoord);
+    //vec3 normal = texture(normal, UVCoord).rgb;
 }   

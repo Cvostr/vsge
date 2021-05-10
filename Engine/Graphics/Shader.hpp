@@ -69,7 +69,7 @@ namespace VSGE {
 	class ShaderCache {
 	private:
 		static ShaderCache* _this;
-		std::vector<ShaderStringPair> mShaders;
+		std::vector<ShaderStringPair> _shaders;
 	public:
 
 		ShaderCache() {

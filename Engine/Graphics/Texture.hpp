@@ -36,33 +36,33 @@ namespace VSGE {
 
 	class Texture : public IGpuObject{
     protected:
-        uint32 mMaxWidth; //Width of best mip map
-        uint32 mMaxHeight; //Height of best mip map
-        uint32 mMipLevels; //Count of mip levels
-        uint32 mLayers; //Count of layers in texture array
-        bool mIsRenderTarget;
+        uint32 _maxWidth; //Width of best mip map
+        uint32 _maxHeight; //Height of best mip map
+        uint32 _mipLevels; //Count of mip levels
+        uint32 _layers; //Count of layers in texture array
+        bool _isRenderTarget;
 
-        TextureFormat mFormat;
+        TextureFormat _format;
     public:
 
         Texture() : 
-            mMaxWidth(0),
-            mMaxHeight(0),
-            mMipLevels(0),
-            mLayers(1),
-            mIsRenderTarget(false),
-            mFormat(FORMAT_RGBA)
+            _maxWidth(0),
+            _maxHeight(0),
+            _mipLevels(0),
+            _layers(1),
+            _isRenderTarget(false),
+            _format(FORMAT_RGBA)
         {}
 
-        TextureFormat GetFormat() { return mFormat; }
-        uint32 GetMipsCount() { return mMipLevels; }
-        uint32 GetLayersCount() { return mLayers; }
-        uint32 GetWidth() { return mMaxWidth; }
-        uint32 GetHeight() { return mMaxHeight; }
+        TextureFormat GetFormat() { return _format; }
+        uint32 GetMipsCount() { return _mipLevels; }
+        uint32 GetLayersCount() { return _layers; }
+        uint32 GetWidth() { return _maxWidth; }
+        uint32 GetHeight() { return _maxHeight; }
         void SetRenderTargetFlag(bool renderTarget) {
-            mIsRenderTarget = renderTarget;
+            _isRenderTarget = renderTarget;
         }
-        bool IsRenderTarget() { return mIsRenderTarget; }
+        bool IsRenderTarget() { return _isRenderTarget; }
 
         /// <summary>
         /// Destroy texture and release memory

@@ -90,7 +90,7 @@ namespace VSGE {
 		virtual void Prepare() {}
 		virtual void PostLoad() {}
 		 
-		//virtual ResourceType GetResourceType() = 0;
+		virtual ResourceType GetResourceType() = 0;
 
 		Resource() :
 			mResourceState(RESOURCE_STATE_UNLOADED),
@@ -99,23 +99,43 @@ namespace VSGE {
 		{}
 	};
 
-	template<class T>
+	
 	class ResourceReference {
+		ResourceType _resourceType;
+		Resource* _resourcePointer;
+		std::string _resourceName;
 	public:
-		T* mResourcePointer;
-		std::string mResourceName;
-
-		void UpdateResourcePointer(const std::string& resourceName) {
-			mResourceName = resourceName;
-			mResourcePointer = (T*)ResourceCache::Get()->GetResource(mResourceName);
+		
+		ResourceType GetResourceType() {
+			return _resourceType;
 		}
 
+		void SetResourceType(ResourceType type) {
+			_resourceType = type;
+		}
+
+		template<class T>
+		T* GetResource() {
+			return static_cast<T*>(_resourcePointer);
+		}
+
+		Resource* GetResource() {
+			return _resourcePointer;
+		}
+
+		const std::string& GetResourceName() {
+			return _resourceName;
+		}
+
+		void UpdateResourcePointer(const std::string& resourceName);
+
 		bool IsResourceSpecified() {
-			return !mResourceName.empty();
+			return !_resourceName.empty();
 		}
 
 		ResourceReference() {
-			mResourcePointer = nullptr;
+			_resourcePointer = nullptr;
+			_resourceType = RESOURCE_TYPE_NONE;
 		}
 	};
 }

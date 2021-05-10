@@ -128,10 +128,10 @@ void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
     vkCmdBindVertexBuffers(mCommandBuffer, 0, 1, &_buffer, offsets);
 }
 
-void VulkanCommandBuffer::BindVertexBuffers(VulkanBuffer* buffer, uint32 size, uint32 start) {
-    VkDeviceSize offsets[] = { 0 };
+void VulkanCommandBuffer::BindVertexBuffers(VulkanBuffer** buffer, uint32 size, uint32 start) {
+    VkDeviceSize offsets[] = { 0, 0, 0, 0  };
     for (uint32 buf_i = 0; buf_i < size; buf_i++) {
-        temp_bufs[buf_i] = buffer[buf_i].GetBuffer();
+        temp_bufs[buf_i] = buffer[buf_i]->GetBuffer();
     }
     vkCmdBindVertexBuffers(mCommandBuffer, start, size, temp_bufs, offsets);
 }

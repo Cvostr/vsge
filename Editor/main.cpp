@@ -4,7 +4,7 @@
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
-#include <System/PlatformSpecific.hpp>
+#include "Windows/ResourcePickWindow.hpp"
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -26,6 +26,9 @@ Application* VSGEMain() {
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);
 
+	ResourcePickerWindow* rpw = new ResourcePickerWindow;
+	rpw->Hide();
+	app->GetLayer<ImGuiLayer>()->AddWindow(rpw);
 	app->GetLayer<EditorLayer>()->OpenProjectDirectory("D:\\DEV\\VSGE\\EngineTest");
 
 	return app;
