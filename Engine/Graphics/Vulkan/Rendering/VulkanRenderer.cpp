@@ -66,6 +66,9 @@ void VulkanRenderer::SetupRenderer() {
 	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
 
+	mMaterialsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	mMaterialsShaderBuffer->Create(MATERIAL_SIZE * MAX_OBJECTS_RENDER);
+
 	//----------------------Descriptors--------------------------
 	mObjectsPool = new VulkanDescriptorPool;
 
@@ -74,6 +77,7 @@ void VulkanRenderer::SetupRenderer() {
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_VERTEX_BIT); //Animation
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 3, VK_SHADER_STAGE_ALL_GRAPHICS); //Animation
 
 		mVertexDescriptorSets.push_back(set);
 	}
@@ -87,6 +91,7 @@ void VulkanRenderer::SetupRenderer() {
 		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
 		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * UNI_ALIGN, sizeof(Mat4));
 		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64);
+		set->WriteDescriptorBuffer(3, mMaterialsShaderBuffer, desc_i * MATERIAL_SIZE, MATERIAL_SIZE);
 	}
 
 	//---------------------Command buffers------------------------
@@ -107,6 +112,10 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_material->SetTemplate(pbr_template);
 
 	test = CreatePipelineFromMaterialTemplate(pbr_template);
+
+	//---------------------Samplers------------------
+	mMaterialMapsSampler = new VulkanSampler;
+	mMaterialMapsSampler->Create();
 }
 
 void VulkanRenderer::DestroyRenderer() {
@@ -120,6 +129,10 @@ void VulkanRenderer::StoreWorldObjects() {
 		Entity* entity = mEntitiesToRender[e_i];
 		transforms[e_i] = entity->GetWorldTransform();
 	}
+
+	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4), transforms);
+	delete[] transforms;
+
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
@@ -144,7 +157,10 @@ void VulkanRenderer::StoreWorldObjects() {
 
 }
 
-void VulkanRenderer::DrawScene() {
+void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
+	cam->UpdateMatrices();
+	mCameraShaderBuffer->WriteData(0, sizeof(Mat4), (void*)&cam->GetProjectionViewMatrix());
+
 	StoreWorldObjects();
 
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mBeginSemaphore, *mEndSemaphore);
@@ -160,6 +176,7 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 	p_layout->Create();
 
 	VulkanPipelineConf conf = {};
+	conf.DepthTest = true;
 
 	VulkanPipeline* pipeline = new VulkanPipeline;
 	pipeline->Create(conf, (VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);

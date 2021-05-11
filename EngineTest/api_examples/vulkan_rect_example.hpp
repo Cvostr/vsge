@@ -12,6 +12,7 @@
 #include <Graphics/Vulkan/VulkanPipeline.hpp>
 #include <Graphics/Vulkan/VulkanBuffer.hpp>
 #include <Graphics/Vulkan/VulkanMesh.hpp>
+#include <Engine/WindowEvent.hpp>
 
 namespace VSGETest {
 
@@ -47,6 +48,9 @@ namespace VSGETest {
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
-		void OnWindowEvent(VSGE::IWindowEvent& event);
+		void OnWindowEvent(const VSGE::IEvent& event);
+
+		void OnWinClose(const VSGE::EventWindowClose& event);
+		void OnScroll(const VSGE::EventMouseScrolled& event);
 	};
 }

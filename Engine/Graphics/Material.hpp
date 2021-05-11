@@ -16,10 +16,13 @@ namespace VSGE {
 	};
 
 	class MaterialTexture {
+	public:
 		std::string name;
 		ResourceReference resource;
+		uint32 _binding;
 
 		MaterialTexture() {
+			_binding = 0;
 			resource.SetResourceType(RESOURCE_TYPE_TEXTURE);
 		}
 	};

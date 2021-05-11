@@ -3,18 +3,17 @@
 using namespace VSGEditor;
 
 void SceneViewWindow::OnDrawWindow() {
-    ImGui::Begin("World view", nullptr, ImGuiWindowFlags_NoCollapse);
-    //update current window pos and size
-    UpdateWindowData();
+    if (Draw("World view")) {
 
-    ImVec2 c = ImGui::GetCursorPos();
+        ImVec2 c = ImGui::GetCursorPos();
 
-    const ImRect bb(mPos + c, mPos + c + mSize);
+        const ImRect bb(mPos + c, mPos + c + mSize);
 
-    /*ImGui::GetWindowDrawList()->AddImage(
-        (void*)mRenderer->GetShaderResourceView(), bb.Min,
-        bb.Max, ImVec2(1, 0), ImVec2(0, 1));
-        */
+        /*ImGui::GetWindowDrawList()->AddImage(
+            (void*)mRenderer->GetShaderResourceView(), bb.Min,
+            bb.Max, ImVec2(1, 0), ImVec2(0, 1));
+            */
 
-    ImGui::End();
+        ImGui::End();
+    }
 }

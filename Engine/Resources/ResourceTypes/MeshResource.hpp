@@ -26,8 +26,6 @@ namespace VSGE {
 			return RESOURCE_TYPE_MESHGROUP;
 		}
 
-		//void PostLoad(byte* data, uint32 size);
-
 	};
 
 	class MeshResource : public Resource {
@@ -45,21 +43,13 @@ namespace VSGE {
 			delete mesh;
 		}
 
-		Mesh* GetMesh() {
-			return mesh;
-		}
+		Mesh* GetMesh();
 
-		void SetGroup(MeshGroupResource* group) {
-			mGroup = group;
-		}
+		void SetGroup(MeshGroupResource* group);
 
-		MeshGroupResource* GetGroup() {
-			return mGroup;
-		}
+		MeshGroupResource* GetGroup();
 
-		ResourceType GetResourceType() {
-			return RESOURCE_TYPE_MESH;
-		}
+		ResourceType GetResourceType();
 
 		void Load();
 	};

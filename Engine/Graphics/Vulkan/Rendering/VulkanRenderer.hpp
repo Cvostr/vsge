@@ -13,6 +13,7 @@
 #define MAX_OBJECTS_RENDER 10000
 #define MAX_ANIMATION_MATRICES 10000
 #define UNI_ALIGN 256
+#define MATERIAL_SIZE 512
 
 namespace VSGE {
 
@@ -60,6 +61,10 @@ namespace VSGE {
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
+		VulkanBuffer* mMaterialsShaderBuffer;
+
+		//--------------------Samplers-------------------
+		VulkanSampler* mMaterialMapsSampler;
 
 		std::vector<VulkanDrawCall> drawCalls;
 
@@ -99,6 +104,6 @@ namespace VSGE {
 
 		void SetupRenderer();
 		void DestroyRenderer();
-		void DrawScene();
+		void DrawScene(VSGE::Camera* cam);
 	};
 }

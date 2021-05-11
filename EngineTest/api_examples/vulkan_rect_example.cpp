@@ -156,17 +156,18 @@ void VulkanRectTestLayer::OnUpdate() {
 	VulkanPresent(presentBegin, _imageIndex);
 }
 
-void VulkanRectTestLayer::OnWindowEvent(IWindowEvent& event) {
-	if (event.type == EventType::EventWindowClose) {
-		Application::Get()->Stop();
-		//Window::Get()->SetWindowSize(1920, 1080);
-	}
-	if (event.type == EventType::EventMouseScrolled) {
-		scale_factor += ((EventMouseScrolled*)&event)->yOffset / 100.f;
-		uniformBuffer->WriteData(0, 4, &scale_factor);
-	}
-	if (event.type == EventType::EventMouseButtonDown) {
-	}
+void VulkanRectTestLayer::OnWindowEvent(const IEvent& event) {
+	DispatchEvent<EventWindowClose>(event, EVENT_FUNC(VulkanRectTestLayer::OnWinClose));
+	DispatchEvent<EventMouseScrolled>(event, EVENT_FUNC(VulkanRectTestLayer::OnScroll));
+}
+
+void VulkanRectTestLayer::OnWinClose(const VSGE::EventWindowClose& event) {
+	Application::Get()->Stop();
+}
+
+void VulkanRectTestLayer::OnScroll(const VSGE::EventMouseScrolled& event) {
+	scale_factor += event.GetOffsetY() / 100.f;
+	uniformBuffer->WriteData(0, 4, &scale_factor);
 }
 
 void VulkanRectTestLayer::OnDetach() {

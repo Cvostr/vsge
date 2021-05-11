@@ -78,7 +78,7 @@ namespace VSGE {
 		void OnUpdate();
 
 		void OnSDL2Event(void* event);
-		void OnEvent(IWindowEvent& event);
+		void OnEvent(const IEvent& event);
 
 		template<typename T>
 		T* GetLayer() {

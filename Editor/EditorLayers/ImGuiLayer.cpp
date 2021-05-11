@@ -1,4 +1,5 @@
 #include "ImGuiLayer.hpp"
+#include "EditorLayer.hpp"
 #include <Graphics/Vulkan/VulkanRAPI.hpp>
 #include <Engine/Application.hpp>
 #include <Engine/Window.hpp>
@@ -131,6 +132,7 @@ void ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endS
 
 
 void ImGuiLayer::OnUpdate() {
+    EditorLayer* editor_layer = EditorLayer::Get();
     VSGE::Application* app = VSGE::Application::Get();
     VSGE::Window* win = &app->GetWindow();
 
@@ -161,7 +163,7 @@ void ImGuiLayer::OnUpdate() {
 
     VulkanRender(draw_data, renderer->GetBeginSemaphore());
 
-    renderer->DrawScene();
+    renderer->DrawScene(editor_layer->GetCamera());
 
     VulkanPresent(*renderer->GetEndSemaphore(), 0);
 

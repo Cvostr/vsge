@@ -45,3 +45,19 @@ void MeshResource::Load() {
 		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(mGroup);
 	}
 }
+
+Mesh* MeshResource::GetMesh() {
+	return mesh;
+}
+
+void MeshResource::SetGroup(MeshGroupResource* group) {
+	mGroup = group;
+}
+
+MeshGroupResource* MeshResource::GetGroup() {
+	return mGroup;
+}
+
+ResourceType MeshResource::GetResourceType() {
+	return RESOURCE_TYPE_MESH;
+}

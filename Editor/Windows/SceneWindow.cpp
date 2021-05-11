@@ -11,45 +11,45 @@ using namespace VSGE;
 
 void SceneWindow::OnDrawWindow() {
     Scene* scene = EditorLayer::Get()->GetScene();
+    
+    if (Draw("Scene Hierarchy")) {
 
-    ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoCollapse);
-    UpdateWindowData();
-    //Draw hierarchy from root object
-    DrawObjectTreeHierarchy(scene->GetRootEntity());
+        //Draw hierarchy from root object
+        DrawObjectTreeHierarchy(scene->GetRootEntity());
 
+        if (ImGui::BeginPopupContextWindow(0, 1, false))
+        {
 
-    if (ImGui::BeginPopupContextWindow(0, 1, false))
-    {
+            if (ImGui::BeginMenu("Create")) {
+                if (ImGui::MenuItem("Empty Entity")) {
+                    Entity* newEntity = scene->AddNewEntity("Entity");
+                }
+                if (ImGui::MenuItem("Cube")) {
+                    Entity* newEntity = scene->AddNewEntity("Cube");
+                    newEntity->AddComponent<MeshComponent>();
+                    newEntity->AddComponent<MaterialComponent>();
+                }
+                if (ImGui::MenuItem("Point Light")) {
+                    Entity* newEntity = scene->AddNewEntity("Point Light");
+                    LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
+                    light->GetLightType() = LIGHT_TYPE_POINT;
+                }
+                if (ImGui::MenuItem("Spot light")) {
+                    Entity* newEntity = scene->AddNewEntity("Spot Light");
+                    LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
+                    light->GetLightType() = LIGHT_TYPE_SPOT;
+                }
+                ImGui::EndMenu();
+            }
 
-        if (ImGui::BeginMenu("Create")) {
-            if (ImGui::MenuItem("Empty Entity")) {
-                Entity* newEntity = scene->AddNewEntity("Entity");
+            if (ImGui::MenuItem("Clear")) {
+                scene->NewScene();
             }
-            if (ImGui::MenuItem("Cube")) {
-                Entity* newEntity = scene->AddNewEntity("Cube");
-                newEntity->AddComponent<MeshComponent>();
-                newEntity->AddComponent<MaterialComponent>();
-            }
-            if (ImGui::MenuItem("Point Light")) {
-                Entity* newEntity = scene->AddNewEntity("Point Light");
-                LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
-                light->GetLightType() = LIGHT_TYPE_POINT;
-            }
-            if (ImGui::MenuItem("Spot light")) {
-                Entity* newEntity = scene->AddNewEntity("Spot Light");
-                LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
-                light->GetLightType() = LIGHT_TYPE_SPOT;
-            }
-            ImGui::EndMenu();
+
+            ImGui::EndPopup();
         }
-
-        if (ImGui::MenuItem("Clear")) {
-            scene->NewScene();
-        }
-
-        ImGui::EndPopup();
-    }    
-    ImGui::End();
+        ImGui::End();
+    }
 }
 
 void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {

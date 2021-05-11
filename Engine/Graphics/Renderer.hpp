@@ -28,7 +28,7 @@ namespace VSGE {
 			return mOutput;
 		}
 
-		virtual void DrawScene() = 0;
+		virtual void DrawScene(VSGE::Camera* cam) = 0;
 
 		void CreateRenderList();
 		void ProcessEntity(Entity* entity);

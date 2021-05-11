@@ -54,13 +54,13 @@ void VSGEditor::InspectorWindow::DrawComponent(std::string Label) {
 }
 
 void VSGEditor::InspectorWindow::OnDrawWindow() {
-    ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoCollapse);
-    UpdateWindowData();
+	if (Draw("Inspector")) {
 
-    if (mShowingEntity)
-        DrawEntityContents();
+		if (mShowingEntity)
+			DrawEntityContents();
 
-    ImGui::End();
+		ImGui::End();
+	}
 }
 
 void VSGEditor::InspectorWindow::DrawEntityContents() {

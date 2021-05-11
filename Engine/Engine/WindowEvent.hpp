@@ -1,130 +1,143 @@
 #pragma once
 
+#include "Event.hpp"
+
 namespace VSGE {
 
-	enum class EventType {
-		EventNone = 0,
-		EventMouseMotion,
-		EventMouseButtonDown,
-		EventMouseButtonUp,
-		EventMouseScrolled,
-
-		EventKeyButtonDown,
-		EventKeyButtonUp,
-		
-		EventWindowMinimized,
-		EventWindowRestored,
-		EventWindowFocus,
-		EventWindowFocusLost,
-		EventWindowClose,
-		EventWindowResized
+	enum MouseButton {
+		MOUSE_BUTTON_LEFT = 1,
+		MOUSE_BUTTON_MIDDLE,
+		MOUSE_BUTTON_RIGHT
 	};
 
-	class IWindowEvent {
-	public:
-		EventType type;
+	class EventMouseMotion : public IEvent {
+	private:
+		int _mouseX;
+		int _mouseY;
 
-		IWindowEvent() {
-			type = EventType::EventNone;
-		}
-	};
-
-	class EventMouseMotion : public IWindowEvent {
+		int _mouseRelX;
+		int _mouseRelY;
 	public:
 
-		int mMouseX;
-		int mMouseY;
+		EVENT_CLASS_TYPE(EventType::EventMouseMotion)
 
-		int mMouseRelX;
-		int mMouseRelY;
+		int GetMouseX() { return _mouseX; }
+		int GetMouseY() { return _mouseY; }
+
+		int GetMouseRelativeX() { return _mouseRelX; }
+		int GetMouseRelativeY() { return _mouseRelY; }
 
 		EventMouseMotion(int mX, int mY, int mRx, int mRy) : 
-			mMouseX(mX), mMouseY(mY), mMouseRelX(mRx), mMouseRelY(mRy) {
-			type = EventType::EventMouseMotion;
+			_mouseX(mX), _mouseY(mY), _mouseRelX(mRx), _mouseRelY(mRy) {
 		}
 	};
 
-	class EventMouseButtonDown : public IWindowEvent {
+	class EventMouseButtonDown : public IEvent {
+		MouseButton _mouseButton;
 	public:
 
-		int MouseButton;
+		EVENT_CLASS_TYPE(EventType::EventMouseButtonDown)
+
+		MouseButton GetMouseButton() { return _mouseButton; }
 
 		EventMouseButtonDown(int _MouseButton) :
-			MouseButton(_MouseButton) {
-			type = EventType::EventMouseButtonDown;
+			_mouseButton((MouseButton)_MouseButton) {
 		}
 	};
-	class EventMouseButtonUp : public IWindowEvent {
+	class EventMouseButtonUp : public IEvent {
+		MouseButton _mouseButton;
 	public:
 
-		int MouseButton;
+		EVENT_CLASS_TYPE(EventType::EventMouseButtonUp)
+
+		MouseButton GetMouseButton() { return _mouseButton; }
 
 		EventMouseButtonUp(int mouseButton) :
-			MouseButton(mouseButton) {
-			type = EventType::EventMouseButtonUp;
+			_mouseButton((MouseButton)mouseButton) {
 		}
 	};
 
-	class EventMouseScrolled : public IWindowEvent {
+	class EventMouseScrolled : public IEvent {
+	private:
+		int _offsetX;
+		int _offsetY;
 	public:
 
-		int xOffset;
-		int yOffset;
+		EVENT_CLASS_TYPE(EventType::EventMouseScrolled)
+
+		int GetOffsetX() const { return _offsetX; }
+		int GetOffsetY() const { return _offsetY; }
 
 		EventMouseScrolled(int xOffset, int yOffset) :
-			xOffset(xOffset), yOffset(yOffset) {
-			type = EventType::EventMouseScrolled;
+			_offsetX(xOffset), _offsetY(yOffset) {
 		}
 	};
 
 
-	class EventKeyButtonDown : public IWindowEvent {
+	class EventKeyButtonDown : public IEvent {
+	private:
+		int _keyCode;
 	public:
 
-		int KeyCode;
+		EVENT_CLASS_TYPE(EventType::EventKeyButtonDown)
+
+		int GetKeyCode() { return _keyCode; }
 
 		EventKeyButtonDown(int keyCode) :
-			KeyCode(keyCode) {
-			type = EventType::EventKeyButtonDown;
+			_keyCode(keyCode) {
 		}
 	};
-	class EventKeyButtonUp : public IWindowEvent {
+	class EventKeyButtonUp : public IEvent {
+	private:
+		int _keyCode;
 	public:
 
-		int KeyCode;
+		EVENT_CLASS_TYPE(EventType::EventKeyButtonUp)
+
+		int GetKeyCode() { return _keyCode; }
 
 		EventKeyButtonUp(int keyCode) :
-			KeyCode(keyCode) {
-			type = EventType::EventKeyButtonUp;
+			_keyCode(keyCode) {
 		}
 	};
 
 
-	class EventWindowClose : public IWindowEvent {
+	class EventWindowClose : public IEvent {
 	public:
+
+		EVENT_CLASS_TYPE(EventType::EventWindowClose)
+
 		EventWindowClose() {
-			type = EventType::EventWindowClose;
 		}
 	};
-	class EventWindowMinimized : public IWindowEvent {
+	class EventWindowMinimized : public IEvent {
 	public:
+
+		EVENT_CLASS_TYPE(EventType::EventWindowMinimized)
+
 		EventWindowMinimized() {
-			type = EventType::EventWindowMinimized;
+			
 		}
 	};
-	class EventWindowRestored : public IWindowEvent {
+	class EventWindowRestored : public IEvent {
 	public:
+
+		EVENT_CLASS_TYPE(EventType::EventWindowRestored)
+
 		EventWindowRestored() {
-			type = EventType::EventWindowRestored;
+			
 		}
 	};
-	class EventWindowResized : public IWindowEvent {
+	class EventWindowResized : public IEvent {
 	public:
 		int x;
 		int y;
+
+		EVENT_CLASS_TYPE(EventType::EventWindowRestored)
+
 		EventWindowResized(int x, int y) : x(x), y(y)
 		{
-			type = EventType::EventWindowResized;
+			
 		}
 	};
 }

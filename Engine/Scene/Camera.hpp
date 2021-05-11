@@ -7,49 +7,91 @@ namespace VSGE {
 
 	typedef unsigned long long ViewMask;
 
+	enum DefaultOrientation {
+		CAM_ORIENTATION_Z_UP,
+		CAM_ORIENTATION_Y_UP
+	};
+
 	class Camera {
 	private:
-		float mFarPlane;
-		float mNearPlane;
-		float mFov;
-		float mAspectRatio;
-		ViewMask mViewMask;
+		DefaultOrientation _defaultOrientation;
+		float _farPlane;
+		float _nearPlane;
+		float _fov;
+		float _aspectRatio;
+		ViewMask _viewMask;
 
-		Vec3 mPosition;
-		Vec3 mFront;
-		Vec3 mUp;
+		Vec3 _position;
+		Vec3 _front;
+		Vec3 _up;
 
-		Mat4 ProjectionMatrix;
-		Mat4 ViewMatrix;
-		Mat4 ProjectionViewMatrix;
+		Mat4 _projectionMatrix;
+		Mat4 _vewMatrix;
+		Mat4 _projectionViewMatrix;
+		
 
 	public:
 
-		Camera() : mAspectRatio(1280.f / 720.f),
-			mNearPlane(1.f),
-			mFarPlane(1000.f),
-			mFov(45),
-			mViewMask(MAX_INT64)
+		Camera() : _aspectRatio(1280.f / 720.f),
+			_nearPlane(1.f),
+			_farPlane(1000.f),
+			_fov(45),
+			_viewMask(MAX_INT64),
+			_defaultOrientation(CAM_ORIENTATION_Z_UP),
+			_front(1.f, 0.f, 0.f),
+			_up(0.f, 0.f, 1.f)
 		{
 
 		}
 
-		void SetNearPlane(float nearPlane) { mNearPlane = nearPlane; }
-		void SetFarPlane(float farPlane) { mFarPlane = farPlane; }
-		void SetFOV(float fov) { mFov = fov; }
-		void SetAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
+		void UpdateMatrices();
+		/// <summary>
+		/// Set near occlusion plane
+		/// </summary>
+		/// <param name="nearPlane"></param>
+		void SetNearPlane(float nearPlane);
+		/// <summary>
+		/// Set far occlusion plane
+		/// </summary>
+		/// <param name="farPlane"></param>
+		void SetFarPlane(float farPlane);
+		/// <summary>
+		/// Set Field of view value in degrees
+		/// </summary>
+		/// <param name="fov"></param>
+		void SetFOV(float fov);
+		/// <summary>
+		/// Set 
+		/// </summary>
+		/// <param name="aspectRatio"></param>
+		void SetAspectRatio(float aspectRatio);
 
-		float GetNearPlane() { return mNearPlane; }
-		float GetFarPlane() { return mFarPlane; }
-		float GetFOV() { return mFov; }
-		float GetAspectRatio() { return mAspectRatio; }
+		float GetNearPlane();
+		float GetFarPlane();
+		float GetFOV();
+		float GetAspectRatio();
 
-		void SetPosition(const Vec3& position) { mPosition = position; }
-		void SetFront(const Vec3& front) { mFront = front; }
-		void SetUp(const Vec3& up) { mUp = up; }
+		void SetPosition(const Vec3& position);
+		void SetFront(const Vec3& front);
+		void SetUp(const Vec3& up);
+		/// <summary>
+		/// Get world position of camera
+		/// </summary>
+		/// <returns></returns>
+		const Vec3& GetPosition();
+		/// <summary>
+		/// Get front vector of camera
+		/// </summary>
+		/// <returns></returns>
+		const Vec3& GetFront();
+		/// <summary>
+		/// Get up vector of camera
+		/// </summary>
+		/// <returns></returns>
+		const Vec3& GetUp();
 
-		const Vec3& GetPosition() { return mPosition; }
-		const Vec3& GetFront() { return mFront; }
-		const Vec3& GetUp() { return mUp; }
+		const Mat4& GetProjectionMatrix();
+		const Mat4& GetViewMatrix();
+		const Mat4& GetProjectionViewMatrix();
 	};
 }

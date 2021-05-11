@@ -15,6 +15,6 @@ namespace VSGETest {
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
-		void OnWindowEvent(VSGE::IWindowEvent& event);
+		void OnWindowEvent(const VSGE::IEvent& event);
 	};
 }

@@ -17,6 +17,6 @@ void D3D12RectTestLayer::OnUpdate() {
 void D3D12RectTestLayer::OnDetach() {
 
 }
-void D3D12RectTestLayer::OnWindowEvent(VSGE::IWindowEvent& event) {
+void D3D12RectTestLayer::OnWindowEvent(const VSGE::IEvent& event) {
 
 }
