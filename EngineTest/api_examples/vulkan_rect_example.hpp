@@ -48,7 +48,7 @@ namespace VSGETest {
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
-		void OnWindowEvent(const VSGE::IEvent& event);
+		void OnEvent(const VSGE::IEvent& event);
 
 		void OnWinClose(const VSGE::EventWindowClose& event);
 		void OnScroll(const VSGE::EventMouseScrolled& event);

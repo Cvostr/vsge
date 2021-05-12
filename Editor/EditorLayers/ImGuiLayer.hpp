@@ -43,9 +43,12 @@ namespace VSGEditor {
 		void OnUpdate();
 		void OnDetach();
 		void OnSDL2Event(void* event_ptr);
+		void OnEvent(const VSGE::IEvent& event);
 
 		void AddWindow(EditorWindow* window);
 		void RemoveWindow(EditorWindow* window);
+
+		void OnWindowResize(const VSGE::EventWindowResized& wr);
 
 		template<typename T>
 		T* GetWindow() {

@@ -191,6 +191,29 @@ void ImGuiLayer::OnSDL2Event(void* event_ptr) {
     ImGui_ImplSDL2_ProcessEvent(event);
 }
 
+void ImGuiLayer::OnEvent(const VSGE::IEvent& event) {
+    VSGE::DispatchEvent<VSGE::EventWindowResized>(event, EVENT_FUNC(ImGuiLayer::OnWindowResize));
+}
+
+void ImGuiLayer::OnWindowResize(const VSGE::EventWindowResized& wr) {
+    int oldWidth = wr.GetOldWidth();
+    int oldHeight = wr.GetOldHeight();
+
+    int width = wr.GetWidth();
+    int height = wr.GetHeight();
+
+    float relX = (float)width / oldWidth;
+    float relY = (float)height / oldHeight;
+
+    for (auto window : mWindows) {
+        ImVec2 old_pos = window->GetPos();
+        ImVec2 old_size = window->GetSize();
+
+        window->SetSize(old_size.x * relX, old_size.y * relY);
+        window->SetPos(old_pos.x * relX, old_pos.y * relY);
+    }
+}
+
 void ImGuiLayer::AddWindow(EditorWindow* window) {
     mWindows.push_back(window);
 }

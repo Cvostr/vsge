@@ -11,37 +11,37 @@ namespace VSGE {
 	};
 	
 	enum KeyCode {
-		KEY_CODE_A,
-		KEY_CODE_B,
-		KEY_CODE_C,
-		KEY_CODE_D,
-		KEY_CODE_E,
-		KEY_CODE_F,
-		KEY_CODE_G,
-		KEY_CODE_H,
-		KEY_CODE_I,
-		KEY_CODE_J,
-		KEY_CODE_K,
-		KEY_CODE_L,
-		KEY_CODE_M,
-		KEY_CODE_N,
-		KEY_CODE_O,
-		KEY_CODE_P,
-		KEY_CODE_Q,
-		KEY_CODE_R,
-		KEY_CODE_S,
-		KEY_CODE_T,
-		KEY_CODE_U,
-		KEY_CODE_V,
-		KEY_CODE_W,
-		KEY_CODE_X,
-		KEY_CODE_Y,
-		KEY_CODE_Z,
+		KEY_CODE_A = 'a',
+		KEY_CODE_B = 'b',
+		KEY_CODE_C = 'c',
+		KEY_CODE_D = 'd',
+		KEY_CODE_E = 'e',
+		KEY_CODE_F = 'f',
+		KEY_CODE_G = 'g',
+		KEY_CODE_H = 'h',
+		KEY_CODE_I = 'i',
+		KEY_CODE_J = 'j',
+		KEY_CODE_K = 'k',
+		KEY_CODE_L = 'l',
+		KEY_CODE_M = 'm',
+		KEY_CODE_N = 'n',
+		KEY_CODE_O = 'o',
+		KEY_CODE_P = 'p',
+		KEY_CODE_Q = 'q',
+		KEY_CODE_R = 'r',
+		KEY_CODE_S = 's',
+		KEY_CODE_T = 't',
+		KEY_CODE_U = 'u',
+		KEY_CODE_V = 'v',
+		KEY_CODE_W = 'w',
+		KEY_CODE_X = 'x',
+		KEY_CODE_Y = 'y',
+		KEY_CODE_Z = 'z',
 
 		KEY_CODE_LCTRL,
 		KEY_CODE_RCTRL,
 		KEY_CODE_TAB,
-		KEY_CODE_SHIFT,
+		KEY_CODE_LSHIFT,
 		KEY_CODE_LALT,
 		KEY_CODE_RALT,
 		
@@ -78,7 +78,7 @@ namespace VSGE {
 
 		EVENT_CLASS_TYPE(EventType::EventMouseButtonDown)
 
-		MouseButton GetMouseButton() { return _mouseButton; }
+		MouseButton GetMouseButton() const { return _mouseButton; }
 
 		EventMouseButtonDown(int _MouseButton) :
 			_mouseButton((MouseButton)_MouseButton) {
@@ -90,7 +90,7 @@ namespace VSGE {
 
 		EVENT_CLASS_TYPE(EventType::EventMouseButtonUp)
 
-		MouseButton GetMouseButton() { return _mouseButton; }
+		MouseButton GetMouseButton() const { return _mouseButton; }
 
 		EventMouseButtonUp(int mouseButton) :
 			_mouseButton((MouseButton)mouseButton) {
@@ -116,31 +116,30 @@ namespace VSGE {
 
 	class EventKeyButtonDown : public IEvent {
 	private:
-		int _keyCode;
+		KeyCode _keyCode;
 	public:
 
 		EVENT_CLASS_TYPE(EventType::EventKeyButtonDown)
 
-		int GetKeyCode() { return _keyCode; }
+		KeyCode GetKeyCode() { return _keyCode; }
 
-		EventKeyButtonDown(int keyCode) :
+		EventKeyButtonDown(KeyCode keyCode) :
 			_keyCode(keyCode) {
 		}
 	};
 	class EventKeyButtonUp : public IEvent {
 	private:
-		int _keyCode;
+		KeyCode _keyCode;
 	public:
 
 		EVENT_CLASS_TYPE(EventType::EventKeyButtonUp)
 
-		int GetKeyCode() { return _keyCode; }
+		KeyCode GetKeyCode() { return _keyCode; }
 
-		EventKeyButtonUp(int keyCode) :
+		EventKeyButtonUp(KeyCode keyCode) :
 			_keyCode(keyCode) {
 		}
 	};
-
 
 	class EventWindowClose : public IEvent {
 	public:
@@ -170,16 +169,22 @@ namespace VSGE {
 	};
 	class EventWindowResized : public IEvent {
 	private:
+		int _oldWidth;
+		int _oldHeight;
+
 		int x;
 		int y;
 	public:
 
 		EVENT_CLASS_TYPE(EventType::EventWindowRestored)
 
-		int GetWidth() { return x; }
-		int GetHeight() { return y; }
+		int GetWidth() const { return x; }
+		int GetHeight() const { return y; }
 
-		EventWindowResized(int x, int y) : x(x), y(y)
+		int GetOldWidth() const { return _oldWidth; }
+		int GetOldHeight() const { return _oldHeight; }
+
+		EventWindowResized(int x, int y, int oldWidth, int oldHeight) : x(x), y(y), _oldWidth(oldWidth), _oldHeight(oldHeight)
 		{
 			
 		}

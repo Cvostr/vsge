@@ -25,7 +25,7 @@ void Application::OnSDL2Event(void* event) {
 void Application::OnEvent(const IEvent& event) {
 		for (auto layer : mLayers) {
 			if (mRunning) {
-			layer->OnWindowEvent(event);
+			layer->OnEvent(event);
 			}
 		}
 }

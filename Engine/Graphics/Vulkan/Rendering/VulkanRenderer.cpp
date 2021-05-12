@@ -170,13 +170,13 @@ void VulkanRenderer::DestroyRenderer() {
 
 void VulkanRenderer::StoreWorldObjects() {
 	CreateRenderList();
-	Mat4* transforms = new Mat4[mEntitiesToRender.size()];
+	Mat4* transforms = new Mat4[mEntitiesToRender.size() * 4];
 	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i ++) {
 		Entity* entity = mEntitiesToRender[e_i];
-		transforms[e_i] = entity->GetWorldTransform();
+		transforms[e_i * 4] = entity->GetWorldTransform();
 	}
 
-	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4), transforms);
+	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * mEntitiesToRender.size(), transforms);
 	delete[] transforms;
 
 	mGBufferCmdbuf->Begin();

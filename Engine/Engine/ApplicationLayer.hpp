@@ -11,7 +11,7 @@ namespace VSGE {
 		virtual void OnUpdate() = 0;
 
 		virtual void OnSDL2Event(void* event_ptr) {}
-		virtual void OnWindowEvent(const IEvent& event) {}
+		virtual void OnEvent(const IEvent& event) {}
 	};
 
 	typedef std::vector<IApplicationLayer*> tApplicationLayerList;

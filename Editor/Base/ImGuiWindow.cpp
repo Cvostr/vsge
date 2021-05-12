@@ -11,7 +11,19 @@ void EditorWindow::UpdateWindowData() {
 
 bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags_ flags) {
 	if (!_hidden) {
+
+		if (_queuedResize) {
+			ImGui::SetNextWindowSize(_size);
+			_queuedResize = false;
+		}
+
+		if (_queuedMove) {
+			ImGui::SetNextWindowPos(_pos);
+			_queuedMove = false;
+		}
+
 		ImGui::Begin(title.c_str(), nullptr, flags);
+
 		//update current window pos and size
 		UpdateWindowData();
 	}
@@ -32,6 +44,26 @@ void EditorWindow::Show() {
 
 bool EditorWindow::IsInFocus() {
 	return _inFocus;
+}
+
+void EditorWindow::SetSize(uint32 width, uint32 height) {
+	_queuedResize = true;
+	_size.x = width;
+	_size.y = height;
+}
+
+void EditorWindow::SetPos(uint32 x, uint32 y) {
+	_queuedMove = true;
+	_pos.x = x;
+	_pos.y = y;
+}
+
+const ImVec2& EditorWindow::GetSize() {
+	return _size;
+}
+
+const ImVec2& EditorWindow::GetPos() {
+	return _pos;
 }
 
 bool EditorWindow::isInsideWindow(uint32 x, uint32 y) {

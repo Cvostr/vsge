@@ -156,7 +156,7 @@ void VulkanRectTestLayer::OnUpdate() {
 	VulkanPresent(presentBegin, _imageIndex);
 }
 
-void VulkanRectTestLayer::OnWindowEvent(const IEvent& event) {
+void VulkanRectTestLayer::OnEvent(const IEvent& event) {
 	DispatchEvent<EventWindowClose>(event, EVENT_FUNC(VulkanRectTestLayer::OnWinClose));
 	DispatchEvent<EventMouseScrolled>(event, EVENT_FUNC(VulkanRectTestLayer::OnScroll));
 }

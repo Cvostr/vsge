@@ -42,17 +42,22 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	VulkanRenderer::Get()->SetScene(this->mScene);
 }
 
-void EditorLayer::OnWindowEvent(const VSGE::IEvent& event) {
+void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventMouseMotion>(event, EVENT_FUNC(EditorLayer::OnMouseMotion));
 	DispatchEvent<VSGE::EventWindowClose>(event, EVENT_FUNC(EditorLayer::OnWindowClose));
 	DispatchEvent<VSGE::EventMouseScrolled>(event, EVENT_FUNC(EditorLayer::OnMouseScroll));
+	DispatchEvent<VSGE::EventMouseButtonDown>(event, EVENT_FUNC(EditorLayer::OnMouseButtonDown));
+	DispatchEvent<VSGE::EventMouseButtonUp>(event, EVENT_FUNC(EditorLayer::OnMouseButtonUp));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
+	InputState.cursorx = motion.GetMouseX();
+	InputState.cursory = motion.GetMouseY();
+
 	ImGuiLayer* imgui = ImGuiLayer::Get();
 	SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 	if (win) {
-		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY())) {
+		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY()) && InputState.right_btn_hold) {
 
 			int relX = motion.GetMouseRelativeX();
 			int relY = motion.GetMouseRelativeY();
@@ -78,11 +83,23 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 	ImGuiLayer* imgui = ImGuiLayer::Get();
 	SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 	if (win) {
-		if (win->IsInFocus()) {
+		if (win->IsInFocus() && win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
 			Vec3 cam_front = mEditorCamera->GetFront() * scroll.GetOffsetY();
-			Vec3 new_pos = mEditorCamera->GetPosition() + cam_front;
+			Vec3 new_pos = mEditorCamera->GetPosition() - cam_front;
 			mEditorCamera->SetPosition(new_pos);
 		}
+	}
+}
+
+void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
+	if (mbd.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
+		InputState.right_btn_hold = true;
+	}
+}
+
+void EditorLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
+	if (mbu.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
+		InputState.right_btn_hold = false;
 	}
 }
 

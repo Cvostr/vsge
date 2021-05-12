@@ -73,6 +73,33 @@ void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title) {
     }
 }
 
+KeyCode GetKeyCode(int sdl_code) {
+    switch (sdl_code) {
+    case SDLK_LCTRL:
+        return KEY_CODE_LCTRL;
+    case SDLK_RCTRL:
+        return KEY_CODE_RCTRL;
+    case SDLK_TAB:
+        return KEY_CODE_TAB;
+    case SDLK_LSHIFT:
+        return KEY_CODE_LSHIFT;
+    case SDLK_LALT:
+        return KEY_CODE_LALT;
+    case SDLK_RALT:
+        return KEY_CODE_RALT;
+
+    case SDLK_UP:
+        return KEY_CODE_UP;
+    case SDLK_DOWN:
+        return KEY_CODE_DOWN;
+    case SDLK_LEFT:
+        return KEY_CODE_LEFT;
+    case SDLK_RIGHT:
+        return KEY_CODE_RIGHT;
+    }
+    return (KeyCode)sdl_code;
+}
+
 void VSGE::Window::PollEvents() {
     if (!mWindow)
         return;
@@ -103,19 +130,25 @@ void VSGE::Window::PollEvents() {
             app->OnEvent(mouse_scrolled_event);
         }
         if (event.type == SDL_KEYDOWN) {
-            EventKeyButtonDown keyboard_btndown_event(event.key.keysym.sym);
+            EventKeyButtonDown keyboard_btndown_event(GetKeyCode(event.key.keysym.sym));
             app->OnEvent(keyboard_btndown_event);
         }
         if (event.type == SDL_KEYUP) { //if user pressed a key on keyboard
-            EventKeyButtonUp keyboard_btnup_event(event.key.keysym.sym);
+            EventKeyButtonUp keyboard_btnup_event(GetKeyCode(event.key.keysym.sym));
             app->OnEvent(keyboard_btnup_event);
         }
         if (event.type == SDL_WINDOWEVENT) {
             if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                EventWindowResized event_win_resized(
+                    event.window.data1,
+                    event.window.data2,
+                    mWindowWidth,
+                    mWindowHeight
+                );
+
                 mWindowWidth = event.window.data1;
                 mWindowHeight = event.window.data2;
-
-                EventWindowResized event_win_resized(event.window.data1, event.window.data2);
+                
                 app->OnEvent(event_win_resized);
             }
             if (event.window.event == SDL_WINDOWEVENT_MINIMIZED) {

@@ -13,7 +13,8 @@ void IRenderer::CreateRenderList() {
 	ProcessEntity(mScene->GetRootEntity());
 }
 void IRenderer::ProcessEntity(Entity* entity) {
-
+	if (!entity->IsActive())
+		return;
 	Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
 	Mat4 worldTransform(1.f);
 	entity->SetLocalTransform(localTransform);

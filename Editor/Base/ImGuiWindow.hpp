@@ -15,11 +15,15 @@ namespace VSGEditor {
 		ImVec2 _pos;
 		bool _inFocus;
 		bool _hidden;
+		bool _queuedResize;
+		bool _queuedMove;
 	public:
 
 		EditorWindow() :
 			_inFocus(false),
-			_hidden(false)
+			_hidden(false),
+			_queuedResize(false),
+			_queuedMove(false)
 		{}
 
 		void UpdateWindowData();
@@ -35,6 +39,14 @@ namespace VSGEditor {
 		bool IsInFocus();
 
 		bool isInsideWindow(uint32 x, uint32 y);
+
+		void SetSize(uint32 width, uint32 height);
+
+		void SetPos(uint32 x, uint32 y);
+
+		const ImVec2& GetSize();
+
+		const ImVec2& GetPos();
 
 		virtual void OnDrawWindow() = 0;
 	};
