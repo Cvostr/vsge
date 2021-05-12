@@ -18,11 +18,11 @@ public:
 		x(x), y(y), z(z), w(w)
 	{}
 
-	float Length() { //Calculates module length of vector
+	float Length() const { //Calculates module length of vector
 		return sqrtf(x * x + y * y + z * z + w * w);
 	}
 
-	Quat GetNormalized() {
+	Quat GetNormalized() const {
 		float coeff = 1.f / Length();
 		return Quat(x * coeff, y * coeff, z * coeff, w * coeff);
 	}

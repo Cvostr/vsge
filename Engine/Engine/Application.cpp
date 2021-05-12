@@ -23,9 +23,11 @@ void Application::OnSDL2Event(void* event) {
     }
 }
 void Application::OnEvent(const IEvent& event) {
-    for (auto layer : mLayers) {
-        layer->OnWindowEvent(event);
-    }
+		for (auto layer : mLayers) {
+			if (mRunning) {
+			layer->OnWindowEvent(event);
+			}
+		}
 }
 
 void Application::Run() {
@@ -39,6 +41,7 @@ void Application::Run() {
 
 void Application::Stop() { 
 	mRunning = false; 
+	mWindow->DestroyWindow();
 	RemoveAllLayers();
 }
 

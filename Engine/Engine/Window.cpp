@@ -68,12 +68,14 @@ void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title) {
         uint32 winMode = 0;
         if (desc.graphicsApi == GRAPHICS_API_VULKAN)
             winMode = SDL_WINDOW_VULKAN;
-
+        
         mWindow = SDL_CreateWindow(title, mWindowPosX, mWindowPosY, width, height, winMode); //Create window
     }
 }
 
 void VSGE::Window::PollEvents() {
+    if (!mWindow)
+        return;
     Application* app = Application::Get();
 
     SDL_Event event;

@@ -13,20 +13,20 @@
 		tVec3(T v) : x(v), y(v), z(v) {}
 		tVec3(T x, T y, T z) : x(x), y(y), z(z) {}
 
-		tVec3 GetNormalized() {
+		tVec3 GetNormalized() const {
 			float coeff = 1.f / Length();
 			return tVec3(x * coeff, y * coeff, z * coeff);
 		}
 
-		float Length() { //Calculates module length of vector
+		float Length() const { //Calculates module length of vector
 			return sqrtf(x * x + y * y + z * z);
 		}
 
-		float Dot(const tVec3& v) {
+		float Dot(const tVec3& v) const {
 			return x * v.x + y * v.y + z * v.z;
 		}
 
-		tVec3 Cross(const tVec3& v) {
+		tVec3 Cross(const tVec3& v) const {
 			return tVec3(y * v.z - z * v.y,
 						z * v.x - x * v.z,
 						x * v.y - y * v.x);

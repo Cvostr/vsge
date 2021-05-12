@@ -20,16 +20,16 @@ namespace VSGE {
 	class Entity {
 	private:
 
-		bool mActive;
-		bool mStatic;
-		ViewMask mViewMask;
-		std::string mName;
-		Guid mId;
+		bool _active;
+		bool _static;
+		ViewMask _viewMask;
+		std::string _name;
+		Guid _id;
 
 		//Parent of Entity, NULL if root entity
-		Entity* mParent; 
+		Entity* _parent; 
 		//Scene, that contains this entity
-		Scene* mScene; 
+		Scene* _scene; 
 		//Array of components, attached to entity
 		tComponentList mComponents;
 		//Array of children, attached to entity
@@ -44,15 +44,15 @@ namespace VSGE {
 		bool mTransformDirty;
 	public:
 
-		Entity() :	mParent(nullptr),
-					mScene(nullptr),
-					mActive(true),
-					mStatic(false),
+		Entity() :	_parent(nullptr),
+					_scene(nullptr),
+					_active(true),
+					_static(false),
 					mTransformDirty(false),
 					mScale(1.f),
 					LocalTransform(1.f),
 					WorldTransform(1.f),
-					mViewMask(MAX_INT64)
+					_viewMask(MAX_INT64)
 		{}
 
 		~Entity() {
@@ -63,47 +63,47 @@ namespace VSGE {
 		/// get guid of entity
 		/// </summary>
 		/// <returns>entity's guid</returns>
-		const Guid& GetGuid() { return mId; }
+		const Guid& GetGuid() { return _id; }
 		/// <summary>
 		/// Set new guid to entity
 		/// </summary>
 		/// <param name="id"></param>
-		void SetGuid(Guid& id) { mId = id; }
+		void SetGuid(Guid& id) { _id = id; }
 		/// <summary>
 		/// Stores pointer to scene in entity class
 		/// </summary>
 		/// <param name="scene"> - pointer to scene</param>
-		void SetScene(Scene* scene) { mScene = scene; }
+		void SetScene(Scene* scene) { _scene = scene; }
 		/// <summary>
 		/// Get pointer to scene in entity class
 		/// </summary>
 		/// <returns>pointer to scene</returns>
-		Scene* GetScene() { return mScene; }
+		Scene* GetScene() { return _scene; }
 		/// <summary>
 		/// Stores pointer to parent entity in entity class
 		/// </summary>
 		/// <param name="parent"> - pointer to parent entity</param>
-		void SetParent(Entity* parent) { mParent = parent; }
+		void SetParent(Entity* parent) { _parent = parent; }
 		/// <summary>
 		/// Set active/inactive state of entity
 		/// </summary>
 		/// <param name="active"></param>
-		void SetActive(bool active) { mActive = active; }
+		void SetActive(bool active) { _active = active; }
 		/// <summary>
 		/// Return whether entity is active.
 		/// </summary>
 		/// <returns></returns>
-		bool IsActive() { return mActive; }
+		bool IsActive() { return _active; }
 		/// <summary>
 		/// Set static/dynamic param of entity
 		/// </summary>
 		/// <param name="static"></param>
-		void SetStatic(bool _static) { mStatic = _static; }
+		void SetStatic(bool _static) { _static = _static; }
 		/// <summary>
 		/// Return whether entity is static.
 		/// </summary>
 		/// <returns></returns>
-		bool IsStatic() { return mStatic; }
+		bool IsStatic() { return _static; }
 		/// <summary>
 		/// Set new name string to entity
 		/// </summary>
@@ -113,7 +113,7 @@ namespace VSGE {
 		/// get name of entity
 		/// </summary>
 		/// <returns></returns>
-		const std::string& GetName() { return mName; }
+		const std::string& GetName() { return _name; }
 		/// <summary>
 		/// Add new child to this entity
 		/// </summary>
@@ -144,7 +144,7 @@ namespace VSGE {
 		/// Returns pointer to parent entity
 		/// </summary>
 		/// <returns></returns>
-		Entity* GetParent() { return mParent; }
+		Entity* GetParent() { return _parent; }
 		/// <summary>
 		/// Tries to find the entity with the given name in this entity hierarchy
 		/// </summary>
@@ -166,11 +166,13 @@ namespace VSGE {
 		void SetScale(const Vec3& scale);
 		void SetRotation(const Vec3& rotation);
 
+		void UpdateAABB();
+
 		const Mat4& GetLocalTransform() { return LocalTransform; }
 		void SetLocalTransform(const Mat4& transform) { LocalTransform = transform; }
 
 		const Mat4& GetWorldTransform() { return WorldTransform; }
-		void SetWorldTransform(const Mat4& transform) { WorldTransform = transform; }
+		void SetWorldTransform(const Mat4& transform);
 
 		/// <summary>
 		/// Destroy this object and all it's children
@@ -195,10 +197,7 @@ namespace VSGE {
 			return static_cast<T*>(component);
 		}
 
-		void AddComponent(IEntityComponent* component) {
-			component->SetEntity(this);
-			mComponents.push_back(component);
-		}
+		void AddComponent(IEntityComponent* component);
 		/// <summary>
 		/// Get entity component with type
 		/// </summary>

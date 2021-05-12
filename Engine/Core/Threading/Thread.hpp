@@ -7,7 +7,10 @@ namespace VSGE {
 	public:
 		Thread() : mThreadHandle(nullptr),
 			mShouldRun(false){
+		}
 
+		~Thread() {
+			Stop();
 		}
 
 		bool Run();

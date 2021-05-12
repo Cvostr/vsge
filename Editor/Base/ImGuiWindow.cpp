@@ -3,8 +3,8 @@
 using namespace VSGEditor;
 
 void EditorWindow::UpdateWindowData() {
-	mPos = ImGui::GetWindowPos();
-	mSize = ImGui::GetWindowSize();
+	_pos = ImGui::GetWindowPos();
+	_size = ImGui::GetWindowSize();
 
 	_inFocus = ImGui::IsWindowFocused();
 }
@@ -32,4 +32,12 @@ void EditorWindow::Show() {
 
 bool EditorWindow::IsInFocus() {
 	return _inFocus;
+}
+
+bool EditorWindow::isInsideWindow(uint32 x, uint32 y) {
+	ImRect wrect = ImRect(_pos, _pos + _size);
+	ImVec2 cursor_pos = ImVec2(x, y);
+	if (wrect.Min.x < cursor_pos.x && wrect.Min.y < cursor_pos.y && wrect.Max.x > x && wrect.Max.y > y)
+		return true;
+	return false;
 }

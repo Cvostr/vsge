@@ -56,15 +56,22 @@ namespace VSGE {
 		//--------------------Descriptors----------------
 		VulkanDescriptorPool* mObjectsPool;
 		std::vector<VulkanDescriptorSet*> mVertexDescriptorSets;
+		VulkanDescriptorSet* mDeferredPassSet;
 
 		//--------------------Buffers--------------------
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
 		VulkanBuffer* mMaterialsShaderBuffer;
+		//--------------------Meshes--------------------
+		VulkanMesh* mSpriteMesh;
 
 		//--------------------Samplers-------------------
 		VulkanSampler* mMaterialMapsSampler;
+		VulkanSampler* mAttachmentSampler;
+
+		//--------------------Pipelines------------------
+		VulkanPipeline* mDeferredPipeline;
 
 		std::vector<VulkanDrawCall> drawCalls;
 
@@ -98,6 +105,10 @@ namespace VSGE {
 
 		VulkanSemaphore* GetEndSemaphore() {
 			return mEndSemaphore;
+		}
+
+		VulkanSampler* GetAttachmentSampler() {
+			return mAttachmentSampler;
 		}
 
 		void StoreWorldObjects();

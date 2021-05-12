@@ -3,8 +3,19 @@
 #include <Core/VarTypes/Base.hpp>
 #include "Vec4.hpp"
 
-float determinant(float a, float b, float c, float d,
-                  float e, float f, float g, float h, float i);
+template<typename T>
+T _determinant(T a, T b, T c, T d, T e, T f,
+    T g, T h, T i) {
+    //a b c
+    //d e f
+    //g h i
+    return (a * e * i) +
+        (d * c * h) +
+        (g * b * f) -
+        (g * e * c) -
+        (d * b * i) -
+        (h * f * a);
+}
 
 template<typename T>
 class tMat4 {
@@ -45,65 +56,22 @@ public:
         Values[3][0] = v4.x; Values[3][1] = v4.y; Values[3][2] = v4.z; Values[3][3] = v4.w;
     }
 
-    tMat4 operator*(T r) const {
-        tMat4 result = *this;
-        for (uint8 i = 0; i < 4; i++) {
-            for (uint8 b = 0; b < 4; b++) {
-                result.Values[i][b] *= r;
-            }
-        }
+    tMat4 operator*(T r) const;
 
-        return result;
-    }
+    tMat4 operator+(tMat4 r) const;
 
-    tMat4 operator+(tMat4 r) const {
-        tMat4 result = *this;
-        for (uint8 i = 0; i < 4; i++) {
-            for (uint8 b = 0; b < 4; b++) {
-                result.Values[i][b] += r.Values[i][b];
-            }
-        }
+    tMat4 operator*(tMat4 r) const ;
 
-        return result;
-    }
+    tVec4<T> operator*(tVec4<T> r) const;
 
-    tMat4 operator*(tMat4 r) const {
-        tMat4 Ret;
-        for (uint8 i = 0; i < 4; i++) {
-            for (uint8 b = 0; b < 4; b++) {
-                Ret.Values[i][b] =
-                    Values[i][0] * r.Values[0][b] +
-                    Values[i][1] * r.Values[1][b] +
-                    Values[i][2] * r.Values[2][b] +
-                    Values[i][3] * r.Values[3][b];
-            }
-        }
-        return Ret;
-    }
+    tVec3<T> GetPosition() const { return tVec3<T>(Values[3][0], Values[3][1], Values[3][2]); }
+    tVec3<T> GetScale() const { return tVec3<T>(Values[0][0], Values[1][1], Values[2][2]); }
 
-    tVec4<T> operator*(tVec4<T> r) const {
-        tVec4<T> Ret;
-        Ret.x = r.x * Values[0][0] + r.y * Values[1][0] + r.z * Values[2][0] + r.w * Values[3][0];
-        Ret.y = r.x * Values[0][1] + r.y * Values[1][1] + r.z * Values[2][1] + r.w * Values[3][1];
-        Ret.z = r.x * Values[0][2] + r.y * Values[1][2] + r.z * Values[2][2] + r.w * Values[3][2];
-        Ret.w = r.x * Values[0][3] + r.y * Values[1][3] + r.z * Values[2][3] + r.w * Values[3][3];
-        return Ret;
-    }
-
-    tMat4 transpose() {
-        tMat4 result;
-
-        for (uint32 i = 0; i < 4; i++) {
-            for (uint32 j = 0; j < 4; j++) {
-                result.Values[i][j] = Values[j][i];
-            }
-        }
-        return result;
-    }
+    tMat4 transpose() const;
 
     tMat4 invert();
 
-    float determinant();
+    T determinant() const ;
 
 };
 

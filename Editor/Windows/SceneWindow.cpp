@@ -84,6 +84,14 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
     {
         InspectorWindow::Get()->SetShowingEntity(entity);
     }
+
+    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+    {
+        EditorLayer* editor = EditorLayer::Get();
+        Vec3 pos = entity->GetWorldTransform().GetPosition();
+        editor->GetCamera()->SetPosition(pos);
+    }
+
     //Return back to white color
     if (!entity->IsActive()) {
         ImGui::PopStyleColor();

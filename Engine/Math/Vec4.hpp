@@ -17,12 +17,12 @@ public:
 
 	tVec4(tVec3<T> xyz, float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
-	tVec4 GetNormalized() {
+	tVec4 GetNormalized() const {
 		float coeff = 1.f / Length();
 		return tVec4(x * coeff, y * coeff, z * coeff, w * coeff);
 	}
 
-	float Length() { //Calculates module length of vector
+	float Length() const { //Calculates module length of vector
 		return sqrtf(x * x + y * y + z * z + w * w);
 	}
 

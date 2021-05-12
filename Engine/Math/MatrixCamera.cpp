@@ -100,8 +100,7 @@ Mat4 GetOrthoRH_Default(ORTHO_ARGS) {
 
 Mat4 GetViewRH(const Vec3& center, const Vec3& eye, const Vec3& up) {
 	Vec3 f = (center - eye).GetNormalized();
-	Vec3 s = f;
-	s = s.Cross(up).GetNormalized();
+	Vec3 s = f.Cross(up).GetNormalized();
 	Vec3 u = s.Cross(f);
 
 	Mat4 Result(1);

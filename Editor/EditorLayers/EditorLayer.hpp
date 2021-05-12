@@ -5,6 +5,7 @@
 #include <Scene/Camera.hpp>
 #include <System/FileWatcher.hpp>
 #include <Resources/ResourceCache.hpp>
+#include <Engine/WindowEvent.hpp>
 
 namespace VSGEditor {
 
@@ -18,6 +19,11 @@ namespace VSGEditor {
 		VSGE::Scene* mScene;
 		VSGE::Camera* mEditorCamera;
 		VSGE::FileWatcher* mResourcesWatcher;
+
+		struct {
+			float cam_yaw;
+			float cam_pitch;
+		}CameraState;
 	public:
 
 		EditorLayer() {
@@ -26,6 +32,9 @@ namespace VSGEditor {
 			mScene->NewScene();
 			_this = this;
 			mResourcesWatcher = new VSGE::FileWatcher;
+
+			CameraState.cam_yaw = 0;
+			CameraState.cam_pitch = 0;
 		}
 
 		~EditorLayer() {
@@ -51,6 +60,11 @@ namespace VSGEditor {
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
+
+		void OnWindowEvent(const VSGE::IEvent& event);
+		void OnMouseMotion(const VSGE::EventMouseMotion& motion);
+		void OnMouseScroll(const VSGE::EventMouseScrolled& scroll);
+		void OnWindowClose(const VSGE::EventWindowClose& close);
 
 	};
 }

@@ -63,17 +63,17 @@ void Entity::SetName(const std::string& name) {
 	int addition = 0;
 	std::string name_to_test = name;
 	Entity* ent = nullptr;
-	while ((ent = mScene->GetEntityWithName(name_to_test)) && ent != this) {
+	while ((ent = _scene->GetEntityWithName(name_to_test)) && ent != this) {
 		addition++;
 		name_to_test = name + " (" + std::to_string(addition) + ")";
 	}
-	mName = name_to_test;
+	_name = name_to_test;
 }
 
 void Entity::Destroy() {
 	//Remove child from entity's parent
-	if (mParent) {
-		mParent->RemoveChild(this);
+	if (_parent) {
+		_parent->RemoveChild(this);
 	}
 	//Call Destroy() on each child
 	while(GetChildrenCount() > 0){
@@ -83,6 +83,11 @@ void Entity::Destroy() {
 	RemoveAllComponents();
 
 	delete this;
+}
+
+void Entity::AddComponent(IEntityComponent* component) {
+	component->SetEntity(this);
+	mComponents.push_back(component);
 }
 
 bool Entity::HasComponent(IEntityComponent* component) {
@@ -120,4 +125,12 @@ void Entity::SetScale(const Vec3& scale) {
 void Entity::SetRotation(const Vec3& rotation) {
 	mRotation = rotation;
 	mTransformDirty = true;
+}
+
+void Entity::UpdateAABB() {
+	
+}
+
+void Entity::SetWorldTransform(const Mat4& transform) { 
+	WorldTransform = transform;
 }
