@@ -168,7 +168,6 @@ void FileBrowserWindow::OnDrawWindow() {
                 if (ImGui::MenuItem("Add to scene")) {
                     EditorLayer* el = EditorLayer::Get();
                     AddSubSceneVS3M(el->GetScene(), e->abs_path);
-                    //addRP3MtoWorld(mWorld, FileContextMenu.file->abs_path);
                 }
             }
             if (ImGui::MenuItem("Open")) {

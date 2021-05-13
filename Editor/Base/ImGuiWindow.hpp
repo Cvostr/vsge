@@ -49,6 +49,8 @@ namespace VSGEditor {
 		const ImVec2& GetPos();
 
 		virtual void OnDrawWindow() = 0;
+
+		virtual void OnWindowResize(){}
 	};
 
 	typedef std::vector<EditorWindow*> tEditorWindowList;

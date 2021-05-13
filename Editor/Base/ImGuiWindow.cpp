@@ -3,8 +3,14 @@
 using namespace VSGEditor;
 
 void EditorWindow::UpdateWindowData() {
+	ImVec2 old_size = _size;
+
 	_pos = ImGui::GetWindowPos();
 	_size = ImGui::GetWindowSize();
+
+	if (_size.x != old_size.x || _size.y != old_size.y) {
+		OnWindowResize();
+	}
 
 	_inFocus = ImGui::IsWindowFocused();
 }
@@ -15,6 +21,7 @@ bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags_ flags) {
 		if (_queuedResize) {
 			ImGui::SetNextWindowSize(_size);
 			_queuedResize = false;
+			OnWindowResize();
 		}
 
 		if (_queuedMove) {
@@ -48,14 +55,14 @@ bool EditorWindow::IsInFocus() {
 
 void EditorWindow::SetSize(uint32 width, uint32 height) {
 	_queuedResize = true;
-	_size.x = width;
-	_size.y = height;
+	_size.x = (float)width;
+	_size.y = (float)height;
 }
 
 void EditorWindow::SetPos(uint32 x, uint32 y) {
 	_queuedMove = true;
-	_pos.x = x;
-	_pos.y = y;
+	_pos.x = (float)x;
+	_pos.y = (float)y;
 }
 
 const ImVec2& EditorWindow::GetSize() {

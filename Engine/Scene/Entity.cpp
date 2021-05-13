@@ -1,14 +1,21 @@
 #include "Entity.hpp"
 #include "Scene.hpp"
 #include <algorithm>
+#include "EntityComponents/MeshComponent.hpp"
 
 using namespace VSGE;
+
+bool Entity::IsActive() {
+	if (!GetParent())
+		return _active;
+	return _active && GetParent()->IsActive();
+}
 
 void Entity::RemoveChild(Entity* entityToRemove) {
 	if (entityToRemove) {
 		if (HasChild(entityToRemove)) {
-			tEntityList::iterator it = std::remove(mChildren.begin(), mChildren.end(), entityToRemove);
-			mChildren.pop_back();
+			tEntityList::iterator it = std::remove(_children.begin(), _children.end(), entityToRemove);
+			_children.pop_back();
 			entityToRemove->SetParent(nullptr);
 		}
 	}
@@ -22,14 +29,14 @@ void Entity::AddChild(Entity* entityToAdd) {
 				entityToAdd->GetParent()->RemoveChild(entityToAdd);
 			}
 
-			mChildren.push_back(entityToAdd);
+			_children.push_back(entityToAdd);
 			entityToAdd->SetParent(this);
 		}
 	}
 }
 
 bool Entity::HasChild(Entity* entity) {
-	for (auto child : mChildren) {
+	for (auto child : _children) {
 		if (entity == child)
 			return true;
 	}
@@ -37,7 +44,7 @@ bool Entity::HasChild(Entity* entity) {
 }
 
 Entity* Entity::GetEntityWithName(std::string name) {
-	for (auto child : mChildren) {
+	for (auto child : _children) {
 		if (child->GetName().compare(name) == 0)
 			return child;
 		Entity* result_from_child = child->GetEntityWithName(name);
@@ -48,7 +55,7 @@ Entity* Entity::GetEntityWithName(std::string name) {
 }
 
 Entity* Entity::GetEntityWithGuid(const Guid& id) {
-	for (auto child : mChildren) {
+	for (auto child : _children) {
 		Guid g = child->GetGuid();
 		if (g == id)
 			return child;
@@ -77,7 +84,7 @@ void Entity::Destroy() {
 	}
 	//Call Destroy() on each child
 	while(GetChildrenCount() > 0){
-		mChildren[0]->Destroy();
+		_children[0]->Destroy();
 	}
 	//Destroy all entity components
 	RemoveAllComponents();
@@ -87,11 +94,11 @@ void Entity::Destroy() {
 
 void Entity::AddComponent(IEntityComponent* component) {
 	component->SetEntity(this);
-	mComponents.push_back(component);
+	_components.push_back(component);
 }
 
 bool Entity::HasComponent(IEntityComponent* component) {
-	for (auto _component : mComponents) {
+	for (auto _component : _components) {
 		if (component == _component)
 			return true;
 	}
@@ -101,8 +108,8 @@ bool Entity::HasComponent(IEntityComponent* component) {
 void Entity::RemoveComponent(IEntityComponent* component) {
 	if (component) {
 		if (HasComponent(component)) {
-			tComponentList::iterator it = std::remove(mComponents.begin(), mComponents.end(), component);
-			mComponents.pop_back();
+			tComponentList::iterator it = std::remove(_components.begin(), _components.end(), component);
+			_components.pop_back();
 			component->OnDestroy();
 		}
 	}
@@ -110,7 +117,7 @@ void Entity::RemoveComponent(IEntityComponent* component) {
 
 void Entity::RemoveAllComponents() {
 	while(GetComponentsCount() > 0){
-		RemoveComponent(mComponents[0]);
+		RemoveComponent(_components[0]);
 	}
 }
 
@@ -127,8 +134,26 @@ void Entity::SetRotation(const Vec3& rotation) {
 	mTransformDirty = true;
 }
 
-void Entity::UpdateAABB() {
-	
+const AABB& Entity::UpdateAABB() {
+	if (!GetParent())
+		return mBoundingBox;
+	MeshComponent* mesh = GetComponent<MeshComponent>();
+	Entity* parent = GetParent();
+
+	if (mesh) {
+		if (mesh->GetMeshResource()) {
+			mBoundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
+		}
+	}
+
+	mBoundingBox.ApplyTransform(LocalTransform);
+
+	for (auto child : _children) {
+		child->UpdateAABB();
+		mBoundingBox.Extend(child->UpdateAABB());
+	}
+
+	return mBoundingBox;
 }
 
 void Entity::SetWorldTransform(const Mat4& transform) { 

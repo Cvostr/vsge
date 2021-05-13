@@ -209,8 +209,8 @@ void ImGuiLayer::OnWindowResize(const VSGE::EventWindowResized& wr) {
         ImVec2 old_pos = window->GetPos();
         ImVec2 old_size = window->GetSize();
 
-        window->SetSize(old_size.x * relX, old_size.y * relY);
-        window->SetPos(old_pos.x * relX, old_pos.y * relY);
+        window->SetSize((uint32)(old_size.x * relX), (uint32)(old_size.y * relY));
+        window->SetPos((uint32)(old_pos.x * relX), (uint32)(old_pos.y * relY));
     }
 }
 

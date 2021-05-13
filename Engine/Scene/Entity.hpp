@@ -31,9 +31,9 @@ namespace VSGE {
 		//Scene, that contains this entity
 		Scene* _scene; 
 		//Array of components, attached to entity
-		tComponentList mComponents;
+		tComponentList _components;
 		//Array of children, attached to entity
-		tEntityList mChildren; 
+		tEntityList _children; 
 
 		AABB mBoundingBox;
 		Vec3 mPosition;
@@ -93,7 +93,7 @@ namespace VSGE {
 		/// Return whether entity is active.
 		/// </summary>
 		/// <returns></returns>
-		bool IsActive() { return _active; }
+		bool IsActive();
 		/// <summary>
 		/// Set static/dynamic param of entity
 		/// </summary>
@@ -128,12 +128,12 @@ namespace VSGE {
 		/// Get amount of children, connected to this object
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetChildrenCount() { return static_cast<uint32>(mChildren.size()); }
+		uint32 GetChildrenCount() { return static_cast<uint32>(_children.size()); }
 		/// <summary>
 		/// Return child entity by index.
 		/// </summary>
 		/// <returns></returns>
-		Entity** GetChildren() { return mChildren.data(); }
+		Entity** GetChildren() { return _children.data(); }
 		/// <summary>
 		/// Does this entity contain child entity with pointer
 		/// </summary>
@@ -166,7 +166,7 @@ namespace VSGE {
 		void SetScale(const Vec3& scale);
 		void SetRotation(const Vec3& rotation);
 
-		void UpdateAABB();
+		const AABB& UpdateAABB();
 
 		const Mat4& GetLocalTransform() { return LocalTransform; }
 		void SetLocalTransform(const Mat4& transform) { LocalTransform = transform; }
@@ -182,7 +182,7 @@ namespace VSGE {
 		/// Get amount of components, attached to this entity
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetComponentsCount() { return static_cast<uint32>(mComponents.size()); }
+		uint32 GetComponentsCount() { return static_cast<uint32>(_components.size()); }
 		/// <summary>
 		/// Create and add new component to entity
 		/// </summary>
@@ -193,7 +193,7 @@ namespace VSGE {
 			IEntityComponent* component = new T;
 			component->SetEntity(this);
 			
-			mComponents.push_back(component);
+			_components.push_back(component);
 			return static_cast<T*>(component);
 		}
 
@@ -205,7 +205,7 @@ namespace VSGE {
 		/// <returns></returns>
 		template<typename T>
 		T* GetComponent() {
-			for (auto component : mComponents) {
+			for (auto component : _components) {
 				if (typeid(*component) == typeid(T)) {
 					return static_cast<T*>(component);
 				}
@@ -214,7 +214,7 @@ namespace VSGE {
 		}
 
 		IEntityComponent** GetComponents() {
-			return mComponents.data();
+			return _components.data();
 		}
 
 		template<typename T>

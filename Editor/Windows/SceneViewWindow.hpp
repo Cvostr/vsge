@@ -9,6 +9,8 @@ namespace VSGEditor {
 		ImTextureID texture;
 		void OnDrawWindow();
 
+		void OnWindowResize();
+
 		SceneViewWindow() {
 			texture = VK_NULL_HANDLE;
 		}

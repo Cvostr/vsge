@@ -25,3 +25,7 @@ void SceneViewWindow::OnDrawWindow() {
         ImGui::End();
     }
 }
+
+void SceneViewWindow::OnWindowResize() {
+    ImVec2 c = ImGui::GetCursorPos();
+}
