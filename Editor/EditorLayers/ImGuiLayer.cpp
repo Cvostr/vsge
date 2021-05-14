@@ -224,3 +224,10 @@ void ImGuiLayer::RemoveWindow(EditorWindow* window) {
 void ImGuiLayer::AddMenu(ImGuiMenu* menu) {
     mMenus.push_back(menu);
 }
+
+void ImGuiLayer::RegroupWindows() {
+    VSGE::Window* win = &VSGE::Application::Get()->GetWindow();
+    for (auto window : mWindows) {
+        window->Regroup(win->GetWindowWidth(), win->GetWindowHeight());
+    }
+}

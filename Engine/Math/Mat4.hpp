@@ -65,7 +65,8 @@ public:
     tVec4<T> operator*(tVec4<T> r) const;
 
     tVec3<T> GetPosition() const { return tVec3<T>(Values[3][0], Values[3][1], Values[3][2]); }
-    tVec3<T> GetScale() const { return tVec3<T>(Values[0][0], Values[1][1], Values[2][2]); }
+    tVec3<T> GetScale() const;
+    tVec3<T> GetRotation() const;
 
     tMat4 transpose() const;
 

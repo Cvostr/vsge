@@ -8,6 +8,7 @@
 #include "../Windows/InspectorWindow.hpp"
 #include "../Windows/BrowserWindow.hpp"
 #include "../Windows/SceneViewWindow.hpp"
+#include "../Windows/ToolbarWindow.hpp"
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
@@ -37,6 +38,7 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddWindow(new InspectorWindow);
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(dir_path));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
+	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);

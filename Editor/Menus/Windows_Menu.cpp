@@ -7,7 +7,7 @@ void Windows_Menu::OnDrawMenu() {
 	if (ImGui::BeginMenu("Windows"))
 	{
 		if (ImGui::MenuItem("Group", NULL)) {
-
+			ImGuiLayer::Get()->RegroupWindows();
 		}
 
 		bool freezeWindows = ImGuiLayer::Get()->IsWindowsFrozen();

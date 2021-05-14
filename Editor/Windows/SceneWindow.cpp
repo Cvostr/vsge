@@ -50,9 +50,13 @@ void SceneWindow::OnDrawWindow() {
         }
         ImGui::End();
     }
+     _entityRemoved = false;
 }
 
 void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
+    if (_entityRemoved)
+        return;
+
     bool isRoot = entity->GetName().compare("Root") == 0;
     ImGuiTreeNodeFlags flags = 0;
     //If entity has no children, then remove arrow on the left side
@@ -72,6 +76,9 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
             if (ImGui::MenuItem("Delete Entity")) {
                 entity->Destroy();
                 InspectorWindow::Get()->SetShowingEntity(nullptr);
+                ImGui::EndPopup();
+                _entityRemoved = true;
+                return;
             }
             if (ImGui::MenuItem("Dublicate")) {
                 //Entity->Dublicate();
@@ -133,11 +140,15 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
         ImGui::EndDragDropTarget();
     }
     if (tree_open) {
-        //Da all chlden
         for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i++) {
             Entity* child_entity = entity->GetChildren()[child_i];
             DrawObjectTreeHierarchy(child_entity);
         }
         ImGui::TreePop();
     }
+}
+
+void SceneWindow::Regroup(uint32 width, uint32 height) {
+    SetPos(0, 70);
+    SetSize(width / 4, height * 0.66f);
 }

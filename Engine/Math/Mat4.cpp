@@ -1,5 +1,7 @@
 #include "Mat4.hpp"
 
+static const float RAD2DEG = (180.f / 3.14159265f);
+
 template<typename T>
 tMat4<T> tMat4<T>::operator+(tMat4<T> r) const {
     tMat4<T> result = *this;
@@ -106,6 +108,47 @@ T tMat4<T>::determinant() const {
         Values[2][0], Values[2][1], Values[2][2], Values[3][0], Values[3][1], Values[3][2]);
 
     return d1 - d2 + d3 - d4;
+}
+
+template<typename T>
+tVec3<T> tMat4<T>::GetScale() const { 
+    float x = Vec3(M11, M12, M13).Length();
+    float y = Vec3(M21, M22, M23).Length();
+    float z = Vec3(M31, M32, M33).Length();
+    return tVec3<T>(x, y, z); 
+}
+
+template<typename T>
+tVec3<T> tMat4<T>::GetRotation() const {
+    tVec3<T> rot;
+    //rot.x = fabs(atan2f(Values[1][2], Values[2][2]));
+    //rot.y = fabs(atan2f(-Values[0][2], sqrtf(Values[1][2] * Values[1][2] + Values[2][2] * Values[2][2])));
+    //rot.z = fabs(atan2f(Values[0][1], Values[0][0]));
+    tVec3<T> scale = GetScale();
+    tMat4<T> m = *this;
+    m.M11 /= scale.x;
+    m.M12 /= scale.x;
+    m.M13 /= scale.x;
+
+    m.M21 /= scale.y;
+    m.M22 /= scale.y;
+    m.M23 /= scale.y;
+
+    m.M31 /= scale.z;
+    m.M32 /= scale.z;
+    m.M33 /= scale.z;
+
+
+    rot.y = asinf(-m.Values[0][2]);
+    if (cosf(rot.y) != 0) {
+        rot.x = atan2f(m.Values[1][2], m.Values[2][2]);
+        rot.z = atan2f(m.Values[0][1], m.Values[0][0]);
+    }
+    else {
+        rot.x = atan2f(-m.Values[2][0], m.Values[1][1]);
+        rot.z = 0;
+    }
+    return rot * RAD2DEG;
 }
 
 template class tMat4<float>;

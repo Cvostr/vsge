@@ -18,6 +18,10 @@
 			return tVec3(x * coeff, y * coeff, z * coeff);
 		}
 
+		tVec3 Invert() const {
+			return tVec3(1.f / x, 1.f / y, 1.f / z);
+		}
+
 		float Length() const { //Calculates module length of vector
 			return sqrtf(x * x + y * y + z * z);
 		}
@@ -42,6 +46,10 @@
 
 		tVec3 operator*(float d) const {
 			return tVec3(x * d, y * d, z * d);
+		}
+
+		tVec3 operator*(const tVec3& v) const {
+			return tVec3(x * v.x, y * v.y, z * v.z);
 		}
 
 		tVec3 operator/(float d) const {

@@ -53,6 +53,8 @@ namespace VSGEditor {
 
 		void OnDrawWindow();
 
+		void Regroup(uint32 width, uint32 height);
+
 		void cd_up();
 		void cd(std::string DirName);
 		void SetDirectory(std::string Dir);

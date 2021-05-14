@@ -49,6 +49,8 @@ namespace VSGEditor {
 			_freezeWindows = freeze;
 		}
 
+		void RegroupWindows();
+
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();

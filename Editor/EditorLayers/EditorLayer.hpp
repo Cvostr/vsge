@@ -33,6 +33,7 @@ namespace VSGEditor {
 		}InputState;
 
 		VSGE::Entity* _pickedEntity;
+		int _transformMode;
 
 	public:
 
@@ -49,12 +50,21 @@ namespace VSGEditor {
 			InputState.left_btn_hold = false;
 
 			_pickedEntity = nullptr;
+			_transformMode = 7;
 		}
 
 		~EditorLayer() {
 			delete mScene;
 			delete mEditorCamera;
 			delete mResourcesWatcher;
+		}
+
+		int GetTransformMode() {
+			return _transformMode;
+		}
+
+		void SetTransformMode(int mode) {
+			_transformMode = mode;
 		}
 
 		const inp_state& GetInputState() {

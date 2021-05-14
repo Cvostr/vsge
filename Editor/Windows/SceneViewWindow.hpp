@@ -11,6 +11,8 @@ namespace VSGEditor {
 
 		void OnWindowResize();
 
+		void Regroup(uint32 width, uint32 height);
+
 		SceneViewWindow() {
 			texture = VK_NULL_HANDLE;
 		}

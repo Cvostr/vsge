@@ -51,6 +51,8 @@ namespace VSGEditor {
 		virtual void OnDrawWindow() = 0;
 
 		virtual void OnWindowResize(){}
+
+		virtual void Regroup(uint32 width, uint32 height) {}
 	};
 
 	typedef std::vector<EditorWindow*> tEditorWindowList;

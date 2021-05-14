@@ -109,3 +109,8 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		ImGui::EndPopup();
 	}
 }
+
+void VSGEditor::InspectorWindow::Regroup(uint32 width, uint32 height) {
+	SetPos(width * 0.75f, 20);
+	SetSize(width / 4, height * 0.66f);
+}

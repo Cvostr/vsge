@@ -203,3 +203,8 @@ void FileBrowserWindow::OnDrawWindow() {
     //End Window
     ImGui::End();
 }
+
+void FileBrowserWindow::Regroup(uint32 width, uint32 height) {
+    SetPos(0, height * 0.66f);
+    SetSize(width, height * 0.33f);
+}
