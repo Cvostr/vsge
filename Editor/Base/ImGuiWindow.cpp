@@ -1,4 +1,5 @@
 #include "ImGuiWindow.hpp"
+#include "../EditorLayers/ImGuiLayer.hpp"
 
 using namespace VSGEditor;
 
@@ -29,7 +30,12 @@ bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags_ flags) {
 			_queuedMove = false;
 		}
 
-		ImGui::Begin(title.c_str(), nullptr, flags);
+		bool frozen = ImGuiLayer::Get()->IsWindowsFrozen();
+		ImGuiWindowFlags_ _flags = flags;
+		if (frozen)
+			_flags = (ImGuiWindowFlags_)(_flags | (ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize));
+
+		ImGui::Begin(title.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | _flags);
 
 		//update current window pos and size
 		UpdateWindowData();

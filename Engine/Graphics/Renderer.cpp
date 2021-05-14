@@ -20,7 +20,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	entity->SetLocalTransform(localTransform);
 
 	if (entity->GetParent()) {
-		worldTransform = entity->GetParent()->GetWorldTransform() * localTransform;
+		worldTransform = localTransform * entity->GetParent()->GetWorldTransform();
 	}
 	entity->SetWorldTransform(worldTransform);
 

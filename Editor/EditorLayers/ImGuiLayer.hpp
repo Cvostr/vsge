@@ -20,6 +20,7 @@ namespace VSGEditor {
 		static ImGuiLayer* _this;
 
 		ImGuiIO io;
+		bool _freezeWindows;
 
 		tEditorWindowList mWindows;
 		tImGuiMenuList mMenus;
@@ -37,6 +38,15 @@ namespace VSGEditor {
 
 		ImGuiLayer() {
 			_this = this;
+			_freezeWindows = true;
+		}
+
+		bool IsWindowsFrozen() {
+			return _freezeWindows;
+		}
+
+		void SetWindowsFreeze(bool freeze) {
+			_freezeWindows = freeze;
 		}
 
 		void OnAttach();

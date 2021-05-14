@@ -6,10 +6,6 @@
 
 namespace VSGE {
 
-    struct DeviceProps {
-        uint32 _uniformBufferMinAlingment;
-    };
-
     class VulkanDevice : public IGpuObject {
     private:
         VkPhysicalDevice mPhysicalDevice;
@@ -18,8 +14,8 @@ namespace VSGE {
         VkQueue mGraphicsQueue; //queue of logical device
         VkQueue mPresentQueue; //queue to present
 
-        int32_t GraphicsQueueFamilyIndex;
-        int32_t PresentQueueFamilyIndex;
+        int32 GraphicsQueueFamilyIndex;
+        int32 PresentQueueFamilyIndex;
 
         VkPhysicalDeviceProperties DeviceProps;
 
@@ -33,11 +29,15 @@ namespace VSGE {
         const VkPhysicalDeviceProperties& GetProps() { return DeviceProps; }
         void SetProperties(const VkPhysicalDeviceProperties& DeviceProps) { this->DeviceProps = DeviceProps; }
 
-        VkQueue GetGraphicsQueue() { return mGraphicsQueue; }
-        VkQueue GetPresentQueue() { return mPresentQueue;  }
+        uint32 GetUniformBufferMinAlignment();
+        uint32 GetMaxBoundDescriptorSets();
+        const std::string GetDeviceName();
 
-        int32_t GetGraphicsQueueFamilyIndex() { return GraphicsQueueFamilyIndex; }
-        int32_t GetPresentQueueFamilyIndex() { return PresentQueueFamilyIndex; }
+        VkQueue GetGraphicsQueue();
+        VkQueue GetPresentQueue();
+
+        int32 GetGraphicsQueueFamilyIndex();
+        int32 GetPresentQueueFamilyIndex();
 
         VulkanDevice();
     };

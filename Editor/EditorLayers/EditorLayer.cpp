@@ -10,6 +10,7 @@
 #include "../Windows/SceneViewWindow.hpp"
 
 #include "../Menus/File_Menu.hpp"
+#include "../Menus/Windows_Menu.hpp"
 
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -38,6 +39,7 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
+	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
 }
@@ -95,11 +97,17 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 	if (mbd.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
 		InputState.right_btn_hold = true;
 	}
+	if (mbd.GetMouseButton() == MOUSE_BUTTON_LEFT) {
+		InputState.left_btn_hold = true;
+	}
 }
 
 void EditorLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
 	if (mbu.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
 		InputState.right_btn_hold = false;
+	}
+	if (mbu.GetMouseButton() == MOUSE_BUTTON_LEFT) {
+		InputState.left_btn_hold = false;
 	}
 }
 

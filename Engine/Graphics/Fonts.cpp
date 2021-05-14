@@ -4,6 +4,7 @@
 
 using namespace VSGE;
 
+GlyphManager glyphs;
 GlyphManager* GlyphManager::_this = nullptr;
 
 GlyphManager::GlyphManager() {

@@ -9,6 +9,8 @@
 namespace fs = std::filesystem;
 using namespace VSGE;
 
+//Create singleton
+ResourceCache cache;
 ResourceCache* ResourceCache::_this = nullptr;
 
 Resource* ResourceCache::GetResource(const std::string& name) {

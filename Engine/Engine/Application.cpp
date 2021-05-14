@@ -1,8 +1,6 @@
 #include "Application.hpp"
 #include <algorithm>
-#include "Graphics/Fonts.hpp"
 #include <Core/Time.hpp>
-#include <Resources/ResourceCache.hpp>
 
 using namespace VSGE;
 
@@ -69,10 +67,6 @@ void Application::RemoveAllLayers() {
 }
 
 int main(int argc, char* argv[]) {
-	//Create singleton
-	GlyphManager glyphs;
-	ResourceCache cache;
-
 	Application* app = VSGEMain();
 
 	app->Run();

@@ -3,6 +3,14 @@
 
 using namespace VSGE;
 
+ByteSerialize::ByteSerialize() :
+	mOutputBytes(nullptr),
+	mAllocatedSize(0),
+	mSerializedSize(0)
+{
+	Reallocate(1000);
+}
+
 void ByteSerialize::Reallocate(uint32 newSize) {
 	byte* new_alloc = new byte[newSize];
 	if (mOutputBytes != nullptr) {
@@ -26,5 +34,13 @@ void ByteSerialize::Serialize(std::string str) {
 		Serialize(str[s]);
 	}
 	char zero = '\0';
-	Serialize(&zero, 1);
+	Serialize(zero);
+}
+
+byte* ByteSerialize::GetBytes() {
+	return mOutputBytes;
+}
+
+uint32 ByteSerialize::GetSerializedSize() {
+	return mSerializedSize;
 }

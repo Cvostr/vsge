@@ -3,7 +3,6 @@
 #include <Graphics/Vulkan/VulkanRAPI.hpp>
 #include <Engine/Application.hpp>
 #include <Engine/Window.hpp>
-
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
 using namespace VSGEditor;
@@ -154,7 +153,6 @@ void ImGuiLayer::OnUpdate() {
         EditorWindow* win = mWindows[win_i];
         win->OnDrawWindow();
     }
-
 
     ImGui::Render();
     ImDrawData* draw_data = ImGui::GetDrawData();

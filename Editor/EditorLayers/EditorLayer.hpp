@@ -25,11 +25,14 @@ namespace VSGEditor {
 			float cam_pitch;
 		}CameraState;
 
-		struct {
+		struct inp_state {
+			bool left_btn_hold;
 			bool right_btn_hold;
 			int cursorx;
 			int cursory;
 		}InputState;
+
+		VSGE::Entity* _pickedEntity;
 
 	public:
 
@@ -43,12 +46,19 @@ namespace VSGEditor {
 			CameraState.cam_yaw = 0;
 			CameraState.cam_pitch = 0;
 			InputState.right_btn_hold = false;
+			InputState.left_btn_hold = false;
+
+			_pickedEntity = nullptr;
 		}
 
 		~EditorLayer() {
 			delete mScene;
 			delete mEditorCamera;
 			delete mResourcesWatcher;
+		}
+
+		const inp_state& GetInputState() {
+			return InputState;
 		}
 
 		static EditorLayer* Get() {
@@ -61,6 +71,14 @@ namespace VSGEditor {
 
 		VSGE::Camera* GetCamera() {
 			return mEditorCamera;
+		}
+
+		VSGE::Entity* GetPickedEntity() {
+			return _pickedEntity;
+		}
+
+		void SetPickedEntity(VSGE::Entity* entity) {
+			_pickedEntity = entity;
 		}
 
 		void OpenProjectDirectory(const std::string& dir_path);

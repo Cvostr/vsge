@@ -130,6 +130,24 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     return true;
 }
 
+VkQueue VulkanDevice::GetGraphicsQueue() { return mGraphicsQueue; }
+VkQueue VulkanDevice::GetPresentQueue() { return mPresentQueue; }
+
+int32 VulkanDevice::GetGraphicsQueueFamilyIndex() { return GraphicsQueueFamilyIndex; }
+int32 VulkanDevice::GetPresentQueueFamilyIndex() { return PresentQueueFamilyIndex; }
+
+uint32 VulkanDevice::GetUniformBufferMinAlignment() {
+    return (uint32)DeviceProps.limits.minUniformBufferOffsetAlignment;
+}
+
+uint32 VulkanDevice::GetMaxBoundDescriptorSets() {
+    return DeviceProps.limits.maxBoundDescriptorSets;
+}
+
+const std::string VulkanDevice::GetDeviceName() {
+    return DeviceProps.deviceName;
+}
+
 void VulkanDevice::Destroy() {
     if (mCreated) {
         vkDestroyDevice(mDevice, nullptr);

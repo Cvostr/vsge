@@ -12,13 +12,7 @@ namespace VSGE {
 		uint32 mSerializedSize;
 	public:
 
-		ByteSerialize() :
-			mOutputBytes(nullptr),
-			mAllocatedSize(0),
-			mSerializedSize(0)
-		{
-			Reallocate(1000);
-		}
+		ByteSerialize();
 
 		~ByteSerialize() {
 			delete[] mOutputBytes;
@@ -40,13 +34,9 @@ namespace VSGE {
 			Serialize((void*)&data, sizeof(T));
 		}
 
-		byte* GetBytes() {
-			return mOutputBytes;
-		}
+		byte* GetBytes();
 
-		uint32 GetSerializedSize() {
-			return mSerializedSize;
-		}
+		uint32 GetSerializedSize();
 
 	};
 }

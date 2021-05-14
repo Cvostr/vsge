@@ -83,6 +83,7 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
     if (ImGui::IsItemClicked() && !isRoot)
     {
         InspectorWindow::Get()->SetShowingEntity(entity);
+        EditorLayer::Get()->SetPickedEntity(entity);
     }
 
     if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
