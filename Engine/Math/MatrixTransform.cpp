@@ -104,3 +104,22 @@ Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation) {
         GetRotationMatrix(rotation);
     return Result;
 }
+
+Mat4 Translate(Mat4& origin, const Vec3& translation) {
+    Mat4 result = origin;
+
+    result.Values[3][0] += translation.x;
+    result.Values[3][1] += translation.y;
+    result.Values[3][2] += translation.z;
+
+    return result;
+}
+Mat4 Scale(Mat4& origin, const Vec3& scale) {
+    Mat4 result = origin;
+
+    result.Values[0][0] *= scale.x;
+    result.Values[1][1] *= scale.y;
+    result.Values[2][2] *= scale.z;
+
+    return result;
+}

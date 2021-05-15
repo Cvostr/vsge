@@ -1,9 +1,10 @@
 #include "MatrixCamera.hpp"
 #include <cmath>
+#include "MathBase.hpp"
 
 Mat4 GetPerspectiveRH_Default(PERSPECTIVE_ARGS) {
 	Mat4 Result(0);
-	float _fov = tan(fov / 2.f);
+	float _fov = tan(to_radians(fov) / 2.f);
 
 	Result.Values[0][0] = 1.f / (aspect * _fov);
 	Result.Values[1][1] = 1.f / _fov;
@@ -15,7 +16,7 @@ Mat4 GetPerspectiveRH_Default(PERSPECTIVE_ARGS) {
 }
 Mat4 GetPerspectiveLH_Default(PERSPECTIVE_ARGS) {
 	Mat4 Result(0);
-	float _fov = tan(fov / 2.f);
+	float _fov = tan(to_radians(fov) / 2.f);
 
 	Result.Values[0][0] = 1.f / (aspect * _fov);
 	Result.Values[1][1] = 1.f / _fov;
@@ -28,7 +29,7 @@ Mat4 GetPerspectiveLH_Default(PERSPECTIVE_ARGS) {
 
 Mat4 GetPerspectiveRH_ZeroOne(PERSPECTIVE_ARGS) {
 	Mat4 Result(0);
-	float _fov = tan(fov / 2.f);
+	float _fov = tan(to_radians(fov) / 2.f);
 
 	Result.Values[0][0] = 1.f / (aspect * _fov);
 	Result.Values[1][1] = 1.f / (_fov);
@@ -40,7 +41,7 @@ Mat4 GetPerspectiveRH_ZeroOne(PERSPECTIVE_ARGS) {
 }
 Mat4 GetPerspectiveLH_ZeroOne(PERSPECTIVE_ARGS) {
 	Mat4 Result(0);
-	float _fov = tan(fov / 2.f);
+	float _fov = tan(to_radians(fov) / 2.f);
 
 	Result.Values[0][0] = 1.f / (aspect * _fov);
 	Result.Values[1][1] = 1.f / (_fov);
@@ -98,7 +99,7 @@ Mat4 GetOrthoRH_Default(ORTHO_ARGS) {
 	return Result;
 }
 
-Mat4 GetViewRH(const Vec3& center, const Vec3& eye, const Vec3& up) {
+Mat4 GetViewRH(const Vec3& eye, const Vec3& center, const Vec3& up) {
 	Vec3 f = (center - eye).GetNormalized();
 	Vec3 s = f.Cross(up).GetNormalized();
 	Vec3 u = s.Cross(f);

@@ -50,7 +50,6 @@ void SceneWindow::OnDrawWindow() {
         }
         ImGui::End();
     }
-     _entityRemoved = false;
 }
 
 void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
@@ -74,11 +73,9 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Delete Entity")) {
-                entity->Destroy();
+                
                 InspectorWindow::Get()->SetShowingEntity(nullptr);
-                ImGui::EndPopup();
                 _entityRemoved = true;
-                return;
             }
             if (ImGui::MenuItem("Dublicate")) {
                 //Entity->Dublicate();
@@ -98,6 +95,16 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
         EditorLayer* editor = EditorLayer::Get();
         Vec3 pos = entity->GetWorldTransform().GetPosition();
         editor->GetCamera()->SetPosition(pos);
+    }
+
+    if (_entityRemoved) {
+        entity->Destroy();
+        _entityRemoved = false;
+
+        if (tree_open) 
+            ImGui::TreePop();
+
+        return;
     }
 
     //Return back to white color

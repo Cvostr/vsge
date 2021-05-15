@@ -15,13 +15,24 @@ void IRenderer::CreateRenderList() {
 void IRenderer::ProcessEntity(Entity* entity) {
 	if (!entity->IsActive())
 		return;
-	Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
-	Mat4 worldTransform(1.f);
+	//Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
+	Mat4 localTransform(1.f);
+	localTransform = Scale(localTransform, entity->GetScale());
+	localTransform = localTransform * GetRotationMatrix(entity->GetRotation());
+	localTransform = Translate(localTransform, entity->GetPosition());
+
 	entity->SetLocalTransform(localTransform);
 
+	Mat4 worldTransform(1.f);
 	if (entity->GetParent()) {
-		worldTransform = entity->GetParent()->GetWorldTransform() * localTransform;
+		worldTransform = entity->GetParent()->GetWorldTransform();
 	}
+
+	worldTransform = Scale(worldTransform, entity->GetScale());
+	worldTransform = worldTransform * GetRotationMatrix(entity->GetRotation());
+	worldTransform = Translate(worldTransform, entity->GetPosition());
+	
+
 	entity->SetWorldTransform(worldTransform);
 
 	bool HasMesh = entity->HasComponent<MeshComponent>();

@@ -30,7 +30,6 @@ void SceneViewWindow::OnDrawWindow() {
             VSGE::Camera* cam = editor_layer->GetCamera();
             Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());
             Mat4 view = GetViewRH(cam->GetPosition(), cam->GetPosition() + cam->GetFront(), cam->GetUp());
-            Mat4 offset = Mat4(1);
             Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
             ImGuizmo::OPERATION op = ImGuizmo::OPERATION(editor_layer->GetTransformMode());
@@ -53,7 +52,7 @@ void SceneViewWindow::OnDrawWindow() {
                 Vec3 parent_scale = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetScale();
 
                 translation = translation - parent_translation;
-                scale = scale * (parent_scale.Invert());
+                scale = scale * parent_scale.Invert();
                 rotation = rotation - parent_rotation;
 
                 editor_layer->GetPickedEntity()->SetPosition(translation);
@@ -73,5 +72,5 @@ void SceneViewWindow::OnWindowResize() {
 
 void SceneViewWindow::Regroup(uint32 width, uint32 height) {
     SetPos(width / 4, 20);
-    SetSize(width / 2, height * 0.66f);
+    SetSize(width / 2, (height / 3) * 2);
 }

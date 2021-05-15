@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 #include "Engine/Application.hpp"
 #include <Math/MatrixCamera.hpp>
+#include <Math/MathBase.hpp>
 
 using namespace VSGE;
 
@@ -48,6 +49,10 @@ const Vec3& Camera::GetFront() {
 }
 const Vec3& Camera::GetUp() { 
 	return _up; 
+}
+
+Vec3 Camera::GetRight() {
+	return _front.Cross(_up).GetNormalized();
 }
 
 const Mat4& Camera::GetProjectionMatrix() {

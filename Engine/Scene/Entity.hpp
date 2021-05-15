@@ -98,7 +98,7 @@ namespace VSGE {
 		/// Set static/dynamic param of entity
 		/// </summary>
 		/// <param name="static"></param>
-		void SetStatic(bool _static) { _static = _static; }
+		void SetStatic(bool _static) { this->_static = _static; }
 		/// <summary>
 		/// Return whether entity is static.
 		/// </summary>

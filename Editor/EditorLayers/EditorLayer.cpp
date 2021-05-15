@@ -1,6 +1,7 @@
 #include "EditorLayer.hpp" 
 #include <Core/FileLoader.hpp>
 #include <Engine/Application.hpp>
+#include <Core/Time.hpp>
 
 #include "ImGuiLayer.hpp"
 
@@ -14,6 +15,8 @@
 #include "../Menus/Windows_Menu.hpp"
 
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+
+#define MONEMENT_COEFF 40.3f
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -52,6 +55,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventMouseScrolled>(event, EVENT_FUNC(EditorLayer::OnMouseScroll));
 	DispatchEvent<VSGE::EventMouseButtonDown>(event, EVENT_FUNC(EditorLayer::OnMouseButtonDown));
 	DispatchEvent<VSGE::EventMouseButtonUp>(event, EVENT_FUNC(EditorLayer::OnMouseButtonUp));
+	DispatchEvent<VSGE::EventKeyButtonDown>(event, EVENT_FUNC(EditorLayer::OnKeyDown));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
@@ -89,7 +93,7 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 	if (win) {
 		if (win->IsInFocus() && win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
 			Vec3 cam_front = mEditorCamera->GetFront() * scroll.GetOffsetY();
-			Vec3 new_pos = mEditorCamera->GetPosition() - cam_front;
+			Vec3 new_pos = mEditorCamera->GetPosition() + cam_front;
 			mEditorCamera->SetPosition(new_pos);
 		}
 	}
@@ -111,6 +115,30 @@ void EditorLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
 	if (mbu.GetMouseButton() == MOUSE_BUTTON_LEFT) {
 		InputState.left_btn_hold = false;
 	}
+}
+
+void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
+	TimePerf* time = TimePerf::Get();
+	Vec3 cam_pos_offset(0.f);
+	switch (kbd.GetKeyCode()) {
+	case KEY_CODE_W:
+		cam_pos_offset = mEditorCamera->GetFront() * MONEMENT_COEFF* time->GetDeltaTime();
+		break;
+	
+	case KEY_CODE_S:
+		cam_pos_offset = mEditorCamera->GetFront() * -MONEMENT_COEFF * time->GetDeltaTime();
+		break;
+
+	case KEY_CODE_A:
+		cam_pos_offset = mEditorCamera->GetRight() * -MONEMENT_COEFF * time->GetDeltaTime();
+		break;
+
+	case KEY_CODE_D:
+		cam_pos_offset = mEditorCamera->GetRight() * MONEMENT_COEFF * time->GetDeltaTime();
+		break;
+	}
+	Vec3 right = mEditorCamera->GetRight();
+	mEditorCamera->SetPosition(mEditorCamera->GetPosition() + cam_pos_offset);
 }
 
 void EditorLayer::OnWindowClose(const VSGE::EventWindowClose& close) {

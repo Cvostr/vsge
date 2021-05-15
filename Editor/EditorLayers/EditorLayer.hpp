@@ -103,6 +103,7 @@ namespace VSGEditor {
 		void OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd);
 		void OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu);
 		void OnWindowClose(const VSGE::EventWindowClose& close);
+		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
 
 	};
 }

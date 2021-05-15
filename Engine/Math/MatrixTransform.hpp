@@ -15,3 +15,6 @@ Mat4 GetRotationMatrix(const Vec3 Rotation);
 Mat4 GetRotationMatrix(const Quat Rotation);
 
 Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation);
+
+Mat4 Translate(Mat4& origin, const Vec3& translation);
+Mat4 Scale(Mat4& origin, const Vec3& scale);

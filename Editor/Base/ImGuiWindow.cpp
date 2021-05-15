@@ -81,7 +81,7 @@ const ImVec2& EditorWindow::GetPos() {
 
 bool EditorWindow::isInsideWindow(uint32 x, uint32 y) {
 	ImRect wrect = ImRect(_pos, _pos + _size);
-	ImVec2 cursor_pos = ImVec2(x, y);
+	ImVec2 cursor_pos = ImVec2((float)x, (float)y);
 	if (wrect.Min.x < cursor_pos.x && wrect.Min.y < cursor_pos.y && wrect.Max.x > x && wrect.Max.y > y)
 		return true;
 	return false;

@@ -36,6 +36,7 @@ public:
 
         T Values[4][4];
         T Raw[16];
+        tVec4<T> Rows[4];
     };
     tMat4(){
         for (uint8 i = 0; i < 16; i++)
@@ -54,6 +55,10 @@ public:
         Values[1][0] = v2.x; Values[1][1] = v2.y; Values[1][2] = v2.z; Values[1][3] = v2.w;
         Values[2][0] = v3.x; Values[2][1] = v3.y; Values[2][2] = v3.z; Values[2][3] = v3.w;
         Values[3][0] = v4.x; Values[3][1] = v4.y; Values[3][2] = v4.z; Values[3][3] = v4.w;
+    }
+
+    tVec4<T>& operator[](uint32 i) {
+        return Rows[i];
     }
 
     tMat4 operator*(T r) const;
