@@ -10,6 +10,8 @@
 #include "Math/AABB.hpp"
 #include "Camera.hpp"
 
+#include <Core/Serialization/ISerializable.hpp>
+
 namespace VSGE {
 
 	class Scene;
@@ -17,7 +19,7 @@ namespace VSGE {
 
 	typedef std::vector<Entity*> tEntityList;
 
-	class Entity {
+	class Entity : public ISerializable {
 	private:
 
 		bool _active;
@@ -234,5 +236,9 @@ namespace VSGE {
 		}
 
 		void RemoveAllComponents();
+
+		void Serialize(Serializer& s);
+
+		void DeSerialize(Deserializer& ds);
 	};
 }

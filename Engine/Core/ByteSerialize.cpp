@@ -21,7 +21,7 @@ void ByteSerialize::Reallocate(uint32 newSize) {
 	mAllocatedSize = newSize;
 }
 
-void ByteSerialize::Serialize(void* data, uint32 size) {
+void ByteSerialize::WriteBytes(void* data, uint32 size) {
 	if (mAllocatedSize < mSerializedSize + size) {
 		Reallocate(mAllocatedSize * 2);
 	}
@@ -34,7 +34,7 @@ void ByteSerialize::Serialize(std::string str) {
 		Serialize(str[s]);
 	}
 	char zero = '\0';
-	Serialize(zero);
+	WriteBytes(&zero, 1);
 }
 
 byte* ByteSerialize::GetBytes() {

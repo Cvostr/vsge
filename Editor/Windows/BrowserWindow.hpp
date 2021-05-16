@@ -35,6 +35,8 @@ namespace VSGEditor {
 		std::string mCurrentDir;
 		std::string mRootDir;
 
+		FileEntry* entryToDelete;
+
 		VSGE::VulkanSampler sampler;
 		struct {
 		
@@ -60,7 +62,7 @@ namespace VSGEditor {
 		void SetDirectory(std::string Dir);
 		void UpdateDirectoryContent();
 		void OpenFile(const FileEntry& Entry);
-		void DeleteFile(const FileEntry& Entry);
+		void DeleteFile(FileEntry* Entry);
 		const std::string& GetCurrentDir() {
 			return mCurrentDir;
 		}

@@ -15,22 +15,23 @@ void IRenderer::CreateRenderList() {
 void IRenderer::ProcessEntity(Entity* entity) {
 	if (!entity->IsActive())
 		return;
-	//Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
-	Mat4 localTransform(1.f);
-	localTransform = Scale(localTransform, entity->GetScale());
-	localTransform = localTransform * GetRotationMatrix(entity->GetRotation());
-	localTransform = Translate(localTransform, entity->GetPosition());
+	Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
 
 	entity->SetLocalTransform(localTransform);
 
+	Vec3 tr = entity->GetPosition();
+	Vec3 sc = entity->GetScale();
+	Vec3 rt = entity->GetRotation();
+
 	Mat4 worldTransform(1.f);
 	if (entity->GetParent()) {
-		worldTransform = entity->GetParent()->GetWorldTransform();
+		Mat4 parent = entity->GetParent()->GetWorldTransform();
+		tr += parent.GetPosition();
+		sc *= parent.GetScale();
+		rt += parent.GetRotation();
 	}
 
-	worldTransform = Scale(worldTransform, entity->GetScale());
-	worldTransform = worldTransform * GetRotationMatrix(entity->GetRotation());
-	worldTransform = Translate(worldTransform, entity->GetPosition());
+	worldTransform = GetTransform(tr, sc, rt);
 	
 
 	entity->SetWorldTransform(worldTransform);

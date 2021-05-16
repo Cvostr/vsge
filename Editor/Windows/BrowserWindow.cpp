@@ -62,46 +62,26 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
 }
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
-    if (Entry.isDir)
-        cd(Entry.name);
+    if (Entry.ext == ".scn") {
+        EditorLayer* el = EditorLayer::Get();
+        VSGE::Deserializer de(Entry.abs_path);
+        el->GetScene()->NewScene();
+        el->GetScene()->DeSerialize(de);
+    }
 }
 
-void FileBrowserWindow::DeleteFile(const FileEntry& Entry) {
-    const SDL_MessageBoxButtonData buttons[] = {
-                { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Yes" },
-                { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 1, "Cancel" },
-    };
+void FileBrowserWindow::DeleteFile(FileEntry* Entry) {
+    if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Delete file %s ?", Entry->name.c_str());
+        ImGui::Separator();
 
-    const SDL_MessageBoxColorScheme colorScheme = {
-    { /* .colors (.r, .g, .b) */
-        /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
-        { 255,   0,   0 },
-        /* [SDL_MESSAGEBOX_COLOR_TEXT] */
-        {   0, 255,   0 },
-        /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
-        { 255, 255,   0 },
-        /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
-        {   0,   0, 255 },
-        /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
-        { 255,   0, 255 }
-    }
-    };
-
-    const SDL_MessageBoxData messageboxdata = {
-        SDL_MESSAGEBOX_INFORMATION, /* .flags */
-        NULL, /* .window */
-        "File deletion", /* .title */
-        "Are you sure?", /* .message */
-        SDL_arraysize(buttons), /* .numbuttons */
-        buttons, /* .buttons */
-        &colorScheme /* .colorScheme */
-    };
-
-    int buttonid;
-    SDL_ShowMessageBox(&messageboxdata, &buttonid);
-    if (buttonid == 0) {
-        //Remove file
-        fs::remove(Entry.abs_path);
+        if (ImGui::Button("OK", ImVec2(120, 0))) { fs::remove(Entry->abs_path); }
+        
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+        ImGui::SetItemDefaultFocus();
+        ImGui::EndPopup();
     }
 }
 
@@ -129,6 +109,9 @@ void FileBrowserWindow::OnDrawWindow() {
         }
         ImGui::EndPopup();
     }
+
+    bool deleteFile = false;
+    
 
     float width = w->Size.x;
     if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(64, 64)))
@@ -160,6 +143,8 @@ void FileBrowserWindow::OnDrawWindow() {
         unsigned int pix = 0;
         bool hovered = false;
         bool clicked = ImageButtonWithText(icon->imtexture, e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
+       
+        
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
         {
@@ -176,11 +161,15 @@ void FileBrowserWindow::OnDrawWindow() {
             if (ImGui::MenuItem("Rename")) {
 
             }
-            if (ImGui::MenuItem("Delete"))
-                DeleteFile(*e);
-
-            ImGui::EndPopup();
+            if (ImGui::MenuItem("Delete")) {
+                deleteFile = true;
+                entryToDelete = e;
+            }
+               
+            ImGui::EndPopup();         
         }
+
+        
         //if user clicked on file
         if (clicked) {
             if (e->isDir) {
@@ -199,6 +188,14 @@ void FileBrowserWindow::OnDrawWindow() {
         else
             drawn_pix = 0;
     }
+    if (deleteFile) {
+        ImGui::OpenPopup("Delete?");
+        deleteFile = false;
+       
+    }
+
+    DeleteFile(entryToDelete);
+
 
     //End Window
     ImGui::End();

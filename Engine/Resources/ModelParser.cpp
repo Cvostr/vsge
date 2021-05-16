@@ -216,7 +216,7 @@ void SceneFileExport::setRootNode(SceneNode* node) {
 void SceneFileExport::write(std::string output_file) {
     ByteSerialize* serializer = new ByteSerialize;
 
-    serializer->Serialize("zs3mscene", 9);
+    serializer->WriteBytes("zs3mscene", 9);
     uint32 model_ver = 1000;
     uint32 meshes_num = static_cast<uint32>(this->mMeshes.size());
     uint32 nodes_num = 0;
@@ -232,7 +232,7 @@ void SceneFileExport::write(std::string output_file) {
     for (uint32 mesh_i = 0; mesh_i < meshes_num; mesh_i++) {
         MeshContainer* mesh_ptr = this->mMeshes[mesh_i];
         //std::cout << "ZS3M: Writing Mesh " << mesh_ptr->mesh_label << std::endl;
-        serializer->Serialize("_MESH", 5);
+        serializer->WriteBytes("_MESH", 5);
         serializer->Serialize(mesh_ptr->meshName);
 
         //Write base numbers
@@ -288,7 +288,7 @@ void SceneFileExport::write(std::string output_file) {
 
 void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
     //Write node header
-    stream->Serialize("_NODE", 5);
+    stream->WriteBytes("_NODE", 5);
     stream->Serialize(node->GetLabel());
 
     uint32 meshesNum = static_cast<uint32>(node->mesh_names.size());

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Entity.hpp"
+#include <Core/Serialization/ISerializable.hpp>
 
 namespace VSGE {
-	class Scene {
+	class Scene : public ISerializable {
 	private:
 		Entity* mRootEntity;
 
@@ -35,6 +36,10 @@ namespace VSGE {
 		/// <param name="id">- guid to find</param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
+
+		void Serialize(Serializer& s);
+
+		void DeSerialize(Deserializer& ds);
 
 		Scene() : mRootEntity(nullptr) {}
 	};

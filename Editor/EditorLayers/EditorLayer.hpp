@@ -32,6 +32,7 @@ namespace VSGEditor {
 			int cursory;
 		}InputState;
 
+		std::string _openedSceneFile;
 		VSGE::Entity* _pickedEntity;
 		int _transformMode;
 
@@ -57,6 +58,10 @@ namespace VSGEditor {
 			delete mScene;
 			delete mEditorCamera;
 			delete mResourcesWatcher;
+		}
+
+		std::string& GetOpenedSceneFile() {
+			return _openedSceneFile;
 		}
 
 		int GetTransformMode() {

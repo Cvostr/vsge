@@ -1,12 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <Core/Serialization/ISerializable.hpp>
 
 namespace VSGE {
 
 	class Entity;
 
-	class IEntityComponent {
+	class IEntityComponent : public ISerializable {
 	public:
 
 		IEntityComponent() : mActive(false), mEntity(nullptr) {}

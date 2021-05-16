@@ -92,7 +92,7 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 	SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 	if (win) {
 		if (win->IsInFocus() && win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
-			Vec3 cam_front = mEditorCamera->GetFront() * scroll.GetOffsetY();
+			Vec3 cam_front = mEditorCamera->GetFront() * (float)scroll.GetOffsetY();
 			Vec3 new_pos = mEditorCamera->GetPosition() + cam_front;
 			mEditorCamera->SetPosition(new_pos);
 		}

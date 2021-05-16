@@ -159,3 +159,22 @@ const AABB& Entity::UpdateAABB() {
 void Entity::SetWorldTransform(const Mat4& transform) { 
 	WorldTransform = transform;
 }
+
+void Entity::Serialize(Serializer& s) {
+	s.BeginHeader("Entity");
+	s.Serialize("e_name", _name);
+	s.Serialize("e_active", _active);
+	s.Serialize("e_vmask", _viewMask);
+	if (GetParent()) {
+		s.Serialize("e_parent", _parent->GetGuid());
+	}
+	s.EndHeader();
+
+	for (Entity* child : _children) {
+		child->Serialize(s);
+	}
+}
+
+void Entity::DeSerialize(Deserializer& ds) {
+
+}
