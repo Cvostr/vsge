@@ -5,6 +5,8 @@
 
 #include "ResourceTypes/TextureResource.hpp"
 #include "ResourceTypes/MeshResource.hpp"
+#include "ResourceTypes/MaterialResource.hpp"
+#include "ResourceTypes/AnimationResource.hpp"
 
 namespace fs = std::filesystem;
 using namespace VSGE;
@@ -26,6 +28,10 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
         return RESOURCE_TYPE_TEXTURE;
     if (ext == ".vs3m")
         return RESOURCE_TYPE_MESHGROUP;
+    if (ext == ".vsmt")
+        return RESOURCE_TYPE_MATERIAL;
+    if (ext == ".vsanim")
+        return RESOURCE_TYPE_ANIMATION;
     return RESOURCE_TYPE_NONE;
 }
 
@@ -58,6 +64,12 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     }
     else if (type == RESOURCE_TYPE_MESHGROUP) {
         res = new MeshGroupResource;
+    }
+    else if (type == RESOURCE_TYPE_MATERIAL) {
+        res = new MaterialResource;
+    }
+    else if (type == RESOURCE_TYPE_ANIMATION) {
+        res = new AnimationResource;
     }
 
     if(res != nullptr)
@@ -107,7 +119,7 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
     ByteSolver solver(data, size);
     solver.Copy(resources_count);
     while (!solver.end()) {
-        ResourceType type = RESOURCE_TYPE_NONE;;
+        ResourceType type = RESOURCE_TYPE_NONE;
         DataDescription ddescr = {};
         solver.Copy(&type);
 

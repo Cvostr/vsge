@@ -39,6 +39,7 @@ void FileBrowserWindow::UpdateDirectoryContent() {
         e.abs_path = entry.path().string();
         e.name = entry.path().filename().string();
         e.ext = entry.path().extension().string();
+        e.directory = mCurrentDir;
         //Calculating relative path
         for (uint32 s = (uint32)mRootDir.size() + 1; s < (uint32)e.abs_path.size(); s++) {
             e.rel_path += e.abs_path[s];
@@ -70,16 +71,39 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     }
 }
 
-void FileBrowserWindow::DeleteFile(FileEntry* Entry) {
+void FileBrowserWindow::DeleteFileDialog(FileEntry* Entry) {
     if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::Text("Delete file %s ?", Entry->name.c_str());
         ImGui::Separator();
 
-        if (ImGui::Button("OK", ImVec2(120, 0))) { fs::remove(Entry->abs_path); }
+        if (ImGui::Button("OK", ImVec2(120, 0))) { 
+            fs::remove(Entry->abs_path); 
+            ImGui::CloseCurrentPopup();
+        }
         
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+        ImGui::SetItemDefaultFocus();
+        ImGui::EndPopup();
+    }
+}
+
+void FileBrowserWindow::RenameFileDialog(FileEntry* Entry) {
+    if (ImGui::BeginPopupModal("Rename?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::InputText("New Name", &new_file_name);
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0))) { 
+            fs::rename(Entry->abs_path, Entry->directory + "/" + new_file_name);
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+            ImGui::CloseCurrentPopup(); 
+        }
         ImGui::SetItemDefaultFocus();
         ImGui::EndPopup();
     }
@@ -111,6 +135,7 @@ void FileBrowserWindow::OnDrawWindow() {
     }
 
     bool deleteFile = false;
+    bool renameFile = false;
     
 
     float width = w->Size.x;
@@ -159,7 +184,8 @@ void FileBrowserWindow::OnDrawWindow() {
                 OpenFile(*e);
             }
             if (ImGui::MenuItem("Rename")) {
-
+                renameFile = true;
+                entryToDelete = e;
             }
             if (ImGui::MenuItem("Delete")) {
                 deleteFile = true;
@@ -191,10 +217,15 @@ void FileBrowserWindow::OnDrawWindow() {
     if (deleteFile) {
         ImGui::OpenPopup("Delete?");
         deleteFile = false;
-       
+    }
+    if (renameFile) {
+        ImGui::OpenPopup("Rename?");
+        new_file_name = entryToDelete->name;
+        renameFile = false;
     }
 
-    DeleteFile(entryToDelete);
+    DeleteFileDialog(entryToDelete);
+    RenameFileDialog(entryToDelete);
 
 
     //End Window

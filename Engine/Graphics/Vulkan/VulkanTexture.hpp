@@ -9,8 +9,8 @@ namespace VSGE {
 
 	class VulkanTexture : public Texture {
     private:
-        VmaVkImage mImage;
-        VkImageView mImageView;
+        VmaVkImage _image;
+        VkImageView _imageView;
 
         VkImageUsageFlagBits usage;
 
@@ -19,15 +19,17 @@ namespace VSGE {
 
     public:
 
-        VulkanTexture() : Texture()
+        VulkanTexture() : 
+            Texture(),
+            _imageView(VK_NULL_HANDLE)
         {}
 
         ~VulkanTexture() {
             Destroy();
         }
 
-        VkImage GetImage() { return mImage.Image; }
-        VkImageView GetImageView() { return mImageView; }
+        VkImage GetImage() { return _image.Image; }
+        VkImageView GetImageView() { return _imageView; }
 
         /// <summary>
         /// Destroy texture and release memory

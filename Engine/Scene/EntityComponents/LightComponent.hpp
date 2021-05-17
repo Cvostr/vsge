@@ -27,6 +27,10 @@ namespace VSGE {
 			mLightType(LIGHT_TYPE_DIRECTIONAL)
 		{}
 
+		EntityComponentType GetType() {
+			return ENTITY_COMPONENT_LIGHTSOURCE;
+		}
+
 		LightType& GetLightType() { return mLightType; }
 		Color& GetColor() { return mLightColor; }
 

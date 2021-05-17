@@ -4,6 +4,6 @@
 using namespace VSGE;
 
 void MeshComponent::SetMeshName(const std::string& mesh) {
-	mMeshResource.UpdateResourcePointer(mesh);
+	_meshResource.UpdateResourcePointer(mesh);
 	//mMeshResource.mResourcePointer->Load();
 }

@@ -6,6 +6,11 @@
 
 namespace VSGE {
 
+	struct Header {
+		uint32 offset;
+		uint32 size;
+	};
+
 	class Deserializer {
 	private:
 		uint32 _offset;

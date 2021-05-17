@@ -39,7 +39,7 @@ namespace VSGE {
 		void write(const std::string& name, VarType type, uint32 size, byte* data);
 
 		template<typename T>
-		void Serialize(const std::string& name, T& value) {
+		void Serialize(const std::string& name, const T& value) {
 			if (typeid(T) == typeid(std::string)) {
 				std::string* s = (std::string*)(&value);
 				write(name, VAR_TYPE_STRING, s->size(), (byte*)s->c_str());

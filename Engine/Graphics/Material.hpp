@@ -82,6 +82,11 @@ namespace VSGE {
 		tMaterialParamsList _materialParams;
 		MaterialTemplate* _template;
 	public:
+
+		Material() :
+			_template(nullptr)
+		{}
+
 		void SetTemplate(MaterialTemplate* mat_template);
 		MaterialTemplate* GetTemplate() {
 			return _template;

@@ -38,7 +38,8 @@ namespace VSGE {
 		
 		FileWatcher() :
 			mMutex(new Mutex),
-			mDelay(700)
+			mDelay(700),
+			handle(nullptr)
 		{
 
 		}

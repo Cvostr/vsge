@@ -26,12 +26,16 @@ namespace VSGE {
         uint32 indexCount;
         uint32 bonesCount;
 
-        MeshContainer() {
-            vertexArray = nullptr;
-            vertexSkinningArray = nullptr;
-            indexArray = nullptr;
-            bonesArray = nullptr;
-        }
+        MeshContainer() :
+            vertexArray(nullptr),
+            vertexSkinningArray(nullptr),
+            indexArray(nullptr),
+            bonesArray(nullptr),
+
+            vertexCount(0),
+            indexCount(0),
+            bonesCount(0)
+        {}
 
         ~MeshContainer() {
             if (vertexArray)

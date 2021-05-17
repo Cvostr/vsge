@@ -69,8 +69,8 @@ void VulkanTexture::Destroy() {
 		VulkanDevice* device = vulkan->GetDevice();
 		VulkanMA* ma = vulkan->GetAllocator();
 
-		ma->destroyImage(&mImage);
-		vkDestroyImageView(device->getVkDevice(), mImageView, nullptr);
+		ma->destroyImage(&_image);
+		vkDestroyImageView(device->getVkDevice(), _imageView, nullptr);
 
 		mCreated = false;
 	}
@@ -126,7 +126,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VulkanMA* ma = rapi->GetAllocator();
 	VulkanDevice* device = rapi->GetDevice();
 
-	ma->createImage(&imageInfo, &this->mImage);
+	ma->createImage(&imageInfo, &this->_image);
 }
 
 void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) {
@@ -163,7 +163,7 @@ bool VulkanTexture::CreateImageView() {
 
 
 	VkImageViewCreateInfo textureImageViewInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
-	textureImageViewInfo.image = mImage.Image;
+	textureImageViewInfo.image = _image.Image;
 	textureImageViewInfo.viewType = ImageViewType;
 	textureImageViewInfo.format = GetFormatVK(_format);
 	textureImageViewInfo.subresourceRange.aspectMask = aspect;
@@ -175,7 +175,7 @@ bool VulkanTexture::CreateImageView() {
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();
 
-	if (vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &mImageView) != VK_SUCCESS)
+	if (vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &_imageView) != VK_SUCCESS)
 		return false;
 
 	return true;
@@ -198,7 +198,7 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 	imgMemBarrier.subresourceRange.layerCount = 1;
 	imgMemBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	imgMemBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	imgMemBarrier.image = mImage.Image;
+	imgMemBarrier.image = _image.Image;
 	imgMemBarrier.srcAccessMask = 0;
 	imgMemBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
@@ -225,11 +225,11 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 	region.imageExtent.height = Height;
 	region.imageExtent.depth = 1;
 
-	vkCmdCopyBufferToImage(cmdbuf, buffer.Buffer, mImage.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+	vkCmdCopyBufferToImage(cmdbuf, buffer.Buffer, _image.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
 	imgMemBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	imgMemBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imgMemBarrier.image = mImage.Image;
+	imgMemBarrier.image = _image.Image;
 	imgMemBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 	imgMemBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 

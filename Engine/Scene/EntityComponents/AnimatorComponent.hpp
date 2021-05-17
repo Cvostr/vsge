@@ -8,5 +8,9 @@ namespace VSGE {
 	private:
 	public:
 		AnimatorComponent(){}
+
+		EntityComponentType GetType() {
+			return ENTITY_COMPONENT_ANIMATOR;
+		}
 	};
 }

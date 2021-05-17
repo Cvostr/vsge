@@ -9,10 +9,11 @@ namespace VSGEditor {
 
 	struct FileEntry {
 		bool isDir;
-		std::string abs_path;
+		std::string abs_path; //full path on disk
 		std::string rel_path;
-		std::string name;
-		std::string ext;
+		std::string name; //name of file with ext
+		std::string ext; //file extension
+		std::string directory; //directory path of file
 		bool is3dModel() {
 			return !ext.compare(".rp3m");
 		}
@@ -35,6 +36,7 @@ namespace VSGEditor {
 		std::string mCurrentDir;
 		std::string mRootDir;
 
+		std::string new_file_name;
 		FileEntry* entryToDelete;
 
 		VSGE::VulkanSampler sampler;
@@ -62,7 +64,8 @@ namespace VSGEditor {
 		void SetDirectory(std::string Dir);
 		void UpdateDirectoryContent();
 		void OpenFile(const FileEntry& Entry);
-		void DeleteFile(FileEntry* Entry);
+		void DeleteFileDialog(FileEntry* Entry);
+		void RenameFileDialog(FileEntry* Entry);
 		const std::string& GetCurrentDir() {
 			return mCurrentDir;
 		}

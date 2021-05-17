@@ -14,16 +14,19 @@ namespace VSGE {
 	class AsyncLoader : public Thread {
 	private:
 		Mutex* mMutex;
-		Resource* loadQueue[LOADER_QUEUE_SIZE];
+		Resource** loadQueue;
 		uint32 queue_length;
 	public:
 		AsyncLoader() :
 			mMutex(new Mutex),
 			queue_length(0)
-		{}
+		{
+			loadQueue = new Resource*[LOADER_QUEUE_SIZE];
+		}
 
 		~AsyncLoader() {
 			delete mMutex;
+			delete[] loadQueue;
 		}
 
 		uint32 GetQueuedResourcesCount() { return queue_length; }

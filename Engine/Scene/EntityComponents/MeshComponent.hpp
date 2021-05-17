@@ -7,15 +7,20 @@
 namespace VSGE {
 	class MeshComponent : public IEntityComponent {
 	private:
-		ResourceReference mMeshResource;
+		ResourceReference _meshResource;
 	public:
 		MeshComponent() {
-			mMeshResource.SetResourceType(RESOURCE_TYPE_MESH);
+			_meshResource.SetResourceType(RESOURCE_TYPE_MESH);
 		}
+
+		EntityComponentType GetType() {
+			return ENTITY_COMPONENT_MESH;
+		}
+
 		void SetMeshName(const std::string& mesh);
-		MeshResource* GetMeshResource() { return mMeshResource.GetResource<MeshResource>(); }
+		MeshResource* GetMeshResource() { return _meshResource.GetResource<MeshResource>(); }
 		ResourceReference& GetResourceReference() {
-			return mMeshResource;
+			return _meshResource;
 		}
 	};
 }

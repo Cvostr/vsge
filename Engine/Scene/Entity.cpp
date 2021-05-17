@@ -168,6 +168,14 @@ void Entity::Serialize(Serializer& s) {
 	if (GetParent()) {
 		s.Serialize("e_parent", _parent->GetGuid());
 	}
+
+	s.BeginHeader("e_children");
+	s.Serialize("ch_count", _children.size());
+	for (int i = 0; i < _children.size(); i++) {
+		s.Serialize("c", _children[i]->GetParent()->GetGuid());
+	}
+	s.EndHeader();
+
 	s.EndHeader();
 
 	for (Entity* child : _children) {
