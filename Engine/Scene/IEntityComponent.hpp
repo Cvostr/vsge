@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <Core/Serialization/ISerializable.hpp>
 
 namespace VSGE {
 
@@ -15,7 +14,7 @@ namespace VSGE {
 
 	class Entity;
 
-	class IEntityComponent : public ISerializable {
+	class IEntityComponent {
 	public:
 
 		IEntityComponent() : _active(false), _entity(nullptr) {}

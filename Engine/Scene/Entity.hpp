@@ -10,8 +10,6 @@
 #include "Math/AABB.hpp"
 #include "Camera.hpp"
 
-#include <Core/Serialization/ISerializable.hpp>
-
 namespace VSGE {
 
 	class Scene;
@@ -19,7 +17,7 @@ namespace VSGE {
 
 	typedef std::vector<Entity*> tEntityList;
 
-	class Entity : public ISerializable {
+	class Entity  {
 	private:
 
 		bool _active;
@@ -65,7 +63,7 @@ namespace VSGE {
 		/// get guid of entity
 		/// </summary>
 		/// <returns>entity's guid</returns>
-		const Guid& GetGuid() { return _id; }
+		const Guid& GetGuid() const { return _id; }
 		/// <summary>
 		/// Set new guid to entity
 		/// </summary>
@@ -95,7 +93,7 @@ namespace VSGE {
 		/// Return whether entity is active.
 		/// </summary>
 		/// <returns></returns>
-		bool IsActive();
+		bool IsActive() const;
 		/// <summary>
 		/// Set static/dynamic param of entity
 		/// </summary>
@@ -105,7 +103,7 @@ namespace VSGE {
 		/// Return whether entity is static.
 		/// </summary>
 		/// <returns></returns>
-		bool IsStatic() { return _static; }
+		bool IsStatic() const { return _static; }
 		/// <summary>
 		/// Set new name string to entity
 		/// </summary>
@@ -115,7 +113,7 @@ namespace VSGE {
 		/// get name of entity
 		/// </summary>
 		/// <returns></returns>
-		const std::string& GetName() { return _name; }
+		const std::string& GetName() const { return _name; }
 		/// <summary>
 		/// Add new child to this entity
 		/// </summary>
@@ -130,7 +128,7 @@ namespace VSGE {
 		/// Get amount of children, connected to this object
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetChildrenCount() { return static_cast<uint32>(_children.size()); }
+		uint32 GetChildrenCount() const { return static_cast<uint32>(_children.size()); }
 		/// <summary>
 		/// Return child entity by index.
 		/// </summary>
@@ -146,7 +144,7 @@ namespace VSGE {
 		/// Returns pointer to parent entity
 		/// </summary>
 		/// <returns></returns>
-		Entity* GetParent() { return _parent; }
+		Entity* GetParent() const { return _parent; }
 		/// <summary>
 		/// Tries to find the entity with the given name in this entity hierarchy
 		/// </summary>
@@ -160,9 +158,9 @@ namespace VSGE {
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
 
-		const Vec3& GetPosition() { return mPosition; }
-		const Vec3& GetScale() { return mScale; }
-		const Vec3& GetRotation() { return mRotation; }
+		const Vec3& GetPosition() const { return mPosition; }
+		const Vec3& GetScale() const { return mScale; }
+		const Vec3& GetRotation() const { return mRotation; }
 
 		void SetPosition(const Vec3& position);
 		void SetScale(const Vec3& scale);
@@ -237,8 +235,5 @@ namespace VSGE {
 
 		void RemoveAllComponents();
 
-		void Serialize(Serializer& s);
-
-		void DeSerialize(Deserializer& ds);
 	};
 }

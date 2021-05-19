@@ -13,6 +13,8 @@ namespace VSGE {
 	public:
 		std::string name;
 		MultitypeValue value;
+		uint32 offset;
+		uint32 size;
 	};
 
 	class MaterialTexture {
@@ -47,9 +49,7 @@ namespace VSGE {
 			return _materialTextures;
 		}
 
-		tMaterialParamsList& GetParams() {
-			return _materialParams;
-		}
+		void AddParameter(const std::string& name);
 
 		Shader* GetShader() {
 			return _shader;
@@ -81,11 +81,35 @@ namespace VSGE {
 		tMaterialTexturesList _materialTextures;
 		tMaterialParamsList _materialParams;
 		MaterialTemplate* _template;
+
+		GraphicsApiDependent _descriptors;
+		Buffer _paramsBuffer;
+
+		bool _paramsDirty;
+		bool _texturesDirty;
+
+		MaterialTexture* GetTextureByName(const std::string& texture_name);
+		MaterialParameter* GetParameterByName(const std::string& param_name);
+		void CopyParamsToBuffer();
 	public:
 
 		Material() :
-			_template(nullptr)
+			_template(nullptr),
+			_paramsDirty(false),
+			_texturesDirty(false),
+			_paramsBuffer(nullptr),
+			_descriptors(nullptr)
 		{}
+
+		~Material() {
+			if (_paramsBuffer)
+				delete[] _paramsBuffer;
+			if (_descriptors)
+				delete _descriptors;
+		}
+
+		void SetTexture(const std::string& texture_name, ResourceReference* texture);
+		void SetParameter(const std::string& parameter_name, MultitypeValue value);
 
 		void SetTemplate(MaterialTemplate* mat_template);
 		MaterialTemplate* GetTemplate() {

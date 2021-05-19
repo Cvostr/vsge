@@ -17,6 +17,9 @@ typedef unsigned long long uint64;
 
 typedef char* BaseString;
 
+typedef void* GraphicsApiDependent;
+typedef void* Buffer;
+
 #define API_FIELD(...)
 
 #define MAX_INT32 0xFFFFFFF

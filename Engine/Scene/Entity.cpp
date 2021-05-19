@@ -5,7 +5,7 @@
 
 using namespace VSGE;
 
-bool Entity::IsActive() {
+bool Entity::IsActive() const {
 	if (!GetParent())
 		return _active;
 	return _active && GetParent()->IsActive();
@@ -55,6 +55,8 @@ Entity* Entity::GetEntityWithName(std::string name) {
 }
 
 Entity* Entity::GetEntityWithGuid(const Guid& id) {
+	if (_id == id)
+		return this;
 	for (auto child : _children) {
 		Guid g = child->GetGuid();
 		if (g == id)
@@ -158,31 +160,4 @@ const AABB& Entity::UpdateAABB() {
 
 void Entity::SetWorldTransform(const Mat4& transform) { 
 	WorldTransform = transform;
-}
-
-void Entity::Serialize(Serializer& s) {
-	s.BeginHeader("Entity");
-	s.Serialize("e_name", _name);
-	s.Serialize("e_active", _active);
-	s.Serialize("e_vmask", _viewMask);
-	if (GetParent()) {
-		s.Serialize("e_parent", _parent->GetGuid());
-	}
-
-	s.BeginHeader("e_children");
-	s.Serialize("ch_count", _children.size());
-	for (int i = 0; i < _children.size(); i++) {
-		s.Serialize("c", _children[i]->GetParent()->GetGuid());
-	}
-	s.EndHeader();
-
-	s.EndHeader();
-
-	for (Entity* child : _children) {
-		child->Serialize(s);
-	}
-}
-
-void Entity::DeSerialize(Deserializer& ds) {
-
 }

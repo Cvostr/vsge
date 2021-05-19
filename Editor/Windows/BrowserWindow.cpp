@@ -4,6 +4,7 @@
 #include <ImageBtnText.h>
 #include "../EditorLayers/EditorLayer.hpp"
 #include "../Misc/SceneExt.hpp"
+#include <Scene/SceneSerialization.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -65,9 +66,11 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     if (Entry.ext == ".scn") {
         EditorLayer* el = EditorLayer::Get();
-        VSGE::Deserializer de(Entry.abs_path);
         el->GetScene()->NewScene();
-        el->GetScene()->DeSerialize(de);
+
+        VSGE::SceneSerializer ss;
+        ss.SetScene(el->GetScene());
+        ss.Deserialize(Entry.abs_path);
     }
 }
 

@@ -127,10 +127,14 @@ namespace VSGE {
 			return _resourceName;
 		}
 
-		void UpdateResourcePointer(const std::string& resourceName);
+		void SetResource(const std::string& resourceName);
 
 		bool IsResourceSpecified() {
 			return !_resourceName.empty();
+		}
+
+		void operator=(ResourceReference& ref) {
+			SetResource(ref._resourceName);
 		}
 
 		ResourceReference() {

@@ -10,6 +10,7 @@ void Scene::NewScene() {
 	mRootEntity = new Entity;
 	mRootEntity->SetScene(this);
 	mRootEntity->SetName("Root");
+	mRootEntity->SetGuid(Guid(0, 0, 0, 0));
 }
 
 Entity* Scene::AddNewEntity(const std::string& name) {
@@ -35,30 +36,4 @@ Entity* Scene::GetEntityWithName(const std::string& name) {
 
 Entity* Scene::GetEntityWithGuid(const Guid& id) {
 	return mRootEntity->GetEntityWithGuid(id);
-}
-
-void Scene::Serialize(Serializer& s) {
-	s.BeginHeader("scene");
-
-	mRootEntity->Serialize(s);
-
-	s.EndHeader();
-}
-
-void Scene::DeSerialize(Deserializer& ds) {
-	std::string header = ds.GetNextHeaderName();
-
-	if (header != "scene")
-		return;
-
-	while (!ds.End()) {
-		std::string header = ds.GetNextHeaderName();
-
-		if (header == "Entity") {
-			Entity* ent = new Entity;
-			ent->SetScene(this);
-			ent->DeSerialize(ds);
-			
-		}
-	}
 }

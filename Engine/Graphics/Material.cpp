@@ -22,3 +22,35 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 		this->_materialParams.push_back(param);
 	}
 }
+
+MaterialTexture* Material::GetTextureByName(const std::string& texture_name) {
+	for (MaterialTexture& texture : _materialTextures) {
+		if (texture.name == texture_name)
+			return &texture;
+	}
+
+	return nullptr;
+}
+MaterialParameter* Material::GetParameterByName(const std::string& param_name) {
+	for (MaterialParameter& param : _materialParams) {
+		if (param.name == param_name)
+			return &param;
+	}
+
+	return nullptr;
+}
+
+void Material::SetTexture(const std::string& texture_name, ResourceReference* texture) {
+	GetTextureByName(texture_name)->resource = *texture;
+	CopyParamsToBuffer();
+	_texturesDirty = true;
+}
+void Material::SetParameter(const std::string& parameter_name, MultitypeValue value) {
+	GetParameterByName(parameter_name)->value = value;
+	CopyParamsToBuffer();
+	_paramsDirty = true;
+}
+
+void Material::CopyParamsToBuffer() {
+
+}
