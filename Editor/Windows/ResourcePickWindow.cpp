@@ -13,7 +13,7 @@ void ResourcePickerWindow::OnDrawWindow() {
             Resource* resource = ResourceCache::Get()->GetResources()[resource_i];
             if (resource->GetResourceType() == reference->GetResourceType()) {
                 if (ImGui::Button(resource->GetName().c_str())) {
-                    reference->UpdateResourcePointer(resource->GetName());
+                    reference->SetResource(resource->GetName());
                     Hide();
                 }
             }

@@ -38,7 +38,10 @@ namespace VSGE {
 			mCpuBuffer(nullptr),
 			mDeviceLocation(LOCATION_CPU_GPU)
 		{}
-
+		/// <summary>
+		/// Get size of buffer
+		/// </summary>
+		/// <returns></returns>
 		uint32 GetSize() { return mSize; }
 		/// <summary>
 		/// Create buffer and allocate memory for it

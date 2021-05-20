@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../GpuObject.hpp"
+#include "../GraphicsPipeline.hpp"
 #include <vulkan/vulkan.hpp>
 #include "VulkanRenderpass.hpp"
 #include "VulkanShader.hpp"
@@ -35,7 +35,7 @@ namespace VSGE {
 	};
 
 
-	class VulkanPipeline : public IGpuObject {
+	class VulkanPipeline : public GraphicsPipeline {
 	private:
 		VkPipeline mPipeline;
 		VulkanPipelineLayout* _pipelineLayout;

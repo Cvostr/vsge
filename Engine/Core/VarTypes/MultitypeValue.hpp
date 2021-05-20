@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.hpp"
+#include "Guid.hpp"
 #include <Math/Vec2.hpp>
 #include <Math/Vec3.hpp>
 #include <Math/Vec4.hpp>
@@ -21,7 +22,8 @@ enum ValueType {
 	VALUE_TYPE_VEC4F,
 	VALUE_TYPE_VEC4I,
 	VALUE_TYPE_QUAT,
-	VALUE_TYPE_COLOR
+	VALUE_TYPE_COLOR,
+	VALUE_TYPE_GUID
 };
 
 union MultitypeData{
@@ -39,6 +41,13 @@ union MultitypeData{
 	Vec4i _vec4i;
 	Quat _quat;
 	VSGE::Color _color;
+	VSGE::Guid guid;
+
+	MultitypeData() :
+		guid(0, 0, 0, 0)
+	{
+		
+	}
 };
 
 class MultitypeValue {
@@ -47,6 +56,10 @@ private:
 	ValueType _type;
 public:
 
+	MultitypeValue() {
+		_type = VALUE_TYPE_INT;
+	}
+
 	ValueType GetType() {
 		return _type;
 	}
@@ -54,6 +67,10 @@ public:
 	template<typename T>
 	T& GetValue() {
 		return *(T*)(&_data);
+	}
+
+	void* GetValuePtr() {
+		return &_data;
 	}
 
 	void SetInt(int _int) {

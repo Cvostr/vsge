@@ -6,6 +6,8 @@
 #include <Core/VarTypes/Guid.hpp>
 #include "VertexLayout.hpp"
 #include <vector>
+#include "GraphicsPipeline.hpp"
+#include "GpuBuffer.hpp"
 
 namespace VSGE {
 
@@ -13,19 +15,21 @@ namespace VSGE {
 	public:
 		std::string name;
 		MultitypeValue value;
-		uint32 offset;
-		uint32 size;
+
+		MaterialParameter() {
+
+		}
 	};
 
 	class MaterialTexture {
 	public:
-		std::string name;
-		ResourceReference resource;
+		std::string _name;
+		ResourceReference _resource;
 		uint32 _binding;
 
 		MaterialTexture() {
 			_binding = 0;
-			resource.SetResourceType(RESOURCE_TYPE_TEXTURE);
+			_resource.SetResourceType(RESOURCE_TYPE_TEXTURE);
 		}
 	};
 
@@ -34,29 +38,45 @@ namespace VSGE {
 
 	class MaterialTemplate {
 	private:
-		Guid _templateGuid;
-
 		tMaterialTexturesList _materialTextures;
 		tMaterialParamsList _materialParams;
 
 		Shader* _shader;
 		VertexLayout _vertexLayout;
+		GraphicsPipeline* _pipeline;
 
 		void SetupDefaultVertexLayout();
 	public:
 		
+		MaterialTemplate() :
+			_shader(nullptr),
+			_pipeline(nullptr)
+		{
+			SetupDefaultVertexLayout();
+		}
+
+		void SetPipeline(GraphicsPipeline* pipeline) {
+			_pipeline = pipeline;
+		}
+
+		GraphicsPipeline* GetPipeline() {
+			return _pipeline;
+		}
+
 		tMaterialTexturesList& GetTextures() {
 			return _materialTextures;
 		}
 
-		void AddParameter(const std::string& name);
+		tMaterialParamsList& GetParams() {
+			return _materialParams;
+		}
+
+		void AddParameter(const std::string& name, MultitypeValue baseValue);
+		
+		void AddTexture(const std::string& name, uint32 binding);
 
 		Shader* GetShader() {
 			return _shader;
-		}
-
-		const Guid& GetGuid() {
-			return _templateGuid;
 		}
 
 		void SetShader(Shader* shader) {
@@ -68,12 +88,6 @@ namespace VSGE {
 		VertexLayout& GetLayout() {
 			return _vertexLayout;
 		}
-
-		MaterialTemplate() : 
-			_shader(nullptr)
-		{
-			SetupDefaultVertexLayout();
-		}
 	};
 
 	class Material {
@@ -83,33 +97,33 @@ namespace VSGE {
 		MaterialTemplate* _template;
 
 		GraphicsApiDependent _descriptors;
-		Buffer _paramsBuffer;
 
 		bool _paramsDirty;
 		bool _texturesDirty;
 
 		MaterialTexture* GetTextureByName(const std::string& texture_name);
 		MaterialParameter* GetParameterByName(const std::string& param_name);
-		void CopyParamsToBuffer();
+		uint32 CopyParamsToBuffer(char** out);
 	public:
 
 		Material() :
 			_template(nullptr),
 			_paramsDirty(false),
 			_texturesDirty(false),
-			_paramsBuffer(nullptr),
 			_descriptors(nullptr)
 		{}
 
 		~Material() {
-			if (_paramsBuffer)
-				delete[] _paramsBuffer;
 			if (_descriptors)
 				delete _descriptors;
 		}
 
 		void SetTexture(const std::string& texture_name, ResourceReference* texture);
 		void SetParameter(const std::string& parameter_name, MultitypeValue value);
+
+		void SetDescriptors(GraphicsApiDependent descriptors) {
+			_descriptors = descriptors;
+		}
 
 		void SetTemplate(MaterialTemplate* mat_template);
 		MaterialTemplate* GetTemplate() {

@@ -12,6 +12,10 @@ namespace VSGE {
 			_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 		}
 
+		ResourceReference& GetResourceReference() {
+			return _materialResource;
+		}
+
 		EntityComponentType GetType() {
 			return ENTITY_COMPONENT_MATERIAL;
 		}

@@ -33,6 +33,8 @@ namespace VSGE {
 		void Destroy();
 
 		void SetPoolSizes(VkDescriptorPoolSize* poolSizes, uint32 poolSizesCount);
+		void AddPoolSize(VkDescriptorType type, uint32 size);
+
 		void SetDescriptorSetsCount(uint32 descriptorSets);
 
 		void AddLayoutBinding(VkDescriptorType type);
@@ -65,6 +67,10 @@ namespace VSGE {
 
 		~VulkanDescriptorSet() {
 			Destroy();
+		}
+
+		void SetDescriptorPool(VulkanDescriptorPool* pool) {
+			mDescriptorPool = pool;
 		}
 
 		VkDescriptorSet GetDescriptorSet() { return mDescriptorSet; }

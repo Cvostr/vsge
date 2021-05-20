@@ -50,6 +50,9 @@ void VSGEditor::InspectorWindow::DrawComponent(std::string Label) {
 		if (typeid(T) == typeid(MeshComponent)) {
 			DrawMeshComponent((MeshComponent*)component);
 		}
+		if (typeid(T) == typeid(MaterialComponent)) {
+			DrawMaterialComponent((MaterialComponent*)component);
+		}
 	}
 }
 

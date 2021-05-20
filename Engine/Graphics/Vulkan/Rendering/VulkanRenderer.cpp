@@ -3,6 +3,7 @@
 #include "../VulkanShader.hpp"
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
 
 using namespace VSGE;
 
@@ -71,8 +72,6 @@ void VulkanRenderer::SetupRenderer() {
 	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
 
-	mMaterialsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mMaterialsShaderBuffer->Create(MATERIAL_SIZE * MAX_OBJECTS_RENDER);
 	//---------------------Meshes----------------------------------
 	mSpriteMesh = new VulkanMesh;
 	Vertex plane_verts[] = {
@@ -98,13 +97,16 @@ void VulkanRenderer::SetupRenderer() {
 
 	//----------------------Descriptors--------------------------
 	mObjectsPool = new VulkanDescriptorPool;
+	mMaterialsDescriptorPool = new VulkanDescriptorPool;
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2000);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
+	mMaterialsDescriptorPool->Create();
 
 	for (uint32 desc_i = 0; desc_i < MAX_OBJECTS_RENDER; desc_i++) {
 		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_VERTEX_BIT); //Animation
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 3, VK_SHADER_STAGE_ALL_GRAPHICS); //Animation
 
 		mVertexDescriptorSets.push_back(set);
 	}
@@ -122,7 +124,6 @@ void VulkanRenderer::SetupRenderer() {
 		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
 		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * UNI_ALIGN, sizeof(Mat4));
 		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64);
-		set->WriteDescriptorBuffer(3, mMaterialsShaderBuffer, desc_i * MATERIAL_SIZE, MATERIAL_SIZE);
 	}
 
 	mDeferredPassSet->Create();
@@ -178,6 +179,19 @@ void VulkanRenderer::StoreWorldObjects() {
 
 	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * mEntitiesToRender.size(), transforms);
 	delete[] transforms;
+
+	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i++) {
+		Entity* entity = mEntitiesToRender[e_i];
+		MaterialComponent* component = entity->GetComponent<MaterialComponent>();
+		if (!component)
+			continue;
+		MaterialResource* resource = (MaterialResource*)entity->GetComponent<MaterialComponent>()->GetResourceReference().GetResource();
+		if (!resource)
+			continue;
+		Material* mat = resource->GetMaterial();
+
+		CreateVulkanMaterial(mat);
+	}
 
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
@@ -241,6 +255,26 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 
 	VulkanPipeline* pipeline = new VulkanPipeline;
 	pipeline->Create(conf, (VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
+	mat_template->SetPipeline(pipeline);
 
 	return pipeline;
+}
+
+VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
+	VulkanMaterial* mat = new VulkanMaterial;
+	if (!material->GetTemplate())
+		return nullptr;
+
+	mat->_fragmentDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	for (MaterialTexture& texture : material->GetTemplate()->GetTextures())
+	{
+		mat->_fragmentDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texture._binding, VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	mat->_fragmentDescriptorSet->SetDescriptorPool(mMaterialsDescriptorPool);
+	mat->_fragmentDescriptorSet->Create();
+
+	material->SetDescriptors(mat);
+
+	return mat;
 }

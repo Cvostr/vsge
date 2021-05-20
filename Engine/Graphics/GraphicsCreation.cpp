@@ -8,6 +8,8 @@
 
 #include "Vulkan/VulkanMesh.hpp"
 
+#include "Vulkan/VulkanBuffer.hpp"
+
 using namespace VSGE;
 
 Texture* VSGE::CreateTexture() {

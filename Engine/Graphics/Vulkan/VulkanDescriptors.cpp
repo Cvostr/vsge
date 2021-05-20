@@ -19,6 +19,13 @@ void VulkanDescriptorPool::SetPoolSizes(VkDescriptorPoolSize* poolSizes, uint32 
     }
 }
 
+void VulkanDescriptorPool::AddPoolSize(VkDescriptorType type, uint32 size) {
+    VkDescriptorPoolSize _size = {};
+    _size.descriptorCount = size;
+    _size.type = type;
+    mSizes.push_back(_size);
+}
+
 void VulkanDescriptorPool::SetDescriptorSetsCount(uint32 descriptorSets) {
     mDescriptorSetsCount = descriptorSets;
 }
@@ -65,7 +72,8 @@ void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, V
     //Push description
     this->descriptors.push_back(samplerLayoutBinding);
     //register this binding in descriptor pool
-    mDescriptorPool->AddLayoutBinding(type);
+    if(mDescriptorPool)
+        mDescriptorPool->AddLayoutBinding(type);
 
     bindings_types.insert({binding, type});
 }

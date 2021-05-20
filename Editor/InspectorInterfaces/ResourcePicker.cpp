@@ -16,7 +16,9 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Select")) {
+	std::string btn_text = "Select " + label;
+
+	if (ImGui::Button(btn_text.c_str())) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 		rpw->SetResourceReference(&reference);
 		rpw->Show();

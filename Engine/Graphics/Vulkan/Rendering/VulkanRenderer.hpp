@@ -25,13 +25,20 @@ namespace VSGE {
 		VulkanDescriptorSet* sets[4];
 	};
 
-	typedef std::pair<Guid, VulkanPipeline*> GuidedVulkanPipeline;
+	class VulkanMaterial {
+	public:
+		VulkanDescriptorSet* _fragmentDescriptorSet;
+		GpuBuffer* _paramsBuffer;
 
-	class MaterialPipelines {
-		std::vector<GuidedVulkanPipeline> _pipelines;
+		VulkanMaterial() {
+			_fragmentDescriptorSet = new VulkanDescriptorSet;
+			_paramsBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
+		}
 
-		VulkanPipeline* GetPipeline(const Guid& guid);
-		void Add(const Guid& guid, VulkanPipeline* pipeline);
+		~VulkanMaterial() {
+			delete _fragmentDescriptorSet;
+			delete _paramsBuffer;
+		}
 	};
 
 	class VulkanRenderer : public IRenderer {
@@ -55,6 +62,7 @@ namespace VSGE {
 		
 		//--------------------Descriptors----------------
 		VulkanDescriptorPool* mObjectsPool;
+		VulkanDescriptorPool* mMaterialsDescriptorPool;
 		std::vector<VulkanDescriptorSet*> mVertexDescriptorSets;
 		VulkanDescriptorSet* mDeferredPassSet;
 
@@ -62,7 +70,6 @@ namespace VSGE {
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
-		VulkanBuffer* mMaterialsShaderBuffer;
 		//--------------------Meshes--------------------
 		VulkanMesh* mSpriteMesh;
 
@@ -81,6 +88,9 @@ namespace VSGE {
 		VulkanPipeline* test;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
+
+		VulkanMaterial* CreateVulkanMaterial(Material* material);
+
 		void BindMaterial(Material* mat);
 
 	public:
