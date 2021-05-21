@@ -11,6 +11,7 @@ namespace VSGE {
 
 		MaterialResource() {
 			_material = new Material;
+			_material->SetTemplate("default_pbr");
 		}
 
 		Material* GetMaterial() { return _material; }

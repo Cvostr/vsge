@@ -2,6 +2,7 @@
 
 #include "../Base/ImGuiWindow.hpp"
 #include <Scene/Entity.hpp>
+#include <Graphics/Material.hpp>
 
 namespace VSGEditor {
 	class InspectorWindow : public EditorWindow {
@@ -9,13 +10,21 @@ namespace VSGEditor {
 		static InspectorWindow* _this;
 		
 		VSGE::Entity* mShowingEntity;
+		VSGE::Material* mShowingMaterial;
 	public:
 		void SetShowingEntity(VSGE::Entity* entity) {
 			mShowingEntity = entity;
+			mShowingMaterial = nullptr;
+		}
+
+		void SetShowingMaterial(VSGE::Material* mat) {
+			mShowingEntity = nullptr;
+			mShowingMaterial = mat;
 		}
 
 		void OnDrawWindow();
 		void DrawEntityContents();
+		void DrawMaterialContents();
 		void Regroup(uint32 width, uint32 height);
 
 		static InspectorWindow* Get()
@@ -37,7 +46,8 @@ namespace VSGEditor {
 		void DrawComponent(std::string Label);
 
 		InspectorWindow() :
-			mShowingEntity(nullptr) 
+			mShowingEntity(nullptr),
+			mShowingMaterial(nullptr)
 		{
 			_this = this;
 		}

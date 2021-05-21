@@ -7,6 +7,7 @@
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
+#include "../InspectorInterfaces/ResourcePicker.hpp"
 
 #include "../InspectorInterfaces/EntityComponents/EntityComponents.hpp"
 
@@ -61,6 +62,8 @@ void VSGEditor::InspectorWindow::OnDrawWindow() {
 
 		if (mShowingEntity)
 			DrawEntityContents();
+		if (mShowingMaterial)
+			DrawMaterialContents();
 
 		ImGui::End();
 	}
@@ -111,6 +114,22 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 
 		ImGui::EndPopup();
 	}
+}
+
+void VSGEditor::InspectorWindow::DrawMaterialContents() {
+	MaterialTemplate* _template = mShowingMaterial->GetTemplate();
+
+	if (_template == nullptr)
+		return;
+
+	//std::vector<MaterialTexture> _temp_textures;
+	for (MaterialTexture& texture : mShowingMaterial->GetTextures()) {
+		//_temp_textures.push_back(texture);
+		//ResourceReference ref = texture._resource;
+		DrawResourcePicker(texture._name.c_str(), texture._resource);
+		mShowingMaterial->SetTexture(texture._name, texture._resource);
+	}
+
 }
 
 void VSGEditor::InspectorWindow::Regroup(uint32 width, uint32 height) {

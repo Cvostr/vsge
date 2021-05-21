@@ -38,6 +38,7 @@ namespace VSGE {
 
 	class MaterialTemplate {
 	private:
+		std::string _name;
 		tMaterialTexturesList _materialTextures;
 		tMaterialParamsList _materialParams;
 
@@ -53,6 +54,14 @@ namespace VSGE {
 			_pipeline(nullptr)
 		{
 			SetupDefaultVertexLayout();
+		}
+
+		const std::string& GetName() {
+			return _name;
+		}
+
+		void SetName(const std::string& name) {
+			_name = name;
 		}
 
 		void SetPipeline(GraphicsPipeline* pipeline) {
@@ -90,6 +99,29 @@ namespace VSGE {
 		}
 	};
 
+	class MaterialTemplateCache {
+	private:
+
+		static MaterialTemplateCache* _this;
+
+		std::vector<MaterialTemplate*> _templates;
+	public:
+
+		MaterialTemplateCache() {
+			_this = this;
+		}
+
+		static MaterialTemplateCache* Get() {
+			return _this;
+		}
+
+		void AddTemplate(MaterialTemplate* _template) {
+			_templates.push_back(_template);
+		}
+
+		MaterialTemplate* GetTemplate(const std::string& name);
+	};
+
 	class Material {
 	private:
 		tMaterialTexturesList _materialTextures;
@@ -98,13 +130,13 @@ namespace VSGE {
 
 		GraphicsApiDependent _descriptors;
 
-		bool _paramsDirty;
-		bool _texturesDirty;
-
 		MaterialTexture* GetTextureByName(const std::string& texture_name);
 		MaterialParameter* GetParameterByName(const std::string& param_name);
 		uint32 CopyParamsToBuffer(char** out);
 	public:
+
+		bool _paramsDirty;
+		bool _texturesDirty;
 
 		Material() :
 			_template(nullptr),
@@ -118,14 +150,43 @@ namespace VSGE {
 				delete _descriptors;
 		}
 
-		void SetTexture(const std::string& texture_name, ResourceReference* texture);
-		void SetParameter(const std::string& parameter_name, MultitypeValue value);
+		tMaterialTexturesList& GetTextures() {
+			return _materialTextures;
+		}
 
+		/// <summary>
+		/// Set texture resource to slot with specified name
+		/// </summary>
+		/// <param name="texture_name">- name of texture slot</param>
+		/// <param name="texture">- reference to texture resource</param>
+		void SetTexture(const std::string& texture_name, ResourceReference& texture);
+		/// <summary>
+		/// Set param to slot with specified name
+		/// </summary>
+		/// <param name="parameter_name"></param>
+		/// <param name="value"></param>
+		void SetParameter(const std::string& parameter_name, MultitypeValue value);
+		
 		void SetDescriptors(GraphicsApiDependent descriptors) {
 			_descriptors = descriptors;
 		}
 
+		GraphicsApiDependent GetDescriptors() {
+			return _descriptors;
+		}
+
+		/// <summary>
+		/// Recreate material with new material template
+		/// </summary>
+		/// <param name="mat_template">- pointer to template</param>
 		void SetTemplate(MaterialTemplate* mat_template);
+		/// <summary>
+		/// Recreate material with new material template
+		/// with specified name in template cache
+		/// </summary>
+		/// <param name="template_name">- name of template in cache</param>
+		void SetTemplate(const std::string& template_name);
+
 		MaterialTemplate* GetTemplate() {
 			return _template;
 		}

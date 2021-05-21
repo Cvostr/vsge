@@ -40,10 +40,27 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	bool HasMaterial = entity->HasComponent<MaterialComponent>();
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
-		if (mesh->GetMeshResource()){
-			mEntitiesToRender.push_back(entity);
+		if (mesh->GetMeshResource()) {
+			
 			mesh->GetMeshResource()->Load();
+			HasMesh = true;
 		}
+		else
+			HasMesh = false;
+	}
+
+	if (HasMaterial) {
+		MaterialComponent* mat = entity->GetComponent<MaterialComponent>();
+		if (mat->GetMaterialResource()) {
+			mat->GetMaterialResource()->Load();
+			HasMaterial = true;
+		}
+		else
+			HasMaterial = false;
+	}
+
+	if (HasMaterial && HasMesh) {
+		mEntitiesToRender.push_back(entity);
 	}
 
 	for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i ++) {

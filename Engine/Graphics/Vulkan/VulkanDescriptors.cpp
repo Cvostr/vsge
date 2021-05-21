@@ -44,6 +44,8 @@ bool VulkanDescriptorPool::Create() {
         return false;
     }
 
+    mCreated = true;
+
     return true;
 }
 

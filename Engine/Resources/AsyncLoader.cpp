@@ -38,7 +38,7 @@ void _LDR_load(Resource* resource) {
     resource->SetLoadedData(data);
     //Do some specific work (on MeshGroupResource as example)
     resource->Prepare();
-
+    //Set resource state to loaded
     resource->SetState(RESOURCE_STATE_LOADED);
 }
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "../Base/ImVulkanTexture.hpp"
+#include <Resources/Resource.hpp>
 
 namespace VSGEditor {
 
@@ -54,6 +55,8 @@ namespace VSGEditor {
 	public:
 
 		FileBrowserWindow(std::string RootDir);
+
+		VSGE::Resource* GetResourceWithFilePath(const std::string& fpath);
 
 		void OnDrawWindow();
 

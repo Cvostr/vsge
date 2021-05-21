@@ -12,6 +12,10 @@ namespace VSGE {
 			_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 		}
 
+		MaterialResource* GetMaterialResource() {
+			return _materialResource.GetResource<MaterialResource>();
+		}
+
 		ResourceReference& GetResourceReference() {
 			return _materialResource;
 		}

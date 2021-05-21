@@ -3,11 +3,16 @@
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
 #include "../EditorLayers/EditorLayer.hpp"
+#include "../EditorLayers/ImGuiLayer.hpp"
 #include "../Misc/SceneExt.hpp"
 #include <Scene/SceneSerialization.hpp>
+#include <Resources/ResourceCache.hpp>
+#include "InspectorWindow.hpp"
+#include <Resources/ResourceTypes/MaterialResource.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
+using namespace VSGE;
 
 void FileBrowserWindow::cd_up() {
     if (mCurrentDir.compare(this->mRootDir) == 0)
@@ -22,7 +27,12 @@ void FileBrowserWindow::cd_up() {
     SetDirectory(newdir);
 }
 void FileBrowserWindow::cd(std::string DirName) {
-    SetDirectory(mCurrentDir + "/" + DirName);
+    std::string divisor = "/";
+#ifdef _WIN32
+    divisor = '\\';
+#endif
+
+    SetDirectory(mCurrentDir + divisor + DirName);
 }
 void FileBrowserWindow::SetDirectory(std::string Dir) {
     mCurrentDir = Dir;
@@ -64,6 +74,7 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
 }
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
+    VSGE::Resource* resource = nullptr;
     if (Entry.ext == ".scn") {
         EditorLayer* el = EditorLayer::Get();
         el->GetScene()->NewScene();
@@ -71,6 +82,13 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         VSGE::SceneSerializer ss;
         ss.SetScene(el->GetScene());
         ss.Deserialize(Entry.abs_path);
+    }
+    else if((resource = GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
+        if (resource->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+            MaterialResource* mat = (MaterialResource*)resource;
+            InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
+            insp->SetShowingMaterial(mat->GetMaterial());
+        }
     }
 }
 
@@ -238,4 +256,14 @@ void FileBrowserWindow::OnDrawWindow() {
 void FileBrowserWindow::Regroup(uint32 width, uint32 height) {
     SetPos(0, height * 0.66f);
     SetSize(width, height * 0.33f);
+}
+
+VSGE::Resource* FileBrowserWindow::GetResourceWithFilePath(const std::string& fpath) {
+    VSGE::ResourceCache* cache = VSGE::ResourceCache::Get();
+    for (uint32 res_i = 0; res_i < cache->GetResourcesCount(); res_i++) {
+        VSGE::Resource* res = cache->GetResources()[res_i];
+        if (res->GetDataDescription().file_path == fpath)
+            return res;
+    }
+    return nullptr;
 }

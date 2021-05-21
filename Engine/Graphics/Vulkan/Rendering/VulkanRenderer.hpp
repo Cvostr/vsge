@@ -91,6 +91,8 @@ namespace VSGE {
 
 		VulkanMaterial* CreateVulkanMaterial(Material* material);
 
+		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
+
 		void BindMaterial(Material* mat);
 
 	public:
