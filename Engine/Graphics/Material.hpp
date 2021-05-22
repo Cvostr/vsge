@@ -132,7 +132,7 @@ namespace VSGE {
 
 		MaterialTexture* GetTextureByName(const std::string& texture_name);
 		MaterialParameter* GetParameterByName(const std::string& param_name);
-		uint32 CopyParamsToBuffer(char** out);
+		
 	public:
 
 		bool _paramsDirty;
@@ -153,6 +153,8 @@ namespace VSGE {
 		tMaterialTexturesList& GetTextures() {
 			return _materialTextures;
 		}
+
+		uint32 CopyParamsToBuffer(char** out);
 
 		/// <summary>
 		/// Set texture resource to slot with specified name

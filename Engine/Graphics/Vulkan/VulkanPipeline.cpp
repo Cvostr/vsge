@@ -32,7 +32,7 @@ VkFormat GetVertexLayoutFormatVK(VertexLayoutFormat format) {
 	return VK_FORMAT_R32G32B32_SFLOAT;
 }
 
-bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout) {
+bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout) {
 	_pipelineLayout = layout;
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	//Array for shader stage create infos
@@ -56,17 +56,17 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader* shader, Vulk
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssembly.topology = Conf.primitiveTopology;
-	inputAssembly.primitiveRestartEnable = Conf.primitiveRestartEnable;
+	inputAssembly.topology = (VkPrimitiveTopology)_primitiveTopology;
+	inputAssembly.primitiveRestartEnable = _primitiveRestartEnable;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer = {};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.depthClampEnable = VK_FALSE;
 	rasterizer.rasterizerDiscardEnable = VK_FALSE;
-	rasterizer.polygonMode = Conf.polygonMode;
+	rasterizer.polygonMode = (VkPolygonMode)_polygonMode;
 	rasterizer.lineWidth = 1.0f;
-	rasterizer.cullMode = Conf.cullFaceMode;
-	rasterizer.frontFace = Conf.frontFace;
+	rasterizer.cullMode = _cullMode;
+	rasterizer.frontFace = (VkFrontFace)_frontFace;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 	rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -105,13 +105,13 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader* shader, Vulk
 
 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depthStencil.depthTestEnable = Conf.DepthTest;
-	depthStencil.depthWriteEnable = Conf.DepthTest;
-	depthStencil.depthCompareOp = Conf.DepthOp;
+	depthStencil.depthTestEnable = _depthTest;
+	depthStencil.depthWriteEnable = _depthTest;
+	depthStencil.depthCompareOp = (VkCompareOp)_depthOp;
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.minDepthBounds = 0.0f; // Optional
 	depthStencil.maxDepthBounds = 1.0f; // Optional
-	depthStencil.stencilTestEnable = Conf.StencilTest;
+	depthStencil.stencilTestEnable = _stencilTest;
 	depthStencil.front = {}; // Optional
 	depthStencil.back = {}; // Optional
 
@@ -205,7 +205,7 @@ bool VulkanPipeline::Create(VulkanPipelineConf& Conf, VulkanShader* shader, Vulk
 	//Try to create pipeline
 	
 	VulkanDevice* device = vulkan->GetDevice();
-	if (vkCreateGraphicsPipelines(device->getVkDevice(), VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &this->mPipeline) != VK_SUCCESS)
+	if (vkCreateGraphicsPipelines(device->getVkDevice(), VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &_pipeline) != VK_SUCCESS)
 		return false;
 
 	mCreated = true;
@@ -217,6 +217,6 @@ void VulkanPipeline::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan->GetDevice();
-		vkDestroyPipeline(device->getVkDevice(), mPipeline, nullptr);
+		vkDestroyPipeline(device->getVkDevice(), _pipeline, nullptr);
 	}
 }

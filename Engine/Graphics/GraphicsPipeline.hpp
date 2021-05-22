@@ -33,8 +33,23 @@ namespace VSGE {
 		COMPARE_OP_ALWAYS = 7
 	};
 
+	enum PrimitiveTopology {
+		PRIMITIVE_TOPOLOGY_POINT_LIST = 0,
+		PRIMITIVE_TOPOLOGY_LINE_LIST = 1,
+		PRIMITIVE_TOPOLOGY_LINE_STRIP = 2,
+		PRIMITIVE_TOPOLOGY_TRIANGLE_LIST = 3,
+		PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP = 4,
+		PRIMITIVE_TOPOLOGY_TRIANGLE_FAN = 5,
+		PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY = 6,
+		PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY = 7,
+		PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY = 8,
+		PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY = 9,
+		PRIMITIVE_TOPOLOGY_PATCH_LIST = 10,
+	};
+
 	class GraphicsPipeline : public IGpuObject {
 	protected:
+		PrimitiveTopology _primitiveTopology;
 		FrontFaceMode _frontFace;
 		CullMode _cullMode;
 		PolygonMode _polygonMode;
@@ -43,6 +58,14 @@ namespace VSGE {
 		bool _depthTest;
 		bool _stencilTest;
 	public:
+
+		void SetPrimitiveTopology(PrimitiveTopology topology) {
+			_primitiveTopology = topology;
+		}
+
+		PrimitiveTopology GetPrimitiveTopology() {
+			return _primitiveTopology;
+		}
 
 		void SetFrontFaceMode(FrontFaceMode mode) {
 			_frontFace = mode;
@@ -82,6 +105,7 @@ namespace VSGE {
 
 		GraphicsPipeline() 
 			: IGpuObject(),
+			_primitiveTopology(PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),
 			_frontFace(FRONT_FACE_MODE_CW),
 			_cullMode(CULL_MODE_NONE),
 			_polygonMode(POLYGON_MODE_FILL),

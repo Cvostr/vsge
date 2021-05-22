@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 namespace VSGE {
 
@@ -22,9 +23,11 @@ namespace VSGE {
 		virtual void OnStart() {}
 		virtual void OnUpdate() {}
 		virtual void OnDestroy() {}
-		virtual EntityComponentType GetType() = 0 {
-			return ENTITY_COMPONENT_NONE;
-		}
+
+		virtual void Serialize(YAML::Emitter& e) {}
+		virtual void Deserialize(YAML::Node& entity) {}
+
+		virtual EntityComponentType GetType() = 0;
 
 		/// <summary>
 		/// Set active/inactive state of entity
@@ -41,6 +44,10 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="entity">- pointer to entity</param>
 		void SetEntity(Entity* entity) { _entity = entity; }
+
+		Entity* GetEntity() {
+			return _entity;
+		}
 	private:
 		bool _active;
 		Entity* _entity;

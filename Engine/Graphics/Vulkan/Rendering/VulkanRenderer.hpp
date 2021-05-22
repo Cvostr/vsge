@@ -28,10 +28,10 @@ namespace VSGE {
 	class VulkanMaterial {
 	public:
 		VulkanDescriptorSet* _fragmentDescriptorSet;
-		GpuBuffer* _paramsBuffer;
+		VulkanBuffer* _paramsBuffer;
 
 		VulkanMaterial() {
-			_fragmentDescriptorSet = new VulkanDescriptorSet;
+			_fragmentDescriptorSet = nullptr;
 			_paramsBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 		}
 
@@ -83,9 +83,6 @@ namespace VSGE {
 		std::vector<VulkanDrawCall> drawCalls;
 
 		MaterialTemplate* pbr_template;
-		Material* pbr_material;
-
-		VulkanPipeline* test;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 

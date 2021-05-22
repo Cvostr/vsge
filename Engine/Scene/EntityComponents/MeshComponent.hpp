@@ -17,6 +17,9 @@ namespace VSGE {
 			return ENTITY_COMPONENT_MESH;
 		}
 
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
+
 		void SetMeshName(const std::string& mesh);
 		MeshResource* GetMeshResource() { return _meshResource.GetResource<MeshResource>(); }
 		ResourceReference& GetResourceReference() {

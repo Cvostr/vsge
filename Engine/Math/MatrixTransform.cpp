@@ -100,8 +100,9 @@ Mat4 GetRotationMatrix(const Quat Rotation) {
 Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation) {
     Mat4 Result = 
         GetScaleMatrix(scale) * 
-        GetTranslationMatrix(pos) * 
-        GetRotationMatrix(rotation);
+        GetRotationMatrix(rotation) *
+        GetTranslationMatrix(pos)
+        ;
     return Result;
 }
 

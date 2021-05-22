@@ -9,52 +9,24 @@
 
 namespace VSGE {
 
-	struct VulkanPipelineConf {
-		VkPrimitiveTopology primitiveTopology;
-		VkBool32 primitiveRestartEnable;
-
-		VkPolygonMode polygonMode;
-		VkCullModeFlagBits cullFaceMode;
-		VkFrontFace frontFace;
-		VkBool32 DepthTest;
-		VkBool32 StencilTest;
-		VkCompareOp DepthOp;
-		
-		VulkanPipelineConf() {
-			primitiveTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-			primitiveRestartEnable = VK_FALSE;
-
-			frontFace = VK_FRONT_FACE_CLOCKWISE;
-			polygonMode = VK_POLYGON_MODE_FILL;
-			cullFaceMode = VK_CULL_MODE_NONE;
-			DepthTest = false;
-			StencilTest = false;
-			DepthOp = VK_COMPARE_OP_LESS;
-		}
-
-	};
-
-
 	class VulkanPipeline : public GraphicsPipeline {
 	private:
-		VkPipeline mPipeline;
+		VkPipeline _pipeline;
 		VulkanPipelineLayout* _pipelineLayout;
-
-		VulkanPipelineConf conf;
-		VertexLayout vert_layout;
 	public:
 
 		VulkanPipeline() : 
-			mPipeline(VK_NULL_HANDLE)
+			_pipeline(VK_NULL_HANDLE),
+			_pipelineLayout(nullptr)
 		{}
 
-		VkPipeline GetPipeline() { return mPipeline; }
+		VkPipeline GetPipeline() { return _pipeline; }
 
 		VulkanPipelineLayout* GetPipelineLayout() {
 			return _pipelineLayout;
 		}
 
-		bool Create(VulkanPipelineConf& Conf, VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout);
+		bool Create(VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout);
 
 		void Destroy();
 

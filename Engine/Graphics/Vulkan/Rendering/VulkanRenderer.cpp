@@ -151,22 +151,17 @@ void VulkanRenderer::SetupRenderer() {
 	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 	_vertexLayout.AddItem(2, offsetof(Vertex, normal), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
-	VulkanPipelineConf conf = {};
 	mDeferredPipeline = new VulkanPipeline;
-	mDeferredPipeline->Create(conf, deferred_light, mOutputPass, _vertexLayout, p_layout);
+	mDeferredPipeline->Create(deferred_light, mOutputPass, _vertexLayout, p_layout);
 
 	//---Material test ----
 	pbr_template = new MaterialTemplate;
 	pbr_template->SetName("default_pbr");
 	pbr_template->SetShader("PBR");
 	pbr_template->AddTexture("diffuse", 1);
+	pbr_template->AddTexture("normal", 2);
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
-
-	pbr_material = new Material;
-	pbr_material->SetTemplate(pbr_template);
-
-	test = CreatePipelineFromMaterialTemplate(pbr_template);
-
+	CreatePipelineFromMaterialTemplate(pbr_template);
 }
 
 void VulkanRenderer::DestroyRenderer() {
@@ -218,6 +213,14 @@ void VulkanRenderer::StoreWorldObjects() {
 					mat->_texturesDirty = false;
 				}
 			}
+		}
+
+		if (mat->_paramsDirty) {
+			char* buffer = nullptr;
+			uint32 size = mat->CopyParamsToBuffer(&buffer);
+
+			vmat->_paramsBuffer->WriteData(0, size, buffer);
+			mat->_paramsDirty = false;
 		}
 	}
 
@@ -295,33 +298,26 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 
 	p_layout->Create();
 
-	VulkanPipelineConf conf = {};
-	//conf.DepthTest = true;
 
 	VulkanPipeline* pipeline = new VulkanPipeline;
-	pipeline->Create(conf, (VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
+	pipeline->SetDepthTest(true);
+	pipeline->Create((VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
 	mat_template->SetPipeline(pipeline);
 
 	return pipeline;
 }
 
 VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
-	VulkanMaterial* mat = new VulkanMaterial;
 	if (!material->GetTemplate())
 		return nullptr;
 
-	/*mat->_fragmentDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-	for (MaterialTexture& texture : material->GetTemplate()->GetTextures())
-	{
-		mat->_fragmentDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texture._binding, VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
+	VulkanMaterial* mat = new VulkanMaterial;
+	mat->_paramsBuffer->Create(1024);
 
-	mat->_fragmentDescriptorSet->SetDescriptorPool(mMaterialsDescriptorPool);
-	mat->_fragmentDescriptorSet->Create();
-	*/
 	if (material->GetDescriptors() == nullptr) {
 		VulkanDescriptorSet* set = CreateDescriptorSetFromMaterialTemplate(material->GetTemplate());
 		mat->_fragmentDescriptorSet = set;
+		mat->_fragmentDescriptorSet->WriteDescriptorBuffer(0, mat->_paramsBuffer, 0, 1024);
 
 		material->SetDescriptors(mat);
 	}

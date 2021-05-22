@@ -1,6 +1,9 @@
 #include "SceneSerialization.hpp"
 #include <fstream>
 
+#include "EntityComponents/MeshComponent.hpp"
+#include "EntityComponents/AnimatorComponent.hpp"
+#include "EntityComponents/MaterialComponent.hpp"
 
 using namespace VSGE;
 using namespace YAML;
@@ -74,6 +77,38 @@ Emitter& operator<<(YAML::Emitter& out, const Vec3& v)
 	return out;
 }
 
+void SceneSerializer::SerializeEntityComponent(IEntityComponent* component, YAML::Emitter& e) {
+	e << BeginMap;
+	e << Key << "Component" << Value << (int)component->GetType();
+
+	component->Serialize(e);
+
+	e << YAML::EndMap; // Entity
+}
+
+void SceneSerializer::DeserializeEntityComponent(Entity* ent, YAML::Node& comp) {
+	int component_id = comp["Component"].as<int>();
+
+	IEntityComponent* component = nullptr;
+	if (component_id == ENTITY_COMPONENT_MESH) {
+		component = new MeshComponent;
+	}
+	if (component_id == ENTITY_COMPONENT_MATERIAL) {
+		component = new MaterialComponent;
+	}
+	if (component_id == ENTITY_COMPONENT_ANIMATOR) {
+		component = new AnimatorComponent;
+	}
+
+	if (component == nullptr)
+		return;
+
+	component->SetEntity(ent);
+	component->Deserialize(comp);
+
+	ent->AddComponent(component);
+}
+
 void SceneSerializer::SerializeEntity(Entity* ent, Emitter& e) {
 	if (ent->GetParent()) {
 		e << BeginMap;
@@ -86,6 +121,12 @@ void SceneSerializer::SerializeEntity(Entity* ent, Emitter& e) {
 		e << Key << "pos" << Value << ent->GetPosition();
 		e << Key << "scale" << Value << ent->GetScale();
 		e << Key << "rot" << Value << ent->GetRotation();
+
+		e << YAML::Key << "components" << YAML::Value << YAML::BeginSeq;
+		for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
+			SerializeEntityComponent(ent->GetComponents()[comp_i], e);
+		}
+		e << YAML::EndSeq;
 
 		e << YAML::EndMap; // Entity
 	}
@@ -112,7 +153,7 @@ void SceneSerializer::Serialize(const std::string& path) {
 
 void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 	ent->SetScene(_scene);
-	std::string name = entity["Entity"].as<std::string>(); // TODO
+	std::string name = entity["Entity"].as<std::string>(); 
 	ent->SetName(name);
 	ent->SetGuid(entity["uid"].as<Guid>());
 	ent->SetActive(entity["active"].as<bool>());
@@ -121,6 +162,11 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 	ent->SetPosition(entity["pos"].as<Vec3>());
 	ent->SetScale(entity["scale"].as<Vec3>());
 	ent->SetRotation(entity["rot"].as<Vec3>());
+
+	YAML::Node components = entity["components"];
+	for(auto component : components) {
+		DeserializeEntityComponent(ent, component);
+	}
 
 	Guid parent = entity["parent"].as<Guid>();
 	Entity* parent_ent = _scene->GetEntityWithGuid(parent);
