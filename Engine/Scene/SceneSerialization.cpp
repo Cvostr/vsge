@@ -4,6 +4,7 @@
 #include "EntityComponents/MeshComponent.hpp"
 #include "EntityComponents/AnimatorComponent.hpp"
 #include "EntityComponents/MaterialComponent.hpp"
+#include "EntityComponents/LightComponent.hpp"
 
 using namespace VSGE;
 using namespace YAML;
@@ -98,6 +99,9 @@ void SceneSerializer::DeserializeEntityComponent(Entity* ent, YAML::Node& comp) 
 	}
 	if (component_id == ENTITY_COMPONENT_ANIMATOR) {
 		component = new AnimatorComponent;
+	}
+	if (component_id == ENTITY_COMPONENT_LIGHTSOURCE) {
+		component = new LightsourceComponent;
 	}
 
 	if (component == nullptr)

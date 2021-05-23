@@ -30,6 +30,8 @@ void MaterialTemplate::AddTexture(const std::string& name, uint32 binding) {
 	texture._name = name;
 	texture._binding = binding;
 	_materialTextures.push_back(texture);
+
+	AddParameter("@has_" + name, false);
 }
 
 MaterialTemplate* MaterialTemplateCache::GetTemplate(const std::string& name) {
@@ -78,6 +80,8 @@ MaterialParameter* Material::GetParameterByName(const std::string& param_name) {
 
 void Material::SetTexture(const std::string& texture_name, ResourceReference& texture) {
 	GetTextureByName(texture_name)->_resource = texture;
+	if(texture.GetResource() != nullptr)
+		SetParameter("@has_" + texture_name, true);
 	_texturesDirty = true;
 }
 void Material::SetParameter(const std::string& parameter_name, MultitypeValue value) {
@@ -95,11 +99,16 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 	uint32 writtenBytes = 0;
 
 	for (MaterialParameter& param : _materialParams) {
-		
+		if (param.value.GetType() == VALUE_TYPE_BOOL) {
+			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 1);
+			writtenBytes += 4;
+		}
 		if (param.value.GetType() == VALUE_TYPE_INT) {
+			writtenBytes += 4;
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 		}
 		if (param.value.GetType() == VALUE_TYPE_FLOAT) {
+			writtenBytes += 4;
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 		}
 		if (param.value.GetType() == VALUE_TYPE_VEC3F) {

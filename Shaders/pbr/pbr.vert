@@ -26,7 +26,13 @@ layout (std140, binding = 2) uniform Animation{
 
 void main() { 
     UVCoord = uv;
-    
+    InNormal = normalize(vec3(obj_model * vec4(normal, 0)));
+
+    vec3 TangentVec = normalize(vec3(obj_model * vec4(tangent, 0)));
+	vec3 BiTangentVec = normalize(vec3(obj_model * vec4(bitangent, 0)));
+	vec3 NormalVec = normalize(vec3(obj_model * vec4(normal, 0)));
+	TBN = transpose(mat3(TangentVec, BiTangentVec, NormalVec));
+
     vec4 ModelPos = obj_model * vec4(position, 1.0);
     FragPos = ModelPos.xyz;
 

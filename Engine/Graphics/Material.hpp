@@ -56,6 +56,10 @@ namespace VSGE {
 			SetupDefaultVertexLayout();
 		}
 
+		~MaterialTemplate() {
+			SAFE_RELEASE(_pipeline);
+		}
+
 		const std::string& GetName() {
 			return _name;
 		}
@@ -146,8 +150,7 @@ namespace VSGE {
 		{}
 
 		~Material() {
-			if (_descriptors)
-				delete _descriptors;
+			SAFE_RELEASE(_descriptors);
 		}
 
 		tMaterialTexturesList& GetTextures() {

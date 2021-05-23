@@ -158,8 +158,12 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_template = new MaterialTemplate;
 	pbr_template->SetName("default_pbr");
 	pbr_template->SetShader("PBR");
-	pbr_template->AddTexture("diffuse", 1);
-	pbr_template->AddTexture("normal", 2);
+	pbr_template->AddTexture("Albedo", 1);
+	pbr_template->AddTexture("Normal", 2);
+	pbr_template->AddTexture("Roughness", 3);
+	pbr_template->AddTexture("Metallic", 4);
+	pbr_template->AddTexture("Height", 5);
+	pbr_template->AddTexture("AO", 6);
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
 }
@@ -291,17 +295,20 @@ void VulkanRenderer::BindMaterial(Material* mat) {
 
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
+	//Add common vertex descriptor
 	p_layout->PushDescriptorSet(mVertexDescriptorSets[0]);
-
+	//Add materials descriptor
 	VulkanDescriptorSet* materialsDescrSet = CreateDescriptorSetFromMaterialTemplate(mat_template);
 	p_layout->PushDescriptorSet(materialsDescrSet);
-
+	//Create pipeline layout
 	p_layout->Create();
 
-
+	//Create pipeline
 	VulkanPipeline* pipeline = new VulkanPipeline;
 	pipeline->SetDepthTest(true);
+	pipeline->SetCullMode(CULL_MODE_FRONT);
 	pipeline->Create((VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
+	//Store pipeline pointer in material template
 	mat_template->SetPipeline(pipeline);
 
 	return pipeline;
@@ -311,18 +318,21 @@ VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
 	if (!material->GetTemplate())
 		return nullptr;
 
-	VulkanMaterial* mat = new VulkanMaterial;
-	mat->_paramsBuffer->Create(1024);
-
 	if (material->GetDescriptors() == nullptr) {
-		VulkanDescriptorSet* set = CreateDescriptorSetFromMaterialTemplate(material->GetTemplate());
-		mat->_fragmentDescriptorSet = set;
+		VulkanMaterial* mat = new VulkanMaterial;
+		//Create params buffer
+		mat->_paramsBuffer->Create(1024);
+		//Create descriptor from material template
+		mat->_fragmentDescriptorSet = CreateDescriptorSetFromMaterialTemplate(material->GetTemplate());
+		//Add buffer to descriptor
 		mat->_fragmentDescriptorSet->WriteDescriptorBuffer(0, mat->_paramsBuffer, 0, 1024);
-
+		//Store descriptor pointer in material
 		material->SetDescriptors(mat);
+
+		return mat;
 	}
 
-	return mat;
+	return nullptr;
 }
 
 VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template) {
