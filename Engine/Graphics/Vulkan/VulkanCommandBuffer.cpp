@@ -15,7 +15,7 @@ VkCommandPool VSGE::beginCommandPool() {
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.queueFamilyIndex = device->GetGraphicsQueueFamilyIndex();
-    poolInfo.flags = 0; // Optional
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
     vkCreateCommandPool(device->getVkDevice(), &poolInfo, nullptr, &commandPool);
 
     return commandPool;

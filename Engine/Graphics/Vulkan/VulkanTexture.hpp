@@ -11,17 +11,19 @@ namespace VSGE {
     private:
         VmaVkImage _image;
         VkImageView _imageView;
+        VkImageLayout _layout;
 
         VkImageUsageFlagBits usage;
 
         // NOT FULLY IMPLEMENTED
-        void Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width, uint32 Height);
+        void Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 Width, uint32 Height);
 
     public:
 
         VulkanTexture() : 
             Texture(),
-            _imageView(VK_NULL_HANDLE)
+            _imageView(VK_NULL_HANDLE),
+            _layout(VK_IMAGE_LAYOUT_UNDEFINED)
         {}
 
         ~VulkanTexture() {
@@ -54,5 +56,7 @@ namespace VSGE {
         void Resize(uint32 width, uint32 height);
 
         bool CreateImageView();
+
+        void ChangeLayout(VkImageLayout newLayout);
 	};
 }

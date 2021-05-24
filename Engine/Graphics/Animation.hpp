@@ -64,10 +64,8 @@ namespace VSGE {
         }
 
         ~TimedValues() {
-            if(values)
-                delete[] values;
-            if(times)
-                delete[] times;
+            SAFE_RELEASE_ARR(values);
+            SAFE_RELEASE_ARR(times);
         }
 
     };

@@ -162,27 +162,20 @@ void FileBrowserWindow::OnDrawWindow() {
     float width = w->Size.x;
     if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(64, 64)))
         cd_up();
-    unsigned int drawn_pix = 0;
-    for (unsigned int f_i = 0; f_i < mFiles.size(); f_i++) {
+    uint32 drawn_pix = 0;
+    for (uint32 f_i = 0; f_i < mFiles.size(); f_i++) {
         FileEntry* e = &mFiles[f_i];
         ImguiVulkanTexture* icon = &FileIcons.mUnknownFile;
         //if file is directory, then set directory icon
         if (e->isDir) icon = &FileIcons.mDirIcon;
         if (e->is3dModel()) icon = &FileIcons.m3DModelIcon;
         if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
-        /*if (e->isMaterial()) {
-            PbrMaterial* mat = resources->getMaterialByRelPath(e->rel_path);
-            if (mat != nullptr) {
-                if (mat->___extra == 0)
-                    renderer->RenderMaterialPreview(mat);
-                icon = mat->___extra;
-            }
-        }*/
+
         if (e->isTexture()) {
-            //ResourceManager* m = Application::getApplication().GetLayer<ResourceManager>();
-            //D3D11Texture2D* res = m->GetResourceByPath<D3D11Texture2D>(e->rel_path);
-            //GLtexture2D* t = resources->getTexture(e->rel_path);
-            //icon = t->getTexture();
+                ImguiVulkanTexture* tex = GetTextureResource(e->abs_path);
+                if (tex)
+                   icon = tex;
+            //GetTextureResource(e->abs_path);
         }
 
         //Draw button with file
@@ -266,4 +259,37 @@ VSGE::Resource* FileBrowserWindow::GetResourceWithFilePath(const std::string& fp
             return res;
     }
     return nullptr;
+}
+
+ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fname) {
+    STRIMGVKT* ptr = nullptr;
+    for (auto& texture_res : mTextureResources) {
+        if (texture_res->first == fname) {
+            ptr = texture_res;
+        }
+    }
+
+    if (ptr == nullptr) {
+        ptr = new STRIMGVKT;
+        ptr->first = fname;
+        ptr->second = nullptr;
+        mTextureResources.push_back(ptr);
+    }
+
+    if (ptr != nullptr) {
+        if (ptr->second == nullptr) {
+            TextureResource* texture = (TextureResource*)GetResourceWithFilePath(fname);
+            if (texture->GetState() != RESOURCE_STATE_READY) {
+                texture->Load();
+                if (texture->GetState() == RESOURCE_STATE_READY) {
+                    ptr->second = new ImguiVulkanTexture;
+                    ptr->second->texture = (VulkanTexture*)texture->GetTexture();
+                    ptr->second->CreateImgui(sampler);
+                }
+            }
+        }
+    }
+
+
+    return ptr->second;
 }

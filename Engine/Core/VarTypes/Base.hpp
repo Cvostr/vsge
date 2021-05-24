@@ -28,3 +28,6 @@ typedef void* Buffer;
 
 #define SAFE_RELEASE(x) if (x)\
 							delete x;
+
+#define SAFE_RELEASE_ARR(x) if (x)\
+							delete[] x;

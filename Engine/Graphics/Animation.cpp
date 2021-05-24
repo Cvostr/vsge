@@ -10,7 +10,7 @@ VSGE::Animation::Animation() :
     mDuration(0) {}
 
 VSGE::Animation::~Animation() {
-    delete[] this->channels;
+    SAFE_RELEASE_ARR(channels)
 }
 
 VSGE::AnimationChannel::AnimationChannel()

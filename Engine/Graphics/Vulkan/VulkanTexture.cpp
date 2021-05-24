@@ -130,6 +130,10 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 }
 
 void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) {
+
+	if (_layout == VK_IMAGE_LAYOUT_UNDEFINED)
+		ChangeLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanMA* ma = rapi->GetAllocator();
 	
@@ -137,18 +141,20 @@ void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 he
 	void* temp_map;
 	ma->allocateCpu(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &temp_buf, size, &temp_map);
 	
-	ma->map(&temp_buf, &temp_map);
 	memcpy(temp_map, data, size);
 	ma->unmap(&temp_buf);
 	//Copy temporary buffer to image
 	Transition(temp_buf, level, width, height);
 
-	ma->unmap(&temp_buf);
 	//Free temporary buffer
 	ma->destroyBuffer(&temp_buf);
 }
 
 bool VulkanTexture::CreateImageView() {
+
+	if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
 	VkImageViewType ImageViewType = VK_IMAGE_VIEW_TYPE_2D;
 	if (_layers > 1)
 		ImageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
@@ -168,7 +174,7 @@ bool VulkanTexture::CreateImageView() {
 	textureImageViewInfo.format = GetFormatVK(_format);
 	textureImageViewInfo.subresourceRange.aspectMask = aspect;
 	textureImageViewInfo.subresourceRange.baseMipLevel = 0;
-	textureImageViewInfo.subresourceRange.levelCount = 1;
+	textureImageViewInfo.subresourceRange.levelCount = _mipLevels;
 	textureImageViewInfo.subresourceRange.baseArrayLayer = 0;
 	textureImageViewInfo.subresourceRange.layerCount = _layers;
 
@@ -181,7 +187,45 @@ bool VulkanTexture::CreateImageView() {
 	return true;
 }
 
-void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width, uint32 Height) {
+void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 Width, uint32 Height) {
+	VulkanRAPI* rapi = VulkanRAPI::Get();
+	VulkanDevice* device = rapi->GetDevice();
+	VulkanMA* ma = rapi->GetAllocator();
+
+	VkCommandBuffer cmdbuf = ma->GetSingleTimeCmdBuf();
+
+
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(cmdbuf, &beginInfo);
+
+
+	VkBufferImageCopy region = {};
+	region.bufferOffset = 0;
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.layerCount = 1;
+	region.imageSubresource.mipLevel = MipLevel;
+	region.imageExtent.width = Width;
+	region.imageExtent.height = Height;
+	region.imageExtent.depth = 1;
+
+	vkCmdCopyBufferToImage(cmdbuf, buffer.Buffer, _image.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+
+	//Run command
+	vkEndCommandBuffer(cmdbuf);
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &cmdbuf;
+
+	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(device->GetGraphicsQueue());
+}
+
+void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();
 	VulkanMA* ma = rapi->GetAllocator();
@@ -193,11 +237,11 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 	imgMemBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	imgMemBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	imgMemBarrier.subresourceRange.baseMipLevel = 0;
-	imgMemBarrier.subresourceRange.levelCount = 1;
+	imgMemBarrier.subresourceRange.levelCount = _mipLevels;
 	imgMemBarrier.subresourceRange.baseArrayLayer = 0;
-	imgMemBarrier.subresourceRange.layerCount = 1;
-	imgMemBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imgMemBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	imgMemBarrier.subresourceRange.layerCount = _layers;
+	imgMemBarrier.oldLayout = _layout;
+	imgMemBarrier.newLayout = newLayout;
 	imgMemBarrier.image = _image.Image;
 	imgMemBarrier.srcAccessMask = 0;
 	imgMemBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -217,41 +261,17 @@ void VulkanTexture::Transition(VmaVkBuffer buffer, uint32 MipLevel, uint32 Width
 		0, nullptr,
 		1, &imgMemBarrier);
 
-	VkBufferImageCopy region = {};
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.layerCount = 1;
-	region.imageSubresource.mipLevel = MipLevel;
-	region.imageExtent.width = Width;
-	region.imageExtent.height = Height;
-	region.imageExtent.depth = 1;
-
-	vkCmdCopyBufferToImage(cmdbuf, buffer.Buffer, _image.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-
-	imgMemBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	imgMemBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imgMemBarrier.image = _image.Image;
-	imgMemBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-	imgMemBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-	vkCmdPipelineBarrier(
-		cmdbuf,
-		VK_PIPELINE_STAGE_TRANSFER_BIT,
-		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-		0,
-		0, nullptr,
-		0, nullptr,
-		1, &imgMemBarrier);
-
-
-	//Run command
-	vkEndCommandBuffer(cmdbuf);
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &cmdbuf;
 
+	vkEndCommandBuffer(cmdbuf);
+
 	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(device->GetGraphicsQueue());
+
+	_layout = newLayout;
 }
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {

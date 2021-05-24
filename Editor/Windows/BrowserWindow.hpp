@@ -19,7 +19,7 @@ namespace VSGEditor {
 			return !ext.compare(".rp3m");
 		}
 		bool isTexture() {
-			return !ext.compare(".DDS") || !ext.compare(".dds");
+			return !ext.compare(".DDS") || !ext.compare(".dds") || !ext.compare(".PNG") || !ext.compare(".png");
 		}
 		bool is3dWorld() {
 			return !ext.compare(".scn");
@@ -30,6 +30,7 @@ namespace VSGEditor {
 	};
 
 	typedef std::vector<FileEntry> tFileEntryList;
+	typedef std::pair<std::string, ImguiVulkanTexture*> STRIMGVKT;
 
 	class FileBrowserWindow : public EditorWindow {
 	private:
@@ -51,7 +52,12 @@ namespace VSGEditor {
 
 			
 		}FileIcons;
+		
+		std::vector<STRIMGVKT*> mTextureResources;
 
+		void DeleteFileDialog(FileEntry* Entry);
+		void RenameFileDialog(FileEntry* Entry);
+		ImguiVulkanTexture* GetTextureResource(const std::string& fname);
 	public:
 
 		FileBrowserWindow(std::string RootDir);
@@ -67,8 +73,7 @@ namespace VSGEditor {
 		void SetDirectory(std::string Dir);
 		void UpdateDirectoryContent();
 		void OpenFile(const FileEntry& Entry);
-		void DeleteFileDialog(FileEntry* Entry);
-		void RenameFileDialog(FileEntry* Entry);
+
 		const std::string& GetCurrentDir() {
 			return mCurrentDir;
 		}

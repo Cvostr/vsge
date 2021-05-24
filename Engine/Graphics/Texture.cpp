@@ -37,8 +37,10 @@ bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
     uint32 offset = 0;
     int nwidth = maxWidth;
     int nheight = maxHeight;
+    if (mMipsCount > 1)
+        mMipsCount = 1;
 
-    for (uint32 level = 0; level < mMipsCount && (nwidth || nheight); ++level) //Iterating over mipmaps
+    for (uint32 level = 0; level < mMipsCount; ++level) //Iterating over mipmaps
     {
         size = ((nwidth + 3) / 4) * ((nheight + 3) / 4) * blockSize; //Calculating mip texture size
 
