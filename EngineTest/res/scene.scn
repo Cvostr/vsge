@@ -56,3 +56,17 @@ Entities:
         mesh: tree.002
       - Component: 2
         material: material
+  - Entity: Point Light
+    uid: [3354040633, 2274876545, 3232628096, 219357724]
+    active: true
+    static: false
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0]
+    components:
+      - Component: 1
+        light_type: 3
+        intensity: 2
+        range: 12
+        color: [0.729729772, 0.34655121, 0.34655121, 1]

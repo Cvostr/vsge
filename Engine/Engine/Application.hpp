@@ -29,26 +29,26 @@ namespace VSGE {
 	class Application {
 	private:
 
-		ApplicationCreateInfo description;
+		ApplicationCreateInfo _description;
 
-		tApplicationLayerList mLayers;
+		tApplicationLayerList _layers;
 
-		Window* mWindow;
+		Window* _window;
 
-		bool mRunning;
+		bool _running;
 	public:
 
 		static Application* _this;
 
 		Application(ApplicationCreateInfo descr) :
-						mRunning(false),
-						mWindow(new Window()),
-						description(descr)
+			_running(false),
+			_window(new Window()),
+			_description(descr)
 		{
 			_this = this;
 		}
 
-		const ApplicationCreateInfo& GetDescription() { return description; }
+		const ApplicationCreateInfo& GetDescription() { return _description; }
 
 		void Run();
 		void Stop();
@@ -71,7 +71,7 @@ namespace VSGE {
 		/// Get object of window
 		/// </summary>
 		/// <returns></returns>
-		Window& GetWindow() { return *mWindow; }
+		Window& GetWindow() { return *_window; }
 		/// <summary>
 		/// Calls OnUpdate on all registered application layers
 		/// </summary>
@@ -82,7 +82,7 @@ namespace VSGE {
 
 		template<typename T>
 		T* GetLayer() {
-			for (auto layer : mLayers) {
+			for (auto layer : _layers) {
 				if (typeid(*layer) == typeid(T)) {
 					return static_cast<T*>(layer);
 				}
@@ -91,7 +91,7 @@ namespace VSGE {
 		}
 
 		GraphicsApi GetGraphicsApi() {
-			return description.graphicsApi;
+			return _description.graphicsApi;
 		}
 
 		static Application* Get() {

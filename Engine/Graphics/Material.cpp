@@ -1,5 +1,7 @@
 #include "Material.hpp"
 #include "Shader.hpp"
+#include <yaml-cpp/yaml.h>
+#include <fstream>
 
 using namespace VSGE;
 
@@ -120,4 +122,37 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 	}
 
 	return writtenBytes;
+}
+
+void Material::Serialize(const std::string& fpath) {
+	YAML::Emitter out;
+	out << YAML::BeginMap;
+	out << YAML::Key << "Material";
+	out << YAML::Key << "template" << YAML::Value << GetTemplate()->GetName();
+	
+	out << YAML::Key << "Textures" << YAML::Value << YAML::BeginSeq;
+	for (auto& texture : this->_materialTextures) {
+		out << YAML::BeginMap;
+		out << YAML::Key << "Texture" << YAML::Value << texture._name;
+		out << YAML::Key << "res" << YAML::Value << texture._resource.GetResourceName();
+		out << YAML::EndMap; // Entity
+	}
+	out << YAML::EndSeq;
+
+	out << YAML::Key << "Params" << YAML::Value << YAML::BeginSeq;
+	for (auto& param : this->_materialParams) {
+		out << YAML::BeginMap;
+		out << YAML::Key << "Param" << YAML::Value << param.name;
+		out << YAML::Key << "type" << YAML::Value << param.value.GetType();
+		out << YAML::EndMap; // Entity
+	}
+	out << YAML::EndSeq;
+
+	out << YAML::EndMap;
+
+	std::ofstream fout(fpath);
+	fout << out.c_str();
+}
+void Material::Deserialize(const std::string& fpath) {
+
 }

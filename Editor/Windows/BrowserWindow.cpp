@@ -77,7 +77,11 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     VSGE::Resource* resource = nullptr;
     if (Entry.ext == ".scn") {
+        InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
+        insp->SetShowingEntity(nullptr);
+
         EditorLayer* el = EditorLayer::Get();
+        el->GetOpenedSceneFile() = Entry.abs_path;
         el->GetScene()->NewScene();
 
         VSGE::SceneSerializer ss;
@@ -173,17 +177,15 @@ void FileBrowserWindow::OnDrawWindow() {
         if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
 
         if (e->isTexture()) {
-                ImguiVulkanTexture* tex = GetTextureResource(e->abs_path);
-                if (tex)
-                   icon = tex;
-            //GetTextureResource(e->abs_path);
+            ImguiVulkanTexture* tex = GetTextureResource(e->abs_path);
+            if (tex)
+                icon = tex;
         }
 
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
         bool clicked = ImageButtonWithText(icon->imtexture, e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
-       
         
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())

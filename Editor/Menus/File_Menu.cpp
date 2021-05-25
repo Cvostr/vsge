@@ -32,7 +32,8 @@ void File_Menu::OnDrawMenu() {
 
 			if (el->GetOpenedSceneFile().size() == 0)
 				SaveAs();
-
+			else
+				SaveScene(el->GetOpenedSceneFile());
 			
 		}
 		if (ImGui::MenuItem("Save As..", NULL)) {

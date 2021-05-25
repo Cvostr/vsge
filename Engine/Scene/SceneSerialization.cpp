@@ -62,6 +62,8 @@ namespace YAML {
 			return true;
 		}
 	};
+
+
 }
 
 Emitter& operator<<(YAML::Emitter& out, const Guid& v)

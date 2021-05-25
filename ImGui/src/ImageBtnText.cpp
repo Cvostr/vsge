@@ -39,7 +39,9 @@ bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _si
 
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + totalSizeWithoutPadding + padding * 2);
     ImVec2 start(0, 0);
-    start = window->DC.CursorPos + padding; if (size.y < textSize.y) start.y += (textSize.y - size.y) * .5f;
+    start = window->DC.CursorPos + padding; 
+    if (size.y < textSize.y) 
+        start.y += (textSize.y - size.y) * .5f;
     const ImRect image_bb(start, start + size);
     start = window->DC.CursorPos + padding;
     start.y += size.y;

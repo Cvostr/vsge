@@ -195,5 +195,8 @@ namespace VSGE {
 		MaterialTemplate* GetTemplate() {
 			return _template;
 		}
+
+		void Serialize(const std::string& fpath);
+		void Deserialize(const std::string& fpath);
 	};
 }

@@ -12,5 +12,5 @@ void MeshComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "mesh" << Value << this->_meshResource.GetResourceName();
 }
 void MeshComponent::Deserialize(YAML::Node& entity) {
-	SetMeshName( entity["mesh"].as<std::string>());
+	SetMeshName(entity["mesh"].as<std::string>());
 }
