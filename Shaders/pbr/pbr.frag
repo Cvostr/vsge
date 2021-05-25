@@ -31,9 +31,9 @@ void main() {
         tColor = texture(albedo, UVCoord);
 
     if(hasNormal){
-       // tNormal = texture(normal, UVCoord).rgb;
-       // tNormal = normalize(tNormal * 2 - 1);
-	//	tNormal = normalize(TBN * tNormal);
+        tNormal = texture(normal, UVCoord).rgb;
+        tNormal = normalize(tNormal * 2 - 1);
+		tNormal = normalize(TBN * tNormal);
     }
 
     tPos = FragPos;

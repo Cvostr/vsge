@@ -59,13 +59,11 @@ namespace VSGE {
 		VulkanCommandPool* mCmdPool;
 		VulkanCommandBuffer* mGBufferCmdbuf;
 		VulkanCommandBuffer* mLightsCmdbuf;
-		
 		//--------------------Descriptors----------------
 		VulkanDescriptorPool* mObjectsPool;
 		VulkanDescriptorPool* mMaterialsDescriptorPool;
 		std::vector<VulkanDescriptorSet*> mVertexDescriptorSets;
 		VulkanDescriptorSet* mDeferredPassSet;
-
 		//--------------------Buffers--------------------
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;

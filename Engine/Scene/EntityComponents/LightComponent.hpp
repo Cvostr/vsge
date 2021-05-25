@@ -36,5 +36,8 @@ namespace VSGE {
 
 		float& GetIntensity() { return mIntensity; }
 		float& GetRange() { return mRange; }
+
+		//void Serialize(YAML::Emitter& e);
+		//void Deserialize(YAML::Node& entity);
 	};
 }

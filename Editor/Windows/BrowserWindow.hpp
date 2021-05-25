@@ -43,26 +43,27 @@ namespace VSGEditor {
 
 		VSGE::VulkanSampler sampler;
 		struct {
-		
 			ImguiVulkanTexture mBackBtnIcon;
 			ImguiVulkanTexture mDirIcon;
 			ImguiVulkanTexture mUnknownFile;
+			ImguiVulkanTexture mEmptyTextureIcon;
 			ImguiVulkanTexture m3DModelIcon;
 			ImguiVulkanTexture mSceneIcon;
-
-			
 		}FileIcons;
 		
 		std::vector<STRIMGVKT*> mTextureResources;
 
 		void DeleteFileDialog(FileEntry* Entry);
 		void RenameFileDialog(FileEntry* Entry);
-		ImguiVulkanTexture* GetTextureResource(const std::string& fname);
+		VSGE::Resource* GetResourceWithFilePath(const std::string& fpath);
 	public:
 
 		FileBrowserWindow(std::string RootDir);
 
-		VSGE::Resource* GetResourceWithFilePath(const std::string& fpath);
+		ImguiVulkanTexture* GetTextureResource(const std::string& fname);
+		ImguiVulkanTexture* GetCheckerboardTexture() { return &FileIcons.mEmptyTextureIcon; }
+
+		
 
 		void OnDrawWindow();
 

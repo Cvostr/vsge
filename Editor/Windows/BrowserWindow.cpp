@@ -71,6 +71,7 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
     FileIcons.mUnknownFile.CreateFromFile("res/icons/unknown.png", sampler);
     FileIcons.m3DModelIcon.CreateFromFile("res/icons/3dmodel.png", sampler);
     FileIcons.mSceneIcon.CreateFromFile("res/icons/3d_scene.png", sampler);
+    FileIcons.mEmptyTextureIcon.CreateFromFile("res/icons/Checkerboard.png", sampler);
 }
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {

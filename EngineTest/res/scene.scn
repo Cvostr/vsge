@@ -1,7 +1,7 @@
 Scene: Untitled
 Entities:
   - Entity: RootNode
-    uid: [3550861801, 2706578198, 3574695605, 1081034643]
+    uid: [3596475925, 718925734, 1179712965, 3447786323]
     active: true
     static: false
     parent: [0, 0, 0, 0]
@@ -11,44 +11,48 @@ Entities:
     components:
       - Component: 4
   - Entity: branch
-    uid: [1349594482, 3844193126, 854915981, 2941620454]
+    uid: [2307791993, 4277425829, 4019492747, 583587837]
     active: true
     static: false
-    parent: [3550861801, 2706578198, 3574695605, 1081034643]
+    parent: [3596475925, 718925734, 1179712965, 3447786323]
     pos: [0, 0, 0]
     scale: [200, 199.999985, 199.999985]
     rot: [0, -0, 0]
     components:
       []
   - Entity: tree.003
-    uid: [3443586967, 1750331217, 2461430312, 3551708183]
+    uid: [852525540, 1687415309, 2557981082, 1860117090]
     active: true
     static: false
-    parent: [1349594482, 3844193126, 854915981, 2941620454]
+    parent: [2307791993, 4277425829, 4019492747, 583587837]
     pos: [0, 0, 0]
     scale: [1, 1, 1]
     rot: [0, 0, 0]
     components:
       - Component: 3
+        mesh: tree.003
       - Component: 2
+        material: material
   - Entity: leaves
-    uid: [3783391875, 2097577705, 3908824731, 678160037]
+    uid: [865068517, 577318344, 2674260326, 1722702064]
     active: true
     static: false
-    parent: [3550861801, 2706578198, 3574695605, 1081034643]
+    parent: [3596475925, 718925734, 1179712965, 3447786323]
     pos: [0, 0, 0]
     scale: [200, 199.999985, 199.999985]
     rot: [0, -0, 0]
     components:
       []
   - Entity: tree.002
-    uid: [2413203800, 996474880, 2032383802, 3498079507]
+    uid: [1606066486, 2303824113, 1045775443, 734561427]
     active: true
     static: false
-    parent: [3783391875, 2097577705, 3908824731, 678160037]
+    parent: [865068517, 577318344, 2674260326, 1722702064]
     pos: [0, 0, 0]
     scale: [1, 1, 1]
     rot: [0, 0, 0]
     components:
       - Component: 3
+        mesh: tree.002
       - Component: 2
+        material: material

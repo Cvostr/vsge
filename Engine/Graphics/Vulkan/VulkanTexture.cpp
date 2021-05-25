@@ -76,6 +76,18 @@ void VulkanTexture::Destroy() {
 	}
 }
 
+VkImageAspectFlagBits VulkanTexture::GetAspect() {
+	//Calculate image aspect
+	VkImageAspectFlagBits aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+
+	if (_format == TextureFormat::FORMAT_DEPTH_32)
+		aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
+	if (_format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
+		aspect = (VkImageAspectFlagBits)(VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
+
+	return aspect;
+}
+
 void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, uint32 layers, uint32 mipLevels) {
 	_maxWidth = width;
 	_maxHeight = height;
@@ -89,12 +101,10 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VkImageLayout imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	if (_isRenderTarget)
 	{
-		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
-		imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
@@ -113,7 +123,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	imageInfo.extent.width = width;
 	imageInfo.extent.height = height;
 	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = _mipLevels;
+	imageInfo.mipLevels = mipLevels;
 	imageInfo.arrayLayers = layers;
 	imageInfo.format = TexFormat;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -127,6 +137,15 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VulkanDevice* device = rapi->GetDevice();
 
 	ma->createImage(&imageInfo, &this->_image);
+
+	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
+	{
+		ChangeLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+	}
+	else if (_isRenderTarget)
+	{
+		ChangeLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	}
 }
 
 void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) {
@@ -140,12 +159,10 @@ void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 he
 	VmaVkBuffer temp_buf;
 	void* temp_map;
 	ma->allocateCpu(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &temp_buf, size, &temp_map);
-	
 	memcpy(temp_map, data, size);
 	ma->unmap(&temp_buf);
 	//Copy temporary buffer to image
 	Transition(temp_buf, level, width, height);
-
 	//Free temporary buffer
 	ma->destroyBuffer(&temp_buf);
 }
@@ -159,20 +176,12 @@ bool VulkanTexture::CreateImageView() {
 	if (_layers > 1)
 		ImageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 
-	//Calculate image aspect
-	VkImageAspectFlagBits aspect = VK_IMAGE_ASPECT_COLOR_BIT;
-
-	if (_format == TextureFormat::FORMAT_DEPTH_32)
-		aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
-	if (_format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
-		aspect = (VkImageAspectFlagBits)(VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
-
-
+	
 	VkImageViewCreateInfo textureImageViewInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
 	textureImageViewInfo.image = _image.Image;
 	textureImageViewInfo.viewType = ImageViewType;
 	textureImageViewInfo.format = GetFormatVK(_format);
-	textureImageViewInfo.subresourceRange.aspectMask = aspect;
+	textureImageViewInfo.subresourceRange.aspectMask = GetAspect();
 	textureImageViewInfo.subresourceRange.baseMipLevel = 0;
 	textureImageViewInfo.subresourceRange.levelCount = _mipLevels;
 	textureImageViewInfo.subresourceRange.baseArrayLayer = 0;
@@ -204,7 +213,7 @@ void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 Widt
 
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.aspectMask = GetAspect();
 	region.imageSubresource.layerCount = 1;
 	region.imageSubresource.mipLevel = MipLevel;
 	region.imageExtent.width = Width;
@@ -235,7 +244,7 @@ void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 	VkImageMemoryBarrier imgMemBarrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
 	imgMemBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	imgMemBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	imgMemBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imgMemBarrier.subresourceRange.aspectMask = GetAspect();
 	imgMemBarrier.subresourceRange.baseMipLevel = 0;
 	imgMemBarrier.subresourceRange.levelCount = _mipLevels;
 	imgMemBarrier.subresourceRange.baseArrayLayer = 0;

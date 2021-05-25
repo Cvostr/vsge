@@ -140,6 +140,7 @@ bool VulkanMA::createImage(VkImageCreateInfo* info, VmaVkImage* image) {
     VmaAllocationCreateInfo vbAllocCreateInfo = {};
     vbAllocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
     vbAllocCreateInfo.flags = 0;
+    
 
     if (vmaCreateImage(*((VmaAllocator*)allocator), info, &vbAllocCreateInfo, &image->Image, (VmaAllocation*)&image->_allocation, nullptr) != VK_SUCCESS)
         return false;

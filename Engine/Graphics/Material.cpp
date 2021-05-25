@@ -102,7 +102,7 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 
 	for (MaterialParameter& param : _materialParams) {
 		if (param.value.GetType() == VALUE_TYPE_BOOL) {
-			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 1);
+			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 			writtenBytes += 4;
 		}
 		if (param.value.GetType() == VALUE_TYPE_INT) {

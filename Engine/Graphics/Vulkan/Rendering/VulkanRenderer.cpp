@@ -114,6 +114,8 @@ void VulkanRenderer::SetupRenderer() {
 
 	mDeferredPassSet = new VulkanDescriptorSet(mObjectsPool);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Create POOL
 	mObjectsPool->Create();
@@ -129,6 +131,8 @@ void VulkanRenderer::SetupRenderer() {
 
 	mDeferredPassSet->Create();
 	mDeferredPassSet->WriteDescriptorImage(3, (VulkanTexture*)mGBuffer->GetColorAttachments()[0], mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(4, (VulkanTexture*)mGBuffer->GetColorAttachments()[1], mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -224,6 +228,7 @@ void VulkanRenderer::StoreWorldObjects() {
 			uint32 size = mat->CopyParamsToBuffer(&buffer);
 
 			vmat->_paramsBuffer->WriteData(0, size, buffer);
+			delete[] buffer;
 			mat->_paramsDirty = false;
 		}
 	}
@@ -256,8 +261,6 @@ void VulkanRenderer::StoreWorldObjects() {
 			mGBufferCmdbuf->BindMesh(*mesh);
 			mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
 		}
-
-		
 	}
 
 	mGBufferCmdbuf->EndRenderPass();

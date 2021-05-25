@@ -37,8 +37,6 @@ bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
     uint32 offset = 0;
     int nwidth = maxWidth;
     int nheight = maxHeight;
-    if (mMipsCount > 1)
-        mMipsCount = 1;
 
     for (uint32 level = 0; level < mMipsCount; ++level) //Iterating over mipmaps
     {

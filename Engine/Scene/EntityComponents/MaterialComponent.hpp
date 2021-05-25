@@ -20,6 +20,13 @@ namespace VSGE {
 			return _materialResource;
 		}
 
+		void SetMaterialName(const std::string& mesh) {
+			_materialResource.SetResource(mesh);
+		}
+
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
+
 		EntityComponentType GetType() {
 			return ENTITY_COMPONENT_MATERIAL;
 		}

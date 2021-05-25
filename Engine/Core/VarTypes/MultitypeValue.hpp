@@ -58,6 +58,7 @@ public:
 
 	MultitypeValue() {
 		_type = VALUE_TYPE_INT;
+		memset(&_data, 0, sizeof(MultitypeData));
 	}
 
 	ValueType GetType() {

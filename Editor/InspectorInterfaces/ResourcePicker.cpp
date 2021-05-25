@@ -1,4 +1,5 @@
 #include "ResourcePicker.hpp"
+#include "../Windows/BrowserWindow.hpp"
 #include <Resources/ResourceCache.hpp>
 #include "../Windows/ResourcePickWindow.hpp"
 #include "../EditorLayers/ImGuiLayer.hpp"
@@ -12,7 +13,19 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 
 	ImGui::SameLine();
 
-	ImGui::Text(reference.GetResourceName().c_str());
+	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE) {
+		ImGui::SameLine();
+		FileBrowserWindow* fbw = ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
+		ImguiVulkanTexture* texture = fbw->GetCheckerboardTexture();
+
+		if (reference.GetResource()) {
+			texture = fbw->GetTextureResource(reference.GetResource()->GetDataDescription().file_path);
+		}
+
+		ImGui::Image(
+			(void*)texture->imtexture, ImVec2(64, 64));
+	}else
+		ImGui::Text(reference.GetResourceName().c_str());
 
 	ImGui::SameLine();
 
