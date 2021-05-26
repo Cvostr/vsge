@@ -17,6 +17,11 @@ namespace VSGE {
 
 	class Frustum {
 	private:
+		std::vector<Plane> _planes;
+	public:
 
+		void Update(const Mat4& PV);
+
+		bool SphereInside(const Vec3& center, float radius);
 	};
 }

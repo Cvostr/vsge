@@ -27,8 +27,6 @@ namespace VSGE {
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
 
-		EntityComponentType GetType() {
-			return ENTITY_COMPONENT_MATERIAL;
-		}
+		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_MATERIAL, "Material")
 	};
 }

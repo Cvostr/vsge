@@ -21,17 +21,18 @@ namespace VSGE {
 		}
 
 		Plane(const Vec3& v1, const Vec3& v2, const Vec3& v3) {
-			//Create(v1, v2, v3);
+			Create(v1, v2, v3);
 		}
 
 		Plane(const Vec3& Normal, const Vec3& Point) {
-			//Create(Normal, Point);
+			Create(Normal, Point);
 		}
 
-		float Distance(const Vec3& point) const { return vDot(mNormal, point) + mD; }
+		float Distance(const Vec3& point) const;
+		
+		float GetD() const;
 
-		const Vec3& GetNormal() { return mNormal; }
-		float GetD() { return mD; }
+		const Vec3& Plane::GetNormal() const;
 
 		void Normalize();
 

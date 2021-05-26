@@ -20,7 +20,7 @@ namespace VSGE {
 		EventWindowResized
 	};
 
-#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return type; }\
+#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return type; } \
 								virtual EventType GetEventType() const { return GetStaticType(); }
 
 #define EVENT_FUNC(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }

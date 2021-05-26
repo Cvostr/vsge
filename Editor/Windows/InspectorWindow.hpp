@@ -33,9 +33,9 @@ namespace VSGEditor {
 		}
 
 		template<class T>
-		void AddComponentButton(std::string Label) {
+		void AddComponentButton() {
 			if (!mShowingEntity->HasComponent<T>()) {
-				if (ImGui::Selectable(Label.c_str()))
+				if (ImGui::Selectable(T::GetTypeStringStatic().c_str()))
 				{
 					mShowingEntity->AddComponent<T>();
 				}
@@ -43,7 +43,7 @@ namespace VSGEditor {
 		}
 
 		template<class T>
-		void DrawComponent(std::string Label);
+		void DrawComponent();
 
 		InspectorWindow() :
 			mShowingEntity(nullptr),

@@ -1,0 +1,147 @@
+#pragma once
+
+#include "../IEntityComponent.hpp"
+#include <Resources/ResourceTypes/MeshResource.hpp>
+#include <Math/Color.hpp>
+#include <string>
+
+namespace VSGE {
+
+	enum ParticleEmitterShape {
+		PE_SHAPE_NONE,
+		PE_SHAPE_SPHERE,
+		PE_SHAPE_BOX,
+		PE_SHAPE_CONE
+	};
+
+	enum ParticleRotateMode {
+		PRM_BILLBOARD,
+		PRM_DIRECTION
+	};
+
+	template <typename T>
+	struct BeginEndValue {
+		T Begin;
+		T End;
+
+		BeginEndValue() :
+			Begin(0),
+			End(10)
+		{}
+
+		BeginEndValue(T Value) :
+			Begin(Value),
+			End(Value)
+		{
+		}
+
+		BeginEndValue(T BeginValue, T EndValue) :
+			Begin(BeginValue),
+			End(EndValue)
+		{}
+	};
+
+	template<typename T>
+	struct MinMaxValue {
+		T Min;
+		T Max;
+
+		MinMaxValue() :
+			Min(0),
+			Max(10)
+		{}
+
+		MinMaxValue(T Value) :
+			Min(Value),
+			Max(Value)
+		{
+		}
+
+		MinMaxValue(T BeginValue, T EndValue) :
+			Min(BeginValue),
+			Max(EndValue)
+		{}
+	};
+
+	template <typename T>
+	struct DeltaValue {
+		T OriginalValue;
+
+		float Add;
+		float Mul;
+
+		DeltaValue() :
+			Add(0),
+			Mul(1)
+		{}
+
+		DeltaValue(T Original) :
+			OriginalValue(Original),
+			Add(0),
+			Mul(1)
+		{}
+	};
+
+	class Particle {
+	public:
+		bool _alive;
+		Vec3 _position; //Current position of particle
+		Vec3 _velocity; //Current velocity of particle
+		Vec2 _size; // Current size of particle
+		float _rotation; //Rotation over Z of particle
+		float _rotationSpeed;
+		Color _color; //Current color of particle
+		float _timePassed; //Time, elapsed from creation
+
+		Particle() :
+			_alive(false),
+			_timePassed(0),
+			_rotation(0),
+			_rotationSpeed(0)
+		{}
+	};
+
+	class ParticleEmitterComponent : public IEntityComponent {
+	private:
+		ResourceReference _meshResource;
+		ResourceReference _materialResource;
+
+		//Array of particles
+		std::vector<Particle*> _particles;
+
+		//Shape of emitter
+		ParticleEmitterShape _shape;
+		float _duration; //single cycle duration
+		bool _looping; //Does particle system loop
+		bool _prewarm; //Restart system on loop
+		float _lifetime; //Lifetime of single particle
+		int32_t _maxParticles; //Limit particles amount
+		MinMaxValue<int> _emissionRate; //Particles per second emitted
+
+		MinMaxValue<Vec3> _direction;
+		DeltaValue<MinMaxValue<Vec2>> _size;
+		MinMaxValue<float> _velocity;
+		Vec3 _constantForce;
+		float _dampingForce;
+		MinMaxValue<float> _rotation;
+		MinMaxValue<float> _rotationSpeed;
+		DeltaValue<Color> _color;
+
+		bool _simulating;
+		float _emitterTime;
+		float _simulationTime;
+	public:
+		ParticleEmitterComponent();
+
+		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_PARTICLE_EMITTER, "Particle Emitter")
+
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
+
+		void SetMeshName(const std::string& mesh);
+		MeshResource* GetMeshResource() { return _meshResource.GetResource<MeshResource>(); }
+		ResourceReference& GetResourceReference() {
+			return _meshResource;
+		}
+	};
+}

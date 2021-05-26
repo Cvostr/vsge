@@ -9,8 +9,6 @@ namespace VSGE {
 	public:
 		AnimatorComponent(){}
 
-		EntityComponentType GetType() {
-			return ENTITY_COMPONENT_ANIMATOR;
-		}
+		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_ANIMATOR, "Animator")
 	};
 }

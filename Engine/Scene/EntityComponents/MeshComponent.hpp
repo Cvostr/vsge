@@ -13,9 +13,7 @@ namespace VSGE {
 			_meshResource.SetResourceType(RESOURCE_TYPE_MESH);
 		}
 
-		EntityComponentType GetType() {
-			return ENTITY_COMPONENT_MESH;
-		}
+		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_MESH, "Mesh")
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

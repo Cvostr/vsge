@@ -7,6 +7,8 @@
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
+#include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 
 #include "../InspectorInterfaces/EntityComponents/EntityComponents.hpp"
@@ -17,22 +19,22 @@ using namespace VSGE;
 InspectorWindow* InspectorWindow:: _this = nullptr;
 
 template<class T>
-void VSGEditor::InspectorWindow::DrawComponent(std::string Label) {
+void VSGEditor::InspectorWindow::DrawComponent() {
 	if (mShowingEntity->HasComponent<T>()) {
-		bool is_down = ImGui::CollapsingHeader(Label.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+		bool is_down = ImGui::CollapsingHeader(T::GetTypeStringStatic().c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
 		if (!is_down)
 			return;
 
 		if (ImGui::IsItemClicked(1))
 		{
-			ImGui::OpenPopup(Label.c_str());
+			ImGui::OpenPopup(T::GetTypeStringStatic().c_str());
 		}
 
 		T* component = mShowingEntity->GetComponent<T>();
 
 		bool removeComponent = false;
-		if (ImGui::BeginPopup(Label.c_str()))
+		if (ImGui::BeginPopup(T::GetTypeStringStatic().c_str()))
 		{
 			if (ImGui::MenuItem("Remove component"))
 				removeComponent = true;
@@ -93,10 +95,11 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		//DrawComponent(component, "Mesh Renderer");
 	//}
 
-	DrawComponent<VSGE::MeshComponent>("Mesh Renderer");
-	DrawComponent<VSGE::MaterialComponent>("Material");
-	DrawComponent<VSGE::LightsourceComponent>("Light");
-	DrawComponent<VSGE::AnimatorComponent>("Animator");
+	DrawComponent<VSGE::MeshComponent>();
+	DrawComponent<VSGE::MaterialComponent>();
+	DrawComponent<VSGE::LightsourceComponent>();
+	DrawComponent<VSGE::AnimatorComponent>();
+	DrawComponent<VSGE::ParticleEmitterComponent>();
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.45f, 0.5f, 1));
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetWindowWidth(), 0)))
@@ -107,10 +110,11 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	{
 		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "--------------------- Components ---------------------");
 		
-		AddComponentButton<VSGE::MeshComponent>("Mesh Renderer");
-		AddComponentButton<VSGE::MaterialComponent>("Material");
-		AddComponentButton<VSGE::LightsourceComponent>("Light");
-		AddComponentButton<VSGE::AnimatorComponent>("Animator");
+		AddComponentButton<VSGE::MeshComponent>();
+		AddComponentButton<VSGE::MaterialComponent>();
+		AddComponentButton<VSGE::LightsourceComponent>();
+		AddComponentButton<VSGE::AnimatorComponent>();
+		AddComponentButton<VSGE::ParticleEmitterComponent>();
 
 		ImGui::EndPopup();
 	}
@@ -122,10 +126,7 @@ void VSGEditor::InspectorWindow::DrawMaterialContents() {
 	if (_template == nullptr)
 		return;
 
-	//std::vector<MaterialTexture> _temp_textures;
 	for (MaterialTexture& texture : mShowingMaterial->GetTextures()) {
-		//_temp_textures.push_back(texture);
-		//ResourceReference ref = texture._resource;
 		DrawResourcePicker(texture._name.c_str(), texture._resource);
 		mShowingMaterial->SetTexture(texture._name, texture._resource);
 	}
