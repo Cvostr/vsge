@@ -4,5 +4,8 @@ mapFile engine_out/shaders.map
 shader PBR/pbr.vert
 shader PBR/pbr.frag
 
+shader particle/particle.vert
+shader particle/particle.frag
+
 shader DeferredLight/deferred.vert
 shader DeferredLight/deferred.frag

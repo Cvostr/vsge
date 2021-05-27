@@ -29,6 +29,11 @@ public:
 		return tVec2(x * d, y * d);
 	}
 
+	void operator*=(float v) {
+		x *= v;
+		y *= v;
+	}
+
 	bool operator ==(const tVec2& r) const {
 		return x == r.x && y == r.y;
 	}

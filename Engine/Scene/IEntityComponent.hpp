@@ -73,7 +73,7 @@ namespace VSGE {
 		Entity* GetEntity() const {
 			return _entity;
 		}
-	private:
+	protected:
 		bool _active;
 		Entity* _entity;
 	};

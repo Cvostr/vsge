@@ -1,4 +1,7 @@
 #include "ParticleEmitterComponent.hpp"
+#include <Math/MathBase.hpp>
+#include <Core/Random.hpp>
+#include <Scene/Entity.hpp>
 
 using namespace VSGE;
 
@@ -56,6 +59,120 @@ void ParticleEmitterComponent::StopSimulation() {
 	_simulating = false;
 }
 
+bool ParticleEmitterComponent::EmitNewParticle() {
+	/*
+	//TransformProperty* transform = go_link.updLinkPtr()->getTransformProperty();
+
+	uint32_t FreeIndex = GetFreeParticleIndex();
+
+	if (FreeIndex == 0xFFFFFFFF || FreeIndex > (_maxParticles - 1))
+		return false;
+
+	Particle* particlePtr = _particles[FreeIndex];
+
+	Vec3 BaseDir;// = _getDirection(transform->abs_rotation);
+
+	particlePtr->_size = GetRandomSize();
+	particlePtr->_color = _color.OriginalValue;
+
+	Vec3 Dir = (BaseDir + GetRandomDirection()).GetNormalized();
+
+	switch (_shape) {
+	case PE_SHAPE_SPHERE: {
+
+		Vec3 vel = Vec3(
+			GetRandomFloat(2.f) - 1.0f,
+			GetRandomFloat(2.f) - 1.0f,
+			GetRandomFloat(2.f) - 1.0f
+		).GetNormalized();
+
+		particlePtr->_position = transform->abs_translation + transform->abs_scale * vel * 0.5f;
+
+		break;
+	}
+	case PE_SHAPE_BOX: {
+		Vec3 Size = transform->abs_scale;
+		particlePtr->_position = Vec3(
+			GetRandomFloat(Size.x) - Size.x * 0.5f,
+			GetRandomFloat(Size.y) - Size.y * 0.5f,
+			GetRandomFloat(Size.z) - Size.z * 0.5f
+		);
+
+		break;
+	}
+	}
+
+	particlePtr->_rotation = GetRandomRotation();
+	particlePtr->_rotationSpeed = GetRandomRotationSpeed();
+	particlePtr->_velocity = Dir * GetRandomVelocity();
+	particlePtr->_alive = true;
+	particlePtr->_timePassed = 0;
+	//particlePtr->Position += Dir * particlePtr->Size.Y;
+	*/
+	return true;
+}
+
+void ParticleEmitterComponent::StepSimulation() {
+	if (!_simulating)
+		return;
+
+	if (_simulationTime >= _duration) {
+		if (_looping) {
+			if (!_prewarm)
+				RestartSimulation();
+		}
+		else {
+			StopSimulation();
+		}
+	}
+
+	float DeltaTime = 16;
+
+	_simulationTime += DeltaTime;
+	_emitterTime += DeltaTime;
+
+	int32_t leftToEmit = _maxParticles - GetAliveParticlesCount();
+
+	while (leftToEmit > 0 && _emitterTime > 0) {
+		if (EmitNewParticle()) {
+			_emitterTime -= (1.f / GetRandomEmissionRate());
+			leftToEmit--;
+		}
+		else
+			break;
+	}
+
+	for (uint32 particle_i = 0; particle_i < GetAliveParticlesCount(); particle_i++) {
+		Particle* particlePtr = _particles[particle_i];
+
+		if (!particlePtr->_alive)
+			continue;
+
+		if (particlePtr->_timePassed >= _lifetime) {
+			DestroyParticle(particlePtr);
+			continue;
+		}
+
+		//update velocity
+		particlePtr->_velocity += _constantForce * DeltaTime;
+
+		if (_dampingForce != 0.f) {
+			Vec3 force = particlePtr->_velocity * _dampingForce;
+			particlePtr->_velocity += force * DeltaTime;
+		}
+
+		//Update size
+		particlePtr->_size = particlePtr->_size + Vec2(_size.Add * DeltaTime);
+		particlePtr->_size *= (_size.Mul - 1.f) * DeltaTime + 1.f;
+		//Update position
+		particlePtr->_position += particlePtr->_velocity * DeltaTime;
+		//Update rotation
+		particlePtr->_rotation += particlePtr->_rotationSpeed * DeltaTime;
+		//Update particle age
+		particlePtr->_timePassed += DeltaTime;
+	}
+}
+
 void ParticleEmitterComponent::RestartSimulation() {
 	StopSimulation();
 	StartSimulation();
@@ -66,7 +183,7 @@ void ParticleEmitterComponent::DestroyParticle(Particle* particle) {
 }
 
 uint32 ParticleEmitterComponent::GetAliveParticlesCount() {
-	uint32_t Result = 0;
+	uint32 Result = 0;
 	for (auto particle : _particles) {
 		if (particle->_alive)
 			Result += 1;
@@ -75,9 +192,46 @@ uint32 ParticleEmitterComponent::GetAliveParticlesCount() {
 }
 
 uint32 ParticleEmitterComponent::GetFreeParticleIndex() {
-	for (uint32_t i = 0; i < static_cast<uint32_t>(_particles.size()); i++) {
+	for (uint32 i = 0; i < static_cast<uint32_t>(_particles.size()); i++) {
 		if (!_particles[i]->_alive)
 			return i;
 	}
 	return UINT64_MAX;
+}
+
+Vec3 ParticleEmitterComponent::GetRandomDirection() {
+	return Vec3(
+		lerp(_direction.Min.x, _direction.Max.x, GetRandomFloat(1.f)),
+		lerp(_direction.Min.y, _direction.Max.y, GetRandomFloat(1.f)),
+		lerp(_direction.Min.z, _direction.Max.z, GetRandomFloat(1.f)));
+}
+
+Vec2 ParticleEmitterComponent::GetRandomSize() {
+
+	Vec2 SizeMin = _size.OriginalValue.Min;
+	Vec2 SizeMax = _size.OriginalValue.Max;
+
+	return Vec2(
+		lerp(SizeMin.x, SizeMax.x, GetRandomFloat(1.f)),
+		lerp(SizeMin.y, SizeMax.y, GetRandomFloat(1.f)));
+}
+
+float ParticleEmitterComponent::GetRandomVelocity() {
+	return lerp(_velocity.Min, _velocity.Max, GetRandomFloat(1.f));
+}
+
+float ParticleEmitterComponent::GetRandomRotation() {
+	return lerp(_rotation.Min, _rotation.Max, GetRandomFloat(1.f));
+}
+
+float ParticleEmitterComponent::GetRandomRotationSpeed() {
+	return lerp(_rotationSpeed.Min, _rotationSpeed.Max, GetRandomFloat(1.f));
+}
+
+int ParticleEmitterComponent::GetRandomEmissionRate() {
+	return lerp(_emissionRate.Min, _emissionRate.Max, GetRandomFloat(1.f));
+}
+
+float ParticleEmitterComponent::GetRandomFloat(float max) {
+	return (Rand() * max) / 32767.f;
 }

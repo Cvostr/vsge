@@ -147,12 +147,22 @@ namespace VSGE {
 			_maxParticles = maxParticles;
 		}
 
+		bool EmitNewParticle();
 		void StartSimulation();
 		void StopSimulation();
+		void StepSimulation();
 		void RestartSimulation();
 		void DestroyParticle(Particle* particle);
 		uint32 GetAliveParticlesCount();
 		uint32 GetFreeParticleIndex();
+
+		Vec3 GetRandomDirection();
+		Vec2 GetRandomSize();
+		float GetRandomVelocity();
+		float GetRandomRotation();
+		float GetRandomRotationSpeed();
+		int GetRandomEmissionRate();
+		float GetRandomFloat(float max);
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
