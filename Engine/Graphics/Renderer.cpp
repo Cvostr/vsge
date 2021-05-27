@@ -4,6 +4,7 @@
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
+#include <Scene/EntityComponents/LightComponent.hpp>
 
 using namespace VSGE;
 
@@ -15,8 +16,9 @@ void IRenderer::CreateRenderList() {
 void IRenderer::ProcessEntity(Entity* entity) {
 	if (!entity->IsActive())
 		return;
+	//Calculate local transformation matrix
 	Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
-
+	//Set local transform matrix to entity
 	entity->SetLocalTransform(localTransform);
 
 	Vec3 tr = entity->GetPosition();
@@ -31,13 +33,18 @@ void IRenderer::ProcessEntity(Entity* entity) {
 		rt += parent.GetRotation();
 	}
 
+	//Calculate absolute transform matrix
 	worldTransform = GetTransform(tr, sc, rt);
 	
-
+	//Update entity absolute transform matrix
 	entity->SetWorldTransform(worldTransform);
+
+	//Call OnPreRender on entity
+	entity->CallOnPreRender();
 
 	bool HasMesh = entity->HasComponent<MeshComponent>();
 	bool HasMaterial = entity->HasComponent<MaterialComponent>();
+	bool hasLightsource = entity->HasComponent<LightsourceComponent>();
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
 		if (mesh->GetMeshResource()) {
@@ -61,6 +68,10 @@ void IRenderer::ProcessEntity(Entity* entity) {
 
 	if (HasMaterial && HasMesh) {
 		mEntitiesToRender.push_back(entity);
+	}
+
+	if (hasLightsource) {
+		mLightsources.push_back(entity);
 	}
 
 	for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i ++) {

@@ -161,3 +161,28 @@ const AABB& Entity::UpdateAABB() {
 void Entity::SetWorldTransform(const Mat4& transform) { 
 	WorldTransform = transform;
 }
+
+void Entity::CallOnStart() {
+	for (auto component : _components) {
+		if(component->IsActive())
+			component->OnStart();
+	}
+}
+void Entity::CallOnUpdate() {
+	for (auto component : _components) {
+		if (component->IsActive())
+			component->OnUpdate();
+	}
+}
+void Entity::CallOnStop() {
+	for (auto component : _components) {
+		if (component->IsActive())
+			component->OnDestroy();
+	}
+}
+void Entity::CallOnPreRender() {
+	for (auto component : _components) {
+		if (component->IsActive())
+			component->OnPreRender();
+	}
+}

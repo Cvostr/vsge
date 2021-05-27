@@ -21,7 +21,17 @@ InspectorWindow* InspectorWindow:: _this = nullptr;
 template<class T>
 void VSGEditor::InspectorWindow::DrawComponent() {
 	if (mShowingEntity->HasComponent<T>()) {
+
+		T* component = mShowingEntity->GetComponent<T>();
+
+		if (!component->IsActive()) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
+		}
 		bool is_down = ImGui::CollapsingHeader(T::GetTypeStringStatic().c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+		if (!component->IsActive()) {
+			ImGui::PopStyleColor();
+		}
 
 		if (!is_down)
 			return;
@@ -31,11 +41,15 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 			ImGui::OpenPopup(T::GetTypeStringStatic().c_str());
 		}
 
-		T* component = mShowingEntity->GetComponent<T>();
+		
 
 		bool removeComponent = false;
 		if (ImGui::BeginPopup(T::GetTypeStringStatic().c_str()))
 		{
+			bool active = component->IsActive();
+			ImGui::MenuItem("Active", NULL, &active);
+			component->SetActive(active);
+
 			if (ImGui::MenuItem("Remove component"))
 				removeComponent = true;
 
@@ -55,6 +69,9 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 		}
 		if (typeid(T) == typeid(MaterialComponent)) {
 			DrawMaterialComponent((MaterialComponent*)component);
+		}
+		if (typeid(T) == typeid(ParticleEmitterComponent)) {
+			//DrawParticleEmitterComponent((ParticleEmitterComponent*)component);
 		}
 	}
 }

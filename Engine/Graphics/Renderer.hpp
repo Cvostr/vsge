@@ -12,7 +12,10 @@ namespace VSGE {
 		Scene* mScene;
 		Texture* mOutput;
 
+		//Entities with mesh and material to render
 		tEntityList mEntitiesToRender;
+		//Entities with lightsource
+		tEntityList mLightsources;
 	public:
 
 		IRenderer() : 

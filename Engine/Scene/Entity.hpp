@@ -157,9 +157,20 @@ namespace VSGE {
 		/// <param name="id">- guid to find</param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
-
+		/// <summary>
+		/// Get local position of entity
+		/// </summary>
+		/// <returns></returns>
 		const Vec3& GetPosition() const { return mPosition; }
+		/// <summary>
+		/// Get local scale of entity
+		/// </summary>
+		/// <returns></returns>
 		const Vec3& GetScale() const { return mScale; }
+		/// <summary>
+		/// Get local rotation of entity
+		/// </summary>
+		/// <returns></returns>
 		const Vec3& GetRotation() const { return mRotation; }
 
 		void SetPosition(const Vec3& position);
@@ -235,5 +246,9 @@ namespace VSGE {
 
 		void RemoveAllComponents();
 
+		void CallOnStart();
+		void CallOnUpdate();
+		void CallOnStop();
+		void CallOnPreRender();
 	};
 }

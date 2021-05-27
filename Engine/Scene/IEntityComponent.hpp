@@ -25,10 +25,24 @@ namespace VSGE {
 	class IEntityComponent {
 	public:
 
-		IEntityComponent() : _active(false), _entity(nullptr) {}
-
+		IEntityComponent() : 
+			_active(true), _entity(nullptr)
+		{}
+		/// <summary>
+		/// Calls on scene start if object and component are both active
+		/// </summary>
 		virtual void OnStart() {}
+		/// <summary>
+		/// Calls on every frame if object and component are both active
+		/// </summary>
+		virtual void OnPreRender(){}
+		/// <summary>
+		/// Calls on every single frame in scene runtime if object and component are both active
+		/// </summary>
 		virtual void OnUpdate() {}
+		/// <summary>
+		/// Calls on scene destroy, object or component deletion
+		/// </summary>
 		virtual void OnDestroy() {}
 
 		virtual void Serialize(YAML::Emitter& e) {}
@@ -52,7 +66,10 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="entity">- pointer to entity</param>
 		void SetEntity(Entity* entity) { _entity = entity; }
-
+		/// <summary>
+		/// Get entity, that owns this object
+		/// </summary>
+		/// <returns></returns>
 		Entity* GetEntity() const {
 			return _entity;
 		}

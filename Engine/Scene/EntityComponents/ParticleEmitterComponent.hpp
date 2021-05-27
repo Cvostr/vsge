@@ -115,7 +115,7 @@ namespace VSGE {
 		bool _looping; //Does particle system loop
 		bool _prewarm; //Restart system on loop
 		float _lifetime; //Lifetime of single particle
-		int32_t _maxParticles; //Limit particles amount
+		uint32_t _maxParticles; //Limit particles amount
 		MinMaxValue<int> _emissionRate; //Particles per second emitted
 
 		MinMaxValue<Vec3> _direction;
@@ -127,16 +127,37 @@ namespace VSGE {
 		MinMaxValue<float> _rotationSpeed;
 		DeltaValue<Color> _color;
 
-		bool _simulating;
-		float _emitterTime;
-		float _simulationTime;
+		bool _simulating; //are particles simulating now? true if simulating
+		float _emitterTime; 
+		float _simulationTime; //time of simulation passed
 	public:
 		ParticleEmitterComponent();
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_PARTICLE_EMITTER, "Particle Emitter")
 
+		void SetDuration(float duration) {
+			_duration = duration;
+		}
+
+		void SetParticleLifetime(float lifetime) {
+			_lifetime = lifetime;
+		}
+
+		void SetMaxParticlesCount(uint32 maxParticles) {
+			_maxParticles = maxParticles;
+		}
+
+		void StartSimulation();
+		void StopSimulation();
+		void RestartSimulation();
+		void DestroyParticle(Particle* particle);
+		uint32 GetAliveParticlesCount();
+		uint32 GetFreeParticleIndex();
+
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
+
+		void OnPreRender();
 
 		void SetMeshName(const std::string& mesh);
 		MeshResource* GetMeshResource() { return _meshResource.GetResource<MeshResource>(); }

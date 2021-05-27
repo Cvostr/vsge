@@ -5,7 +5,6 @@ using namespace VSGEditor;
 using namespace VSGE;
 
 void VSGEditor::DrawLightsourceComponent(VSGE::LightsourceComponent* light) {
-	int i = 0;
 	ImGui::RadioButton("Point Light", (int*)&light->GetLightType(), (int)LightType::LIGHT_TYPE_POINT);
 	ImGui::RadioButton("Spot Light", (int*)&light->GetLightType(), (int)LightType::LIGHT_TYPE_SPOT);
 
