@@ -4,6 +4,7 @@
 
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_vulkan.h>
+#include <imgui_internal.h>
 
 #include <Graphics/Vulkan/VulkanDescriptors.hpp>
 #include <Graphics/Vulkan/VulkanRenderpass.hpp>
@@ -20,7 +21,6 @@ namespace VSGEditor {
 		static ImGuiLayer* _this;
 
 		ImGuiIO io;
-		bool _freezeWindows;
 
 		tEditorWindowList mWindows;
 		tImGuiMenuList mMenus;
@@ -38,16 +38,9 @@ namespace VSGEditor {
 
 		ImGuiLayer() {
 			_this = this;
-			_freezeWindows = true;
 		}
 
-		bool IsWindowsFrozen() {
-			return _freezeWindows;
-		}
-
-		void SetWindowsFreeze(bool freeze) {
-			_freezeWindows = freeze;
-		}
+		void DrawDockWindow();
 
 		void RegroupWindows();
 

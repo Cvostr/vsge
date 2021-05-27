@@ -34,7 +34,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp.lib)
 target_link_libraries(Editor winmm.lib)
 target_link_libraries(Editor Setupapi.lib)
 target_link_libraries(Editor Version.lib)
-#target_link_libraries(Editor Imm32.lib)
+target_link_libraries(Editor Imm32.lib)
 
 ENDIF()
 

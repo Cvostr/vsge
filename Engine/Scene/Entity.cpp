@@ -124,15 +124,15 @@ void Entity::RemoveAllComponents() {
 }
 
 void Entity::SetPosition(const Vec3& position) {
-	mPosition = position;
+	_position = position;
 	mTransformDirty = true;
 }
 void Entity::SetScale(const Vec3& scale) {
-	mScale = scale;
+	_scale = scale;
 	mTransformDirty = true;
 }
 void Entity::SetRotation(const Vec3& rotation) {
-	mRotation = rotation;
+	_rotation = rotation;
 	mTransformDirty = true;
 }
 
@@ -185,4 +185,14 @@ void Entity::CallOnPreRender() {
 		if (component->IsActive())
 			component->OnPreRender();
 	}
+}
+
+Vec3 Entity::GetAbsolutePosition() {
+	return WorldTransform.GetPosition();
+}
+Vec3 Entity::GetAbsoluteScale() {
+	return WorldTransform.GetScale();
+}
+Vec3 Entity::GetAbsoluteRotation() {
+	return WorldTransform.GetRotation();
 }

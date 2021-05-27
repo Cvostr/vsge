@@ -249,11 +249,6 @@ void FileBrowserWindow::OnDrawWindow() {
     ImGui::End();
 }
 
-void FileBrowserWindow::Regroup(uint32 width, uint32 height) {
-    SetPos(0, height * 0.66f);
-    SetSize(width, height * 0.33f);
-}
-
 VSGE::Resource* FileBrowserWindow::GetResourceWithFilePath(const std::string& fpath) {
     VSGE::ResourceCache* cache = VSGE::ResourceCache::Get();
     for (uint32 res_i = 0; res_i < cache->GetResourcesCount(); res_i++) {

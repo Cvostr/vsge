@@ -69,8 +69,3 @@ void SceneViewWindow::OnWindowResize() {
     EditorLayer* editor_layer = EditorLayer::Get();
     editor_layer->GetCamera()->SetAspectRatio(_size.x / _size.y);
 }
-
-void SceneViewWindow::Regroup(uint32 width, uint32 height) {
-    SetPos(width / 4, 20);
-    SetSize(width / 2, (height / 3) * 2);
-}

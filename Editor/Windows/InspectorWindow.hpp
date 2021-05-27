@@ -25,7 +25,6 @@ namespace VSGEditor {
 		void OnDrawWindow();
 		void DrawEntityContents();
 		void DrawMaterialContents();
-		void Regroup(uint32 width, uint32 height);
 
 		static InspectorWindow* Get()
 		{

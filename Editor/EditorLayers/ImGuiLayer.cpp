@@ -40,6 +40,8 @@ void ImGuiLayer::OnAttach() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     io.DisplaySize = ImVec2((float)win->GetWindowWidth(), (float)win->GetWindowWidth());
     //io.DisplayFramebufferScale = ImVec2(1.25f, 1.25f);
 
@@ -167,11 +169,14 @@ void ImGuiLayer::OnUpdate() {
 
 	ImGui::EndMainMenuBar();
 
+    DrawDockWindow();
 
     for (uint32 win_i = 0; win_i < mWindows.size(); win_i ++) {
         EditorWindow* win = mWindows[win_i];
         win->OnDrawWindow();
     }
+
+    ImGui::End();
 
     ImGui::Render();
     ImDrawData* draw_data = ImGui::GetDrawData();
@@ -226,8 +231,8 @@ void ImGuiLayer::OnWindowResize(const VSGE::EventWindowResized& wr) {
         ImVec2 old_pos = window->GetPos();
         ImVec2 old_size = window->GetSize();
 
-        window->SetSize((uint32)(old_size.x * relX), (uint32)(old_size.y * relY));
-        window->SetPos((uint32)(old_pos.x * relX), (uint32)(old_pos.y * relY));
+        //window->SetSize((uint32)(old_size.x * relX), (uint32)(old_size.y * relY));
+        //window->SetPos((uint32)(old_pos.x * relX), (uint32)(old_pos.y * relY));
     }
 }
 
@@ -248,5 +253,68 @@ void ImGuiLayer::RegroupWindows() {
     VSGE::Window* win = &VSGE::Application::Get()->GetWindow();
     for (auto window : mWindows) {
         window->Regroup(win->GetWindowWidth(), win->GetWindowHeight());
+    }
+}
+
+void ImGuiLayer::DrawDockWindow() {
+    const auto window_flags =
+        ImGuiWindowFlags_MenuBar |
+        ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoNavFocus;
+
+    // Set window position and size
+    float offset_y = 50;
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + offset_y));
+    ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - offset_y));
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    // Set window style
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::SetNextWindowBgAlpha(0.0f);
+
+    // Begin window
+    std::string name = "##dock_window";
+    bool open = true;
+    bool m_editor_begun = ImGui::Begin(name.c_str(), &open, window_flags);
+    ImGui::PopStyleVar(3);
+
+    // Begin dock space
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable && m_editor_begun)
+    {
+        // Dock space
+        const auto window_id = ImGui::GetID(name.c_str());
+        if (!ImGui::DockBuilderGetNode(window_id))
+        {
+            // Reset current docking state
+            ImGui::DockBuilderRemoveNode(window_id);
+            ImGui::DockBuilderAddNode(window_id, ImGuiDockNodeFlags_None);
+            ImGui::DockBuilderSetNodeSize(window_id, ImGui::GetMainViewport()->Size);
+
+            ImGuiID dock_main_id = window_id;
+            ImGuiID dock_top_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0.2f, nullptr, &dock_main_id);
+            ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.2f, nullptr, &dock_main_id);
+            ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
+            const ImGuiID dock_right_down_id = ImGui::DockBuilderSplitNode(dock_right_id, ImGuiDir_Down, 0.6f, nullptr, &dock_right_id);
+            ImGuiID dock_down_id = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
+            const ImGuiID dock_down_right_id = ImGui::DockBuilderSplitNode(dock_down_id, ImGuiDir_Right, 0.6f, nullptr, &dock_down_id);
+
+            // Dock windows
+            ImGui::DockBuilderDockWindow("Scene Hierarchy", dock_left_id);
+            ImGui::DockBuilderDockWindow("Inspector", dock_right_id);
+            ImGui::DockBuilderDockWindow("File Browser", dock_down_id);
+            ImGui::DockBuilderDockWindow("World view", dock_main_id);
+
+            ImGui::DockBuilderFinish(dock_main_id);
+        }
+
+        ImGui::DockSpace(window_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
     }
 }

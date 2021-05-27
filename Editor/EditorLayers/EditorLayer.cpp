@@ -44,7 +44,6 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
-	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
 }

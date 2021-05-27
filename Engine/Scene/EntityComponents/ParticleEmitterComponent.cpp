@@ -60,8 +60,7 @@ void ParticleEmitterComponent::StopSimulation() {
 }
 
 bool ParticleEmitterComponent::EmitNewParticle() {
-	/*
-	//TransformProperty* transform = go_link.updLinkPtr()->getTransformProperty();
+	Entity* ent = GetEntity();
 
 	uint32_t FreeIndex = GetFreeParticleIndex();
 
@@ -86,12 +85,12 @@ bool ParticleEmitterComponent::EmitNewParticle() {
 			GetRandomFloat(2.f) - 1.0f
 		).GetNormalized();
 
-		particlePtr->_position = transform->abs_translation + transform->abs_scale * vel * 0.5f;
+		particlePtr->_position = ent->GetAbsolutePosition() + ent->GetAbsoluteScale() * vel * 0.5f;
 
 		break;
 	}
 	case PE_SHAPE_BOX: {
-		Vec3 Size = transform->abs_scale;
+		Vec3 Size = ent->GetAbsoluteScale();
 		particlePtr->_position = Vec3(
 			GetRandomFloat(Size.x) - Size.x * 0.5f,
 			GetRandomFloat(Size.y) - Size.y * 0.5f,
@@ -108,7 +107,7 @@ bool ParticleEmitterComponent::EmitNewParticle() {
 	particlePtr->_alive = true;
 	particlePtr->_timePassed = 0;
 	//particlePtr->Position += Dir * particlePtr->Size.Y;
-	*/
+	
 	return true;
 }
 

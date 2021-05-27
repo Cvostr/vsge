@@ -7,11 +7,12 @@ using namespace VSGEditor;
 #define BTN_SIZE 35
 
 void ToolbarWindow::OnDrawWindow() {
-    if (Draw("Toolbar_window", (ImGuiWindowFlags_)(ImGuiWindowFlags_NoTitleBar |
+    if (Draw("Toolbar" , (ImGuiWindowFlags_)(ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoMove | 
         ImGuiWindowFlags_NoResize | 
         ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoScrollWithMouse))) {
+        ImGuiWindowFlags_NoScrollWithMouse
+        ))) {
         
         if (ImGui::Button("T", ImVec2(BTN_SIZE, BTN_SIZE))) {
             EditorLayer::Get()->SetTransformMode(ImGuizmo::OPERATION::TRANSLATE);
@@ -30,6 +31,6 @@ void ToolbarWindow::OnDrawWindow() {
 }
 
 ToolbarWindow::ToolbarWindow() {
-    SetSize(140, 50);
-    SetPos(0, 20);
+    SetSize(2000, 50);
+    SetPos(0, 24);
 }

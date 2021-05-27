@@ -36,9 +36,9 @@ namespace VSGE {
 		tEntityList _children; 
 
 		AABB mBoundingBox;
-		Vec3 mPosition;
-		Vec3 mScale;
-		Vec3 mRotation;
+		Vec3 _position;
+		Vec3 _scale;
+		Vec3 _rotation;
 		Mat4 LocalTransform;
 		Mat4 WorldTransform;
 		bool mTransformDirty;
@@ -49,7 +49,7 @@ namespace VSGE {
 					_active(true),
 					_static(false),
 					mTransformDirty(false),
-					mScale(1.f),
+					_scale(1.f),
 					LocalTransform(1.f),
 					WorldTransform(1.f),
 					_viewMask(MAX_INT64)
@@ -161,17 +161,21 @@ namespace VSGE {
 		/// Get local position of entity
 		/// </summary>
 		/// <returns></returns>
-		const Vec3& GetPosition() const { return mPosition; }
+		const Vec3& GetPosition() const { return _position; }
 		/// <summary>
 		/// Get local scale of entity
 		/// </summary>
 		/// <returns></returns>
-		const Vec3& GetScale() const { return mScale; }
+		const Vec3& GetScale() const { return _scale; }
 		/// <summary>
 		/// Get local rotation of entity
 		/// </summary>
 		/// <returns></returns>
-		const Vec3& GetRotation() const { return mRotation; }
+		const Vec3& GetRotation() const { return _rotation; }
+
+		Vec3 GetAbsolutePosition();
+		Vec3 GetAbsoluteScale();
+		Vec3 GetAbsoluteRotation();
 
 		void SetPosition(const Vec3& position);
 		void SetScale(const Vec3& scale);

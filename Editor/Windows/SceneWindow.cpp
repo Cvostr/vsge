@@ -154,8 +154,3 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
         ImGui::TreePop();
     }
 }
-
-void SceneWindow::Regroup(uint32 width, uint32 height) {
-    SetPos(0, 70);
-    SetSize(width / 4, height * 0.66f);
-}

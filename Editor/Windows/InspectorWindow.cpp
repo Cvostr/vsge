@@ -147,10 +147,4 @@ void VSGEditor::InspectorWindow::DrawMaterialContents() {
 		DrawResourcePicker(texture._name.c_str(), texture._resource);
 		mShowingMaterial->SetTexture(texture._name, texture._resource);
 	}
-
-}
-
-void VSGEditor::InspectorWindow::Regroup(uint32 width, uint32 height) {
-	SetPos(width * 0.75f, 20);
-	SetSize(width / 4, height * 0.66f);
 }
