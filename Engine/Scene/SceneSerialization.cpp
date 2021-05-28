@@ -5,6 +5,7 @@
 #include "EntityComponents/AnimatorComponent.hpp"
 #include "EntityComponents/MaterialComponent.hpp"
 #include "EntityComponents/LightComponent.hpp"
+#include "EntityComponents/ParticleEmitterComponent.hpp"
 
 using namespace VSGE;
 using namespace YAML;
@@ -104,6 +105,9 @@ void SceneSerializer::DeserializeEntityComponent(Entity* ent, YAML::Node& comp) 
 	}
 	if (component_id == ENTITY_COMPONENT_LIGHTSOURCE) {
 		component = new LightsourceComponent;
+	}
+	if (component_id == ENTITY_COMPONENT_PARTICLE_EMITTER) {
+		component = new ParticleEmitterComponent;
 	}
 
 	if (component == nullptr)

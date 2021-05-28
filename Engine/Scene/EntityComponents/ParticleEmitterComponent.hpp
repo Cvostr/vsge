@@ -135,17 +135,26 @@ namespace VSGE {
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_PARTICLE_EMITTER, "Particle Emitter")
 
-		void SetDuration(float duration) {
-			_duration = duration;
-		}
+		ParticleEmitterShape GetEmitterShape();
+		float GetDuration();
+		bool GetLooping();
+		bool GetPrewarm();
+		float GetParticleLifetime();
+		uint32 GetMaxParticlesCount();
 
-		void SetParticleLifetime(float lifetime) {
-			_lifetime = lifetime;
-		}
-
-		void SetMaxParticlesCount(uint32 maxParticles) {
-			_maxParticles = maxParticles;
-		}
+		void SetEmitterShape(ParticleEmitterShape shape);
+		void SetDuration(float duration);
+		void SetLooping(bool looping);
+		void SetPrewarm(bool prewarm);
+		void SetParticleLifetime(float lifetime);
+		void SetMaxParticlesCount(uint32 maxParticles);
+		void SetEmissionRate(int min, int max);
+		void SetDirection(const Vec3& min, const Vec3& max);
+		void SetVelocity(float min, float max);
+		void SetConstantForce(const Vec3& force);
+		void SetDampingForce(float damping);
+		void SetRotation(float min, float max);
+		void SetRotationSpeed(float min, float max);
 
 		bool EmitNewParticle();
 		void StartSimulation();

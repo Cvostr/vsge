@@ -34,9 +34,11 @@ namespace VSGEditor {
 
 	class FileBrowserWindow : public EditorWindow {
 	private:
-		tFileEntryList mFiles;
-		std::string mCurrentDir;
-		std::string mRootDir;
+		tFileEntryList _files;
+		std::string _currentDir;
+		std::string _rootDir;
+
+		int _itemsSize;
 
 		std::string new_file_name;
 		FileEntry* entryToDelete;
@@ -74,7 +76,7 @@ namespace VSGEditor {
 		void OpenFile(const FileEntry& Entry);
 
 		const std::string& GetCurrentDir() {
-			return mCurrentDir;
+			return _currentDir;
 		}
 	};
 }

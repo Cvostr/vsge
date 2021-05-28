@@ -2,6 +2,7 @@
 #include <Math/MathBase.hpp>
 #include <Core/Random.hpp>
 #include <Scene/Entity.hpp>
+#include <Core/Time.hpp>
 
 using namespace VSGE;
 
@@ -125,7 +126,7 @@ void ParticleEmitterComponent::StepSimulation() {
 		}
 	}
 
-	float DeltaTime = 16;
+	float DeltaTime = TimePerf::Get()->GetDeltaTime();
 
 	_simulationTime += DeltaTime;
 	_emitterTime += DeltaTime;
@@ -233,4 +234,78 @@ int ParticleEmitterComponent::GetRandomEmissionRate() {
 
 float ParticleEmitterComponent::GetRandomFloat(float max) {
 	return (Rand() * max) / 32767.f;
+}
+
+void ParticleEmitterComponent::SetDuration(float duration) {
+	_duration = duration;
+}
+
+void ParticleEmitterComponent::SetLooping(bool looping) {
+	_looping = looping;
+}
+
+void ParticleEmitterComponent::SetPrewarm(bool prewarm) {
+	_prewarm = prewarm;
+}
+
+void ParticleEmitterComponent::SetParticleLifetime(float lifetime) {
+	_lifetime = lifetime;
+}
+
+void ParticleEmitterComponent::SetMaxParticlesCount(uint32 maxParticles) {
+	_maxParticles = maxParticles;
+}
+
+void ParticleEmitterComponent::SetEmissionRate(int min, int max) {
+	_emissionRate.Min = min;
+	_emissionRate.Max = max;
+}
+
+void ParticleEmitterComponent::SetDirection(const Vec3& min, const Vec3& max) {
+	_direction.Min = min;
+	_direction.Max = max;
+}
+
+void ParticleEmitterComponent::SetVelocity(float min, float max) {
+	_velocity.Min = min;
+	_velocity.Max = max;
+}
+
+void ParticleEmitterComponent::SetConstantForce(const Vec3& force) {
+	_constantForce = force;
+}
+
+void ParticleEmitterComponent::SetDampingForce(float damping) {
+	_dampingForce = damping;
+}
+
+void ParticleEmitterComponent::SetRotation(float min, float max) {
+	_rotation.Min = min;
+	_rotation.Max = max;
+}
+void ParticleEmitterComponent::SetRotationSpeed(float min, float max) {
+	_rotationSpeed.Max = max;
+	_rotationSpeed.Min = min;
+}
+void ParticleEmitterComponent::SetEmitterShape(ParticleEmitterShape shape) {
+	_shape = shape;
+}
+
+ParticleEmitterShape ParticleEmitterComponent::GetEmitterShape() {
+	return _shape;
+}
+float ParticleEmitterComponent::GetDuration() {
+	return _duration;
+}
+bool ParticleEmitterComponent::GetLooping() {
+	return _looping;
+}
+bool ParticleEmitterComponent::GetPrewarm() {
+	return _prewarm;
+}
+float ParticleEmitterComponent::GetParticleLifetime(){
+	return _lifetime;
+}
+uint32 ParticleEmitterComponent::GetMaxParticlesCount() {
+	return _maxParticles;
 }

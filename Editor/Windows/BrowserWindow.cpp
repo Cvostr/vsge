@@ -1,5 +1,6 @@
 #include "BrowserWindow.hpp"
 #include <filesystem>
+#include <imgui_internal.h>
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
 #include "../EditorLayers/EditorLayer.hpp"
@@ -15,10 +16,10 @@ using namespace VSGEditor;
 using namespace VSGE;
 
 void FileBrowserWindow::cd_up() {
-    if (mCurrentDir.compare(this->mRootDir) == 0)
+    if (_currentDir.compare(this->_rootDir) == 0)
         return;
 
-    std::string newdir = mCurrentDir;
+    std::string newdir = _currentDir;
     while (newdir[newdir.size() - 1] != '\\' && newdir[newdir.size() - 1] != '/') {
         newdir.pop_back();
     }
@@ -32,16 +33,16 @@ void FileBrowserWindow::cd(std::string DirName) {
     divisor = '\\';
 #endif
 
-    SetDirectory(mCurrentDir + divisor + DirName);
+    SetDirectory(_currentDir + divisor + DirName);
 }
 void FileBrowserWindow::SetDirectory(std::string Dir) {
-    mCurrentDir = Dir;
+    _currentDir = Dir;
     UpdateDirectoryContent();
 }
 void FileBrowserWindow::UpdateDirectoryContent() {
-    mFiles.clear();
+    _files.clear();
 
-    for (const auto& entry : fs::directory_iterator(mCurrentDir)) {
+    for (const auto& entry : fs::directory_iterator(_currentDir)) {
         FileEntry e;
         //if file starts with "." then don't show it
         if (entry.path().filename().string()[0] == '.')
@@ -50,18 +51,19 @@ void FileBrowserWindow::UpdateDirectoryContent() {
         e.abs_path = entry.path().string();
         e.name = entry.path().filename().string();
         e.ext = entry.path().extension().string();
-        e.directory = mCurrentDir;
+        e.directory = _currentDir;
         //Calculating relative path
-        for (uint32 s = (uint32)mRootDir.size() + 1; s < (uint32)e.abs_path.size(); s++) {
+        for (uint32 s = (uint32)_rootDir.size() + 1; s < (uint32)e.abs_path.size(); s++) {
             e.rel_path += e.abs_path[s];
         }
         //Push new entry to array
-        mFiles.push_back(e);
+        _files.push_back(e);
     }
 }
 
 FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
-    mRootDir = RootDir;
+    _rootDir = RootDir;
+    _itemsSize = 64;
     SetDirectory(RootDir);
 
     sampler.Create();
@@ -162,14 +164,36 @@ void FileBrowserWindow::OnDrawWindow() {
 
     bool deleteFile = false;
     bool renameFile = false;
-    
+
+    if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(20, 20)))
+        cd_up();
+
+    std::string dir_name = "";
+    std::string path_to_go = "";
+    for(uint32 path_i = 0; path_i < _currentDir.size() + 1; path_i++) {
+        path_to_go.push_back(_currentDir[path_i]);
+        if (_currentDir[path_i] != '/' && _currentDir[path_i] != '\\' && _currentDir[path_i] != '\0') {
+            dir_name.push_back(_currentDir[path_i]);
+        }
+        else {
+            ImGui::SameLine();
+            bool btn_clicked = ImGui::Button(dir_name.c_str());
+            dir_name.clear();
+            if (btn_clicked) {
+                path_to_go.pop_back();
+                SetDirectory(path_to_go);
+            }
+        }
+    }
+
+    ImGui::SameLine();
+    ImGui::SliderInt("Size", &_itemsSize, 32, 96);
 
     float width = w->Size.x;
-    if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(64, 64)))
-        cd_up();
+    
     uint32 drawn_pix = 0;
-    for (uint32 f_i = 0; f_i < mFiles.size(); f_i++) {
-        FileEntry* e = &mFiles[f_i];
+    for (uint32 f_i = 0; f_i < _files.size(); f_i++) {
+        FileEntry* e = &_files[f_i];
         ImguiVulkanTexture* icon = &FileIcons.mUnknownFile;
         //if file is directory, then set directory icon
         if (e->isDir) icon = &FileIcons.mDirIcon;
@@ -185,7 +209,7 @@ void FileBrowserWindow::OnDrawWindow() {
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
-        bool clicked = ImageButtonWithText(icon->imtexture, e->name.c_str(), &pix, &hovered, ImVec2(64, 64));
+        bool clicked = ImageButtonWithText(icon->imtexture, e->name.c_str(), &pix, &hovered, ImVec2(_itemsSize, _itemsSize));
         
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
@@ -231,6 +255,7 @@ void FileBrowserWindow::OnDrawWindow() {
         else
             drawn_pix = 0;
     }
+
     if (deleteFile) {
         ImGui::OpenPopup("Delete?");
         deleteFile = false;

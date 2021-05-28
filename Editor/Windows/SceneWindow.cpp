@@ -5,6 +5,7 @@
 #include "Scene/EntityComponents/MeshComponent.hpp"
 #include "Scene/EntityComponents/MaterialComponent.hpp"
 #include "Scene/EntityComponents/LightComponent.hpp"
+#include "Scene/EntityComponents/ParticleEmitterComponent.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -38,6 +39,10 @@ void SceneWindow::OnDrawWindow() {
                     Entity* newEntity = scene->AddNewEntity("Spot Light");
                     LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
                     light->GetLightType() = LIGHT_TYPE_SPOT;
+                }
+                if (ImGui::MenuItem("Particle Emitter")) {
+                    Entity* newEntity = scene->AddNewEntity("Particles");
+                    ParticleEmitterComponent* light = newEntity->AddComponent<ParticleEmitterComponent>();
                 }
                 ImGui::EndMenu();
             }

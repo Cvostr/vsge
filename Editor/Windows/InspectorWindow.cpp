@@ -71,7 +71,7 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 			DrawMaterialComponent((MaterialComponent*)component);
 		}
 		if (typeid(T) == typeid(ParticleEmitterComponent)) {
-			//DrawParticleEmitterComponent((ParticleEmitterComponent*)component);
+			DrawParticleEmitterComponent((ParticleEmitterComponent*)component);
 		}
 	}
 }
