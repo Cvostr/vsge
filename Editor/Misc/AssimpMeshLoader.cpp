@@ -44,13 +44,13 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
     mesh_ptr->meshName = std::string(mnam);
 
     mesh_ptr->vertexCount = mesh->mNumVertices;
-    mesh_ptr->indexCount = mesh->mNumFaces;
+    mesh_ptr->indexCount = mesh->mNumFaces * 3;
     mesh_ptr->bonesCount = mesh->mNumBones;
     //Allocate memory for vertices and indices
     mesh_ptr->vertexArray = new Vertex[mesh_ptr->vertexCount];
     mesh_ptr->vertexSkinningArray = new VertexSkinningData[mesh_ptr->vertexCount];
     mesh_ptr->bonesArray = new Bone[mesh_ptr->bonesCount];
-    mesh_ptr->indexArray = new uint32[mesh_ptr->indexCount * 3];
+    mesh_ptr->indexArray = new uint32[mesh_ptr->indexCount];
 
     //Iterate over all vertices, read data and write to array
     for (uint32 v = 0; v < mesh_ptr->vertexCount; v++) {
@@ -106,7 +106,7 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
         mesh_ptr->bonesArray[bone_i] = bone;
     }
 
-    for (uint32 i = 0; i < mesh_ptr->indexCount; i++)
+    for (uint32 i = 0; i < mesh_ptr->indexCount / 3; i++)
     {
         aiFace face = mesh->mFaces[i];
         for (uint32 j = 0; j < face.mNumIndices; j++)

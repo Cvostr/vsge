@@ -108,6 +108,7 @@ void FileBrowserWindow::DeleteFileDialog(FileEntry* Entry) {
         if (ImGui::Button("OK", ImVec2(120, 0))) { 
             fs::remove(Entry->abs_path); 
             ImGui::CloseCurrentPopup();
+            UpdateDirectoryContent();
         }
         
         ImGui::SameLine();
@@ -126,6 +127,7 @@ void FileBrowserWindow::RenameFileDialog(FileEntry* Entry) {
         if (ImGui::Button("OK", ImVec2(120, 0))) { 
             fs::rename(Entry->abs_path, Entry->directory + "/" + new_file_name);
             ImGui::CloseCurrentPopup();
+            UpdateDirectoryContent();
         }
 
         ImGui::SameLine();

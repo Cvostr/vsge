@@ -5,6 +5,12 @@
 
 namespace VSGE {
 
+	enum FrustumIntersection {
+		FRUSTUM_INTERSECTS,
+		FRUSTUM_INSIDE,
+		FRUSTUM_OUTSIDE
+	};
+
 	enum Side
 	{
 		LEFT = 0,
@@ -22,6 +28,6 @@ namespace VSGE {
 
 		void Update(const Mat4& PV);
 
-		bool SphereInside(const Vec3& center, float radius);
+		FrustumIntersection SphereInside(const Vec3& center, float radius);
 	};
 }

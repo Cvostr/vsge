@@ -36,6 +36,10 @@ namespace VSGE {
             return channels;
         }
 
+        void SetChannels(AnimationChannel* channels) {
+            this->channels = channels;
+        }
+
         //Get pointer to channel by specified node name
         AnimationChannel* getChannelByNodeName(std::string node_name);
 
@@ -57,11 +61,17 @@ namespace VSGE {
             times = new double[count];
         }
 
-        TimedValues() {
-            values = nullptr;
-            times = nullptr;
-            keysCount = 0;
-        }
+        TimedValues() :
+            values(nullptr),
+            times(nullptr),
+            keysCount(0)
+        {}
+
+        TimedValues(T* values, double* times, uint32 count) :
+            values(values),
+            times(times),
+            keysCount(count)
+        {}
 
         ~TimedValues() {
             SAFE_RELEASE_ARR(values);
@@ -72,7 +82,7 @@ namespace VSGE {
 
     class AnimationChannel {
     private:
-        std::string mChannelBoneName;
+        std::string _channelBoneName;
 
         TimedValues<Vec3> pos;
         TimedValues<Vec3> scale;
@@ -82,8 +92,8 @@ namespace VSGE {
         
         Animation* anim_ptr;
         
-        const std::string& GetBoneName() { return mChannelBoneName; }
-        void SetBoneName(const std::string& name) { mChannelBoneName = name; }
+        const std::string& GetBoneName() { return _channelBoneName; }
+        void SetBoneName(const std::string& name) { _channelBoneName = name; }
 
         void SetPositionKeysCount(uint32 posKeys) {
             pos.Allocate(posKeys);
@@ -109,7 +119,7 @@ namespace VSGE {
         uint32 getScaleIndex(double Time);
         uint32 getRotationIndex(double Time);
 
-        Vec3 getPostitionInterpolated(double Time);
+        Vec3 getPositionInterpolated(double Time);
         Vec3 getScaleInterpolated(double Time);
         Quat getRotationInterpolated(double Time);
 

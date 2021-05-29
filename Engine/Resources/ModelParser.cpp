@@ -115,32 +115,23 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
 
         //We reached mesh
         if (prefix[0] == '_' && prefix[1] == 'M' && prefix[2] == 'E' && prefix[3] == 'S' && prefix[4] == 'H') {
-
-            std::string mesh_label = solver.ReadNextString();
             //Read mesh label string
-
-            int vertexNum = 0;
-            int indexNum = 0;
-            uint32 bonesNum = 0;
+            MeshContainer* mesh = new MeshContainer;
+            mesh->meshName = solver.ReadNextString();
             //Read mesh info
             //Read vertex amount
-            solver.Copy(vertexNum);
-            solver.Copy(indexNum);
-            solver.Copy(bonesNum);
+            solver.Copy(mesh->vertexCount);
+            solver.Copy(mesh->indexCount);
+            solver.Copy(mesh->bonesCount);
 
-            MeshContainer* mesh = new MeshContainer;
-            mesh->meshName = mesh_label;
-            mesh->vertexCount = vertexNum;
-            mesh->indexCount = indexNum;
-            mesh->bonesCount = bonesNum;
             //Allocate arrays for vectors
-            mesh->vertexArray = new Vertex[static_cast<uint32>(vertexNum)];
-            mesh->vertexSkinningArray = new VertexSkinningData[static_cast<uint32>(vertexNum)];
+            mesh->vertexArray = new Vertex[mesh->vertexCount];
+            mesh->vertexSkinningArray = new VertexSkinningData[mesh->vertexCount];
 
-            mesh->indexArray = new uint32[static_cast<uint32>(indexNum)];
-            mesh->bonesArray = new Bone[bonesNum];
+            mesh->indexArray = new uint32[mesh->indexCount];
+            mesh->bonesArray = new Bone[mesh->bonesCount];
             
-            for (uint32 v_i = 0; v_i < static_cast<uint32>(vertexNum); v_i++) {
+            for (uint32 v_i = 0; v_i < mesh->vertexCount; v_i++) {
                 Vertex v_ptr;
                 //Read vertex vectors
                 solver.Copy(v_ptr.pos);
@@ -165,11 +156,11 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
                 mesh->vertexSkinningArray[v_i] = vertexSkinning;
             }
             //Read mesh indices
-            for (uint32 in_i = 0; in_i < static_cast<uint32>(indexNum); in_i++) {
+            for (uint32 in_i = 0; in_i < mesh->indexCount; in_i++) {
                 solver.Copy(mesh->indexArray[in_i]);
             }
 
-            for (uint32 b_i = 0; b_i < bonesNum; b_i++) {
+            for (uint32 b_i = 0; b_i < mesh->bonesCount; b_i++) {
                 //Read mesh label string
                 std::string bone_label = solver.ReadNextString();
 

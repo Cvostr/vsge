@@ -61,6 +61,8 @@ public:
         return Rows[i];
     }
 
+    bool operator==(tMat4 r)const;
+
     tMat4 operator*(T r) const;
 
     tMat4 operator+(tMat4 r) const;

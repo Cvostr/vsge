@@ -1,6 +1,7 @@
 #include "ResourceImporter.hpp"
 #include <Core/VarTypes/Base.hpp>
 #include <Resources/ModelParser.hpp>
+#include <Resources/AnimationParser.hpp>
 #include "AssimpMeshLoader.h"
 
 #include "../EditorLayers/ImGuiLayer.hpp"
@@ -8,6 +9,14 @@
 
 using namespace VSGE;
 using namespace VSGEditor;
+
+void ProcessFileName(std::string& str) {
+    for (int i = 0; i < str.size(); i++) {
+        char c = str[i];
+        if (c == '|' || c == ':' || c == '/' || c == '\\' || c == '*')
+            str[i] = '_';
+    }
+}
 
 void VSGEditor::ImportFile(const std::string& str) {
     FileBrowserWindow* fbw = ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
@@ -55,6 +64,19 @@ void VSGEditor::ImportFile(const std::string& str) {
             loadMesh(str, &meshes[mesh_i], static_cast<int>(mesh_i));
             //Add loaded mesh to exporter
             exporter.pushMesh(&meshes[mesh_i]);
+        }
+
+        for (uint32 anim_i = 0; anim_i < num_anims; anim_i++) {
+            Animation* anim = new Animation;
+            loadAnimation(str, anim, (int)anim_i);
+            
+            AnimationFileExport anim_exporter(anim);
+            std::string processed_fname = anim->GetName() + ".vsanim";
+            ProcessFileName(processed_fname);
+            std::string new_file_name = cur_dir + "/" + processed_fname;
+
+            anim_exporter.write(new_file_name);
+            delete anim;
         }
 
         if (num_meshes > 0) {

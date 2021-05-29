@@ -39,5 +39,12 @@ namespace VSGE {
 			Copy(&dest, sizeof(T));
 		}
 
+		template<typename T>
+		T GetValue() {
+			T value;
+			Copy(&value, sizeof(T));
+			return value;
+		}
+
 	};
 }

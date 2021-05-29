@@ -69,7 +69,7 @@ uint32 VSGE::AnimationChannel::getRotationIndex(double Time) {
     return 0;
 }
 
-Vec3 VSGE::AnimationChannel::getPostitionInterpolated(double Time) {
+Vec3 VSGE::AnimationChannel::getPositionInterpolated(double Time) {
     uint32 index1 = getPositionIndex(Time);
     uint32 index2 = index1 + 1;
 

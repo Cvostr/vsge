@@ -53,6 +53,14 @@ tVec4<T> tMat4<T>::operator*(tVec4<T> r) const {
 }
 
 template<typename T>
+bool tMat4<T>::operator==(tMat4 r)const {
+    for (uint8 i = 0; i < 16; i++)
+        if(Raw[i] != r.Raw[i])
+            return false;
+    return true;
+}
+
+template<typename T>
 tMat4<T> tMat4<T>::transpose() const {
     tMat4<T> result;
 
@@ -135,9 +143,9 @@ tVec3<T> tMat4<T>::GetRotation() const {
     m.M32 /= scale.z;
     m.M33 /= scale.z;
 
-    rot.x = fabs(atan2f(Values[1][2], Values[2][2]));
-    rot.y = fabs(atan2f(-Values[0][2], sqrtf(Values[1][2] * Values[1][2] + Values[2][2] * Values[2][2])));
-    rot.z = fabs(atan2f(Values[0][1], Values[0][0]));
+    rot.x = (atan2f(Values[1][2], Values[2][2]));
+    rot.y = (atan2f(-Values[0][2], sqrtf(Values[1][2] * Values[1][2] + Values[2][2] * Values[2][2])));
+    rot.z = (atan2f(Values[0][1], Values[0][0]));
 
     return rot * RAD2DEG;
 }

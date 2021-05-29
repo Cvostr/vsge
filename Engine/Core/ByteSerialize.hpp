@@ -37,7 +37,7 @@ namespace VSGE {
 		}
 
 		template<typename T>
-		void Serialize(T& data) {
+		void Serialize(const T& data) {
 			WriteBytes((void*)&data, sizeof(T));
 		}
 		/// <summary>

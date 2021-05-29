@@ -31,8 +31,15 @@ namespace VSGE {
 		float Distance(const Vec3& point) const;
 		
 		float GetD() const;
-
 		const Vec3& Plane::GetNormal() const;
+
+		void SetNormal(const Vec3& normal) {
+			_normal = normal;
+		}
+
+		void SetD(float d) {
+			_d = d;
+		}
 
 		void Normalize();
 
