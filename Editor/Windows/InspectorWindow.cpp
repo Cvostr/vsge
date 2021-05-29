@@ -104,11 +104,10 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
     ImGui::Separator();
     ImGui::InputFloat3("Translation", (float*)&mShowingEntity->GetPosition().x);
     ImGui::InputFloat3("Scale", (float*)&mShowingEntity->GetScale().x);
-	Vec3 rotation_euler = mShowingEntity->GetRotation().GetEulerAngles();
+	Vec3 rotation_euler = mShowingEntity->GetRotationEuler();
     ImGui::InputFloat3("Rotation", &rotation_euler.x);
-	Quat q;
-	q.CreateFromEulerAngles(rotation_euler);
-	mShowingEntity->SetRotation(q);
+	mShowingEntity->SetRotationEuler(rotation_euler);
+
     ImGui::Separator();
 
 	//for (uint32 comp_i = 0; comp_i < mShowingEntity->GetComponentsCount(); comp_i) {

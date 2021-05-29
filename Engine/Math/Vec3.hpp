@@ -78,6 +78,9 @@
 			return x == r.x && y == r.y && z == r.z;
 		}
 
+		bool operator !=(const tVec3& r) const {
+			return x != r.x && y != r.y && z != r.z;
+		}
 	};
 
 	typedef tVec3<float> Vec3;

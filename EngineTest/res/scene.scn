@@ -7,7 +7,7 @@ Entities:
     parent: [0, 0, 0, 0]
     pos: [0, 0, 0]
     scale: [1, 1, 1]
-    rot: [0.382683456, 0, 0, 0.923879504]
+    rot: [0.309597433, 0.543042719, -0.224935681, 0.747434199]
     components:
       - Component: 4
   - Entity: branch

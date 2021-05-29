@@ -8,6 +8,11 @@ float Quat::Length() const { //Calculates module length of vector
 	return sqrtf(x * x + y * y + z * z + w * w);
 }
 
+float Quat::LengthSquared() const 
+{ 
+    return (x * x) + (y * y) + (z * z) + (w * w); 
+}
+
 Quat Quat::GetNormalized() const {
 	float coeff = 1.f / Length();
 	return Quat(x * coeff, y * coeff, z * coeff, w * coeff);
@@ -68,36 +73,34 @@ Quat& Quat::operator*=(float rhs)
     return *this;
 }
 
+Quat Quat::operator*(float rhs) {
+    return Quat(x * rhs, y * rhs, z * rhs, w * rhs);
+}
+
 Vec3 Quat::GetEulerAngles() const {
-	const float check = 2.0f * (y * z + w * x);
-	float RAD_TO_DEG = 180.f / 3.14159265f;
+    float RAD_TO_DEG = 180.f / 3.14159265f;
+    Vec3 result;
+    /*float sinr_cosp = 2 * (w * x + y * z);
+    float cosr_cosp = 1 - 2 * (x * x + y * y);
+    result.x = std::atan2(sinr_cosp, cosr_cosp);
 
-	if (check < -0.995f)
-	{
-		return Vec3
-		(
-			-90.0f,
-			0.0f,
-			-atan2f(2.0f * (x * z - w * y), 1.0f - 2.0f * (y * y + z * z)) * RAD_TO_DEG
-		);
-	}
+    // pitch (y-axis rotation)
+    float sinp = 2 * (w * y - z * x);
+    if (std::abs(sinp) >= 1)
+        result.y = std::copysign(PI_FLOAT / 2, sinp); // use 90 degrees if out of range
+    else
+        result.y = std::asin(sinp);
 
-	if (check > 0.995f)
-	{
-		return Vec3
-		(
-			90.0f,
-			0.0f,
-			atan2f(2.0f * (x * z - w * y), 1.0f - 2.0f * (y * y + z * z)) * RAD_TO_DEG
-		);
-	}
+    // yaw (z-axis rotation)
+    float siny_cosp = 2 * (w * z + x * y);
+    float cosy_cosp = 1 - 2 * (y * y + z * z);
+    result.z = std::atan2(siny_cosp, cosy_cosp);*/
 
-	return Vec3
-	(
-		asinf(check) * RAD_TO_DEG,
-		atan2f(2.0f * (x * z + w * y), 1.0f - 2.0f * (x * x + y * y)) * RAD_TO_DEG,
-		atan2f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z)) * RAD_TO_DEG
-	);
+    result.y = GetYaw();
+    result.x = GetPitch();
+    result.z = GetRoll();
+
+    return result * RAD_TO_DEG;
 }
 
 void Quat::CreateFromYawPitchRoll(float yaw, float pitch, float roll) {
@@ -122,4 +125,15 @@ void Quat::CreateFromYawPitchRoll(float yaw, float pitch, float roll) {
 
 void Quat::CreateFromEulerAngles(const Vec3& euler) {
     CreateFromYawPitchRoll(to_radians(euler.y), to_radians(euler.x), to_radians(euler.z));
+}
+
+Quat Quat::Inverse() const
+{
+    float length_squared = LengthSquared();
+    if (length_squared == 1.0f)
+        return Conjugate();
+    else if (length_squared >= std::numeric_limits<float>::epsilon())
+        return Conjugate() * (1.0f / length_squared);
+    else
+        return Quat(0, 0, 0, 1);
 }

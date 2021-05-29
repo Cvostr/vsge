@@ -173,6 +173,11 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		const Quat& GetRotation() const { return _rotation; }
+		/// <summary>
+		/// Get local rotation of entity in euler angles
+		/// </summary>
+		/// <returns></returns>
+		Vec3 GetRotationEuler() const { return _rotation.GetEulerAngles(); }
 
 		Vec3 GetAbsolutePosition();
 		Vec3 GetAbsoluteScale();
@@ -181,6 +186,7 @@ namespace VSGE {
 		void SetPosition(const Vec3& position);
 		void SetScale(const Vec3& scale);
 		void SetRotation(const Quat& rotation);
+		void SetRotationEuler(const Vec3& rotation);
 
 		const AABB& UpdateAABB();
 

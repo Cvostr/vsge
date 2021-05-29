@@ -196,3 +196,12 @@ Vec3 Entity::GetAbsoluteScale() {
 Vec3 Entity::GetAbsoluteRotation() {
 	return WorldTransform.GetRotation();
 }
+
+void Entity::SetRotationEuler(const Vec3& rotation) {
+	Vec3 current = GetRotationEuler();
+	if ((rotation - current).Length() < 1.f)
+		return;
+	Quat q;
+	q.CreateFromEulerAngles(rotation);
+	SetRotation(q);
+}

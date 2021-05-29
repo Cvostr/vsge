@@ -33,31 +33,31 @@ void SceneViewWindow::OnDrawWindow() {
             Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
             ImGuizmo::OPERATION op = ImGuizmo::OPERATION(editor_layer->GetTransformMode());
-            bool snap = (op == ImGuizmo::OPERATION::ROTATE);
+            bool snap = false;
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(_pos.x, _pos.y, _size.x, _size.y);
             ImGuizmo::Manipulate(&view.M11, &proj.M11,
-                op, ImGuizmo::LOCAL, &newmat.M11,
+                op, ImGuizmo::WORLD, &newmat.M11,
                 nullptr, snap ? snapValues : nullptr);
 
 
             if (ImGuizmo::IsUsing()) {
                 Vec3 translation = newmat.GetPosition();
-              //  Vec3 rotation = newmat.GetRotation();
+                Quat rotation = GetRotation(newmat);
                 Vec3 scale = newmat.GetScale();
 
                 Vec3 parent_translation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetPosition();
-             //   Vec3 parent_rotation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetRotation();
+                Quat parent_rotation = GetRotation( editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform());
                 Vec3 parent_scale = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetScale();
 
                 translation = translation - parent_translation;
                 scale = scale * parent_scale.Invert();
-               // rotation = rotation - parent_rotation;
+                rotation = rotation * parent_rotation.Inverse();
 
                 editor_layer->GetPickedEntity()->SetPosition(translation);
                 editor_layer->GetPickedEntity()->SetScale(scale);
-                //editor_layer->GetPickedEntity()->SetRotation(rotation);
+                editor_layer->GetPickedEntity()->SetRotation(rotation);
             }
         }
         ImGui::End();

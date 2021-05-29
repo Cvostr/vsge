@@ -25,7 +25,11 @@ public:
 
     float Length() const;
 
+	float LengthSquared() const;
+
 	Quat GetNormalized() const;
+
+	Quat Inverse() const;
 
 	Quat slerp(Quat& s, float factor);
 
@@ -35,6 +39,8 @@ public:
 
 	void CreateFromEulerAngles(const Vec3& euler);
 
+	Quat operator *(float rhs);
+
 	Quat& operator *=(float rhs);
 
 	Quat operator*(const Quat& q) {
@@ -43,5 +49,22 @@ public:
 
 	void operator*=(const Quat& q) {
 		*this = MultiplyTo(q);
+	}
+
+	float GetRoll() const {
+		float _y = 2.f * (x * y + w * z);
+		float _x = w * w + x * x - y * y - z * z;
+		return std::atan2(_y, _x);
+	}
+
+	float GetPitch() const {
+		float _y = 2.f * (y * z + w * x);
+		float _x = w * w - x * x - y * y + z * z;
+		return std::atan2(_y, _x);
+	}
+
+	float GetYaw() const {
+
+		return asin(clamp(-2.f * (x * z - w * y), -1.f, 1.f));
 	}
 };
