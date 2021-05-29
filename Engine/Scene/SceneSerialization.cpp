@@ -64,7 +64,32 @@ namespace YAML {
 		}
 	};
 
+	template<>
+	struct convert<Quat>
+	{
+		static Node encode(const Quat& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
 
+		static bool decode(const Node& node, Quat& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			rhs.w = node[3].as<float>();
+			return true;
+		}
+	};
 }
 
 Emitter& operator<<(YAML::Emitter& out, const Guid& v)
@@ -80,6 +105,14 @@ Emitter& operator<<(YAML::Emitter& out, const Vec3& v)
 	out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
 	return out;
 }
+
+Emitter& operator<<(YAML::Emitter& out, const Quat& v)
+{
+	out << YAML::Flow;
+	out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
+	return out;
+}
+
 
 void SceneSerializer::SerializeEntityComponent(IEntityComponent* component, YAML::Emitter& e) {
 	e << BeginMap;
@@ -171,7 +204,7 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 
 	ent->SetPosition(entity["pos"].as<Vec3>());
 	ent->SetScale(entity["scale"].as<Vec3>());
-	ent->SetRotation(entity["rot"].as<Vec3>());
+	ent->SetRotation(entity["rot"].as<Quat>());
 
 	YAML::Node components = entity["components"];
 	for(auto component : components) {

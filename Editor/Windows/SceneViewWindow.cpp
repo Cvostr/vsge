@@ -44,20 +44,20 @@ void SceneViewWindow::OnDrawWindow() {
 
             if (ImGuizmo::IsUsing()) {
                 Vec3 translation = newmat.GetPosition();
-                Vec3 rotation = newmat.GetRotation();
+              //  Vec3 rotation = newmat.GetRotation();
                 Vec3 scale = newmat.GetScale();
 
                 Vec3 parent_translation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetPosition();
-                Vec3 parent_rotation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetRotation();
+             //   Vec3 parent_rotation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetRotation();
                 Vec3 parent_scale = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetScale();
 
                 translation = translation - parent_translation;
                 scale = scale * parent_scale.Invert();
-                rotation = rotation - parent_rotation;
+               // rotation = rotation - parent_rotation;
 
                 editor_layer->GetPickedEntity()->SetPosition(translation);
                 editor_layer->GetPickedEntity()->SetScale(scale);
-                editor_layer->GetPickedEntity()->SetRotation(rotation);
+                //editor_layer->GetPickedEntity()->SetRotation(rotation);
             }
         }
         ImGui::End();

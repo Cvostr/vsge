@@ -131,7 +131,7 @@ void Entity::SetScale(const Vec3& scale) {
 	_scale = scale;
 	mTransformDirty = true;
 }
-void Entity::SetRotation(const Vec3& rotation) {
+void Entity::SetRotation(const Quat& rotation) {
 	_rotation = rotation;
 	mTransformDirty = true;
 }

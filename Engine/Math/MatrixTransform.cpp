@@ -106,6 +106,15 @@ Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation) {
     return Result;
 }
 
+Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Quat& rotation) {
+    Mat4 Result =
+        GetScaleMatrix(scale) *
+        GetRotationMatrix(rotation) *
+        GetTranslationMatrix(pos)
+        ;
+    return Result;
+}
+
 Mat4 Translate(Mat4& origin, const Vec3& translation) {
     Mat4 result = origin;
 

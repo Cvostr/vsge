@@ -6,6 +6,7 @@
 #include <string>
 #include <typeinfo>
 #include "Math/Vec3.hpp"
+#include <Math/Quaternion.hpp>
 #include "Math/Mat4.hpp"
 #include "Math/AABB.hpp"
 #include "Camera.hpp"
@@ -38,7 +39,7 @@ namespace VSGE {
 		AABB mBoundingBox;
 		Vec3 _position;
 		Vec3 _scale;
-		Vec3 _rotation;
+		Quat _rotation;
 		Mat4 LocalTransform;
 		Mat4 WorldTransform;
 		bool mTransformDirty;
@@ -171,7 +172,7 @@ namespace VSGE {
 		/// Get local rotation of entity
 		/// </summary>
 		/// <returns></returns>
-		const Vec3& GetRotation() const { return _rotation; }
+		const Quat& GetRotation() const { return _rotation; }
 
 		Vec3 GetAbsolutePosition();
 		Vec3 GetAbsoluteScale();
@@ -179,7 +180,7 @@ namespace VSGE {
 
 		void SetPosition(const Vec3& position);
 		void SetScale(const Vec3& scale);
-		void SetRotation(const Vec3& rotation);
+		void SetRotation(const Quat& rotation);
 
 		const AABB& UpdateAABB();
 

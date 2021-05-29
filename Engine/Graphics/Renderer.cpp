@@ -23,14 +23,14 @@ void IRenderer::ProcessEntity(Entity* entity) {
 
 	Vec3 tr = entity->GetPosition();
 	Vec3 sc = entity->GetScale();
-	Vec3 rt = entity->GetRotation();
+	Quat rt = entity->GetRotation();
 
 	Mat4 worldTransform(1.f);
 	if (entity->GetParent()) {
 		Mat4 parent = entity->GetParent()->GetWorldTransform();
 		tr += parent.GetPosition();
 		sc *= parent.GetScale();
-		rt += parent.GetRotation();
+		rt *= GetRotation(parent);
 	}
 
 	//Calculate absolute transform matrix

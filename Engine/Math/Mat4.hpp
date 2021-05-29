@@ -2,6 +2,7 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include "Vec4.hpp"
+#include "Quaternion.hpp"
 
 template<typename T>
 T _determinant(T a, T b, T c, T d, T e, T f,
@@ -84,3 +85,6 @@ public:
 };
 
 typedef tMat4<float> Mat4;
+
+
+Quat GetRotation(const Mat4& mat);

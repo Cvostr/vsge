@@ -150,5 +150,71 @@ tVec3<T> tMat4<T>::GetRotation() const {
     return rot * RAD2DEG;
 }
 
+Quat GetRotation(const Mat4& mat) {
+
+    Vec3 scale = mat.GetScale();
+
+    // Avoid division by zero (we'll divide to remove scaling)
+    if (scale.x == 0.0f || scale.y == 0.0f || scale.z == 0.0f) { return Quat(0, 0, 0, 1); }
+
+    // Extract rotation and remove scaling
+    Mat4 normalized;
+    normalized.M11 = mat.M11 / scale.x; normalized.M12 = mat.M12 / scale.x; normalized.M13 = mat.M13 / scale.x; normalized.M14 = 0.0f;
+    normalized.M21 = mat.M21 / scale.y; normalized.M22 = mat.M22 / scale.y; normalized.M23 = mat.M23 / scale.y; normalized.M24 = 0.0f;
+    normalized.M31 = mat.M31 / scale.z; normalized.M32 = mat.M32 / scale.z; normalized.M33 = mat.M33 / scale.z; normalized.M34 = 0.0f;
+    normalized.M41 = 0; normalized.M42 = 0; normalized.M43 = 0; normalized.M44 = 1.0f;
+
+    Quat quaternion;
+    float sqrt;
+    float half;
+    float _scale = normalized.M11 + normalized.M22 + normalized.M33;
+
+    if (_scale > 0.0f)
+    {
+        sqrt = sqrtf(_scale + 1.0f);
+        quaternion.w = sqrt * 0.5f;
+        sqrt = 0.5f / sqrt;
+
+        quaternion.x = (normalized.M23 - normalized.M32) * sqrt;
+        quaternion.y = (normalized.M31 - normalized.M13) * sqrt;
+        quaternion.z = (normalized.M12 - normalized.M21) * sqrt;
+
+        return quaternion;
+    }
+    if ((normalized.M11 >= normalized.M22) && (normalized.M11 >= normalized.M33))
+    {
+        sqrt = sqrtf(1.0f + normalized.M11 - normalized.M22 - normalized.M33);
+        half = 0.5f / sqrt;
+
+        quaternion.x = 0.5f * sqrt;
+        quaternion.y = (normalized.M12 + normalized.M21) * half;
+        quaternion.z = (normalized.M13 + normalized.M31) * half;
+        quaternion.w = (normalized.M23 - normalized.M32) * half;
+
+        return quaternion;
+    }
+    if (normalized.M22 > normalized.M33)
+    {
+        sqrt = sqrtf(1.0f + normalized.M22 - normalized.M11 - normalized.M33);
+        half = 0.5f / sqrt;
+
+        quaternion.x = (normalized.M21 + normalized.M12) * half;
+        quaternion.y = 0.5f * sqrt;
+        quaternion.z = (normalized.M32 + normalized.M23) * half;
+        quaternion.w = (normalized.M31 - normalized.M13) * half;
+
+        return quaternion;
+    }
+    sqrt = sqrtf(1.0f + normalized.M33 - normalized.M11 - normalized.M22);
+    half = 0.5f / sqrt;
+
+    quaternion.x = (normalized.M31 + normalized.M13) * half;
+    quaternion.y = (normalized.M32 + normalized.M23) * half;
+    quaternion.z = 0.5f * sqrt;
+    quaternion.w = (normalized.M12 - normalized.M21) * half;
+
+    return quaternion;
+}
+
 template class tMat4<float>;
 template class tMat4<int>;
