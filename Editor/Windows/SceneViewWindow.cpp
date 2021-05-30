@@ -30,17 +30,21 @@ void SceneViewWindow::OnDrawWindow() {
             VSGE::Camera* cam = editor_layer->GetCamera();
             Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());
             Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();
+
+            Quat rotation = GetRotationFromQuat(newmat);
+
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
             ImGuizmo::OPERATION op = ImGuizmo::OPERATION(editor_layer->GetTransformMode());
-            bool snap = false;
+            bool snap = (op == ImGuizmo::OPERATION::ROTATE);
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(_pos.x, _pos.y, _size.x, _size.y);
 
-            ImGuizmo::Manipulate(&cam->GetViewMatrix().M11, &proj.M11,
-                op, ImGuizmo::LOCAL, &newmat.M11,
-                nullptr, snap ? snapValues : nullptr);
+            Vec3 rotDelta;
 
+            ImGuizmo::ManipulateQuat(&cam->GetViewMatrix().M11, &proj.M11,
+                op, ImGuizmo::WORLD, &newmat.M11,
+                nullptr, snap ? snapValues : nullptr, nullptr, nullptr, &rotDelta.x);
 
             if (ImGuizmo::IsUsing()) {
 
@@ -57,15 +61,10 @@ void SceneViewWindow::OnDrawWindow() {
                     editor_layer->GetPickedEntity()->SetScale(scale);
                 }
                 if (op == ImGuizmo::ROTATE) {
-                    /*Quat rotation = GetRotationFromQuat(newmat);
-                    Quat parent_rotation = GetRotationFromQuat(editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform());
-                    rotation = rotation * parent_rotation.Inverse();
-                    editor_layer->GetPickedEntity()->SetRotation(rotation);*/
-
-                    Vec3 new_rotation = newmat.GetRotation();
-                    Vec3 parent_rotation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetRotation();
-                    Vec3 rotation = new_rotation - parent_rotation;
-                    editor_layer->GetPickedEntity()->SetRotationEuler(rotation);
+                    Quat delta;
+                    delta.CreateFromEulerAngles(rotDelta);
+                    rotation = editor_layer->GetPickedEntity()->GetRotation();
+                    editor_layer->GetPickedEntity()->SetRotation(rotation * delta);
                 }
 
                 editor_layer->GetPickedEntity()->UpdateTransformMatrices();

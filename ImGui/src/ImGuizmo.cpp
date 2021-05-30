@@ -2178,6 +2178,91 @@ namespace ImGuizmo
         return modified;
     }
 
+    static bool HandleRotationAlt(float* matrix,  OPERATION op, int& type, const float* snap, float* delta)
+    {
+        if (!Intersects(op, ROTATE) || type != MT_NONE)
+        {
+            return false;
+        }
+        ImGuiIO& io = ImGui::GetIO();
+        bool applyRotationLocaly = gContext.mMode == LOCAL;
+        bool modified = false;
+
+        if (!gContext.mbUsing)
+        {
+            type = GetRotateType(op);
+
+            if (type != MT_NONE)
+            {
+                ImGui::CaptureMouseFromApp();
+            }
+
+            if (type == MT_ROTATE_SCREEN)
+            {
+                applyRotationLocaly = true;
+            }
+
+            if (CanActivate() && type != MT_NONE)
+            {
+                gContext.mbUsing = true;
+                gContext.mEditingID = gContext.mActualID;
+                gContext.mCurrentOperation = type;
+                const vec_t rotatePlanNormal[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir, -gContext.mCameraDir };
+                // pickup plan
+                if (applyRotationLocaly)
+                {
+                    gContext.mTranslationPlan = BuildPlan(gContext.mModel.v.position, rotatePlanNormal[type - MT_ROTATE_X]);
+                }
+                else
+                {
+                    gContext.mTranslationPlan = BuildPlan(gContext.mModelSource.v.position, directionUnary[type - MT_ROTATE_X]);
+                }
+
+                const float len = IntersectRayPlane(gContext.mRayOrigin, gContext.mRayVector, gContext.mTranslationPlan);
+                vec_t localPos = gContext.mRayOrigin + gContext.mRayVector * len - gContext.mModel.v.position;
+                gContext.mRotationVectorSource = Normalized(localPos);
+                gContext.mRotationAngleOrigin = ComputeAngleOnPlan();
+            }
+        }
+
+        // rotation
+        if (gContext.mbUsing && (gContext.mActualID == -1 || gContext.mActualID == gContext.mEditingID) && IsRotateType(gContext.mCurrentOperation))
+        {
+            ImGui::CaptureMouseFromApp();
+            gContext.mRotationAngle = ComputeAngleOnPlan();
+            if (snap)
+            {
+                float snapInRadian = snap[0] * DEG2RAD;
+                ComputeSnap(&gContext.mRotationAngle, snapInRadian);
+            }
+            vec_t rotationAxisLocalSpace;
+
+            rotationAxisLocalSpace.TransformVector(makeVect(gContext.mTranslationPlan.x, gContext.mTranslationPlan.y, gContext.mTranslationPlan.z, 0.f), gContext.mModelInverse);
+            rotationAxisLocalSpace.Normalize();
+
+            if (gContext.mRotationAngle != gContext.mRotationAngleOrigin)
+            {
+                modified = true;
+            }
+           
+            float scalarDelta = gContext.mRotationAngle - gContext.mRotationAngleOrigin;
+
+            gContext.mRotationAngleOrigin = gContext.mRotationAngle;
+
+            delta[0] = rotationAxisLocalSpace.x * -scalarDelta * 8;
+            delta[1] = rotationAxisLocalSpace.y * -scalarDelta * 8;
+            delta[2] = rotationAxisLocalSpace.z * -scalarDelta * 8;
+
+            if (!io.MouseDown[0])
+            {
+                gContext.mbUsing = false;
+                gContext.mEditingID = -1;
+            }
+            type = gContext.mCurrentOperation;
+        }
+        return modified;
+    }
+
     void DecomposeMatrixToComponents(const float* matrix, float* translation, float* rotation, float* scale)
     {
         matrix_t mat = *(matrix_t*)matrix;
@@ -2265,6 +2350,51 @@ namespace ImGuizmo
                 manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap) ||
                     HandleScale(matrix, deltaMatrix, operation, type, snap) ||
                     HandleRotation(matrix, deltaMatrix, operation, type, snap);
+            }
+        }
+
+        if (localBounds && !gContext.mbUsing)
+        {
+            HandleAndDrawLocalBounds(localBounds, (matrix_t*)matrix, boundsSnap, operation);
+        }
+
+        gContext.mOperation = operation;
+        if (!gContext.mbUsingBounds)
+        {
+            DrawRotationGizmo(operation, type);
+            DrawTranslationGizmo(operation, type);
+            DrawScaleGizmo(operation, type);
+        }
+        return manipulated;
+    }
+
+    IMGUI_API bool ManipulateQuat(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix, const float* snap, const float* localBounds, const float* boundsSnap, float* rotDelta) {
+        ComputeContext(view, projection, matrix, mode);
+
+        // set delta to identity
+        if (deltaMatrix)
+        {
+            ((matrix_t*)deltaMatrix)->SetToIdentity();
+        }
+
+        // behind camera
+        vec_t camSpacePosition;
+        camSpacePosition.TransformPoint(makeVect(0.f, 0.f, 0.f), gContext.mMVP);
+        if (!gContext.mIsOrthographic && camSpacePosition.z < 0.001f)
+        {
+            return false;
+        }
+
+        // --
+        int type = MT_NONE;
+        bool manipulated = false;
+        if (gContext.mbEnable)
+        {
+            if (!gContext.mbUsingBounds)
+            {
+                manipulated = HandleTranslation(matrix, deltaMatrix, operation, type, snap) ||
+                    HandleScale(matrix, deltaMatrix, operation, type, snap) ||
+                    HandleRotationAlt(matrix, operation, type, snap, rotDelta);
             }
         }
 

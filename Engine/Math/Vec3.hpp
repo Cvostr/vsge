@@ -12,6 +12,11 @@
 		tVec3() : x(0), y(0), z(0) {}
 		tVec3(T v) : x(v), y(v), z(v) {}
 		tVec3(T x, T y, T z) : x(x), y(y), z(z) {}
+		tVec3(T* data) {
+			x = (data)[0];
+			y = (data)[1];
+			z = (data)[2];
+		}
 
 		tVec3 GetNormalized() const {
 			float coeff = 1.f / Length();
