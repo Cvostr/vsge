@@ -150,7 +150,7 @@ tVec3<T> tMat4<T>::GetRotation() const {
     return rot * RAD2DEG;
 }
 
-Quat GetRotation(const Mat4& mat) {
+Quat GetRotationFromQuat(const Mat4& mat) {
 
     Vec3 scale = mat.GetScale();
 

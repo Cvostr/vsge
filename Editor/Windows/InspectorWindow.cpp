@@ -102,7 +102,9 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	mShowingEntity->SetName(new_name);
 
     ImGui::Separator();
-    ImGui::InputFloat3("Translation", (float*)&mShowingEntity->GetPosition().x);
+	Vec3 translation = mShowingEntity->GetPosition();
+    ImGui::InputFloat3("Translation", (float*)&translation.x);
+	mShowingEntity->SetPosition(translation);
     ImGui::InputFloat3("Scale", (float*)&mShowingEntity->GetScale().x);
 	Vec3 rotation_euler = mShowingEntity->GetRotationEuler();
     ImGui::InputFloat3("Rotation", &rotation_euler.x);

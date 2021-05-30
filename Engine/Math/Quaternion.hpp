@@ -51,20 +51,9 @@ public:
 		*this = MultiplyTo(q);
 	}
 
-	float GetRoll() const {
-		float _y = 2.f * (x * y + w * z);
-		float _x = w * w + x * x - y * y - z * z;
-		return std::atan2(_y, _x);
-	}
+	float GetRoll() const;
 
-	float GetPitch() const {
-		float _y = 2.f * (y * z + w * x);
-		float _x = w * w - x * x - y * y + z * z;
-		return std::atan2(_y, _x);
-	}
+	float GetPitch() const;
 
-	float GetYaw() const {
-
-		return asin(clamp(-2.f * (x * z - w * y), -1.f, 1.f));
-	}
+	float GetYaw() const;
 };

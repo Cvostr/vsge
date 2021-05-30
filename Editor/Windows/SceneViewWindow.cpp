@@ -29,7 +29,6 @@ void SceneViewWindow::OnDrawWindow() {
         if (editor_layer->GetPickedEntity()) {
             VSGE::Camera* cam = editor_layer->GetCamera();
             Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());
-            Mat4 view = GetViewRH(cam->GetPosition(), cam->GetPosition() + cam->GetFront(), cam->GetUp());
             Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();
             float snapValues[3] = { 0.5f, 0.5f, 0.5f };
             ImGuizmo::OPERATION op = ImGuizmo::OPERATION(editor_layer->GetTransformMode());
@@ -37,27 +36,39 @@ void SceneViewWindow::OnDrawWindow() {
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
             ImGuizmo::SetRect(_pos.x, _pos.y, _size.x, _size.y);
-            ImGuizmo::Manipulate(&view.M11, &proj.M11,
-                op, ImGuizmo::WORLD, &newmat.M11,
+
+            ImGuizmo::Manipulate(&cam->GetViewMatrix().M11, &proj.M11,
+                op, ImGuizmo::LOCAL, &newmat.M11,
                 nullptr, snap ? snapValues : nullptr);
 
 
             if (ImGuizmo::IsUsing()) {
-                Vec3 translation = newmat.GetPosition();
-                Quat rotation = GetRotation(newmat);
-                Vec3 scale = newmat.GetScale();
 
-                Vec3 parent_translation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetPosition();
-                Quat parent_rotation = GetRotation( editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform());
-                Vec3 parent_scale = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetScale();
+                if (op == ImGuizmo::TRANSLATE) {
+                    Vec3 translation = newmat.GetPosition();
+                    Vec3 parent_translation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetPosition();
+                    translation = translation - parent_translation;
+                    editor_layer->GetPickedEntity()->SetPosition(translation);
+                }
+                if (op == ImGuizmo::SCALE) {
+                    Vec3 scale = newmat.GetScale();
+                    Vec3 parent_scale = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetScale();
+                    scale = scale * parent_scale.Invert();
+                    editor_layer->GetPickedEntity()->SetScale(scale);
+                }
+                if (op == ImGuizmo::ROTATE) {
+                    /*Quat rotation = GetRotationFromQuat(newmat);
+                    Quat parent_rotation = GetRotationFromQuat(editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform());
+                    rotation = rotation * parent_rotation.Inverse();
+                    editor_layer->GetPickedEntity()->SetRotation(rotation);*/
 
-                translation = translation - parent_translation;
-                scale = scale * parent_scale.Invert();
-                rotation = rotation * parent_rotation.Inverse();
+                    Vec3 new_rotation = newmat.GetRotation();
+                    Vec3 parent_rotation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetRotation();
+                    Vec3 rotation = new_rotation - parent_rotation;
+                    editor_layer->GetPickedEntity()->SetRotationEuler(rotation);
+                }
 
-                editor_layer->GetPickedEntity()->SetPosition(translation);
-                editor_layer->GetPickedEntity()->SetScale(scale);
-                editor_layer->GetPickedEntity()->SetRotation(rotation);
+                editor_layer->GetPickedEntity()->UpdateTransformMatrices();
             }
         }
         ImGui::End();

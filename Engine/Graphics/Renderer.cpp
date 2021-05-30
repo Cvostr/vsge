@@ -16,28 +16,8 @@ void IRenderer::CreateRenderList() {
 void IRenderer::ProcessEntity(Entity* entity) {
 	if (!entity->IsActive())
 		return;
-	//Calculate local transformation matrix
-	Mat4 localTransform = GetTransform(entity->GetPosition(), entity->GetScale(), entity->GetRotation());
-	//Set local transform matrix to entity
-	entity->SetLocalTransform(localTransform);
-
-	Vec3 tr = entity->GetPosition();
-	Vec3 sc = entity->GetScale();
-	Quat rt = entity->GetRotation();
-
-	Mat4 worldTransform(1.f);
-	if (entity->GetParent()) {
-		Mat4 parent = entity->GetParent()->GetWorldTransform();
-		tr += parent.GetPosition();
-		sc *= parent.GetScale();
-		rt *= GetRotation(parent);
-	}
-
-	//Calculate absolute transform matrix
-	worldTransform = GetTransform(tr, sc, rt);
 	
-	//Update entity absolute transform matrix
-	entity->SetWorldTransform(worldTransform);
+	entity->UpdateTransformMatrices();
 
 	//Call OnPreRender on entity
 	entity->CallOnPreRender();

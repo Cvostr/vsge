@@ -196,6 +196,8 @@ namespace VSGE {
 		const Mat4& GetWorldTransform() { return WorldTransform; }
 		void SetWorldTransform(const Mat4& transform);
 
+		void UpdateTransformMatrices();
+
 		/// <summary>
 		/// Destroy this object and all it's children
 		/// </summary>

@@ -2,6 +2,7 @@
 #include "Scene.hpp"
 #include <algorithm>
 #include "EntityComponents/MeshComponent.hpp"
+#include <Math/MatrixTransform.hpp>
 
 using namespace VSGE;
 
@@ -199,9 +200,36 @@ Vec3 Entity::GetAbsoluteRotation() {
 
 void Entity::SetRotationEuler(const Vec3& rotation) {
 	Vec3 current = GetRotationEuler();
-	if ((rotation - current).Length() < 1.f)
+	if ((rotation - current).Length() < 0.5f)
 		return;
 	Quat q;
 	q.CreateFromEulerAngles(rotation);
 	SetRotation(q);
+}
+
+void Entity::UpdateTransformMatrices() {
+	//Calculate local transformation matrix
+	Mat4 localTransform = GetTransform(GetPosition(), GetScale(), GetRotation());
+	//Set local transform matrix to entity
+	SetLocalTransform(localTransform);
+
+
+	Vec3 tr = GetPosition();
+	Vec3 sc = GetScale();
+	Quat rt = GetRotation();
+
+	Mat4 worldTransform(1.f);
+	if (GetParent()) {
+		Mat4 parent = GetParent()->GetWorldTransform();
+		tr += parent.GetPosition();
+		sc *= parent.GetScale();
+		rt *= GetRotationFromQuat(parent);
+	}
+
+	//Calculate absolute transform matrix
+	worldTransform = GetTransform(tr, sc, rt);
+
+	//Update entity absolute transform matrix
+	SetWorldTransform(worldTransform);
+
 }

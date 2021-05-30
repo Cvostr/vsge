@@ -18,6 +18,39 @@ Quat Quat::GetNormalized() const {
 	return Quat(x * coeff, y * coeff, z * coeff, w * coeff);
 }
 
+float Quat::GetRoll() const {
+    float _y = 2.f * (x * y + w * z);
+    float _x = w * w + x * x - y * y - z * z;
+    return std::atan2(_y, _x);
+}
+
+float Quat::GetPitch() const {
+    float _y = 2.f * (y * z + w * x);
+    float _x = w * w - x * x - y * y + z * z;
+    return std::atan2(_y, _x);
+}
+
+float Quat::GetYaw() const {
+    return asin(clamp(-2.f * (x * z - w * y), -1.f, 1.f));
+}
+
+static float NormalizeAngle(float angle)
+{
+    while (angle > 360)
+        angle -= 360;
+    while (angle < 0)
+        angle += 360;
+    return angle;
+}
+
+static Vec3 NormalizeAngles(Vec3 angles)
+{
+    angles.x = NormalizeAngle(angles.x);
+    angles.y = NormalizeAngle(angles.y);
+    angles.z = NormalizeAngle(angles.z);
+    return angles;
+}
+
 Quat Quat::MultiplyTo(const Quat& qb) {
    float num4 = qb.x;
    float num3 = qb.y;
@@ -79,28 +112,34 @@ Quat Quat::operator*(float rhs) {
 
 Vec3 Quat::GetEulerAngles() const {
     float RAD_TO_DEG = 180.f / 3.14159265f;
-    Vec3 result;
-    /*float sinr_cosp = 2 * (w * x + y * z);
-    float cosr_cosp = 1 - 2 * (x * x + y * y);
-    result.x = std::atan2(sinr_cosp, cosr_cosp);
 
-    // pitch (y-axis rotation)
-    float sinp = 2 * (w * y - z * x);
-    if (std::abs(sinp) >= 1)
-        result.y = std::copysign(PI_FLOAT / 2, sinp); // use 90 degrees if out of range
-    else
-        result.y = std::asin(sinp);
+    float sqw = w * w;
+    float sqx = x * x;
+    float sqy = y * y;
+    float sqz = z * z;
+    float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+    float test = x * w - y * z;
+    Vec3 v;
 
-    // yaw (z-axis rotation)
-    float siny_cosp = 2 * (w * z + x * y);
-    float cosy_cosp = 1 - 2 * (y * y + z * z);
-    result.z = std::atan2(siny_cosp, cosy_cosp);*/
+    if (test > 0.4995f * unit) { // singularity at north pole
+        v.y = 2.f * std::atan2f(y, x);
+        v.x = PI_FLOAT / 2;
+        v.z = 0;
+        return NormalizeAngles(v * RAD_TO_DEG);
+    }
+    if (test < -0.4995f * unit) { // singularity at south pole
+        v.y = -2.f * std::atan2f(y, x);
+        v.x = -PI_FLOAT / 2;
+        v.z = 0;
+        return NormalizeAngles(v * RAD_TO_DEG);
+    }
 
-    result.y = GetYaw();
-    result.x = GetPitch();
-    result.z = GetRoll();
+    Quat q = Quat(w, z, x, y);
+    v.y = std::atan2f(2.f * q.x * q.w + 2.f * q.y * q.z, 1 - 2.f * (q.z * q.z + q.w * q.w));     // Yaw
+    v.x = std::asin(2.f * (q.x * q.z - q.w * q.y));                             // Pitch
+    v.z = std::atan2f(2.f * q.x * q.y + 2.f * q.z * q.w, 1 - 2.f * (q.y * q.y + q.z * q.z));      // Roll
 
-    return result * RAD_TO_DEG;
+    return NormalizeAngles(v * RAD_TO_DEG);
 }
 
 void Quat::CreateFromYawPitchRoll(float yaw, float pitch, float roll) {
