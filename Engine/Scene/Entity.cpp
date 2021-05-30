@@ -149,7 +149,7 @@ const AABB& Entity::UpdateAABB() {
 		}
 	}
 
-	mBoundingBox.ApplyTransform(LocalTransform);
+	mBoundingBox.ApplyTransform(WorldTransform);
 
 	for (auto child : _children) {
 		child->UpdateAABB();

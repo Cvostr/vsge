@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Plane.hpp"
+#include "AABB.hpp"
 #include <vector>
 
 namespace VSGE {
@@ -26,8 +27,14 @@ namespace VSGE {
 		std::vector<Plane> _planes;
 	public:
 
+		Frustum() {
+			_planes.resize(6);
+		}
+
 		void Update(const Mat4& PV);
 
 		FrustumIntersection SphereInside(const Vec3& center, float radius);
+
+		FrustumIntersection CheckAABB(const AABB& aabb);
 	};
 }

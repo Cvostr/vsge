@@ -74,4 +74,10 @@ void Camera::UpdateMatrices() {
 		_vewMatrix = GetViewRH(_position, _position + _front, _up);
 		_projectionViewMatrix = _vewMatrix * _projectionMatrix;
 	}
+	//update frustum
+	_frustum.Update(_projectionViewMatrix);
+}
+
+bool Camera::IsVisibleInFrustum(const AABB& aabb) {
+	return _frustum.CheckAABB(aabb) == FRUSTUM_INSIDE || _frustum.CheckAABB(aabb) == FRUSTUM_INTERSECTS;
 }

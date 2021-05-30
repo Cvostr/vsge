@@ -31,3 +31,6 @@ float TimePerf::GetDeltaTime() {
 uint64 TimePerf::GetFramesCount() {
 	return mFramesCount;
 }
+uint64 TimePerf::GetCurrentTime() {
+	return mNow;
+}

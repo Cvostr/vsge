@@ -36,3 +36,28 @@ void Plane::Normalize() {
 	_normal.z = _normal.z / mag;
 	_d = _d / mag;
 }
+
+Mat4 Plane::GetReflectionMatrix() {
+	Mat4 out = Mat4(1);
+
+	float A = _normal.x;
+	float B = _normal.y;
+	float C = _normal.z;
+
+	out.Values[0][0] = 1.f - 2.f * A * A;
+	out.Values[0][1] = -2.f * A * B;
+	out.Values[0][2] = -2.f * A * C;
+	out.Values[0][3] = -2.f * A * _d;
+
+	out.Values[1][0] = -2.f * A * B;
+	out.Values[1][1] = 1.f - 2.f * B * B;
+	out.Values[1][2] = -2.f * B * C;
+	out.Values[1][3] = -2.f * B * _d;
+
+	out.Values[2][0] = -2.f * A * C;
+	out.Values[2][1] = -2.f * B * C;
+	out.Values[2][2] = 1.f - 2.f * C * C;
+	out.Values[2][3] = -2.f * C * _d;
+
+	return out;
+}

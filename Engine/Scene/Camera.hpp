@@ -2,6 +2,7 @@
 
 #include <Math/Vec3.hpp>
 #include <Math/Mat4.hpp>
+#include <Math/Frustum.hpp>
 
 namespace VSGE {
 
@@ -29,7 +30,7 @@ namespace VSGE {
 		Mat4 _vewMatrix;
 		Mat4 _projectionViewMatrix;
 		
-
+		Frustum _frustum;
 	public:
 
 		Camera() : _aspectRatio(1280.f / 720.f),
@@ -98,5 +99,11 @@ namespace VSGE {
 		const Mat4& GetProjectionMatrix();
 		const Mat4& GetViewMatrix();
 		const Mat4& GetProjectionViewMatrix();
+
+		const Frustum& GetFrustum() {
+			return _frustum;
+		}
+
+		bool IsVisibleInFrustum(const AABB& aabb);
 	};
 }

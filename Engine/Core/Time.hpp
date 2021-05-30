@@ -15,6 +15,9 @@ namespace VSGE {
 	public:
 		TimePerf();
 		static TimePerf* Get();
+		/// <summary>
+		/// Update time
+		/// </summary>
 		void Tick();
 		/// <summary>
 		/// Time in seconds, spent to draw last frame
@@ -26,5 +29,6 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		uint64 GetFramesCount();
+		uint64 GetCurrentTime();
 	};
 }

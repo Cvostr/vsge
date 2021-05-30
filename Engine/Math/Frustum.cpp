@@ -59,3 +59,27 @@ FrustumIntersection Frustum::SphereInside(const Vec3& center, float radius) {
     // otherwise we are fully in view
     return FRUSTUM_INSIDE;
 }
+
+FrustumIntersection Frustum::CheckAABB(const AABB& aabb) {
+    Vec3 center = aabb.GetCenter();
+    Vec3 edge = center - aabb.GetMin();
+    bool allInside = true;
+
+    for (unsigned int plane_i = 0; plane_i < 6; plane_i++)
+    {
+        Plane* plane_ptr = &_planes[plane_i];
+        Vec3 PlaneNormal = plane_ptr->GetNormal();
+        Vec3 PlaneNormalAbs = Vec3(fabs(PlaneNormal.x), fabs(PlaneNormal.y), fabs(PlaneNormal.z));
+        PlaneNormalAbs = PlaneNormalAbs.GetNormalized();
+
+        float dist = PlaneNormal.Dot(center) + plane_ptr->GetD();
+        float absDist = PlaneNormalAbs.Dot(edge);
+
+        if (dist < -absDist)
+            return FRUSTUM_OUTSIDE;
+        else if (dist < absDist)
+            allInside = false;
+    }
+
+    return allInside ? FRUSTUM_INSIDE : FRUSTUM_INTERSECTS;
+}

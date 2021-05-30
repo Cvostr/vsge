@@ -73,6 +73,9 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 		if (typeid(T) == typeid(ParticleEmitterComponent)) {
 			DrawParticleEmitterComponent((ParticleEmitterComponent*)component);
 		}
+		if (typeid(T) == typeid(AnimatorComponent)) {
+			DrawAnimatorComponent((AnimatorComponent*)component);
+		}
 	}
 }
 

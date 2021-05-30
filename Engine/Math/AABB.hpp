@@ -6,8 +6,8 @@
 
 class AABB {
 private:
-	Vec3 mMin;
-	Vec3 mMax;
+	Vec3 _min;
+	Vec3 _max;
 
 public:
 	
@@ -18,13 +18,21 @@ public:
 	void CreateFromVertexArray(Vertex* array, unsigned int vertexCount);
 	void ApplyTransform(const Mat4& transform);
 
-	Vec3 GetCenter();
-	Vec3 GetSize();
-	Mat4 GetMatrix();
+	const Vec3& GetMin() const {
+		return _min;
+	}
+
+	const Vec3& GetMax() const {
+		return _max;
+	}
+
+	Vec3 GetCenter() const;
+	Vec3 GetSize() const;
+	Mat4 GetMatrix() const;
 
 	AABB(const Vec3& min, const Vec3& max) {
-		mMin = min;
-		mMax = max;
+		_min = min;
+		_max = max;
 	}
 	AABB() { PrepareForExtend(); }
 };
