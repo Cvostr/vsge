@@ -19,7 +19,7 @@ public:
 		x(x), y(y), z(z), w(w)
 	{}
 
-	Quat MultiplyTo(const Quat& qb);
+	Quat MultiplyTo(const Quat& qb) const;
 
 	Quat Conjugate() const;
 
@@ -43,7 +43,7 @@ public:
 
 	Quat& operator *=(float rhs);
 
-	Quat operator*(const Quat& q) {
+	Quat operator*(const Quat& q) const {
 		return MultiplyTo(q);
 	}
 

@@ -2,10 +2,11 @@
 #include "../EditorLayers/EditorLayer.hpp"
 #include "InspectorWindow.hpp"
 
-#include "Scene/EntityComponents/MeshComponent.hpp"
-#include "Scene/EntityComponents/MaterialComponent.hpp"
-#include "Scene/EntityComponents/LightComponent.hpp"
-#include "Scene/EntityComponents/ParticleEmitterComponent.hpp"
+#include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
+#include <Scene/EntityComponents/LightComponent.hpp>
+#include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+#include <Scene/EntityComponents/AudioSourceComponent.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -43,6 +44,10 @@ void SceneWindow::OnDrawWindow() {
                 if (ImGui::MenuItem("Particle Emitter")) {
                     Entity* newEntity = scene->AddNewEntity("Particles");
                     ParticleEmitterComponent* light = newEntity->AddComponent<ParticleEmitterComponent>();
+                }
+                if (ImGui::MenuItem("Audio Source")) {
+                    Entity* newEntity = scene->AddNewEntity("Audio");
+                    AudioSourceComponent* light = newEntity->AddComponent<AudioSourceComponent>();
                 }
                 ImGui::EndMenu();
             }

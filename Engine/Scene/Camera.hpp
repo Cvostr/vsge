@@ -44,7 +44,9 @@ namespace VSGE {
 		{
 
 		}
-
+		/// <summary>
+		/// Recalculate projection, view matrices and update frustum
+		/// </summary>
 		void UpdateMatrices();
 		/// <summary>
 		/// Set near occlusion plane
@@ -66,10 +68,25 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="aspectRatio"></param>
 		void SetAspectRatio(float aspectRatio);
-
+		/// <summary>
+		/// Get near culling plane value
+		/// </summary>
+		/// <returns></returns>
 		float GetNearPlane();
+		/// <summary>
+		/// Get far culling plane value
+		/// </summary>
+		/// <returns></returns>
 		float GetFarPlane();
+		/// <summary>
+		/// Get Field of View value
+		/// </summary>
+		/// <returns></returns>
 		float GetFOV();
+		/// <summary>
+		/// Get Aspect ratio value
+		/// </summary>
+		/// <returns></returns>
 		float GetAspectRatio();
 
 		void SetPosition(const Vec3& position);
@@ -95,11 +112,25 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		Vec3 GetRight();
-
+		/// <summary>
+		/// Get calculated projection matrix
+		/// </summary>
+		/// <returns></returns>
 		const Mat4& GetProjectionMatrix();
+		/// <summary>
+		/// Get calculated view matrix
+		/// </summary>
+		/// <returns></returns>
 		const Mat4& GetViewMatrix();
+		/// <summary>
+		/// Get calculated multiplication of projection and view matrices
+		/// </summary>
+		/// <returns></returns>
 		const Mat4& GetProjectionViewMatrix();
-
+		/// <summary>
+		/// Get frustum, attached to this camera
+		/// </summary>
+		/// <returns></returns>
 		const Frustum& GetFrustum() {
 			return _frustum;
 		}

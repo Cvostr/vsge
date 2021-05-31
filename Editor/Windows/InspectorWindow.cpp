@@ -8,6 +8,7 @@
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+#include <Scene/EntityComponents/AudioSourceComponent.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 
@@ -125,6 +126,7 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::LightsourceComponent>();
 	DrawComponent<VSGE::AnimatorComponent>();
 	DrawComponent<VSGE::ParticleEmitterComponent>();
+	DrawComponent<VSGE::AudioSourceComponent>();
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.45f, 0.5f, 1));
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetWindowWidth(), 0)))
@@ -140,6 +142,7 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		AddComponentButton<VSGE::LightsourceComponent>();
 		AddComponentButton<VSGE::AnimatorComponent>();
 		AddComponentButton<VSGE::ParticleEmitterComponent>();
+		AddComponentButton<VSGE::AudioSourceComponent>();
 
 		ImGui::EndPopup();
 	}

@@ -79,5 +79,6 @@ void Camera::UpdateMatrices() {
 }
 
 bool Camera::IsVisibleInFrustum(const AABB& aabb) {
-	return _frustum.CheckAABB(aabb) == FRUSTUM_INSIDE || _frustum.CheckAABB(aabb) == FRUSTUM_INTERSECTS;
+	FrustumIntersection intersection = _frustum.CheckAABB(aabb);
+	return intersection == FRUSTUM_INSIDE || intersection == FRUSTUM_INTERSECTS;
 }

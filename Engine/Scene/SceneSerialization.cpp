@@ -213,7 +213,8 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 
 	Guid parent = entity["parent"].as<Guid>();
 	Entity* parent_ent = _scene->GetEntityWithGuid(parent);
-	parent_ent->AddChild(ent);
+	//Add child to parent without retransforming
+	parent_ent->AddChild(ent, false);
 }
 
 bool SceneSerializer::Deserialize(const std::string& path) {

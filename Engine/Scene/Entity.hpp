@@ -36,7 +36,7 @@ namespace VSGE {
 		//Array of children, attached to entity
 		tEntityList _children; 
 
-		AABB mBoundingBox;
+		AABB _boundingBox;
 		Vec3 _position;
 		Vec3 _scale;
 		Quat _rotation;
@@ -119,7 +119,7 @@ namespace VSGE {
 		/// Add new child to this entity
 		/// </summary>
 		/// <param name="entityToAdd">- pointer to new child</param>
-		void AddChild(Entity* entityToAdd);
+		void AddChild(Entity* entityToAdd, bool retransform = true);
 		/// <summary>
 		/// Remove child from this entity
 		/// </summary>

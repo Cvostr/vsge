@@ -18,11 +18,22 @@ void Entity::RemoveChild(Entity* entityToRemove) {
 			tEntityList::iterator it = std::remove(_children.begin(), _children.end(), entityToRemove);
 			_children.pop_back();
 			entityToRemove->SetParent(nullptr);
+
+			UpdateTransformMatrices();
+
+			Vec3 AbsTranslation = WorldTransform.GetPosition();
+			Vec3 AbsScale = WorldTransform.GetScale();
+			Quat AbsRotation = GetRotationFromQuat(WorldTransform);
+
+			//Retransform entity
+			entityToRemove->SetPosition(entityToRemove->GetPosition() + AbsTranslation);
+			entityToRemove->SetScale(entityToRemove->GetScale() * AbsScale);
+			entityToRemove->SetRotation(entityToRemove->GetRotation() * AbsRotation);
 		}
 	}
 }
 
-void Entity::AddChild(Entity* entityToAdd) {
+void Entity::AddChild(Entity* entityToAdd, bool retransform) {
 	if (entityToAdd) {
 		if (!HasChild(entityToAdd)) {
 
@@ -32,6 +43,19 @@ void Entity::AddChild(Entity* entityToAdd) {
 
 			_children.push_back(entityToAdd);
 			entityToAdd->SetParent(this);
+
+			if (retransform) {
+				UpdateTransformMatrices();
+
+				Vec3 AbsTranslation = WorldTransform.GetPosition();
+				Vec3 AbsScale = WorldTransform.GetScale();
+				Quat AbsRotation = GetRotationFromQuat(WorldTransform);
+
+				//Retransform entity
+				entityToAdd->SetPosition(entityToAdd->GetPosition() - AbsTranslation);
+				entityToAdd->SetScale(entityToAdd->GetScale() * AbsScale.Invert());
+				entityToAdd->SetRotation(entityToAdd->GetRotation() * AbsRotation.Inverse());
+			}
 		}
 	}
 }
@@ -139,24 +163,24 @@ void Entity::SetRotation(const Quat& rotation) {
 
 const AABB& Entity::UpdateAABB() {
 	if (!GetParent())
-		return mBoundingBox;
+		return _boundingBox;
 	MeshComponent* mesh = GetComponent<MeshComponent>();
 	Entity* parent = GetParent();
 
 	if (mesh) {
 		if (mesh->GetMeshResource()) {
-			mBoundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
+			_boundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
 		}
 	}
 
-	mBoundingBox.ApplyTransform(WorldTransform);
+	_boundingBox.ApplyTransform(WorldTransform);
 
 	for (auto child : _children) {
 		child->UpdateAABB();
-		mBoundingBox.Extend(child->UpdateAABB());
+		_boundingBox.Extend(child->UpdateAABB());
 	}
 
-	return mBoundingBox;
+	return _boundingBox;
 }
 
 void Entity::SetWorldTransform(const Mat4& transform) { 

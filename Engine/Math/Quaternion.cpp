@@ -51,7 +51,7 @@ static Vec3 NormalizeAngles(Vec3 angles)
     return angles;
 }
 
-Quat Quat::MultiplyTo(const Quat& qb) {
+Quat Quat::MultiplyTo(const Quat& qb) const {
    float num4 = qb.x;
    float num3 = qb.y;
    float num2 = qb.z;
