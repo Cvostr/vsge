@@ -26,7 +26,7 @@ void AnimatorComponent::Play() {
 }
 
 void AnimatorComponent::Pause() {
-
+	_playing = false;
 }
 
 void AnimatorComponent::Stop() {

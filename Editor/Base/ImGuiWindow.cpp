@@ -17,7 +17,7 @@ void EditorWindow::UpdateWindowData() {
 }
 
 bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags_ flags) {
-	if (!_hidden) {
+	if (_showing) {
 
 		if (_queuedResize) {
 			ImGui::SetNextWindowSize(_size);
@@ -30,24 +30,28 @@ bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags_ flags) {
 			_queuedMove = false;
 		}
 
-		ImGui::Begin(title.c_str(), nullptr, ImGuiWindowFlags_NoCollapse | flags);
+		bool* _closeCross = (_showCloseCross) ? &_showing : nullptr;
+		ImGui::Begin(title.c_str(), _closeCross, ImGuiWindowFlags_NoCollapse | flags);
+
+		if (!_showing)
+			ImGui::End();
 
 		//update current window pos and size
 		UpdateWindowData();
 	}
-	return !_hidden;
+	return _showing;
 }
 
 bool EditorWindow::IsHidden() {
-	return _hidden;
+	return !_showing;
 }
 
 void EditorWindow::Hide() {
-	_hidden = true;
+	_showing = false;
 }
 
 void EditorWindow::Show() {
-	_hidden = false;
+	_showing = true;
 }
 
 bool EditorWindow::IsInFocus() {

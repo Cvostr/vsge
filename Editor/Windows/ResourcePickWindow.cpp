@@ -5,6 +5,11 @@
 using namespace VSGEditor;
 using namespace VSGE;
 
+ResourcePickerWindow::ResourcePickerWindow() {
+    SetSize(600, 600);
+    _showCloseCross = true;
+}
+
 void ResourcePickerWindow::OnDrawWindow() {
     if (Draw("Select")) {
         uint32 resources_size = ResourceCache::Get()->GetResourcesCount();

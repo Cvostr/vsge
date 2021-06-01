@@ -9,7 +9,7 @@ namespace VSGEditor {
 		VSGE::ResourceReference* reference;
 	public:
 
-		ResourcePickerWindow() {}
+		ResourcePickerWindow();
 
 		void SetResourceReference(VSGE::ResourceReference* reference) {
 			this->reference = reference;

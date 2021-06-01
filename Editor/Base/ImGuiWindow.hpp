@@ -14,16 +14,18 @@ namespace VSGEditor {
 		ImVec2 _size;
 		ImVec2 _pos;
 		bool _inFocus;
-		bool _hidden;
+		bool _showing;
 		bool _queuedResize;
 		bool _queuedMove;
+		bool _showCloseCross;
 	public:
 
 		EditorWindow() :
 			_inFocus(false),
-			_hidden(false),
+			_showing(true),
 			_queuedResize(false),
-			_queuedMove(false)
+			_queuedMove(false),
+			_showCloseCross(false)
 		{}
 
 		void UpdateWindowData();
