@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <Core/VarTypes/Base.hpp>
 #include <Math/Mat4.hpp>
 
@@ -8,38 +9,39 @@ namespace VSGE {
 
     class Bone {
     private:
-        std::string mBoneName;
-        Mat4 mOffsetMatrix;
+        std::string _boneName;
+        Mat4 _offsetMatrix;
 
-        uint32 mVerticesAffected;
+        uint32 _verticesAffected;
     public:
 
-        uint32 GetAffectedVerticesCount() { return mVerticesAffected; }
+        uint32 GetAffectedVerticesCount() { return _verticesAffected; }
 
         void SetOffsetMatrix(const Mat4& offsetMatrix){
-            mOffsetMatrix = offsetMatrix;
+            _offsetMatrix = offsetMatrix;
         }
 
-        const Mat4& GetOffsetMatrix() { return mOffsetMatrix; }
+        const Mat4& GetOffsetMatrix() { return _offsetMatrix; }
 
-        const std::string GetName() { return mBoneName; }
+        const std::string GetName() { return _boneName; }
 
         Bone() :
-            mBoneName(""),
-            mVerticesAffected(0)
+            _boneName(""),
+            _verticesAffected(0)
         {
 
         }
 
         Bone(const std::string& name, uint32 vertices) :
-            mBoneName(name),
-            mVerticesAffected(vertices)
+            _boneName(name),
+            _verticesAffected(vertices)
         {}
 
         Bone(const std::string& name) :
-            mBoneName(name),
-            mVerticesAffected(0)
+            _boneName(name),
+            _verticesAffected(0)
         {}
     };
 
+    typedef std::vector<Bone> tBonesList;
 }

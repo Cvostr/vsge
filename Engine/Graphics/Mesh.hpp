@@ -2,6 +2,7 @@
 
 #include <Math/Vertex.hpp>
 #include <Math/AABB.hpp>
+#include "Bone.hpp"
 #include <Core/VarTypes/Base.hpp>
 #include <vector>
 #include "GpuObject.hpp"
@@ -13,10 +14,11 @@ namespace VSGE {
 	};
 	class Mesh : public IGpuObject {
 	protected:
-		std::vector<VertexBufferData> mVertexBuffers;
+		std::vector<VertexBufferData> _vertexBuffers;
 		uint32* _indexArray;
 
-		AABB _meshBoundingBox;
+		AABB _meshBoundingBox; //Bounding box of mesh
+		tBonesList _bones; //Bones, attached to this mesh
 
 		uint32 _verticesCount;
 		uint32 _indicesCount;
@@ -37,7 +39,7 @@ namespace VSGE {
 			VertexBufferData vbd;
 			vbd.mVertices = (byte*)vertices;
 			vbd.mVertexSize = sizeof(T);
-			mVertexBuffers.push_back(vbd);
+			_vertexBuffers.push_back(vbd);
 		}
 		/// <summary>
 		/// Set index buffer
@@ -60,11 +62,17 @@ namespace VSGE {
 		/// Get count of mesh indices
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetVertexBuffersCount() { return (uint32)mVertexBuffers.size(); }
+		uint32 GetVertexBuffersCount() { return (uint32)_vertexBuffers.size(); }
 		/// <summary>
 		/// get aabb of this mesh
 		/// </summary>
 		const AABB& GetBoundingBox() { return _meshBoundingBox; }
+
+		tBonesList& GetBones() {
+			return _bones;
+		}
+
+		void SetBones(Bone* bones, uint32 size);
 
 		Mesh() : 
 			_indexArray(nullptr),

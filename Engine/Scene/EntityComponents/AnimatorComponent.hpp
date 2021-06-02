@@ -3,6 +3,8 @@
 #include "../IEntityComponent.hpp"
 #include <Resources/ResourceTypes/AnimationResource.hpp>
 #include <vector>
+#include <Math/Mat4.hpp>
+#include <Scene/Entity.hpp>
 
 namespace VSGE {
 
@@ -17,8 +19,11 @@ namespace VSGE {
 		std::vector<AnimationCoeff> _animations;
 		bool _playing;
 		double _startTime;
+		
 	public:
-		AnimatorComponent(){}
+		uint32 descriptor_id;
+		
+		AnimatorComponent();
 
 		std::vector<AnimationCoeff>& GetAnimations() {
 			return _animations;
@@ -26,12 +31,20 @@ namespace VSGE {
 
 		void NewAnimation();
 
+		bool IsPlaying() {
+			return _playing;
+		}
+
 		void Play();
 
 		void Pause();
 
 		void Stop();
 
+		void updateNodeTransform(Entity* child, const Mat4& parent);
+
+		void OnPreRender();
+		
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_ANIMATOR, "Animator")
 	};
 }

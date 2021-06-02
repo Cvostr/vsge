@@ -15,4 +15,18 @@ void VSGEditor::DrawAnimatorComponent(VSGE::AnimatorComponent* anic) {
 	if (ImGui::Button("Add animation")) {
 		anic->NewAnimation();
 	}
+	if (!anic->IsPlaying()) {
+		if (ImGui::Button("Play")) {
+			anic->Play();
+		}
+	}
+	else {
+		if (ImGui::Button("Stop")) {
+			anic->Stop();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Pause")) {
+			anic->Pause();
+		}
+	}
 }

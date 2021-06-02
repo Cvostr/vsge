@@ -4,6 +4,7 @@
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
+#include <Scene/EntityComponents/AnimatorComponent.hpp>
 
 using namespace VSGE;
 
@@ -182,6 +183,15 @@ void VulkanRenderer::StoreWorldObjects() {
 	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i ++) {
 		Entity* entity = mEntitiesToRender[e_i];
 		transforms[e_i * 4] = entity->GetWorldTransform();
+
+		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+
+		AnimatorComponent* anim_comp = entity->GetComponent<AnimatorComponent>();
+
+		for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
+			
+			Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
+		}
 	}
 
 	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * mEntitiesToRender.size(), transforms);

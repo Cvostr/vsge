@@ -29,6 +29,7 @@ void MeshGroupResource::Prepare() {
 				mesh->SetVertexBuffer(loadedMesh->vertexArray, loadedMesh->vertexCount);
 				mesh->AddVertexBuffer(loadedMesh->vertexSkinningArray);
 				mesh->SetIndexBuffer(loadedMesh->indexArray, loadedMesh->indexCount);
+				mesh->SetBones(loadedMesh->bonesArray, loadedMesh->bonesCount);
 				mesh->Create();
 			}
 			mesh_res->SetState(RESOURCE_STATE_LOADED);
