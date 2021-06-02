@@ -48,7 +48,8 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
     Vec3 position = child->GetPosition();
     Vec3 scale = child->GetScale();
     Quat rotation = child->GetRotation();
-    abs = GetTransform(child->GetPosition(), child->GetScale(), child->GetRotation());
+    //abs = GetTransform(child->GetPosition(), child->GetScale(), child->GetRotation());
+    abs = GetTranslationMatrix(position).transpose() * GetRotationMatrix(rotation).transpose() * GetScaleMatrix(scale).transpose();
     //abs = GetTranslationMatrix(position) * GetRotationMatrix(rotation) * GetScaleMatrix(scale);
     /*AnimationResource* resource = _animations[0]._animResource.GetResource<AnimationResource>();
 
@@ -72,6 +73,7 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
     abs = parent * abs;
 
     child->SetWorldTransform(abs);
+    
 
     //Go deeper in tree
     for (size_t i = 0; i < child->GetChildrenCount(); i++) {

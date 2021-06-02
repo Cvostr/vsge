@@ -233,6 +233,8 @@ void Entity::SetRotationEuler(const Vec3& rotation) {
 }
 
 void Entity::UpdateTransformMatrices() {
+	if (!this->mTransformDirty)
+		return;
 	//Calculate local transformation matrix
 	Mat4 localTransform = GetTransform(GetPosition(), GetScale(), GetRotation());
 	//Set local transform matrix to entity
@@ -256,6 +258,7 @@ void Entity::UpdateTransformMatrices() {
 
 	//Update entity absolute transform matrix
 	SetWorldTransform(worldTransform);
+	mTransformDirty = false;
 }
 
 Entity* Entity::GetRootSkinningEntity() {
@@ -265,16 +268,25 @@ Entity* Entity::GetRootSkinningEntity() {
 	return _parent->GetRootSkinningEntity();
 }
 
-Entity* Entity::GetChildEntityWithLabelStartsWith(const std::string& label) {
+Entity* Entity::GetChildEntityWithLabelStartsWith(const std::string& label, int& len) {
+	Entity* result = nullptr;
 	for (auto child : _children) {
-		if (label._Starts_with(child->GetName())) {
-			return child;
+		if (label._Starts_with(child->GetName()) && (len < child->GetName().size())) {
+			result = child;
+			len = child->GetName().size();
+			int old_len = len;
+
+			Entity* result1 = child->GetChildEntityWithLabelStartsWith(label, len);
+
+			if (len > old_len)
+				result = result1;
 		}
 		else {
-			Entity* result = child->GetChildEntityWithLabelStartsWith(label);
+			Entity* result = child->GetChildEntityWithLabelStartsWith(label, len);
+
 			if (result)
 				return result;
 		}
 	}
-	return nullptr;
+	return result;
 }

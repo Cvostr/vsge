@@ -99,7 +99,7 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
             }
             Mat4 node_transform;
             solver.Copy(&node_transform);
-            node->SetNodeTransform(node_transform.transpose());
+            node->SetNodeTransform(node_transform);
 
             Vec3 translation, scale;
             Quat rotation;
@@ -167,10 +167,9 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
                 Bone bone(bone_label);
                 Mat4 boneTransform;
                 solver.Copy(&boneTransform);
-                bone.SetOffsetMatrix(boneTransform.transpose());
+                bone.SetOffsetMatrix(boneTransform);
                 
                 mesh->bonesArray[b_i] = bone;
-                solver.move(1);
             }
             
             //Push mesh as output result
@@ -260,13 +259,7 @@ void SceneFileExport::write(std::string output_file) {
             //Write bone name
             serializer->Serialize(bone->GetName());
             //Write offset matrix
-            for (uint32 m_i = 0; m_i < 4; m_i++) {
-                for (uint32 m_j = 0; m_j < 4; m_j++) {
-                    float m_v = bone->GetOffsetMatrix().Values[m_i][m_j];
-                    serializer->Serialize(m_v);
-                }
-            }
-            serializer->Serialize("\n");
+            serializer->Serialize(bone->GetOffsetMatrix());
         }
     }
     
@@ -297,12 +290,8 @@ void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {
         stream->Serialize(node->children[ch_i]->GetLabel());
     }
     //Write node base matrix
-    for (uint32 m_i = 0; m_i < 4; m_i++) {
-        for (uint32 m_j = 0; m_j < 4; m_j++) {
-            float m_v = node->GetNodeTransform().Values[m_i][m_j];
-            stream->Serialize(m_v);
-        }
-    }
+    stream->Serialize(node->GetNodeTransform());
+
     stream->Serialize(node->GetTranslation().x);//Writing position X
     stream->Serialize(node->GetTranslation().y); //Writing position Y
     stream->Serialize(node->GetTranslation().z); //Writing position Z

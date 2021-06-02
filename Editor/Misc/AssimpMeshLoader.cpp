@@ -11,13 +11,9 @@ using namespace VSGEditor;
 using namespace VSGE;
 
 void VSGEditor::cmat(aiMatrix4x4 matin, Mat4* matout){
-
-    matout->Values[0][0] = matin.a1; matout->Values[0][1] = matin.b1;  matout->Values[0][2] = matin.c1; matout->Values[0][3] = matin.d1;
-    matout->Values[1][0] = matin.a2; matout->Values[1][1] = matin.b2;  matout->Values[1][2] = matin.c2; matout->Values[1][3] = matin.d2;
-    matout->Values[2][0] = matin.a3; matout->Values[2][1] = matin.b3;  matout->Values[2][2] = matin.c3; matout->Values[2][3] = matin.d3;
-    matout->Values[3][0] = matin.a4; matout->Values[3][1] = matin.b4;  matout->Values[3][2] = matin.c4; matout->Values[3][3] = matin.d4;
-
-    *matout = matout->transpose();
+    for (uint32 i = 0; i < 4; i++)
+        for (uint32 j = 0; j < 4; j++)
+            matout->Values[i][j] = matin[i][j];
 }
 
 bool VSGEditor::getSizes(std::string file_path, unsigned int* meshes, unsigned int* anims, unsigned int* textures, unsigned int* materials){

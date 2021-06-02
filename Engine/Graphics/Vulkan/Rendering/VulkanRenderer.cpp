@@ -196,18 +196,18 @@ void VulkanRenderer::StoreWorldObjects() {
 			Mat4 rootNodeTransform;
 
 			if (rootNode != nullptr) {
-					//if RootNode is specified
-					node = rootNode->GetChildEntityWithLabelStartsWith(bone->GetName());
-					//Get root transform
-					rootNodeTransform = rootNode->GetLocalTransform().invert();
+				//if RootNode is specified
+				int len = 0;
+				node = rootNode->GetChildEntityWithLabelStartsWith(bone->GetName(), len);
+				//Get root transform
+				rootNodeTransform = rootNode->GetLocalTransform().invert();
 			}
 
 			if (node != nullptr) {
 				//Calculate result matrix
 				Mat4 matrix = (rootNodeTransform * node->GetWorldTransform() * bone->GetOffsetMatrix());
-				//matrix.transpose();
 				//Send skinned matrix to skinning uniform buffer
-				anim[bone_i] = matrix;
+				anim[bone_i] = matrix.transpose();
 			}
 		}
 	}

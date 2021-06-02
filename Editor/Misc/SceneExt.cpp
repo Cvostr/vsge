@@ -24,19 +24,23 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	Entity* result = w->AddNewEntity(node->GetLabel());
 
 	//set node transform to object transform
+	Vec3 pos = node->GetNodeTransform().GetPosition();
+	Vec3 sca = node->GetNodeTransform().GetScale();
+	Quat rot = GetRotationFromQuat(node->GetNodeTransform());
+
 	result->SetPosition(node->GetTranslation());
 	result->SetScale(node->GetScale());
-	Quat node_rotation = node->GetRotation();
+	Quat node_rotation = node->GetRotation().Conjugate();
 	result->SetRotation(node_rotation);
 
-	Mat4 abs = GetTransform(result->GetPosition(), result->GetScale(), result->GetRotation()).transpose();
+	//Mat4 abs = GetTransform(result->GetPosition(), result->GetScale(), result->GetRotation()).transpose();
 
 	//Iterate over all children nodes
 	for (uint32 node_i = 0; node_i < node->children.size(); node_i++) {
 		SceneNode* ptr = node->children[node_i];
 		//Create new node object
 		Entity* newobj = addObjectFromNode(w, ptr);
-		result->AddChild(newobj);
+		result->AddChild(newobj, false);
 	}
 	//Iterate over all children meshes
 	for (uint32 node_i = 0; node_i < node->mesh_names.size(); node_i++) {
@@ -45,7 +49,7 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 		MeshComponent* meshc = object->AddComponent<MeshComponent>();
 		meshc->SetMeshName(mesh_label);
 		object->AddComponent<MaterialComponent>();
-		result->AddChild(object);
+		result->AddChild(object, false);
 	}
 	return result;
 }
