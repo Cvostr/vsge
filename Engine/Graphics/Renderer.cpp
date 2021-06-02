@@ -17,7 +17,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	if (!entity->IsActive())
 		return;
 	
-	entity->UpdateTransformMatrices();
+	//entity->UpdateTransformMatrices();
 
 	//Call OnPreRender on entity
 	entity->CallOnPreRender();

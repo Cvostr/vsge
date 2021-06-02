@@ -73,7 +73,7 @@ tMat4<T> tMat4<T>::transpose() const {
 }
 
 template<typename T>
-tMat4<T> tMat4<T>::invert() {
+tMat4<T> tMat4<T>::invert() const {
     float det_inv = 1.f / determinant();
 
     T A11 = +_determinant(Values[1][1], Values[1][2], Values[1][3], Values[2][1], Values[2][2], Values[2][3], Values[3][1], Values[3][2], Values[3][3]);

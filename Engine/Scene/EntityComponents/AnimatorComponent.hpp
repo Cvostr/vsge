@@ -21,7 +21,6 @@ namespace VSGE {
 		double _startTime;
 		
 	public:
-		uint32 descriptor_id;
 		
 		AnimatorComponent();
 

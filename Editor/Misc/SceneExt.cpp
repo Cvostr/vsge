@@ -28,6 +28,9 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	result->SetScale(node->GetScale());
 	Quat node_rotation = node->GetRotation();
 	result->SetRotation(node_rotation);
+
+	Mat4 abs = GetTransform(result->GetPosition(), result->GetScale(), result->GetRotation()).transpose();
+
 	//Iterate over all children nodes
 	for (uint32 node_i = 0; node_i < node->children.size(); node_i++) {
 		SceneNode* ptr = node->children[node_i];

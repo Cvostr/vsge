@@ -2,6 +2,7 @@
 #include "Scene.hpp"
 #include <algorithm>
 #include "EntityComponents/MeshComponent.hpp"
+#include "EntityComponents/AnimatorComponent.hpp"
 #include <Math/MatrixTransform.hpp>
 
 using namespace VSGE;
@@ -255,5 +256,25 @@ void Entity::UpdateTransformMatrices() {
 
 	//Update entity absolute transform matrix
 	SetWorldTransform(worldTransform);
+}
 
+Entity* Entity::GetRootSkinningEntity() {
+	if (HasComponent<AnimatorComponent>())
+		return this;
+
+	return _parent->GetRootSkinningEntity();
+}
+
+Entity* Entity::GetChildEntityWithLabelStartsWith(const std::string& label) {
+	for (auto child : _children) {
+		if (label._Starts_with(child->GetName())) {
+			return child;
+		}
+		else {
+			Entity* result = child->GetChildEntityWithLabelStartsWith(label);
+			if (result)
+				return result;
+		}
+	}
+	return nullptr;
 }

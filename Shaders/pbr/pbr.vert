@@ -32,7 +32,7 @@ layout (std140, binding = 1) uniform Transform{
 };
 
 layout (std140, binding = 2) uniform Animation{
-    uniform mat4 bone_transform[400];
+    uniform mat4 bone_transform[200];
 };
 
 mat4 getBoneTransform(){
@@ -79,8 +79,8 @@ void main() {
     InNormal = normalize(vec3(obj_model * vec4(normal, 0)));
 
     mat4 bone_t = mat4(1.0);
-	//if(bones > 0)
-	//	bone_t = getBoneTransform();
+	if(bones > 0)
+		bone_t = getBoneTransform();
 
     vec3 TangentVec = normalize(vec3(obj_model * vec4(tangent, 0)));
 	vec3 BiTangentVec = normalize(vec3(obj_model * vec4(bitangent, 0)));

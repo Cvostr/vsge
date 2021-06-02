@@ -78,9 +78,9 @@ public:
 
     tMat4 transpose() const;
 
-    tMat4 invert();
+    tMat4 invert() const;
 
-    T determinant() const ;
+    T determinant() const;
 
 };
 

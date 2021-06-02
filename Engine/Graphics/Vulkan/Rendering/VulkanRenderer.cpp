@@ -127,7 +127,7 @@ void VulkanRenderer::SetupRenderer() {
 
 		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
 		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * UNI_ALIGN, sizeof(Mat4));
-		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64);
+		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64 * 201);
 	}
 
 	mDeferredPassSet->Create();
@@ -180,22 +180,43 @@ void VulkanRenderer::DestroyRenderer() {
 void VulkanRenderer::StoreWorldObjects() {
 	CreateRenderList();
 	Mat4* transforms = new Mat4[mEntitiesToRender.size() * 4];
+	Mat4* anim = new Mat4[1000];
 	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i ++) {
 		Entity* entity = mEntitiesToRender[e_i];
 		transforms[e_i * 4] = entity->GetWorldTransform();
 
 		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
-
 		AnimatorComponent* anim_comp = entity->GetComponent<AnimatorComponent>();
 
 		for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
 			
 			Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
+			Entity* rootNode = entity->GetRootSkinningEntity();
+			Entity* node = nullptr;
+			Mat4 rootNodeTransform;
+
+			if (rootNode != nullptr) {
+					//if RootNode is specified
+					node = rootNode->GetChildEntityWithLabelStartsWith(bone->GetName());
+					//Get root transform
+					rootNodeTransform = rootNode->GetLocalTransform().invert();
+			}
+
+			if (node != nullptr) {
+				//Calculate result matrix
+				Mat4 matrix = (rootNodeTransform * node->GetWorldTransform() * bone->GetOffsetMatrix());
+				//matrix.transpose();
+				//Send skinned matrix to skinning uniform buffer
+				anim[bone_i] = matrix;
+			}
 		}
 	}
 
 	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * mEntitiesToRender.size(), transforms);
 	delete[] transforms;
+
+	mAnimationTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 1000, anim);
+	delete[] anim;
 
 	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i++) {
 		Entity* entity = mEntitiesToRender[e_i];

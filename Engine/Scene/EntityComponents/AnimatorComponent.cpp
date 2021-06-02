@@ -1,5 +1,6 @@
 #include "AnimatorComponent.hpp"
 #include <Core/Time.hpp>
+#include <Math/MatrixTransform.hpp>
 
 using namespace VSGE;
 
@@ -44,7 +45,11 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
     //Assign base node transform
     Mat4 abs = child->GetLocalTransform();
     //Are we need to play animation
-
+    Vec3 position = child->GetPosition();
+    Vec3 scale = child->GetScale();
+    Quat rotation = child->GetRotation();
+    abs = GetTransform(child->GetPosition(), child->GetScale(), child->GetRotation());
+    //abs = GetTranslationMatrix(position) * GetRotationMatrix(rotation) * GetScaleMatrix(scale);
     /*AnimationResource* resource = _animations[0]._animResource.GetResource<AnimationResource>();
 
     if (resource != nullptr && _playing && resource->GetResourceType() == RESOURCE_STATE_LOADED) {
@@ -61,10 +66,13 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
         }
     }*/
 
-    child->SetLocalTransform(abs);
+    
 
     //Apply parent transform
-    //abs = parent * abs;
+    abs = parent * abs;
+
+    child->SetWorldTransform(abs);
+
     //Go deeper in tree
     for (size_t i = 0; i < child->GetChildrenCount(); i++) {
         updateNodeTransform(child->GetChildren()[i], abs);
