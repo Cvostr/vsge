@@ -13,9 +13,11 @@ namespace VSGE {
 		Texture* mOutput;
 
 		//Entities with mesh and material to render
-		tEntityList mEntitiesToRender;
+		tEntityList _entitiesToRender;
 		//Entities with lightsource
-		tEntityList mLightsources;
+		tEntityList _lightsources;
+		//Entities with particle emitter
+		tEntityList _particleEmitters;
 	public:
 
 		IRenderer() : 

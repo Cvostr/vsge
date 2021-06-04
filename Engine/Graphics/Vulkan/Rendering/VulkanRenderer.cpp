@@ -179,10 +179,10 @@ void VulkanRenderer::DestroyRenderer() {
 
 void VulkanRenderer::StoreWorldObjects() {
 	CreateRenderList();
-	Mat4* transforms = new Mat4[mEntitiesToRender.size() * 4];
+	Mat4* transforms = new Mat4[_entitiesToRender.size() * 4];
 	Mat4* anim = new Mat4[1000];
-	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i ++) {
-		Entity* entity = mEntitiesToRender[e_i];
+	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i ++) {
+		Entity* entity = _entitiesToRender[e_i];
 		transforms[e_i * 4] = entity->GetWorldTransform();
 
 		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
@@ -212,14 +212,14 @@ void VulkanRenderer::StoreWorldObjects() {
 		}
 	}
 
-	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * mEntitiesToRender.size(), transforms);
+	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * _entitiesToRender.size(), transforms);
 	delete[] transforms;
 
 	mAnimationTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 1000, anim);
 	delete[] anim;
 
-	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i++) {
-		Entity* entity = mEntitiesToRender[e_i];
+	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
+		Entity* entity = _entitiesToRender[e_i];
 		MaterialComponent* component = entity->GetComponent<MaterialComponent>();
 		if (!component)
 			continue;
@@ -268,8 +268,8 @@ void VulkanRenderer::StoreWorldObjects() {
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
 
-	for (uint32 e_i = 0; e_i < mEntitiesToRender.size(); e_i++) {
-		Entity* entity = mEntitiesToRender[e_i];
+	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
+		Entity* entity = _entitiesToRender[e_i];
 		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
 		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
 		

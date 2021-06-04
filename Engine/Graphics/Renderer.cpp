@@ -5,11 +5,14 @@
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
+#include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 
 using namespace VSGE;
 
 void IRenderer::CreateRenderList() {
-	mEntitiesToRender.clear();
+	_entitiesToRender.clear();
+	_lightsources.clear();
+	_particleEmitters.clear();
 
 	ProcessEntity(mScene->GetRootEntity());
 }
@@ -25,6 +28,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	bool HasMesh = entity->HasComponent<MeshComponent>();
 	bool HasMaterial = entity->HasComponent<MaterialComponent>();
 	bool hasLightsource = entity->HasComponent<LightsourceComponent>();
+	bool hasParticleEmitter = entity->HasComponent<ParticleEmitterComponent>();
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
 		if (mesh->GetMeshResource()) {
@@ -47,11 +51,15 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	}
 
 	if (HasMaterial && HasMesh) {
-		mEntitiesToRender.push_back(entity);
+		_entitiesToRender.push_back(entity);
 	}
 
 	if (hasLightsource) {
-		mLightsources.push_back(entity);
+		_lightsources.push_back(entity);
+	}
+
+	if (hasLightsource) {
+		_particleEmitters.push_back(entity);
 	}
 
 	for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i ++) {

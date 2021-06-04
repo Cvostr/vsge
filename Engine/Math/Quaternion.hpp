@@ -50,10 +50,4 @@ public:
 	void operator*=(const Quat& q) {
 		*this = MultiplyTo(q);
 	}
-
-	float GetRoll() const;
-
-	float GetPitch() const;
-
-	float GetYaw() const;
 };

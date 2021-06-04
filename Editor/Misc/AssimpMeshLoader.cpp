@@ -197,14 +197,15 @@ void VSGEditor::loadNodeTree(std::string file_path, SceneNode* node){
 void VSGEditor::processNodeForTree(SceneNode* node, aiNode* node_assimp, const aiScene* scene){
     node->SetNodeLabel(node_assimp->mName.C_Str()); //assigning node name
 
+    aiMatrix4x4 node_transform = node_assimp->mTransformation;
     //Write node matrix
     Mat4 nodeTransform;
-    cmat(node_assimp->mTransformation, &nodeTransform);
+    cmat(node_transform, &nodeTransform);
     node->SetNodeTransform(nodeTransform);
 
     aiVector3D translation, scale;
     aiQuaternion rotation;
-    node_assimp->mTransformation.Decompose(scale, rotation, translation);
+    node_transform.Decompose(scale, rotation, translation);
 
     Vec3 node_translation = Vec3(translation.x, translation.y, translation.z);
     Vec3 node_scaling = Vec3(scale.x, scale.y, scale.z);

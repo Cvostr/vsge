@@ -24,16 +24,22 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	Entity* result = w->AddNewEntity(node->GetLabel());
 
 	//set node transform to object transform
-	Vec3 pos = node->GetNodeTransform().GetPosition();
-	Vec3 sca = node->GetNodeTransform().GetScale();
-	Quat rot = GetRotationFromQuat(node->GetNodeTransform());
+	Mat4 node_transform_transposed = node->GetNodeTransform().transpose();
+	Vec3 pos = node_transform_transposed.GetPosition();
+	Vec3 sca = node_transform_transposed.GetScale();
+	Quat rot = GetRotationFromQuat(node_transform_transposed);
+
+	
+
+	result->SetPosition(pos);
+	result->SetScale(sca);
+	result->SetRotation(rot.Conjugate());
 
 	result->SetPosition(node->GetTranslation());
 	result->SetScale(node->GetScale());
 	Quat node_rotation = node->GetRotation().Conjugate();
 	result->SetRotation(node_rotation);
-
-	//Mat4 abs = GetTransform(result->GetPosition(), result->GetScale(), result->GetRotation()).transpose();
+	
 
 	//Iterate over all children nodes
 	for (uint32 node_i = 0; node_i < node->children.size(); node_i++) {

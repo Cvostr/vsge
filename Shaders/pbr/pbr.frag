@@ -30,6 +30,9 @@ void main() {
     if(hasAlbedo)
         tColor = texture(albedo, UVCoord);
 
+    if(hasOcclusion)
+        tColor.rgb *= texture(occlusion, UVCoord).r;
+
     if(hasNormal){
         tNormal = texture(normal, UVCoord).rgb;
         tNormal = normalize(tNormal * 2 - 1);

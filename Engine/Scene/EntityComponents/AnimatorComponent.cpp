@@ -48,8 +48,8 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
     Vec3 position = child->GetPosition();
     Vec3 scale = child->GetScale();
     Quat rotation = child->GetRotation();
-    //abs = GetTransform(child->GetPosition(), child->GetScale(), child->GetRotation());
-    abs = GetTranslationMatrix(position).transpose() * GetRotationMatrix(rotation).transpose() * GetScaleMatrix(scale).transpose();
+    abs = GetTransform(child->GetPosition(), child->GetScale(), child->GetRotation()).transpose();
+    //abs = GetTranslationMatrix(position).transpose() * GetRotationMatrix(rotation).transpose() * GetScaleMatrix(scale).transpose();
     //abs = GetTranslationMatrix(position) * GetRotationMatrix(rotation) * GetScaleMatrix(scale);
     /*AnimationResource* resource = _animations[0]._animResource.GetResource<AnimationResource>();
 
