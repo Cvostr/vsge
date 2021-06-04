@@ -221,7 +221,7 @@ void SceneFileExport::write(std::string output_file) {
     //Iterate over all meshes
     for (uint32 mesh_i = 0; mesh_i < meshes_num; mesh_i++) {
         MeshContainer* mesh_ptr = this->mMeshes[mesh_i];
-        //std::cout << "ZS3M: Writing Mesh " << mesh_ptr->mesh_label << std::endl;
+
         serializer->WriteBytes("_MESH", 5);
         serializer->Serialize(mesh_ptr->meshName);
 

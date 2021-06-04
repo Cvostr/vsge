@@ -7,22 +7,22 @@ using namespace VSGE;
 void MeshGroupResource::Prepare() {
 	
 	ImportedSceneFile isf;
-	isf.loadFromBuffer(mLoadedData, description.size);
+	isf.loadFromBuffer(_loadedData, _description.size);
 	if (!mPrepared) {
 		for (uint32 mesh_i = 0; mesh_i < isf.mReadedMeshes.size(); mesh_i++) {
 			MeshContainer* mc = isf.mReadedMeshes[mesh_i];
 			MeshResource* mres = new MeshResource;
 			mres->SetName(mc->meshName);
-			mres->SetGroup(this);
-			_meshes.push_back(mres);
+			mres->SetParent(this);
+			_subresources.push_back(mres);
 			ResourceCache::Get()->PushResource(mres);
 		}
 			
 		mPrepared = true;
 	}
 	else {
-		for (uint32 mesh_i = 0; mesh_i < _meshes.size(); mesh_i++) {
-			MeshResource* mesh_res = _meshes[mesh_i];
+		for (uint32 mesh_i = 0; mesh_i < _subresources.size(); mesh_i++) {
+			MeshResource* mesh_res = (MeshResource*)_subresources[mesh_i];
 			MeshContainer* loadedMesh = isf.mReadedMeshes[mesh_i];
 			if (mesh_res->GetState() == RESOURCE_STATE_UNLOADED) {
 				Mesh* mesh = mesh_res->GetMesh();
@@ -42,21 +42,13 @@ void MeshGroupResource::Prepare() {
 }
 
 void MeshResource::Load() {
-	if (mResourceState == RESOURCE_STATE_UNLOADED) {
-		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(mGroup);
+	if (_resourceState == RESOURCE_STATE_UNLOADED) {
+		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(_parent);
 	}
 }
 
 Mesh* MeshResource::GetMesh() {
 	return mesh;
-}
-
-void MeshResource::SetGroup(MeshGroupResource* group) {
-	mGroup = group;
-}
-
-MeshGroupResource* MeshResource::GetGroup() {
-	return mGroup;
 }
 
 ResourceType MeshResource::GetResourceType() {

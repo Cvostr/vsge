@@ -48,6 +48,10 @@ void VulkanBuffer::Destroy() {
 }
 
 void VulkanBuffer::WriteData(uint32 offset, uint32 size, void* data) {
+	if (size == 0)
+		//if nothing to copy, then exit
+		return;
+
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanMA* vulkan_ma = vulkan_rapi->GetAllocator();
 	if (mDeviceLocation == LOCATION_CPU_GPU) {

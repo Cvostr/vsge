@@ -27,7 +27,9 @@ typedef void* Buffer;
 #define MAX_FLOAT (3.402823466e+38f)
 
 #define SAFE_RELEASE(x) if (x)\
-							delete x;
+							delete x;\
+							x = nullptr;
 
 #define SAFE_RELEASE_ARR(x) if (x)\
-							delete[] x;
+							delete[] x;\
+							x = nullptr;

@@ -109,7 +109,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	}
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
 	{
-		imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		//imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
 	if (!_isRenderTarget) {
@@ -141,6 +141,9 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
 		ChangeLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+	}
+	else if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32) {
+		ChangeLayout(VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 	}
 	else if (_isRenderTarget)
 	{

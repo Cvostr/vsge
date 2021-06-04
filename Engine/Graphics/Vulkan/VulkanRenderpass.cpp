@@ -84,12 +84,13 @@ void VulkanRenderPass::Destroy() {
 }
 
 void VulkanRenderPass::PushColorAttachment(VkFormat format, VkImageLayout Layout) {
-    VkImageLayout imgLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    VkImageLayout descriptionLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    VkImageLayout referenceLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     if (Layout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
-        imgLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        descriptionLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     else
-        imgLayout = Layout;
+        descriptionLayout = Layout;
 
     VkAttachmentDescription colorAttachment = {};
     colorAttachment.format = format;
@@ -99,7 +100,7 @@ void VulkanRenderPass::PushColorAttachment(VkFormat format, VkImageLayout Layout
     colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout = imgLayout;
+    colorAttachment.finalLayout = descriptionLayout;
     //Push new attachment description
     mAttachmentDescriptions.push_back(colorAttachment);
 
@@ -108,7 +109,7 @@ void VulkanRenderPass::PushColorAttachment(VkFormat format, VkImageLayout Layout
     VkAttachmentReference colorAttachmentRef = {};
     colorAttachmentRef.attachment =
         static_cast<uint32>(mAttachmentReferences.size());
-    colorAttachmentRef.layout = Layout;
+    colorAttachmentRef.layout = referenceLayout;
     //Push new attachment reference
     mAttachmentReferences.push_back(colorAttachmentRef);
 

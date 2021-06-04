@@ -68,6 +68,7 @@ namespace VSGE {
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
+		VulkanBuffer* _lightsBuffer;
 		//--------------------Meshes--------------------
 		VulkanMesh* mSpriteMesh;
 

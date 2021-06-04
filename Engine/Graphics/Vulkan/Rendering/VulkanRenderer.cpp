@@ -65,13 +65,16 @@ void VulkanRenderer::SetupRenderer() {
 
 	//---------------------Buffers--------------------------------
 	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mCameraShaderBuffer->Create(UNI_ALIGN);
+	mCameraShaderBuffer->Create(UNI_ALIGN, LOCATION_GPU);
 
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mTransformsShaderBuffer->Create(UNI_ALIGN * MAX_OBJECTS_RENDER);
+	mTransformsShaderBuffer->Create(UNI_ALIGN * MAX_OBJECTS_RENDER, LOCATION_GPU);
 
 	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
+
+	_lightsBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	_lightsBuffer->Create(200 * 64 + 16);
 
 	//---------------------Meshes----------------------------------
 	mSpriteMesh = new VulkanMesh;
@@ -114,6 +117,8 @@ void VulkanRenderer::SetupRenderer() {
 	}
 
 	mDeferredPassSet = new VulkanDescriptorSet(mObjectsPool);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -131,6 +136,8 @@ void VulkanRenderer::SetupRenderer() {
 	}
 
 	mDeferredPassSet->Create();
+	mDeferredPassSet->WriteDescriptorBuffer(1, mCameraShaderBuffer);
+	mDeferredPassSet->WriteDescriptorBuffer(2, _lightsBuffer);
 	mDeferredPassSet->WriteDescriptorImage(3, (VulkanTexture*)mGBuffer->GetColorAttachments()[0], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(4, (VulkanTexture*)mGBuffer->GetColorAttachments()[1], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);

@@ -2,6 +2,7 @@
 
 #include <Core/VarTypes/Guid.hpp>
 #include <string>
+#include <vector>
 
 namespace VSGE {
 	
@@ -34,33 +35,36 @@ namespace VSGE {
 
 	class Resource {
 	protected:
-		ResourceState mResourceState;
+		ResourceState _resourceState;
 		uint32 mMemoryUse;
-		std::string mName;
+		std::string _name;
 
-		byte* mLoadedData;
-		DataDescription description;
+		byte* _loadedData;
+		DataDescription _description;
+
+		Resource* _parent; //Resource, that created this resource
+		std::vector<Resource*> _subresources; //Resources, that created from this resource
 	public:
 		/// <summary>
 		/// Get name of this resource
 		/// </summary>
 		/// <returns>resource name</returns>
-		const std::string& GetName() { return mName; }
+		const std::string& GetName() { return _name; }
 		/// <summary>
 		/// Set name of this resource
 		/// </summary>
 		/// <param name="name">new resource name</param>
-		void SetName(const std::string& name) { mName = name; }
+		void SetName(const std::string& name) { _name = name; }
 		/// <summary>
 		/// get current loading state of resource
 		/// </summary>
 		/// <returns>state of resource</returns>
-		const ResourceState& GetState() { return mResourceState; }
+		const ResourceState& GetState() { return _resourceState; }
 		/// <summary>
 		/// Set loading state of resource
 		/// </summary>
 		/// <param name="State"></param>
-		void SetState(const ResourceState& State) { mResourceState = State; }
+		void SetState(const ResourceState& State) { _resourceState = State; }
 		/// <summary>
 		/// Get size of memory, allocated for this resource
 		/// </summary>
@@ -68,23 +72,19 @@ namespace VSGE {
 		uint32 GetMemoryUse() { return mMemoryUse; }
 		void SetMemoryUse(uint32 memory) { mMemoryUse = memory; }
 
-		void SetDataDescription(const DataDescription& desc) {
-			description = desc;
-		}
+		Resource* GetParent();
 
-		const DataDescription& GetDataDescription() {
-			return description;
-		}
+		void SetParent(Resource* resource);
 
-		void SetLoadedData(byte* data) {
-			mLoadedData = data;
-		}
+		void SetDataDescription(const DataDescription& desc);
+
+		const DataDescription& GetDataDescription();
+
+		void SetLoadedData(byte* data);
 
 		void FreeLoadedData();
 
-		byte* GetLoadedData() {
-			return mLoadedData;
-		}
+		byte* GetLoadedData();
 
 		virtual void Load();
 		virtual void Prepare() {}
@@ -93,9 +93,10 @@ namespace VSGE {
 		virtual ResourceType GetResourceType() = 0;
 
 		Resource() :
-			mResourceState(RESOURCE_STATE_UNLOADED),
+			_parent(nullptr),
+			_resourceState(RESOURCE_STATE_UNLOADED),
 			mMemoryUse(0),
-			mLoadedData(nullptr)
+			_loadedData(nullptr)
 		{}
 	};
 
@@ -104,6 +105,7 @@ namespace VSGE {
 		ResourceType _resourceType;
 		Resource* _resourcePointer;
 		std::string _resourceName;
+		std::string _parentName;
 	public:
 		
 		ResourceType GetResourceType() {
@@ -119,19 +121,15 @@ namespace VSGE {
 			return static_cast<T*>(_resourcePointer);
 		}
 
-		Resource* GetResource() {
-			return _resourcePointer;
-		}
+		Resource* GetResource();
 
-		const std::string& GetResourceName() {
-			return _resourceName;
-		}
+		const std::string& GetResourceName();
 
 		void SetResource(const std::string& resourceName);
 
-		bool IsResourceSpecified() {
-			return !_resourceName.empty();
-		}
+		void SetResource(Resource* resource);
+
+		bool IsResourceSpecified();
 
 		void operator=(ResourceReference& ref) {
 			SetResource(ref._resourceName);

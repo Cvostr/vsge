@@ -94,6 +94,7 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
 
     res->SetName(res_name);
     
+    //if it is mesh group - load it to create meshes
     if (type == RESOURCE_TYPE_MESHGROUP) {
         _loader->AddToQueue(res);
     }
