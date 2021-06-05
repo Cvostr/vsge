@@ -103,16 +103,22 @@ namespace VSGE {
 		}
 	};
 
+	typedef std::vector<MaterialTemplate*> tMaterialTemplateList;
+
 	class MaterialTemplateCache {
 	private:
 
 		static MaterialTemplateCache* _this;
 
-		std::vector<MaterialTemplate*> _templates;
+		tMaterialTemplateList _templates;
 	public:
 
 		MaterialTemplateCache() {
 			_this = this;
+		}
+
+		tMaterialTemplateList& GetTemplates() {
+			return _templates;
 		}
 
 		static MaterialTemplateCache* Get() {
@@ -144,8 +150,8 @@ namespace VSGE {
 
 		Material() :
 			_template(nullptr),
-			_paramsDirty(false),
-			_texturesDirty(false),
+			_paramsDirty(true),
+			_texturesDirty(true),
 			_descriptors(nullptr)
 		{}
 
@@ -153,12 +159,26 @@ namespace VSGE {
 			SAFE_RELEASE(_descriptors);
 		}
 
+		/// <summary>
+		/// Get vector of textures
+		/// </summary>
+		/// <returns></returns>
 		tMaterialTexturesList& GetTextures() {
 			return _materialTextures;
 		}
-
+		/// <summary>
+		/// Get vector of parameters
+		/// </summary>
+		/// <returns></returns>
+		tMaterialParamsList& GetParams() {
+			return _materialParams;
+		}
+		/// <summary>
+		/// Generate buffer of params that ready to send on gpu shader
+		/// </summary>
+		/// <param name="out"></param>
+		/// <returns></returns>
 		uint32 CopyParamsToBuffer(char** out);
-
 		/// <summary>
 		/// Set texture resource to slot with specified name
 		/// </summary>
@@ -191,7 +211,10 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="template_name">- name of template in cache</param>
 		void SetTemplate(const std::string& template_name);
-
+		/// <summary>
+		/// Get template of this material
+		/// </summary>
+		/// <returns></returns>
 		MaterialTemplate* GetTemplate() {
 			return _template;
 		}

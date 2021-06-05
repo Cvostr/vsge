@@ -21,14 +21,18 @@ layout (std140, set = 1, binding = 0) uniform MaterialData{
     bool hasMetallic;
     bool hasHeight;
     bool hasOcclusion;
+
+    vec4 color;
+    float roughness_factor;
+    float metallic_factor;
 };
 
 void main() {
-    tColor = vec4(1, 1, 1, 1);
+    tColor = vec4(color.xyz, 1);
     tNormal = InNormal;
 
     if(hasAlbedo)
-        tColor = texture(albedo, UVCoord);
+        tColor *= texture(albedo, UVCoord);
 
     if(hasOcclusion)
         tColor.rgb *= texture(occlusion, UVCoord).r;

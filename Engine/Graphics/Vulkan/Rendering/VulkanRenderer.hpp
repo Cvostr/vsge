@@ -82,6 +82,7 @@ namespace VSGE {
 		std::vector<VulkanDrawCall> drawCalls;
 
 		MaterialTemplate* pbr_template;
+		MaterialTemplate* particle_template;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 

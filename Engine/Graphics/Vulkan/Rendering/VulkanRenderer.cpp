@@ -23,6 +23,11 @@ void VulkanRenderer::SetupRenderer() {
 	deferred_light->AddShaderFromFile("deferred.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(deferred_light, "Deferred");
 
+	VulkanShader* particle = new VulkanShader;
+	particle->AddShaderFromFile("particle.vert", SHADER_STAGE_VERTEX);
+	particle->AddShaderFromFile("particle.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(particle, "Particle");
+
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 	//--------------------Framebuffers----------------
 	mGBufferPass = new VulkanRenderPass;
@@ -176,8 +181,18 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_template->AddTexture("Metallic", 4);
 	pbr_template->AddTexture("Height", 5);
 	pbr_template->AddTexture("AO", 6);
+	pbr_template->AddParameter("Color", Color(1, 1, 1, 1));
+	pbr_template->AddParameter("Roughness factor", 1.f);
+	pbr_template->AddParameter("Metallic factor", 1.f);
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
+
+	particle_template = new MaterialTemplate;
+	particle_template->SetName("default_particle");
+	particle_template->SetShader("Particle");
+	
+	MaterialTemplateCache::Get()->AddTemplate(particle_template);
+	CreatePipelineFromMaterialTemplate(particle_template);
 }
 
 void VulkanRenderer::DestroyRenderer() {

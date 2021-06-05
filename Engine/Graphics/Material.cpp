@@ -64,6 +64,10 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 
 	this->_template = mat_template;
 
+	//clear params and textures first
+	_materialTextures.clear();
+	_materialParams.clear();
+
 	for (auto texture : mat_template->GetTextures()) {
 		this->_materialTextures.push_back(texture);
 	}
@@ -119,16 +123,22 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 			writtenBytes += 4;
 		}
 		if (param.value.GetType() == VALUE_TYPE_INT) {
-			writtenBytes += 4;
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
+			writtenBytes += 4;
 		}
 		if (param.value.GetType() == VALUE_TYPE_FLOAT) {
-			writtenBytes += 4;
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
+			writtenBytes += 4;
 		}
-		if (param.value.GetType() == VALUE_TYPE_VEC3F) {
+		if (param.value.GetType() == VALUE_TYPE_VEC3F || param.value.GetType() == VALUE_TYPE_VEC3I) {
 			writtenBytes = align(writtenBytes);
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 12);
+			writtenBytes += 16;
+		}
+		if (param.value.GetType() == VALUE_TYPE_COLOR) {
+			writtenBytes = align(writtenBytes);
+			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 16);
+			writtenBytes += 16;
 		}
 	}
 

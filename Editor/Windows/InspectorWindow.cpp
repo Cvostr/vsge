@@ -11,6 +11,9 @@
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
+#include "../InspectorInterfaces/VariantInput.hpp"
+
+#include <Graphics/Material.hpp>
 
 #include "../InspectorInterfaces/EntityComponents/EntityComponents.hpp"
 
@@ -151,7 +154,25 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 }
 
 void VSGEditor::InspectorWindow::DrawMaterialContents() {
+	MaterialTemplateCache* mtemplates = MaterialTemplateCache::Get();
+
 	MaterialTemplate* _template = mShowingMaterial->GetTemplate();
+	std::string current_template_name = "";
+	if(_template)
+		current_template_name = _template->GetName();
+
+	if (ImGui::BeginCombo("##Template", current_template_name.c_str())) {
+		for (auto mtemplate : mtemplates->GetTemplates()) {
+			bool is_selected = (current_template_name == mtemplate->GetName());
+			if (ImGui::Selectable(mtemplate->GetName().c_str(), is_selected)) {
+				current_template_name = mtemplate->GetName();
+				mShowingMaterial->SetTemplate(current_template_name);
+				_template = mShowingMaterial->GetTemplate();
+			}
+		}
+
+		ImGui::EndCombo();
+	}
 
 	if (_template == nullptr)
 		return;
@@ -159,5 +180,12 @@ void VSGEditor::InspectorWindow::DrawMaterialContents() {
 	for (MaterialTexture& texture : mShowingMaterial->GetTextures()) {
 		DrawResourcePicker(texture._name.c_str(), texture._resource);
 		mShowingMaterial->SetTexture(texture._name, texture._resource);
+	}
+
+	for (MaterialParameter& param : mShowingMaterial->GetParams()) {
+		if (param.name[0] != '@') {
+			DrawVariantInput(param.name, param.value);
+			mShowingMaterial->SetParameter(param.name, param.value);
+		}
 	}
 }
