@@ -5,6 +5,7 @@ layout(location = 2) in vec2 UVCoord;
 layout(binding = 3) uniform sampler2D color;
 layout(binding = 4) uniform sampler2D normal;
 layout(binding = 5) uniform sampler2D pos;
+layout(binding = 6) uniform sampler2D material;
 
 #define LIGHTSOURCE_NONE 0
 #define LIGHTSOURCE_DIR 1
@@ -12,12 +13,12 @@ layout(binding = 5) uniform sampler2D pos;
 #define LIGHTSOURCE_SPOT 3
 
 struct Light{
-    int type;
-    float intensity;
-    int range;
-    vec3 position;
-    vec3 direction;
-    vec3 color;
+    int type;           //0
+    float intensity;    //4
+    float range;          //8
+    vec3 position;      //16
+    vec3 direction;     //32
+    vec3 color;         //48
 };
 
 layout (std140, binding = 1) uniform CamMatrices{
@@ -36,6 +37,7 @@ void main() {
     vec4 diffuse = texture(color, UVCoord);
     vec3 normal = texture(normal, UVCoord).rgb;
     vec3 pos = texture(pos, UVCoord).rgb;
+    vec4 material = texture(material, UVCoord);
 
     vec3 lightning = CalculateLightning(diffuse.rgb, normal, pos);
 
@@ -45,7 +47,7 @@ void main() {
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos) {
     vec3 result = color;
     //Calculate direction from camera to processing fragment
-    //vec3 camToFragDirection = normalize(cam_position - pos);
+    vec3 camToFragDirection = normalize(cam_position - pos);
     //iterate over all lights and calculate them
     for(int lg = 0; lg < lights_count; lg ++) {
         if(lights[lg].type == LIGHTSOURCE_DIR){
@@ -59,22 +61,22 @@ vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos) {
 		    //add light to result color
             result += rlight;
         }
-        /*if(lights[lg].type == LIGHTSOURCE_POINT){
+        if(lights[lg].type == LIGHTSOURCE_POINT){
             //distance from light to fragment
-            float Dist = length(lights[lg].pos - FragPos);
-            vec3 Dir = normalize(lights[lg].pos - FragPos);
+            float Dist = length(lights[lg].position - pos);
+            vec3 Dir = normalize(lights[lg].position - pos);
             //calculate factor of light
             float factor = 1.0 / ( 1.0 + 1.0 / lights[lg].range * Dist + 1.0 / lights[lg].range * Dist * Dist) * lights[lg].intensity;
             
-            float lightcoeff = max(dot(Normal, normalize(Dir)), 0.0) * lights[lg].intensity;
+            float lightcoeff = max(dot(normal, Dir), 0.0) * lights[lg].intensity;
             vec3 rlight = lightcoeff * lights[lg].color;
             //Specular calculation
-            vec3 lightDirReflected = reflect(normalize(-Dir), Normal);
-            float angle = max(dot(camToFragDirection, lightDirReflected), 0.0);
-            rlight += pow(angle, 32) * specularFactor * lights[lg].color;
+            vec3 lightDirReflected = reflect(-Dir, normal);
+            //float angle = max(dot(camToFragDirection, lightDirReflected), 0.0);
+            //rlight += pow(angle, 32) * specularFactor * lights[lg].color;
 		    //add light to result color
             result += rlight * factor;
-        }*/
+        }
         /*if(lights[lg].type == LIGHTSOURCE_SPOT){
             
             vec3 vec_dir = normalize(lights[lg].dir);

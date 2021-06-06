@@ -37,6 +37,10 @@ void VulkanBuffer::Create(uint32 size, BufferDeviceLocation location) {
 	mCreated = true;
 }
 
+void VulkanBuffer::Resize(uint32 new_size) {
+	//VulkanBuffer* temp_buffer = new VulkanBuffer(GPU_)
+}
+
 void VulkanBuffer::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();

@@ -309,3 +309,9 @@ float ParticleEmitterComponent::GetParticleLifetime(){
 uint32 ParticleEmitterComponent::GetMaxParticlesCount() {
 	return _maxParticles;
 }
+MinMaxValue<int>& ParticleEmitterComponent::GetEmissionRate() {
+	return _emissionRate;
+}
+MinMaxValue<Vec3>& ParticleEmitterComponent::GetDirection() {
+	return _direction;
+}

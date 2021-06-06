@@ -141,6 +141,8 @@ namespace VSGE {
 		bool GetPrewarm();
 		float GetParticleLifetime();
 		uint32 GetMaxParticlesCount();
+		MinMaxValue<int>& GetEmissionRate();
+		MinMaxValue<Vec3>& GetDirection();
 
 		void SetEmitterShape(ParticleEmitterShape shape);
 		void SetDuration(float duration);

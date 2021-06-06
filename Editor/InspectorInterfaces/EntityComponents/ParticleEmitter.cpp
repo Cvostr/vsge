@@ -2,6 +2,7 @@
 #include <imgui.h>
 
 using namespace VSGEditor;
+using namespace VSGE;
 
 void VSGEditor::DrawParticleEmitterComponent(VSGE::ParticleEmitterComponent* pec) {
 	bool looping = pec->GetLooping();
@@ -23,4 +24,20 @@ void VSGEditor::DrawParticleEmitterComponent(VSGE::ParticleEmitterComponent* pec
 	float particleLifetime = pec->GetParticleLifetime();
 	ImGui::InputFloat("Particle Lifetime", &particleLifetime);
 	pec->SetParticleLifetime(particleLifetime);
+
+	ImGui::Separator();
+
+	MinMaxValue<int> emissionRate = pec->GetEmissionRate();
+	ImGui::Text("Emission rate");
+	ImGui::InputInt("Min", &emissionRate.Min);
+	ImGui::InputInt("Max", &emissionRate.Max);
+	pec->SetEmissionRate(emissionRate.Min, emissionRate.Max);
+
+	ImGui::Separator();
+
+	MinMaxValue<Vec3> direction = pec->GetDirection();
+	ImGui::Text("Direction");
+	ImGui::InputFloat3("Min", &direction.Min.x);
+	ImGui::InputFloat3("Max", &direction.Max.x);
+	pec->SetDirection(direction.Min, direction.Max);
 }

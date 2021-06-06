@@ -179,9 +179,9 @@ namespace VSGE {
 		/// <returns></returns>
 		Vec3 GetRotationEuler() const { return _rotation.GetEulerAngles(); }
 
-		Vec3 GetAbsolutePosition();
-		Vec3 GetAbsoluteScale();
-		Vec3 GetAbsoluteRotation();
+		Vec3 GetAbsolutePosition() const;
+		Vec3 GetAbsoluteScale() const;
+		Quat GetAbsoluteRotation();
 
 		void SetPosition(const Vec3& position);
 		void SetScale(const Vec3& scale);

@@ -3,6 +3,7 @@
 #include "../VulkanShader.hpp"
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
 
@@ -35,6 +36,7 @@ void VulkanRenderer::SetupRenderer() {
 	mGBufferPass->PushColorAttachment(FORMAT_RGBA);
 	mGBufferPass->PushColorAttachment(FORMAT_RGBA16F);
 	mGBufferPass->PushColorAttachment(FORMAT_RGBA16F);
+	mGBufferPass->PushColorAttachment(FORMAT_RGBA);
 	mGBufferPass->PushDepthAttachment();
 	mGBufferPass->Create();
 
@@ -43,6 +45,7 @@ void VulkanRenderer::SetupRenderer() {
 	mGBuffer->AddAttachment(FORMAT_RGBA); //Color
 	mGBuffer->AddAttachment(FORMAT_RGBA16F); //Normal
 	mGBuffer->AddAttachment(FORMAT_RGBA16F); //Position
+	mGBuffer->AddAttachment(FORMAT_RGBA); //Material
 	mGBuffer->AddDepth();
 	mGBuffer->Create(mGBufferPass);
 
@@ -107,8 +110,8 @@ void VulkanRenderer::SetupRenderer() {
 	//----------------------Descriptors--------------------------
 	mObjectsPool = new VulkanDescriptorPool;
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;
-	mMaterialsDescriptorPool->SetDescriptorSetsCount(2000);
-	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2000);
+	mMaterialsDescriptorPool->SetDescriptorSetsCount(8000);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8000);
 	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
 	mMaterialsDescriptorPool->Create();
 
@@ -127,6 +130,7 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Create POOL
 	mObjectsPool->Create();
@@ -146,6 +150,7 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->WriteDescriptorImage(3, (VulkanTexture*)mGBuffer->GetColorAttachments()[0], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(4, (VulkanTexture*)mGBuffer->GetColorAttachments()[1], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(6, (VulkanTexture*)mGBuffer->GetColorAttachments()[3], mAttachmentSampler);
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -180,7 +185,8 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_template->AddTexture("Roughness", 3);
 	pbr_template->AddTexture("Metallic", 4);
 	pbr_template->AddTexture("Height", 5);
-	pbr_template->AddTexture("AO", 6);
+	pbr_template->AddTexture("Occlusion", 6);
+	pbr_template->AddTexture("Emission", 7);
 	pbr_template->AddParameter("Color", Color(1, 1, 1, 1));
 	pbr_template->AddParameter("Roughness factor", 1.f);
 	pbr_template->AddParameter("Metallic factor", 1.f);
@@ -201,6 +207,27 @@ void VulkanRenderer::DestroyRenderer() {
 
 void VulkanRenderer::StoreWorldObjects() {
 	CreateRenderList();
+
+	//send lights to gpu buffer
+	uint32 lights_count = this->_lightsources.size();
+	_lightsBuffer->WriteData(0, 4, &lights_count);
+	for (uint32 light_i = 0; light_i < lights_count; light_i++) {
+		LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
+		int light_type = light->GetLightType();
+		float intensity = light->GetIntensity();
+		float range = light->GetRange();
+		Vec3 pos = _lightsources[light_i]->GetAbsolutePosition();
+		Quat dir = _lightsources[light_i]->GetAbsoluteRotation();
+		Color color = light->GetColor();
+		_lightsBuffer->WriteData(16 + light_i * 64, 4, &light_type);
+		_lightsBuffer->WriteData(16 + light_i * 64 + 4, 4, &intensity);
+		_lightsBuffer->WriteData(16 + light_i * 64 + 8, 4, &range);
+		_lightsBuffer->WriteData(16 + light_i * 64 + 16, 16, &pos);
+		_lightsBuffer->WriteData(16 + light_i * 64 + 32, 16, &dir);
+		_lightsBuffer->WriteData(16 + light_i * 64 + 48, 16, &color);
+	}
+
+
 	Mat4* transforms = new Mat4[_entitiesToRender.size() * 4];
 	Mat4* anim = new Mat4[1000];
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i ++) {

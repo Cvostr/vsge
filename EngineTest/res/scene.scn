@@ -1269,3 +1269,17 @@ Entities:
         mesh: Mesh
       - Component: 2
         material: material
+  - Entity: Point Light
+    uid: [1562462192, 1467645814, 1312067406, 180605538]
+    active: true
+    static: false
+    parent: [0, 0, 0, 0]
+    pos: [-70.9073639, 41.8340416, 2.80614376]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 1
+        light_type: 2
+        intensity: 2
+        range: 122
+        color: [0.826254845, 0.0319017321, 0.0319017321, 1]

@@ -213,14 +213,14 @@ void Entity::CallOnPreRender() {
 	}
 }
 
-Vec3 Entity::GetAbsolutePosition() {
+Vec3 Entity::GetAbsolutePosition() const {
 	return WorldTransform.GetPosition();
 }
-Vec3 Entity::GetAbsoluteScale() {
+Vec3 Entity::GetAbsoluteScale() const {
 	return WorldTransform.GetScale();
 }
-Vec3 Entity::GetAbsoluteRotation() {
-	return WorldTransform.GetRotation();
+Quat Entity::GetAbsoluteRotation() {
+	return GetRotationFromQuat(WorldTransform);
 }
 
 void Entity::SetRotationEuler(const Vec3& rotation) {

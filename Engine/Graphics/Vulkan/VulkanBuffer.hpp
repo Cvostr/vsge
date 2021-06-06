@@ -17,6 +17,8 @@ namespace VSGE {
 
 		void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU);
 
+		void Resize(uint32 new_size);
+
 		void Destroy();
 
 		void WriteData(uint32 offset, uint32 size, void* data);

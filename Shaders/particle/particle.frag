@@ -4,7 +4,6 @@ layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec3 tNormal;
 layout (location = 2) out vec3 tPos;
 layout (location = 3) out vec4 tSpec;
-layout (location = 4) out vec4 tMasks;
 
 layout (location = 0) in vec3 FragPos;
 layout (location = 1) in vec2 UVCoord;
@@ -28,5 +27,4 @@ void main(){
 	
     FragColor = vec4(color, sprite.a);    
     tPos = FragPos;
-    tMasks.r = 1;
 }

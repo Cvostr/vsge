@@ -50,6 +50,11 @@ namespace VSGE {
 		/// <param name="location"></param>
 		virtual void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU) = 0;
 		/// <summary>
+		/// Recreate buffer with new size and copy previous data to it
+		/// </summary>
+		/// <param name="new_size"></param>
+		virtual void Resize(uint32 new_size) = 0;
+		/// <summary>
 		/// Write data to buffer
 		/// </summary>
 		/// <param name="offset"></param>

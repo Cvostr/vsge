@@ -13,6 +13,7 @@ void SceneViewWindow::OnDrawWindow() {
     if (Draw("World view", ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar)) {
         ImGui::PopStyleColor();
         ImVec2 c = ImGui::GetCursorPos();
+        ImGuizmo::SetDrawlist();
 
         const ImRect bb(_pos + c, _pos + c + _size);
 
@@ -27,10 +28,14 @@ void SceneViewWindow::OnDrawWindow() {
         ImGui::GetWindowDrawList()->AddImage(
             (void*)texture, bb.Min,
             bb.Max, ImVec2(0, 0), ImVec2(1, 1));
-            
+        
+        VSGE::Camera* cam = editor_layer->GetCamera();
+        Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());
+
+        //Mat4 identity = Mat4(10);
+        //ImGuizmo::DrawGrid(&cam->GetViewMatrix().M11, &proj.M11, &identity.M11, 40.f);
+
         if (editor_layer->GetPickedEntity()) {
-            VSGE::Camera* cam = editor_layer->GetCamera();
-            Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());
             Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();
 
             Quat rotation = GetRotationFromQuat(newmat);

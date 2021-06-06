@@ -31,6 +31,12 @@ void SceneWindow::OnDrawWindow() {
                     newEntity->AddComponent<MeshComponent>();
                     newEntity->AddComponent<MaterialComponent>();
                 }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Directional Light")) {
+                    Entity* newEntity = scene->AddNewEntity("Directional Light");
+                    LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
+                    light->GetLightType() = LIGHT_TYPE_DIRECTIONAL;
+                }
                 if (ImGui::MenuItem("Point Light")) {
                     Entity* newEntity = scene->AddNewEntity("Point Light");
                     LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
@@ -41,6 +47,7 @@ void SceneWindow::OnDrawWindow() {
                     LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
                     light->GetLightType() = LIGHT_TYPE_SPOT;
                 }
+                ImGui::Separator();
                 if (ImGui::MenuItem("Particle Emitter")) {
                     Entity* newEntity = scene->AddNewEntity("Particles");
                     ParticleEmitterComponent* light = newEntity->AddComponent<ParticleEmitterComponent>();
