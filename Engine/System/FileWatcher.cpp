@@ -1,4 +1,5 @@
 #include "FileWatcher.hpp"
+#include <Engine/Application.hpp>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -67,13 +68,15 @@ void FileWatcher::WatchWin32() {
                 wcstombs(mb_filepath, record->FileName, record->FileNameLength / sizeof(WCHAR));
                 mb_filepath[record->FileNameLength / sizeof(WCHAR)] = '\0';
 
-                FileChange fc ( std::string(mb_filepath),
+                std::string absoluteFilePath = this->mWatchingDirectory + "\\" + std::string(mb_filepath);
+
+                FileChageEvent* fc = new FileChageEvent ( std::string(mb_filepath), absoluteFilePath,
                                 (FileChangeActionType)record->Action );
                 
-                fc.absoluteFilePath = this->mWatchingDirectory + "\\" + std::string(mb_filepath);
-
-                changes.push_back(fc);
- 
+                mMutex->Lock();
+                Application::Get()->ScheduleEvent(fc);
+                mMutex->Release();
+                
                 delete[] mb_filepath;
             }
 

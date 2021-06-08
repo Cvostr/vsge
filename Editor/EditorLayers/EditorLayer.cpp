@@ -55,6 +55,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventMouseButtonDown>(event, EVENT_FUNC(EditorLayer::OnMouseButtonDown));
 	DispatchEvent<VSGE::EventMouseButtonUp>(event, EVENT_FUNC(EditorLayer::OnMouseButtonUp));
 	DispatchEvent<VSGE::EventKeyButtonDown>(event, EVENT_FUNC(EditorLayer::OnKeyDown));
+	DispatchEvent<VSGE::FileChageEvent>(event, EVENT_FUNC(EditorLayer::OnFileEvent));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
@@ -138,6 +139,10 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 	}
 	Vec3 right = mEditorCamera->GetRight();
 	mEditorCamera->SetPosition(mEditorCamera->GetPosition() + cam_pos_offset);
+}
+
+void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
+	ImGuiLayer::Get()->GetWindow<FileBrowserWindow>()->UpdateDirectoryContent();
 }
 
 void EditorLayer::OnWindowClose(const VSGE::EventWindowClose& close) {

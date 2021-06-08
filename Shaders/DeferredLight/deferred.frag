@@ -15,7 +15,8 @@ layout(binding = 6) uniform sampler2D material;
 struct Light{
     int type;           //0
     float intensity;    //4
-    float range;          //8
+    float range;        //8
+    float spot_angle;   //12
     vec3 position;      //16
     vec3 direction;     //32
     vec3 color;         //48
@@ -77,23 +78,22 @@ vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos) {
 		    //add light to result color
             result += rlight * factor;
         }
-        /*if(lights[lg].type == LIGHTSOURCE_SPOT){
+        if(lights[lg].type == LIGHTSOURCE_SPOT){
             
-            vec3 vec_dir = normalize(lights[lg].dir);
-            vec3 vec_frag_light = (lights[lg].pos - FragPos);
+            vec3 vec_dir = normalize(lights[lg].direction);
+            vec3 vec_frag_light = (lights[lg].position - pos);
             
             float vangle = dot(vec_dir, normalize(vec_frag_light));
             
             float spot_angle = cos(lights[lg].spot_angle);
             float spot_out_angle = cos(spot_angle + 0.2);
             
-            
             float epsilon   = spot_angle - spot_out_angle;
             float intensity = clamp((vangle - spot_out_angle) / epsilon, 0.0, 1.0);
             intensity = intensity;
             result += lights[lg].color * intensity * lights[lg].intensity * (lights[lg].range / length(vec_frag_light));
             
-        }*/
+        }
     }
     return result;
 }

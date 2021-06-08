@@ -17,7 +17,9 @@ namespace VSGE {
 		EventWindowFocus,
 		EventWindowFocusLost,
 		EventWindowClose,
-		EventWindowResized
+		EventWindowResized,
+
+		EventFileChanged
 	};
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return type; } \

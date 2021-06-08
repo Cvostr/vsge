@@ -216,12 +216,14 @@ void VulkanRenderer::StoreWorldObjects() {
 		int light_type = light->GetLightType();
 		float intensity = light->GetIntensity();
 		float range = light->GetRange();
+		float spot_angle = light->GetSpotAngle();
 		Vec3 pos = _lightsources[light_i]->GetAbsolutePosition();
 		Quat dir = _lightsources[light_i]->GetAbsoluteRotation();
 		Color color = light->GetColor();
 		_lightsBuffer->WriteData(16 + light_i * 64, 4, &light_type);
 		_lightsBuffer->WriteData(16 + light_i * 64 + 4, 4, &intensity);
 		_lightsBuffer->WriteData(16 + light_i * 64 + 8, 4, &range);
+		_lightsBuffer->WriteData(16 + light_i * 64 + 12, 4, &spot_angle);
 		_lightsBuffer->WriteData(16 + light_i * 64 + 16, 16, &pos);
 		_lightsBuffer->WriteData(16 + light_i * 64 + 32, 16, &dir);
 		_lightsBuffer->WriteData(16 + light_i * 64 + 48, 16, &color);

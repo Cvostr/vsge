@@ -30,8 +30,10 @@ namespace VSGE {
 	private:
 
 		ApplicationCreateInfo _description;
-
+		//registered application layers list
 		tApplicationLayerList _layers;
+		//Events, created (usually) from other thread
+		std::vector<IEvent*> _scheduledEvents;
 
 		Window* _window;
 
@@ -79,6 +81,8 @@ namespace VSGE {
 
 		void OnSDL2Event(void* event);
 		void OnEvent(const IEvent& event);
+
+		void ScheduleEvent(const IEvent* event);
 
 		template<typename T>
 		T* GetLayer() {

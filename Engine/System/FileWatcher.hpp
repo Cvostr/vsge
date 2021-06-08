@@ -3,6 +3,7 @@
 #include <Core/Threading/Thread.hpp>
 #include <Core/Threading/Mutex.hpp>
 #include <Core/VarTypes/Base.hpp>
+#include <Engine/Event.hpp>
 #include <string>
 #include <vector>
 
@@ -14,16 +15,25 @@ namespace VSGE {
 		FCAT_MODIFIED = 0x00000003
 	};
 
-	struct FileChange {
-		std::string filePath;
-		std::string absoluteFilePath;
-		FileChangeActionType actionType;
+	class FileChageEvent : public IEvent {
+		std::string _filePath;
+		std::string _absFilePath;
+		FileChangeActionType _actionType;
+	public:
+		EVENT_CLASS_TYPE(EventType::EventFileChanged)
 
-		FileChange(const std::string& filePath,
-			const FileChangeActionType& actionType) :
+		const std::string& GetFilePath() { return _filePath; }
+		const std::string& GetAbsFilePath() { return _absFilePath; }
+		FileChangeActionType GetActionType() { return _actionType; }
 
-			filePath(filePath),
-			actionType(actionType)
+			FileChageEvent(
+				const std::string& filePath, 
+				const std::string& absFilePath,
+				const FileChangeActionType& actionType) :
+
+			_filePath(filePath),
+			_absFilePath(absFilePath),
+			_actionType(actionType)
 		{}
 	};
 
@@ -31,14 +41,11 @@ namespace VSGE {
 	private:
 		void* handle;
 		Mutex* mMutex;
-		uint32 mDelay;
-		std::vector<FileChange> changes;
 		std::string mWatchingDirectory;
 	public:
 		
 		FileWatcher() :
 			mMutex(new Mutex),
-			mDelay(700),
 			handle(nullptr)
 		{
 

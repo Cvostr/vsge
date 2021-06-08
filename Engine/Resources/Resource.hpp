@@ -71,9 +71,15 @@ namespace VSGE {
 		/// <returns></returns>
 		uint32 GetMemoryUse() { return mMemoryUse; }
 		void SetMemoryUse(uint32 memory) { mMemoryUse = memory; }
-
+		/// <summary>
+		/// Get pointer to parent resource
+		/// </summary>
+		/// <returns></returns>
 		Resource* GetParent();
-
+		/// <summary>
+		/// Set resource parent
+		/// </summary>
+		/// <param name="resource"></param>
 		void SetParent(Resource* resource);
 
 		void SetDataDescription(const DataDescription& desc);

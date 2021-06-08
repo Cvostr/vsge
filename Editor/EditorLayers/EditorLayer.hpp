@@ -6,6 +6,7 @@
 #include <System/FileWatcher.hpp>
 #include <Resources/ResourceCache.hpp>
 #include <Engine/WindowEvent.hpp>
+#include <System/FileWatcher.hpp>
 
 namespace VSGEditor {
 
@@ -41,6 +42,7 @@ namespace VSGEditor {
 		EditorLayer() {
 			mScene = new VSGE::Scene;
 			mEditorCamera = new VSGE::Camera;
+			mEditorCamera->SetFarPlane(5000);
 			mScene->NewScene();
 			_this = this;
 			mResourcesWatcher = new VSGE::FileWatcher;
@@ -109,6 +111,7 @@ namespace VSGEditor {
 		void OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu);
 		void OnWindowClose(const VSGE::EventWindowClose& close);
 		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
+		void OnFileEvent(const VSGE::FileChageEvent& fce);
 
 	};
 }

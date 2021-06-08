@@ -10,6 +10,13 @@ extern Application* VSGEMain();
 
 void Application::OnUpdate() {
 	TimePerf::Get()->Tick();
+	for (uint32 event_i = 0; event_i < _scheduledEvents.size(); event_i ++) {
+		IEvent* event_ptr = _scheduledEvents[0];
+		OnEvent(*(event_ptr));
+		std::remove(_scheduledEvents.begin(), _scheduledEvents.end(), event_ptr);
+		_scheduledEvents.pop_back();
+		delete event_ptr;
+	}
 	for (auto Layer : _layers) {
 		Layer->OnUpdate();
 	}
@@ -21,11 +28,15 @@ void Application::OnSDL2Event(void* event) {
     }
 }
 void Application::OnEvent(const IEvent& event) {
-		for (auto layer : _layers) {
-			if (_running) {
+	for (auto layer : _layers) {
+		if (_running) {
 			layer->OnEvent(event);
-			}
 		}
+	}
+}
+
+void Application::ScheduleEvent(const IEvent* event) {
+	_scheduledEvents.push_back((IEvent*)event);
 }
 
 void Application::Run() {

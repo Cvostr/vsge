@@ -19,11 +19,13 @@ namespace VSGE {
 		Color _lightColor;
 		float _intensity;
 		float _range;
+		float _spot_angle;
 	public:
 
 		LightsourceComponent() : 
 			_intensity(1.f),
 			_range(5.5f),
+			_spot_angle(12.5f),
 			_lightType(LIGHT_TYPE_DIRECTIONAL)
 		{}
 
@@ -34,6 +36,7 @@ namespace VSGE {
 
 		float& GetIntensity() { return _intensity; }
 		float& GetRange() { return _range; }
+		float& GetSpotAngle() { return _spot_angle; }
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
