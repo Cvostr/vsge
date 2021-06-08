@@ -23,11 +23,7 @@ namespace VSGE {
 			return _loader;
 		}
 
-		ResourceCache() {
-			_this = this;
-			_loader = new AsyncLoader;
-			_loader->Run();
-		}
+		ResourceCache();
 
 		~ResourceCache() {
 			delete _loader;
@@ -57,6 +53,8 @@ namespace VSGE {
 		/// <param name="name">- name of resource to find</param>
 		/// <returns>pointer to resource</returns>
 		Resource* GetResource(const std::string& name);
+
+		void AddResourceFile(const std::string& path);
 		/// <summary>
 		/// Add all resource in specified directory and its subdirectories
 		/// </summary>

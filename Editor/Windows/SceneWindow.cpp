@@ -60,6 +60,7 @@ void SceneWindow::OnDrawWindow() {
             }
 
             if (ImGui::MenuItem("Clear")) {
+                InspectorWindow::Get()->SetShowingEntity(nullptr);
                 scene->NewScene();
             }
 

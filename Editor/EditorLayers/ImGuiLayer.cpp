@@ -309,6 +309,7 @@ void ImGuiLayer::DrawDockWindow() {
             // Dock windows
             ImGui::DockBuilderDockWindow("Scene Hierarchy", dock_left_id);
             ImGui::DockBuilderDockWindow("Inspector", dock_right_id);
+            ImGui::DockBuilderDockWindow("Console", dock_down_id);
             ImGui::DockBuilderDockWindow("File Browser", dock_down_id);
             ImGui::DockBuilderDockWindow("World view", dock_main_id);
 

@@ -10,6 +10,7 @@
 #include "../Windows/BrowserWindow.hpp"
 #include "../Windows/SceneViewWindow.hpp"
 #include "../Windows/ToolbarWindow.hpp"
+#include "../Windows/ConsoleWindow.hpp"
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
@@ -39,9 +40,11 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 
 	ImGuiLayer::Get()->AddWindow(new SceneWindow);
 	ImGuiLayer::Get()->AddWindow(new InspectorWindow);
+	ImGuiLayer::Get()->AddWindow(new ConsoleWindow);
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(dir_path));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
+	
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 
@@ -143,6 +146,11 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 
 void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 	ImGuiLayer::Get()->GetWindow<FileBrowserWindow>()->UpdateDirectoryContent();
+
+	if (fce.GetActionType() == FCAT_ADDED) {
+		//Try to add this file as resource
+		ResourceCache::Get()->AddResourceFile(fce.GetAbsFilePath());
+	}
 }
 
 void EditorLayer::OnWindowClose(const VSGE::EventWindowClose& close) {

@@ -15,6 +15,12 @@ using namespace VSGE;
 ResourceCache cache;
 ResourceCache* ResourceCache::_this = nullptr;
 
+ResourceCache::ResourceCache() {
+    _this = this;
+    _loader = new AsyncLoader;
+    _loader->Run();
+}
+
 Resource* ResourceCache::GetResource(const std::string& name) {
     for (Resource* resource : _resources) {
         if (resource->GetName() == name)
@@ -35,6 +41,18 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
     return RESOURCE_TYPE_NONE;
 }
 
+void ResourceCache::AddResourceFile(const std::string& path) {
+    fs::directory_entry file(path);
+    ResourceType type = GetTypeByFileExt(file.path().extension().string());
+    if (type != RESOURCE_TYPE_NONE) {
+        DataDescription ddescr = {};
+        ddescr.file_path = path;
+        ddescr.offset = 0;
+        ddescr.size = static_cast<uint32>(file.file_size());
+        CreateResource(ddescr, type);
+    }
+}
+
 void ResourceCache::AddResourceDir(const std::string& path) {
     for (const auto& entry : fs::directory_iterator(path)) {
         //if file starts with "." then don't show it
@@ -44,14 +62,7 @@ void ResourceCache::AddResourceDir(const std::string& path) {
             AddResourceDir(entry.path().string()); 
         //if it is a file
         if (!entry.is_directory()) {
-            ResourceType type = GetTypeByFileExt(entry.path().extension().string());
-            if (type != RESOURCE_TYPE_NONE) {
-                DataDescription ddescr = {};
-                ddescr.file_path = entry.path().string();
-                ddescr.offset = 0;
-                ddescr.size = static_cast<uint32>(entry.file_size());
-                CreateResource(ddescr, type);
-            }
+            AddResourceFile(entry.path().string());
         }
     }
 }

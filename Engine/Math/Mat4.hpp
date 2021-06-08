@@ -86,5 +86,4 @@ public:
 
 typedef tMat4<float> Mat4;
 
-
 Quat GetRotationFromQuat(const Mat4& mat);

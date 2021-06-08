@@ -22,9 +22,9 @@ namespace VSGE {
 	public:
 		EVENT_CLASS_TYPE(EventType::EventFileChanged)
 
-		const std::string& GetFilePath() { return _filePath; }
-		const std::string& GetAbsFilePath() { return _absFilePath; }
-		FileChangeActionType GetActionType() { return _actionType; }
+		const std::string& GetFilePath() const { return _filePath; }
+		const std::string& GetAbsFilePath() const { return _absFilePath; }
+		FileChangeActionType GetActionType() const { return _actionType; }
 
 			FileChageEvent(
 				const std::string& filePath, 
