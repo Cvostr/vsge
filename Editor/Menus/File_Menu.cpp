@@ -47,7 +47,9 @@ void File_Menu::OnDrawMenu() {
 				if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
 					MaterialResource* mat_res = (MaterialResource*)res;
 
-					mat_res->GetMaterial()->Serialize(mat_res->GetDataDescription().file_path);
+					std::string dest_path = mat_res->GetDataDescription().file_path;
+					if(dest_path.size() > 0 && mat_res->GetState() == RESOURCE_STATE_READY)
+						mat_res->GetMaterial()->Serialize(dest_path);
 				}
 			}
 			

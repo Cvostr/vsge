@@ -33,6 +33,10 @@ namespace VSGE {
 			return mOutput;
 		}
 
+		const tEntityList& GetEntitiesToDraw() {
+			return _entitiesToRender;
+		}
+
 		virtual void DrawScene(VSGE::Camera* cam) = 0;
 
 		void CreateRenderList();

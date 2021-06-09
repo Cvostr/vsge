@@ -258,7 +258,8 @@ void VulkanRenderer::StoreWorldObjects() {
 				//Calculate result matrix
 				Mat4 matrix = (rootNodeTransform * node->GetWorldTransform() * bone->GetOffsetMatrix());
 				//Send skinned matrix to skinning uniform buffer
-				anim[bone_i] = matrix.transpose();
+				//anim[bone_i] = matrix.transpose();
+				anim[bone_i] = Mat4(1);
 			}
 		}
 	}
@@ -335,13 +336,16 @@ void VulkanRenderer::StoreWorldObjects() {
 		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
 		mGBufferCmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 		
-		if (mresource->GetState() == RESOURCE_STATE_LOADED) {
+		if (mresource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mresource->GetMesh();
 			
 			
 			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[e_i]);
 			mGBufferCmdbuf->BindMesh(*mesh);
-			mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
+			if (mesh->GetIndexCount() > 0)
+				mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
+			else
+				mGBufferCmdbuf->Draw(mesh->GetVerticesCount());
 		}
 	}
 

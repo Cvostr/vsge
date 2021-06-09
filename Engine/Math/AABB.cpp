@@ -51,6 +51,17 @@ bool AABB::IsIntersects(const AABB& box) {
 	return true;
 }
 
+bool AABB::IsInside(const Vec3& point) const {
+	if (point.x < _min.x || point.x > _max.x ||
+		point.y < _min.y || point.y > _max.y ||
+		point.z < _min.z || point.z > _max.z)
+	{
+		return false;
+	}
+
+		return true;
+}
+
 void AABB::ApplyTransform(const Mat4& transform) {
 	Vec3 corners[8];
 	corners[0] = _min;

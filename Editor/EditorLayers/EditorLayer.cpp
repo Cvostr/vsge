@@ -17,6 +17,8 @@
 
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
+#include <Math/Ray.hpp>
+
 #define MONEMENT_COEFF 40.3f
 
 using namespace VSGEditor;
@@ -108,6 +110,52 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 	}
 	if (mbd.GetMouseButton() == MOUSE_BUTTON_LEFT) {
 		InputState.left_btn_hold = true;
+
+		//Try to pick object
+		ImGuiLayer* imgui = ImGuiLayer::Get();
+		SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
+		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
+		if (win) {
+			if (win->IsInFocus() && win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
+				int relx = InputState.cursorx - win->GetPos().x;
+				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y;
+
+				Vec2 crpos = Vec2((float)relx / win->GetSize().x,
+					(float)rely / win->GetSize().y
+				);
+
+				Vec3 world_pos = mEditorCamera->ScreenPointToWorldPoint(crpos);
+				Vec3 dir = world_pos - mEditorCamera->GetPosition();
+
+				VulkanRenderer* renderer = VulkanRenderer::Get();
+
+				Ray ray(mEditorCamera->GetPosition(), dir.GetNormalized());
+
+				std::vector<RayHit> hits;
+
+				Entity* picked = nullptr;
+				for (auto entity : renderer->GetEntitiesToDraw()) {
+					AABB bb = entity->UpdateAABB();
+
+					float len = ray.GetHitdistance(bb);
+					if (len < 10000.f) {
+						RayHit newhit(ray.GetHitdistance(bb), Vec3(0, 0, 0), entity);
+						hits.push_back(newhit);
+					}
+				}
+
+				std::sort(hits.begin(), hits.end(), [](const RayHit& a, const RayHit& b) { return a.GetDistance() < b.GetDistance(); });
+
+				if (hits.size() > 0) {
+					SetPickedEntity((Entity*)hits[0].GetHitObject());
+					insp->SetShowingEntity((Entity*)hits[0].GetHitObject());
+				}
+				else {
+					SetPickedEntity(nullptr);
+					insp->SetShowingEntity(nullptr);
+				}
+			}
+		}
 	}
 }
 

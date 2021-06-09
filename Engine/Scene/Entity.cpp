@@ -233,8 +233,8 @@ void Entity::SetRotationEuler(const Vec3& rotation) {
 }
 
 void Entity::UpdateTransformMatrices() {
-	if (!this->mTransformDirty)
-		return;
+	//if (!this->mTransformDirty)
+	//	return;
 	//Calculate local transformation matrix
 	Mat4 localTransform = GetTransform(GetPosition(), GetScale(), GetRotation());
 	//Set local transform matrix to entity

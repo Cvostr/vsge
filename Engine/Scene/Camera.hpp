@@ -136,5 +136,8 @@ namespace VSGE {
 		}
 
 		bool IsVisibleInFrustum(const AABB& aabb);
+
+		Vec3 ScreenPointToWorldPoint(const Vec2& screen_point);
+		Vec2 WorldPointToScreenpoint(const Vec3& world_point);
 	};
 }

@@ -6,6 +6,8 @@
 
 #include "Windows/ResourcePickWindow.hpp"
 
+#include <Resources/DefaultResources.hpp>
+
 using namespace VSGE;
 using namespace VSGEditor;
 
@@ -25,6 +27,9 @@ Application* VSGEMain() {
 
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);
+
+	AddDefaultMaterial();
+	AddDefaultMeshes();
 
 	ResourcePickerWindow* rpw = new ResourcePickerWindow;
 	rpw->Hide();

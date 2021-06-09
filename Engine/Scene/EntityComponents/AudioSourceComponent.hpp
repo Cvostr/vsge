@@ -13,6 +13,9 @@ namespace VSGE {
 
 		ResourceReference _audioResource;
 
+		bool _loop;
+		float _volume;
+
 	public:
 		AudioSourceComponent() {
 			_audioResource.SetResourceType(RESOURCE_TYPE_AUDIOCLIP);

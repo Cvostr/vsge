@@ -28,8 +28,10 @@ void SceneWindow::OnDrawWindow() {
                 }
                 if (ImGui::MenuItem("Cube")) {
                     Entity* newEntity = scene->AddNewEntity("Cube");
-                    newEntity->AddComponent<MeshComponent>();
-                    newEntity->AddComponent<MaterialComponent>();
+                    MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
+                    mesh->SetMeshName("Cube");
+                    MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
+                    mat->SetMaterialName("Default Material");
                 }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Directional Light")) {

@@ -32,7 +32,7 @@ void MeshGroupResource::Prepare() {
 				mesh->SetBones(loadedMesh->bonesArray, loadedMesh->bonesCount);
 				mesh->Create();
 			}
-			mesh_res->SetState(RESOURCE_STATE_LOADED);
+			mesh_res->SetState(RESOURCE_STATE_READY);
 		}
 	}
 		

@@ -82,6 +82,14 @@ public:
 
     T determinant() const;
 
+    tVec3<T> operator*(const tVec3<T>& rhs) const
+    {
+        tVec4<T> temp = *this * tVec4<T>(rhs, 1);
+        temp.w = 1.f / temp.w;
+        return tVec3<T>(temp.x * temp.w, temp.y * temp.w, temp.z * temp.w);
+    }
+
+    //static const Matrix Identity;
 };
 
 typedef tMat4<float> Mat4;

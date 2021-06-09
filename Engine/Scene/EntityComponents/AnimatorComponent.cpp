@@ -72,7 +72,7 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
     //Apply parent transform
     abs = parent * abs;
 
-    child->SetWorldTransform(abs);
+    //child->SetWorldTransform(abs);
     
 
     //Go deeper in tree
@@ -83,5 +83,5 @@ void AnimatorComponent::updateNodeTransform(Entity* child, const Mat4& parent) {
 
 void AnimatorComponent::OnPreRender() {
     Mat4 identity_matrix = Mat4(1);
-    updateNodeTransform(GetEntity(), identity_matrix);
+    //updateNodeTransform(GetEntity(), identity_matrix);
 }

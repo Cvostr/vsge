@@ -5,9 +5,9 @@ Entities:
     active: true
     static: false
     parent: [0, 0, 0, 0]
-    pos: [0, 0, 0]
+    pos: [0, 0, 139.285141]
     scale: [1, 1, 1]
-    rot: [0.228857264, -0.0288654789, 0.518795729, 0.823190212]
+    rot: [0.20677276, 0.102244273, -0.0217326917, 0.972789228]
     components:
       - Component: 4
   - Entity: branch
@@ -61,7 +61,7 @@ Entities:
     active: true
     static: false
     parent: [0, 0, 0, 0]
-    pos: [0, 0, 0]
+    pos: [0, 0, -13.4148445]
     scale: [0.100000001, 0.100000001, 0.100000001]
     rot: [-0, -0, -0, 1]
     components:

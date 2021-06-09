@@ -82,3 +82,22 @@ bool Camera::IsVisibleInFrustum(const AABB& aabb) {
 	FrustumIntersection intersection = _frustum.CheckAABB(aabb);
 	return intersection == FRUSTUM_INSIDE || intersection == FRUSTUM_INTERSECTS;
 }
+
+Vec3 Camera::ScreenPointToWorldPoint(const Vec2& screen_point) {
+	Vec3 position_clip;
+	position_clip.x = screen_point.x * 2.0f - 1.0f;
+	position_clip.y = screen_point.y * -2.0f + 1.0f;
+	position_clip.z = _nearPlane;
+
+	UpdateMatrices();
+
+	// Compute world space position
+	Mat4 view_projection_inverted = _projectionViewMatrix.invert();
+	//Vec3 position_world = position_clip * view_projection_inverted;
+	Vec3 position_world = view_projection_inverted * position_clip;
+
+	return position_world;
+}
+Vec2 Camera::WorldPointToScreenpoint(const Vec3& world_point) {
+	return Vec2(0, 0);
+}
