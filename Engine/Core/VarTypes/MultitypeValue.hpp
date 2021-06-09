@@ -74,6 +74,11 @@ public:
 		return &_data;
 	}
 
+	void SetData(ValueType type, MultitypeData value){
+		_type = type;
+		_data = value;
+	}
+
 	void SetInt(int _int) {
 		_data._int = _int;
 		_type = VALUE_TYPE_INT;

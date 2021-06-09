@@ -220,6 +220,6 @@ namespace VSGE {
 		}
 
 		void Serialize(const std::string& fpath);
-		void Deserialize(const std::string& fpath);
+		void Deserialize(byte* data, uint32 size);
 	};
 }

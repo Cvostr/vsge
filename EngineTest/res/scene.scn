@@ -55,7 +55,7 @@ Entities:
       - Component: 3
         mesh: tree.002
       - Component: 2
-        material: ""
+        material: material
   - Entity: RootNode (1)
     uid: [2096059344, 1877813765, 3924542226, 1656019522]
     active: true
@@ -1274,7 +1274,7 @@ Entities:
     active: true
     static: false
     parent: [0, 0, 0, 0]
-    pos: [-70.9073639, 41.8340416, 2.80614376]
+    pos: [-20.1670246, 41.8340416, 2.80614376]
     scale: [1, 1, 1]
     rot: [0, 0, 0, 1]
     components:

@@ -17,7 +17,7 @@ namespace VSGE {
 		Material* GetMaterial() { return _material; }
 
 		void PostLoad() {
-			//_texture->CreateFromBuffer(mLoadedData, description.size);
+			_material->Deserialize(_loadedData, _description.size);
 		}
 
 		ResourceType GetResourceType() {

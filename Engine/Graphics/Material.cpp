@@ -1,6 +1,7 @@
 #include "Material.hpp"
 #include "Shader.hpp"
-#include <yaml-cpp/yaml.h>
+#include <Core/ByteSerialize.hpp>
+#include <Core/ByteSolver.hpp>
 #include <fstream>
 
 using namespace VSGE;
@@ -146,34 +147,71 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 }
 
 void Material::Serialize(const std::string& fpath) {
-	YAML::Emitter out;
-	out << YAML::BeginMap;
-	out << YAML::Key << "Material";
-	out << YAML::Key << "template" << YAML::Value << GetTemplate()->GetName();
+	ByteSerialize serializer;
+	//write header without terminator
+	serializer.WriteBytes("vs_material", 12);
+
+	std::string template_name = "";
+	if (GetTemplate()) {
+		template_name = GetTemplate()->GetName();
+	}
+	//write name of template
+	serializer.Serialize(template_name);
+	//Write count of textures and params
+	serializer.Serialize((uint32)_materialTextures.size());
+	serializer.Serialize((uint32)_materialParams.size());
+	//Write textures
+	for (auto& _texture : _materialTextures) {
+		serializer.Serialize(_texture._name);
+		serializer.Serialize(_texture._resource.GetResourceName());
+	}
+
+	for (auto& _param : _materialParams) {
+		serializer.Serialize(_param.name);
+		serializer.Serialize(_param.value.GetType());
+		serializer.WriteBytes(_param.value.GetValuePtr(), sizeof(MultitypeData));
+	}
 	
-	out << YAML::Key << "Textures" << YAML::Value << YAML::BeginSeq;
-	for (auto& texture : this->_materialTextures) {
-		out << YAML::BeginMap;
-		out << YAML::Key << "Texture" << YAML::Value << texture._name;
-		out << YAML::Key << "res" << YAML::Value << texture._resource.GetResourceName();
-		out << YAML::EndMap; // Entity
-	}
-	out << YAML::EndSeq;
-
-	out << YAML::Key << "Params" << YAML::Value << YAML::BeginSeq;
-	for (auto& param : this->_materialParams) {
-		out << YAML::BeginMap;
-		out << YAML::Key << "Param" << YAML::Value << param.name;
-		out << YAML::Key << "type" << YAML::Value << param.value.GetType();
-		out << YAML::EndMap; // Entity
-	}
-	out << YAML::EndSeq;
-
-	out << YAML::EndMap;
-
-	std::ofstream fout(fpath);
-	fout << out.c_str();
+	std::ofstream stream(fpath, std::ios::binary);
+	stream.write((const char*)serializer.GetBytes(), serializer.GetSerializedSize());
+	stream.close();
 }
-void Material::Deserialize(const std::string& fpath) {
+void Material::Deserialize(byte* data, uint32 size) {
+	if (size == 0)
+		return;
 
+	ByteSolver deserializer(data, size);
+
+	std::string header = deserializer.ReadNextString();
+
+	if (header != "vs_material") {
+		return;
+	}
+
+	std::string material_template = deserializer.ReadNextString();
+
+	SetTemplate(material_template);
+
+	uint32 textures_count = deserializer.GetValue<uint32>();
+	uint32 params_count = deserializer.GetValue<uint32>();
+
+	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) {
+		std::string name = deserializer.ReadNextString();
+		std::string texture_name = deserializer.ReadNextString();
+
+		ResourceReference ref;
+		ref.SetResource(texture_name);
+		SetTexture(name, ref);
+	}
+
+	for (uint32 param_i = 0; param_i < params_count; param_i++) {
+		std::string name = deserializer.ReadNextString();
+		ValueType type = deserializer.GetValue<ValueType>();
+		MultitypeData data = deserializer.GetValue<MultitypeData>();
+		
+		MultitypeValue value;
+		value.SetData(type, data);
+
+		SetParameter(name, value);
+	}
 }

@@ -202,6 +202,12 @@ void FileBrowserWindow::OnDrawWindow() {
         if (e->is3dModel()) icon = &FileIcons.m3DModelIcon;
         if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
 
+        if (e->isMaterial()) {
+            MaterialResource* mat = (MaterialResource*)GetResourceWithFilePath(e->abs_path);
+            if (mat->GetState() != RESOURCE_STATE_READY) {
+                mat->Load();
+            }
+        }
         if (e->isTexture()) {
             ImguiVulkanTexture* tex = GetTextureResource(e->abs_path);
             if (tex)

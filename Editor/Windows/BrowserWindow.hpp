@@ -25,7 +25,7 @@ namespace VSGEditor {
 			return !ext.compare(".scn");
 		}
 		bool isMaterial() {
-			return !ext.compare(".rpmat");
+			return !ext.compare(".vsmt");
 		}
 	};
 

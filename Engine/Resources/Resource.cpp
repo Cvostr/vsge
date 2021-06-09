@@ -60,6 +60,7 @@ void ResourceReference::SetResource(Resource* resource) {
 
 	_resourceName = resource->GetName();
 	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName);
+	SetResourceType(resource->GetResourceType());
 
 	//if resource created from other resource
 	if (resource->GetParent()) {
