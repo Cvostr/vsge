@@ -2,6 +2,8 @@
 
 #include <string>
 #include <stdio.h>
+#include <Engine/Event.hpp>
+#include "VarTypes/Base.hpp"
 
 namespace VSGE {
 
@@ -14,6 +16,31 @@ namespace VSGE {
 
 	class OpLogger;
 
+	class MessageEvent : public IEvent {
+	private:
+		LogType _type;
+		time_t _msg_time;
+		std::string _content;
+	public:
+
+		EVENT_CLASS_TYPE(EventType::EventMessage)
+
+		MessageEvent(LogType type, time_t time) :
+			_type(type),
+			_msg_time(time)
+		{}
+
+		LogType GetMsgType() {
+			return _type;
+		}
+		std::string& GetContent() {
+			return _content;
+		}
+		time_t GetTime() {
+			return _msg_time;
+		}
+	};
+
 	class Logger {
 	private:
 		static OpLogger mOpLogger;
@@ -23,31 +50,22 @@ namespace VSGE {
 	};
 
 	class OpLogger {
-
+	private:
+		MessageEvent* _lastEvent;
 	public:
-		OpLogger() {}
+		OpLogger() {
+			_lastEvent = nullptr;
+		}
 
+		void SetEvent(MessageEvent* _event) {
+			_lastEvent = _event;
+		}
 
-		OpLogger& operator<<(int var) {
-			printf("%i", var);
-			return *this;
-		}
-		OpLogger& operator<<(unsigned int var) {
-			printf("%u", var);
-			return *this;
-		}
-		OpLogger& operator<<(float var) {
-			printf("%f", var);
-			return *this;
-		}
-		OpLogger& operator<<(const char* var) {
-			printf("%s", var);
-			return *this;
-		}
-		OpLogger& operator<<(std::string var) {
-			printf("%s", var.c_str());
-			return *this;
-		}
+		OpLogger& operator<<(int var);
+		OpLogger& operator<<(unsigned int var);
+		OpLogger& operator<<(float var);
+		OpLogger& operator<<(const char* var);
+		OpLogger& operator<<(std::string var);
 
 	};
 }

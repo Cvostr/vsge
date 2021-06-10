@@ -2,6 +2,7 @@
 #include "Shader.hpp"
 #include <Core/ByteSerialize.hpp>
 #include <Core/ByteSolver.hpp>
+#include <Core/Logger.hpp>
 #include <fstream>
 
 using namespace VSGE;
@@ -185,6 +186,7 @@ void Material::Deserialize(byte* data, uint32 size) {
 	std::string header = deserializer.ReadNextString();
 
 	if (header != "vs_material") {
+		Logger::Log() << "Error loading material - incorrect header\n";
 		return;
 	}
 

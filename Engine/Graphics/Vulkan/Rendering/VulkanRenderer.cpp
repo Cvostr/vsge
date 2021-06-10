@@ -143,7 +143,7 @@ void VulkanRenderer::SetupRenderer() {
 		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * UNI_ALIGN, sizeof(Mat4));
 		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64 * 201);
 	}
-
+	
 	mDeferredPassSet->Create();
 	mDeferredPassSet->WriteDescriptorBuffer(1, mCameraShaderBuffer);
 	mDeferredPassSet->WriteDescriptorBuffer(2, _lightsBuffer);

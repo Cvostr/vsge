@@ -6,6 +6,7 @@
 #include <System/FileWatcher.hpp>
 #include <Resources/ResourceCache.hpp>
 #include <Engine/WindowEvent.hpp>
+#include <Core/Logger.hpp>
 #include <System/FileWatcher.hpp>
 
 namespace VSGEditor {
@@ -112,6 +113,6 @@ namespace VSGEditor {
 		void OnWindowClose(const VSGE::EventWindowClose& close);
 		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
 		void OnFileEvent(const VSGE::FileChageEvent& fce);
-
+		void OnMessageEvent(const VSGE::MessageEvent& me);
 	};
 }

@@ -31,9 +31,8 @@ void SceneViewWindow::OnDrawWindow() {
         
         VSGE::Camera* cam = editor_layer->GetCamera();
         Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());
-
-        //Mat4 identity = Mat4(10);
-        //ImGuizmo::DrawGrid(&cam->GetViewMatrix().M11, &proj.M11, &identity.M11, 40.f);
+        Mat4 identity = Mat4(1);
+        //ImGuizmo::DrawGrid(&cam->GetViewMatrix().M11, &proj.M11, &identity.M11, 80.f);
 
         if (editor_layer->GetPickedEntity()) {
             Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();

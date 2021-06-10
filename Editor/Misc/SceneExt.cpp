@@ -49,7 +49,8 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	if (node->mesh_names.size() == 1) {
 		MeshComponent* meshc = result->AddComponent<MeshComponent>();
 		meshc->SetMeshName(node->mesh_names[0]);
-		result->AddComponent<MaterialComponent>();
+		MaterialComponent* mat = result->AddComponent<MaterialComponent>();
+		mat->SetMaterialName("Default Material");
 	}
 	else {
 		//Iterate over all children meshes
@@ -58,7 +59,8 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 			Entity* object = w->AddNewEntity(mesh_label);
 			MeshComponent* meshc = object->AddComponent<MeshComponent>();
 			meshc->SetMeshName(mesh_label);
-			object->AddComponent<MaterialComponent>();
+			MaterialComponent* mat = object->AddComponent<MaterialComponent>();
+			mat->SetMaterialName("Default Material");
 			result->AddChild(object, false);
 		}
 	}

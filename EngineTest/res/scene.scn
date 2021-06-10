@@ -1,61 +1,5 @@
 Scene: Untitled
 Entities:
-  - Entity: RootNode
-    uid: [1537698495, 1042810703, 3714919149, 800092594]
-    active: true
-    static: false
-    parent: [0, 0, 0, 0]
-    pos: [0, 0, 139.285141]
-    scale: [1, 1, 1]
-    rot: [0.20677276, 0.102244273, -0.0217326917, 0.972789228]
-    components:
-      - Component: 4
-  - Entity: branch
-    uid: [442019655, 2122700868, 195271173, 4264167802]
-    active: true
-    static: false
-    parent: [1537698495, 1042810703, 3714919149, 800092594]
-    pos: [0, 0, 0]
-    scale: [200, 199.999985, 199.999985]
-    rot: [0, 0, 0, 1]
-    components:
-      []
-  - Entity: tree.003
-    uid: [2935691044, 1467277025, 2795163064, 1888668574]
-    active: true
-    static: false
-    parent: [442019655, 2122700868, 195271173, 4264167802]
-    pos: [0, 0, 0]
-    scale: [1, 1, 1]
-    rot: [1.03597768e-06, 0.0436195843, -9.06633346e-09, 0.999048233]
-    components:
-      - Component: 3
-        mesh: tree.003
-      - Component: 2
-        material: material
-  - Entity: leaves
-    uid: [2100556316, 4225917491, 1731024226, 2190799534]
-    active: true
-    static: false
-    parent: [1537698495, 1042810703, 3714919149, 800092594]
-    pos: [0, 0, 0]
-    scale: [200, 199.999985, 199.999985]
-    rot: [0, 0, 0, 1]
-    components:
-      []
-  - Entity: tree.002
-    uid: [2780007330, 211729297, 1729242257, 1283500179]
-    active: true
-    static: false
-    parent: [2100556316, 4225917491, 1731024226, 2190799534]
-    pos: [0, 0, 0]
-    scale: [1, 1, 1]
-    rot: [0, 0, 0, 1]
-    components:
-      - Component: 3
-        mesh: tree.002
-      - Component: 2
-        material: material
   - Entity: RootNode (1)
     uid: [2096059344, 1877813765, 3924542226, 1656019522]
     active: true
@@ -1261,7 +1205,7 @@ Entities:
     active: true
     static: false
     parent: [1440367187, 746306431, 3278505261, 820588395]
-    pos: [0, 0, 0]
+    pos: [7.4824214, -1.08166766, -18.5257263]
     scale: [1, 1, 1]
     rot: [0, 0, 0, 1]
     components:
@@ -1283,3 +1227,39 @@ Entities:
         intensity: 2
         range: 122
         color: [0.826254845, 0.0319017321, 0.0319017321, 1]
+  - Entity: RootNode
+    uid: [2686268074, 3481468073, 2879436916, 4176170713]
+    active: true
+    static: false
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 49.0941391]
+    scale: [1, 1, 1]
+    rot: [-0, -0, -0, 1]
+    components:
+      - Component: 4
+  - Entity: branch
+    uid: [3670634720, 1641154148, 3207424242, 1358753338]
+    active: true
+    static: false
+    parent: [2686268074, 3481468073, 2879436916, 4176170713]
+    pos: [0, 0, 0]
+    scale: [200, 199.999985, 199.999985]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: tree.003
+      - Component: 2
+        material: Default Material
+  - Entity: leaves
+    uid: [3197897109, 84670618, 2697748651, 539700845]
+    active: true
+    static: false
+    parent: [2686268074, 3481468073, 2879436916, 4176170713]
+    pos: [0, 0, 0]
+    scale: [200, 199.999985, 199.999985]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: tree.002
+      - Component: 2
+        material: Default Material

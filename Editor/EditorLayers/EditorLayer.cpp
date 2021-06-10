@@ -11,6 +11,7 @@
 #include "../Windows/SceneViewWindow.hpp"
 #include "../Windows/ToolbarWindow.hpp"
 #include "../Windows/ConsoleWindow.hpp"
+#include "../Windows/EditorSettingsWindow.hpp"
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
@@ -46,9 +47,13 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(dir_path));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
-	
+
+	EditorSettingsWindow* settings = new EditorSettingsWindow;
+	settings->Hide();
+	ImGuiLayer::Get()->AddWindow(settings);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
+	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
 }
@@ -61,6 +66,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventMouseButtonUp>(event, EVENT_FUNC(EditorLayer::OnMouseButtonUp));
 	DispatchEvent<VSGE::EventKeyButtonDown>(event, EVENT_FUNC(EditorLayer::OnKeyDown));
 	DispatchEvent<VSGE::FileChageEvent>(event, EVENT_FUNC(EditorLayer::OnFileEvent));
+	DispatchEvent<VSGE::MessageEvent>(event, EVENT_FUNC(EditorLayer::OnMessageEvent));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
@@ -203,4 +209,10 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 
 void EditorLayer::OnWindowClose(const VSGE::EventWindowClose& close) {
 	Application::Get()->Stop();
+}
+
+void EditorLayer::OnMessageEvent(const VSGE::MessageEvent& me) {
+	ConsoleWindow* cw = ImGuiLayer::Get()->GetWindow<ConsoleWindow>();
+
+	cw->addMsg((VSGE::MessageEvent*)&me);
 }

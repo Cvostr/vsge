@@ -10,6 +10,7 @@
 #include <Resources/ResourceCache.hpp>
 #include "InspectorWindow.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
+//#include <Core/Logger.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;

@@ -2,7 +2,11 @@
 #include <iostream>
 #ifdef _WIN32
 #include <windows.h>
+#undef CreateWindow
 #endif
+
+#include <chrono>
+#include <Engine/Application.hpp>
 
 using namespace VSGE;
 using namespace std;
@@ -43,6 +47,12 @@ void Logger::Log(const std::string& msg, LogType type) {
 }
 
 OpLogger& Logger::Log(LogType type) {
+	time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	MessageEvent* _event = new MessageEvent(type, now);
+
+	mOpLogger.SetEvent(_event);
+	Application::Get()->OnEvent(*_event);
+
 	switch (type) {
 	case LogType::LOG_TYPE_INFO:
 		PrintText(INFO_PREFIX);
@@ -55,4 +65,30 @@ OpLogger& Logger::Log(LogType type) {
 		break;
 	}
 	return mOpLogger;
+}
+
+OpLogger& OpLogger::operator<<(int var) {
+	printf("%i", var);
+	_lastEvent->GetContent() += std::to_string(var);
+	return *this;
+}
+OpLogger& OpLogger::operator<<(unsigned int var) {
+	printf("%u", var);
+	_lastEvent->GetContent() += std::to_string(var);
+	return *this;
+}
+OpLogger& OpLogger::operator<<(float var) {
+	printf("%f", var);
+	_lastEvent->GetContent() += std::to_string(var);
+	return *this;
+}
+OpLogger& OpLogger::operator<<(const char* var) {
+	printf("%s", var);
+	_lastEvent->GetContent() += std::string(var);
+	return *this;
+}
+OpLogger& OpLogger::operator<<(std::string var) {
+	printf("%s", var.c_str());
+	_lastEvent->GetContent() += var;
+	return *this;
 }
