@@ -98,7 +98,7 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
                 _entityRemoved = true;
             }
             if (ImGui::MenuItem("Dublicate")) {
-                //Entity->Dublicate();
+                entity->Dublicate();
             }
             ImGui::EndPopup();
         }

@@ -1,4 +1,6 @@
 #include "EditorSettingsWindow.hpp"
+#include "../EditorLayers/EditorLayer.hpp"
+#include <imgui_stdlib.h>
 
 using namespace VSGEditor;
 
@@ -6,7 +8,7 @@ void EditorSettingsWindow::OnDrawWindow() {
 	if (Draw("Settings")) {
 
         {
-            ImGui::BeginChild("Child1", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.3f, 300), false);
+            ImGui::BeginChild("left_settings", ImVec2(ImGui::GetWindowContentRegionWidth() * 0.3f, 300), false);
             
             if (ImGui::Button("General", ImVec2(ImGui::GetWindowWidth(), 0))) {
                 _mode = Settings_General;
@@ -26,15 +28,43 @@ void EditorSettingsWindow::OnDrawWindow() {
 
         ImGui::SameLine();
 
-        // Child 2: rounded border
         {
             ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-            ImGui::BeginChild("Child2", ImVec2(0, 300), true);
+            ImGui::BeginChild("right_settings", ImVec2(0, 300), true);
             
+            switch (_mode) {
+            case Settings_General:
+                DrawGeneralSettings();
+                break;
+            case Settings_SceneView:
+                DrawSceneView();
+                break;
+            case Settings_Building:
+                DrawBuilding();
+                break;
+            case Settings_Mono:
+                DrawMonoSettings();
+                break;
+            }
+
             ImGui::EndChild();
             ImGui::PopStyleVar();
         }
 
 		ImGui::End();
 	}
+}
+
+void EditorSettingsWindow::DrawGeneralSettings() {
+
+}
+void EditorSettingsWindow::DrawSceneView() {
+
+}
+void EditorSettingsWindow::DrawBuilding() {
+
+}
+void EditorSettingsWindow::DrawMonoSettings() {
+    EditorSettings* settings = &EditorLayer::Get()->GetEditorSettings();
+    ImGui::InputText("Path to mono", &settings->_mono_path);
 }

@@ -14,6 +14,11 @@ namespace VSGEditor {
 	class EditorSettingsWindow : public EditorWindow {
 	private:
 		SettingsMode _mode;
+
+		void DrawGeneralSettings();
+		void DrawSceneView();
+		void DrawBuilding();
+		void DrawMonoSettings();
 	public:
 
 		EditorSettingsWindow() {

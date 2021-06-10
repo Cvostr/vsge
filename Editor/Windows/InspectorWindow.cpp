@@ -9,6 +9,8 @@
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
+#include <Scene/EntityComponents/ColliderComponent.hpp>
+#include <Scene/EntityComponents/RigidBodyComponent.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
@@ -108,6 +110,16 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
     ImGui::InputText("Entity Name", &new_name);
 	mShowingEntity->SetName(new_name);
 
+	ViewMask current_view_mask = mShowingEntity->GetViewMask();
+	for (uint32 vm_i = 0; vm_i < 16; vm_i ++) {
+		bool vm = (current_view_mask >> vm_i) & 0x1;
+		if (ImGui::Button("", ImVec2(10, 10))) {
+
+		}
+		if ((vm_i + 1) % 8 > 0)
+			ImGui::SameLine();
+	}
+
     ImGui::Separator();
 	Vec3 translation = mShowingEntity->GetPosition();
     ImGui::InputFloat3("Translation", (float*)&translation.x);
@@ -132,6 +144,9 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::AnimatorComponent>();
 	DrawComponent<VSGE::ParticleEmitterComponent>();
 	DrawComponent<VSGE::AudioSourceComponent>();
+	DrawComponent<VSGE::ColliderComponent>();
+	DrawComponent<VSGE::RigidBodyComponent>();
+	DrawComponent<VSGE::Camera>();
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.45f, 0.5f, 1));
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetWindowWidth(), 0)))
@@ -148,6 +163,9 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		AddComponentButton<VSGE::AnimatorComponent>();
 		AddComponentButton<VSGE::ParticleEmitterComponent>();
 		AddComponentButton<VSGE::AudioSourceComponent>();
+		AddComponentButton<VSGE::ColliderComponent>();
+		AddComponentButton<VSGE::RigidBodyComponent>();
+		AddComponentButton<VSGE::Camera>();
 
 		ImGui::EndPopup();
 	}

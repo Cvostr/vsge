@@ -5,6 +5,7 @@
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
 #include "Windows/ResourcePickWindow.hpp"
+#include "Windows/StartWindow.hpp"
 
 #include <Resources/DefaultResources.hpp>
 
@@ -34,7 +35,8 @@ Application* VSGEMain() {
 	ResourcePickerWindow* rpw = new ResourcePickerWindow;
 	rpw->Hide();
 	app->GetLayer<ImGuiLayer>()->AddWindow(rpw);
-	app->GetLayer<EditorLayer>()->OpenProjectDirectory("D:\\DEV\\VSGE\\EngineTest");
+
+	app->GetLayer<ImGuiLayer>()->AddWindow(new StartWindow);
 
 	return app;
 }

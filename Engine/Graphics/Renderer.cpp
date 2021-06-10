@@ -13,8 +13,8 @@ void IRenderer::CreateRenderList() {
 	_entitiesToRender.clear();
 	_lightsources.clear();
 	_particleEmitters.clear();
-
-	ProcessEntity(mScene->GetRootEntity());
+	if(mScene)
+		ProcessEntity(mScene->GetRootEntity());
 }
 void IRenderer::ProcessEntity(Entity* entity) {
 	if (!entity->IsActive())

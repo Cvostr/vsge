@@ -3,6 +3,7 @@
 #include <Math/Vec3.hpp>
 #include <Math/Mat4.hpp>
 #include <Math/Frustum.hpp>
+#include "IEntityComponent.hpp"
 
 namespace VSGE {
 
@@ -13,7 +14,7 @@ namespace VSGE {
 		CAM_ORIENTATION_Y_UP
 	};
 
-	class Camera {
+	class Camera : public IEntityComponent {
 	private:
 		DefaultOrientation _defaultOrientation;
 		float _farPlane;
@@ -33,7 +34,10 @@ namespace VSGE {
 		Frustum _frustum;
 	public:
 
-		Camera() : _aspectRatio(1280.f / 720.f),
+		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_CAMERA, "Camera")
+
+		Camera() : 
+			_aspectRatio(1280.f / 720.f),
 			_nearPlane(1.f),
 			_farPlane(1000.f),
 			_fov(45.f),
@@ -88,9 +92,20 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		float GetAspectRatio();
-
+		/// <summary>
+		/// Move camera to new position
+		/// </summary>
+		/// <param name="position">- new position for camera</param>
 		void SetPosition(const Vec3& position);
+		/// <summary>
+		/// Set new front vector to camera
+		/// </summary>
+		/// <param name="front"></param>
 		void SetFront(const Vec3& front);
+		/// <summary>
+		/// Set new UP vector to camera
+		/// </summary>
+		/// <param name="up"></param>
 		void SetUp(const Vec3& up);
 		/// <summary>
 		/// Get world position of camera
@@ -134,10 +149,19 @@ namespace VSGE {
 		const Frustum& GetFrustum() {
 			return _frustum;
 		}
-
+		/// <summary>
+		/// Is bounding box visible in camera's frustum
+		/// </summary>
+		/// <param name="aabb">- bounding box to check</param>
+		/// <returns></returns>
 		bool IsVisibleInFrustum(const AABB& aabb);
-
+		/// <summary>
+		/// Unproject screen point to world point on near plane
+		/// </summary>
+		/// <param name="screen_point">- point on camera surface</param>
+		/// <returns>Position on world</returns>
 		Vec3 ScreenPointToWorldPoint(const Vec2& screen_point);
+
 		Vec2 WorldPointToScreenpoint(const Vec3& world_point);
 	};
 }

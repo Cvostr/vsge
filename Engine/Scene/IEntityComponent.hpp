@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <yaml-cpp/yaml.h>
+#include <Core/ByteSerialize.hpp>
+#include <Core/ByteSolver.hpp>
 
 namespace VSGE {
 
@@ -13,6 +15,7 @@ namespace VSGE {
 		ENTITY_COMPONENT_ANIMATOR,
 		ENTITY_COMPONENT_PARTICLE_EMITTER,
 		ENTITY_COMPONENT_AUDIO_SOURCE,
+		ENTITY_COMPONENT_CAMERA,
 		ENTITY_COMPONENT_RIGIDBODY,
 		ENTITY_COMPONENT_COLLIDER
 	};
@@ -50,6 +53,9 @@ namespace VSGE {
 
 		virtual void Serialize(YAML::Emitter& e) {}
 		virtual void Deserialize(YAML::Node& entity) {}
+
+		virtual void SerializeBinary(ByteSerialize& serializer){}
+		virtual void DeserializeBinary(ByteSolver& solver){}
 
 		virtual EntityComponentType GetType() const = 0;
 		virtual std::string GetTypeString() const = 0;

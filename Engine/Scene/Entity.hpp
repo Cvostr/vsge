@@ -115,6 +115,13 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		const std::string& GetName() const { return _name; }
+
+		ViewMask GetViewMask() {
+			return _viewMask;
+		}
+		void SetViewMask(ViewMask) {
+			_viewMask = _viewMask;
+		}
 		/// <summary>
 		/// Add new child to this entity
 		/// </summary>
@@ -158,6 +165,10 @@ namespace VSGE {
 		/// <param name="id">- guid to find</param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
+
+		Entity* Dublicate();
+
+		void ToPrefab(char** out);
 		/// <summary>
 		/// Get local position of entity
 		/// </summary>
@@ -178,8 +189,15 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		Vec3 GetRotationEuler() const { return _rotation.GetEulerAngles(); }
-
+		/// <summary>
+		/// Get absolute position of entity
+		/// </summary>
+		/// <returns></returns>
 		Vec3 GetAbsolutePosition() const;
+		/// <summary>
+		/// Get absolute scale of entity
+		/// </summary>
+		/// <returns></returns>
 		Vec3 GetAbsoluteScale() const;
 		Quat GetAbsoluteRotation();
 
@@ -195,9 +213,10 @@ namespace VSGE {
 
 		const Mat4& GetWorldTransform() { return WorldTransform; }
 		void SetWorldTransform(const Mat4& transform);
-
+		/// <summary>
+		/// Recalculate local and world-space matrices
+		/// </summary>
 		void UpdateTransformMatrices();
-
 		/// <summary>
 		/// Destroy this object and all it's children
 		/// </summary>

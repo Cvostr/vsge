@@ -3,6 +3,11 @@
 #include "Entity.hpp"
 
 namespace VSGE {
+
+	class SceneSettings {
+
+	};
+
 	class Scene {
 	private:
 		Entity* mRootEntity;

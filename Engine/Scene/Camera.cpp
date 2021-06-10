@@ -93,7 +93,6 @@ Vec3 Camera::ScreenPointToWorldPoint(const Vec2& screen_point) {
 
 	// Compute world space position
 	Mat4 view_projection_inverted = _projectionViewMatrix.invert();
-	//Vec3 position_world = position_clip * view_projection_inverted;
 	Vec3 position_world = view_projection_inverted * position_clip;
 
 	return position_world;

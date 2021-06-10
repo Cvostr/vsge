@@ -290,3 +290,24 @@ Entity* Entity::GetChildEntityWithLabelStartsWith(const std::string& label, int&
 	}
 	return result;
 }
+
+Entity* Entity::Dublicate() {
+	Entity* new_entity = _scene->AddNewEntity(GetName());
+
+	new_entity->SetPosition(GetAbsolutePosition());
+	new_entity->SetScale(GetAbsoluteScale());
+	new_entity->SetRotation(GetAbsoluteRotation());
+
+	GetParent()->AddChild(new_entity);
+
+	new_entity->SetActive(_active);
+	new_entity->SetStatic(_static);
+	new_entity->SetViewMask(GetViewMask());
+
+	for (uint32 child_i = 0; child_i < _children.size(); child_i ++) {
+		Entity* new_child = _children[child_i]->Dublicate();
+		new_entity->AddChild(new_child);
+	}
+
+	return new_entity;
+}
