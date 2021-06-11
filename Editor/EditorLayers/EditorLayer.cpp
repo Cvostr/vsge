@@ -122,7 +122,10 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 		SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
 		if (win) {
-			if (win->IsInFocus() && win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
+			if (!win->IsTransformGizmoUsed() && 
+				win->IsInFocus() && 
+				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
+
 				int relx = InputState.cursorx - win->GetPos().x;
 				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y;
 

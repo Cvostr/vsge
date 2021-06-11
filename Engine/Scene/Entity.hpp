@@ -119,8 +119,8 @@ namespace VSGE {
 		ViewMask GetViewMask() {
 			return _viewMask;
 		}
-		void SetViewMask(ViewMask) {
-			_viewMask = _viewMask;
+		void SetViewMask(ViewMask viewMask) {
+			_viewMask = viewMask;
 		}
 		/// <summary>
 		/// Add new child to this entity

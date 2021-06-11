@@ -53,7 +53,7 @@ void SceneViewWindow::OnDrawWindow() {
                 nullptr, snap ? snapValues : nullptr, nullptr, nullptr, &rotDelta.x);
 
             if (ImGuizmo::IsUsing()) {
-
+                _transform_gizmo_used = true;
                 if (op == ImGuizmo::TRANSLATE) {
                     Vec3 translation = newmat.GetPosition();
                     Vec3 parent_translation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetPosition();
@@ -74,6 +74,9 @@ void SceneViewWindow::OnDrawWindow() {
                 }
 
                 editor_layer->GetPickedEntity()->UpdateTransformMatrices();
+            }
+            else {
+                _transform_gizmo_used = false;
             }
         }
         ImGui::End();

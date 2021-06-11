@@ -5,6 +5,9 @@
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
+#include <Scene/EntityComponents/AudioSourceComponent.hpp>
+#include <Scene/EntityComponents/RigidBodyComponent.hpp>
+#include <Scene/EntityComponents/ColliderComponent.hpp>
 
 namespace VSGEditor {
 	void DrawLightsourceComponent(VSGE::LightsourceComponent* light);
@@ -12,4 +15,5 @@ namespace VSGEditor {
 	void DrawMaterialComponent(VSGE::MaterialComponent* mat);
 	void DrawParticleEmitterComponent(VSGE::ParticleEmitterComponent* pec);
 	void DrawAnimatorComponent(VSGE::AnimatorComponent* anic);
+	void DrawAudioSourceComponent(VSGE::AudioSourceComponent* asc);
 }

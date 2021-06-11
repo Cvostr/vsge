@@ -159,6 +159,7 @@ void SceneSerializer::SerializeEntity(Entity* ent, Emitter& e) {
 		e << Key << "uid" << Value << ent->GetGuid();
 		e << Key << "active" << Value << ent->IsActive();
 		e << Key << "static" << Value << ent->IsStatic();
+		e << Key << "view_mask" << Value << ent->GetViewMask();
 		e << Key << "parent" << Value << ent->GetParent()->GetGuid();
 
 		e << Key << "pos" << Value << ent->GetPosition();
@@ -201,6 +202,7 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 	ent->SetGuid(entity["uid"].as<Guid>());
 	ent->SetActive(entity["active"].as<bool>());
 	ent->SetStatic(entity["static"].as<bool>());
+	ent->SetViewMask(entity["view_mask"].as<ViewMask>());
 
 	ent->SetPosition(entity["pos"].as<Vec3>());
 	ent->SetScale(entity["scale"].as<Vec3>());
