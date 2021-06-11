@@ -1,0 +1,30 @@
+Scene: Untitled
+Entities:
+  - Entity: Cube
+    uid: [1583312746, 3316505567, 1319969406, 3158553842]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 1]
+    scale: [2, 2, 2]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: Default Material
+  - Entity: Cube (1)
+    uid: [1400282445, 2539254531, 1237464579, 1897811857]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 8]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: Default Material

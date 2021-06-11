@@ -21,15 +21,12 @@ void Entity::RemoveChild(Entity* entityToRemove) {
 			entityToRemove->SetParent(nullptr);
 
 			UpdateTransformMatrices();
+			entityToRemove->UpdateTransformMatrices();
 
-			Vec3 AbsTranslation = WorldTransform.GetPosition();
-			Vec3 AbsScale = WorldTransform.GetScale();
-			Quat AbsRotation = GetRotationFromQuat(WorldTransform);
-
-			//Retransform entity
-			entityToRemove->SetPosition(entityToRemove->GetPosition() + AbsTranslation);
-			entityToRemove->SetScale(entityToRemove->GetScale() * AbsScale);
-			entityToRemove->SetRotation(entityToRemove->GetRotation() * AbsRotation);
+			Mat4 new_transform_mat = entityToRemove->GetLocalTransform() * WorldTransform;
+			entityToRemove->SetPosition(new_transform_mat.GetPosition());
+			entityToRemove->SetScale(new_transform_mat.GetScale());
+			entityToRemove->SetRotation(GetRotationFromQuat(new_transform_mat));
 		}
 	}
 }
@@ -47,15 +44,12 @@ void Entity::AddChild(Entity* entityToAdd, bool retransform) {
 
 			if (retransform) {
 				UpdateTransformMatrices();
+				entityToAdd->UpdateTransformMatrices();
 
-				Vec3 AbsTranslation = WorldTransform.GetPosition();
-				Vec3 AbsScale = WorldTransform.GetScale();
-				Quat AbsRotation = GetRotationFromQuat(WorldTransform);
-
-				//Retransform entity
-				entityToAdd->SetPosition(entityToAdd->GetPosition() - AbsTranslation);
-				entityToAdd->SetScale(entityToAdd->GetScale() * AbsScale.Invert());
-				entityToAdd->SetRotation(entityToAdd->GetRotation() * AbsRotation.Inverse());
+				Mat4 new_transform_mat = entityToAdd->GetLocalTransform() * WorldTransform.invert();
+				entityToAdd->SetPosition(new_transform_mat.GetPosition());
+				entityToAdd->SetScale(new_transform_mat.GetScale());
+				entityToAdd->SetRotation(GetRotationFromQuat(new_transform_mat));
 			}
 		}
 	}
@@ -162,7 +156,7 @@ void Entity::SetRotation(const Quat& rotation) {
 	mTransformDirty = true;
 }
 
-const AABB& Entity::UpdateAABB() {
+const AABB& Entity::GetAABB(bool extendChildren) {
 	if (!GetParent())
 		return _boundingBox;
 	MeshComponent* mesh = GetComponent<MeshComponent>();
@@ -175,10 +169,11 @@ const AABB& Entity::UpdateAABB() {
 	}
 
 	_boundingBox.ApplyTransform(WorldTransform);
-
-	for (auto child : _children) {
-		child->UpdateAABB();
-		_boundingBox.Extend(child->UpdateAABB());
+	if (extendChildren) {
+		for (auto child : _children) {
+			child->GetAABB();
+			_boundingBox.Extend(child->GetAABB());
+		}
 	}
 
 	return _boundingBox;
@@ -240,21 +235,10 @@ void Entity::UpdateTransformMatrices() {
 	//Set local transform matrix to entity
 	SetLocalTransform(localTransform);
 
-
-	Vec3 tr = GetPosition();
-	Vec3 sc = GetScale();
-	Quat rt = GetRotation();
-
-	Mat4 worldTransform(1.f);
+	Mat4 worldTransform = localTransform;
 	if (GetParent()) {
-		Mat4 parent = GetParent()->GetWorldTransform();
-		tr += parent.GetPosition();
-		sc *= parent.GetScale();
-		rt *= GetRotationFromQuat(parent);
+		worldTransform = worldTransform * GetParent()->GetWorldTransform();
 	}
-
-	//Calculate absolute transform matrix
-	worldTransform = GetTransform(tr, sc, rt);
 
 	//Update entity absolute transform matrix
 	SetWorldTransform(worldTransform);

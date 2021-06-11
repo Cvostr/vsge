@@ -206,7 +206,7 @@ namespace VSGE {
 		void SetRotation(const Quat& rotation);
 		void SetRotationEuler(const Vec3& rotation);
 
-		const AABB& UpdateAABB();
+		const AABB& GetAABB(bool extendChildren = true);
 
 		const Mat4& GetLocalTransform() { return LocalTransform; }
 		void SetLocalTransform(const Mat4& transform) { LocalTransform = transform; }

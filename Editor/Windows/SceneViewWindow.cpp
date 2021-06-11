@@ -35,7 +35,8 @@ void SceneViewWindow::OnDrawWindow() {
         //ImGuizmo::DrawGrid(&cam->GetViewMatrix().M11, &proj.M11, &identity.M11, 80.f);
 
         if (editor_layer->GetPickedEntity()) {
-            Mat4 newmat = editor_layer->GetPickedEntity()->GetWorldTransform();
+            VSGE::Entity* picked_entity = editor_layer->GetPickedEntity();
+            Mat4 newmat = picked_entity->GetWorldTransform();
 
             Quat rotation = GetRotationFromQuat(newmat);
 
@@ -54,26 +55,21 @@ void SceneViewWindow::OnDrawWindow() {
 
             if (ImGuizmo::IsUsing()) {
                 _transform_gizmo_used = true;
+
+                Mat4 delta_mat = newmat * picked_entity->GetParent()->GetWorldTransform().invert();
+
                 if (op == ImGuizmo::TRANSLATE) {
-                    Vec3 translation = newmat.GetPosition();
-                    Vec3 parent_translation = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetPosition();
-                    translation = translation - parent_translation;
-                    editor_layer->GetPickedEntity()->SetPosition(translation);
+                    picked_entity->SetPosition(delta_mat.GetPosition());
                 }
                 if (op == ImGuizmo::SCALE) {
-                    Vec3 scale = newmat.GetScale();
-                    Vec3 parent_scale = editor_layer->GetPickedEntity()->GetParent()->GetWorldTransform().GetScale();
-                    scale = scale * parent_scale.Invert();
-                    editor_layer->GetPickedEntity()->SetScale(scale);
+                    picked_entity->SetScale(delta_mat.GetScale());
                 }
                 if (op == ImGuizmo::ROTATE) {
                     Quat delta;
                     delta.CreateFromEulerAngles(rotDelta);
                     rotation = editor_layer->GetPickedEntity()->GetRotation();
-                    editor_layer->GetPickedEntity()->SetRotation(rotation * delta);
+                    picked_entity->SetRotation(rotation * delta);
                 }
-
-                editor_layer->GetPickedEntity()->UpdateTransformMatrices();
             }
             else {
                 _transform_gizmo_used = false;

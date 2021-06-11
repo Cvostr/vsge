@@ -15,11 +15,17 @@ namespace VSGE {
 
 		bool _loop;
 		float _volume;
-
+		float _pitch;
 	public:
 		AudioSourceComponent() {
 			_audioResource.SetResourceType(RESOURCE_TYPE_AUDIOCLIP);
 		}
+
+		bool IsPlaying();
+
+		float GetPitch();
+		
+		void SetPitch(float pitch);
 
 		void Play();
 

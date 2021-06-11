@@ -82,6 +82,15 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 		if (typeid(T) == typeid(AnimatorComponent)) {
 			DrawAnimatorComponent((AnimatorComponent*)component);
 		}
+		if (typeid(T) == typeid(AudioSourceComponent)) {
+			DrawAudioSourceComponent((AudioSourceComponent*)component);
+		}
+		if (typeid(T) == typeid(RigidBodyComponent)) {
+			DrawRigidbodyComponent((RigidBodyComponent*)component);
+		}
+		if (typeid(T) == typeid(ColliderComponent)) {
+			DrawColliderComponent((ColliderComponent*)component);
+		}
 	}
 }
 

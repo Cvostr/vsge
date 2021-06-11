@@ -127,7 +127,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
 
 				int relx = InputState.cursorx - win->GetPos().x;
-				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y;
+				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y + 20;
 
 				Vec2 crpos = Vec2((float)relx / win->GetSize().x,
 					(float)rely / win->GetSize().y
@@ -144,7 +144,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 
 				Entity* picked = nullptr;
 				for (auto entity : renderer->GetEntitiesToDraw()) {
-					AABB bb = entity->UpdateAABB();
+					AABB bb = entity->GetAABB(false);
 
 					float len = ray.GetHitdistance(bb);
 					if (len < 10000.f) {
@@ -160,8 +160,8 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 					insp->SetShowingEntity((Entity*)hits[0].GetHitObject());
 				}
 				else {
-					SetPickedEntity(nullptr);
-					insp->SetShowingEntity(nullptr);
+				//	SetPickedEntity(nullptr);
+				//	insp->SetShowingEntity(nullptr);
 				}
 			}
 		}
