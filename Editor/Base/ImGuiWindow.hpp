@@ -8,6 +8,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#define WINDOW_MENU_OFFSET 26
+
 namespace VSGEditor {
 	class EditorWindow {
 	protected:

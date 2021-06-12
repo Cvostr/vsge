@@ -1,11 +1,13 @@
 #pragma once
 
+#include <Math/Color.hpp>
 #include "Entity.hpp"
 
 namespace VSGE {
 
 	class SceneSettings {
-
+		Color _ambient_color;
+		Entity* _sun;
 	};
 
 	class Scene {

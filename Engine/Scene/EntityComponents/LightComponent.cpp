@@ -45,7 +45,7 @@ void LightsourceComponent::Serialize(YAML::Emitter& e) {
 }
 void LightsourceComponent::Deserialize(YAML::Node& entity) {
 	_lightType = (LightType)entity["light_type"].as<int>();
-	_intensity = (LightType)entity["intensity"].as<float>();
-	_range = (LightType)entity["range"].as<float>();
+	_intensity = entity["intensity"].as<float>();
+	_range = entity["range"].as<float>();
 	_lightColor = entity["color"].as<Color>();
 }

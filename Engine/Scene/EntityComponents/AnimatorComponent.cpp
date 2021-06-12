@@ -2,6 +2,7 @@
 #include <Core/Time.hpp>
 #include <Math/MatrixTransform.hpp>
 
+using namespace YAML;
 using namespace VSGE;
 
 AnimatorComponent::AnimatorComponent() :
@@ -10,7 +11,7 @@ AnimatorComponent::AnimatorComponent() :
     _current_time(0)
 {}
 
-void AnimatorComponent::NewAnimation() {
+void AnimatorComponent::AddNewAnimation() {
 	AnimationCoeff coeff;
 	coeff.coeff = 1;
 	coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
@@ -28,7 +29,8 @@ void AnimatorComponent::Play() {
 
 	for (auto& anim : _animations) {
 		//Queue resource loading
-		anim._animResource.GetResource()->Load();
+        if(anim._animResource.GetResource())
+		    anim._animResource.GetResource()->Load();
 	}
 }
 
@@ -40,7 +42,7 @@ void AnimatorComponent::Stop() {
 	_playing = false;
 }
 
-void AnimatorComponent::updateNodeTransform(Entity* child) {
+void AnimatorComponent::UpdateNodeTransform(Entity* child) {
     if (!child && !_playing) return;
 
     //Assign base node transform
@@ -74,7 +76,7 @@ void AnimatorComponent::updateNodeTransform(Entity* child) {
     
     //Go deeper in tree
     for (uint32 i = 0; i < child->GetChildrenCount(); i++) {
-        updateNodeTransform(child->GetChildren()[i]);
+        UpdateNodeTransform(child->GetChildren()[i]);
     }
 }
 
@@ -83,6 +85,29 @@ void AnimatorComponent::OnPreRender() {
         TimePerf* time = TimePerf::Get();
         _current_time = static_cast<double>(time->GetCurrentTime()) / 1000 - _startTime;
         
-        updateNodeTransform(GetEntity());
+        UpdateNodeTransform(GetEntity());
+    }
+}
+
+void AnimatorComponent::Serialize(YAML::Emitter& e) {
+    e << YAML::Key << "anims" << YAML::Value << YAML::BeginSeq;
+    for (auto& anim : _animations) {
+        e << BeginMap;
+        e << Key << "resource" << Value << anim._animResource.GetResourceName();
+        e << Key << "coeff" << Value << anim.coeff;
+        e << YAML::EndMap; // Anim resource
+    }
+    e << YAML::EndSeq;
+}
+void AnimatorComponent::Deserialize(YAML::Node& entity) {
+    YAML::Node anims = entity["anims"];
+    for (auto& anim : anims) {
+        std::string resource_name = anim["resource"].as<std::string>();
+        float coeff = anim["coeff"].as<float>();
+
+        AnimationCoeff anim_coeff;
+        anim_coeff._animResource.SetResource(resource_name);
+        anim_coeff.coeff = coeff;
+        _animations.push_back(anim_coeff);
     }
 }

@@ -45,7 +45,7 @@ void SceneViewWindow::OnDrawWindow() {
             bool snap = (op == ImGuizmo::OPERATION::ROTATE);
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
-            ImGuizmo::SetRect(_pos.x, _pos.y, _size.x, _size.y);
+            ImGuizmo::SetRect(_pos.x, _pos.y + WINDOW_MENU_OFFSET, _size.x, _size.y);
 
             Vec3 rotDelta;
 

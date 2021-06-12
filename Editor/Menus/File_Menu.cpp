@@ -33,26 +33,7 @@ void File_Menu::OnDrawMenu() {
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("Save", NULL)) {
-			EditorLayer* el = EditorLayer::Get();
-
-			if (el->GetOpenedSceneFile().size() == 0)
-				SaveAs();
-			else
-				SaveScene(el->GetOpenedSceneFile());
-			//save all materials
-
-			ResourceCache* res_cache = ResourceCache::Get();
-			for (uint32 resource_i = 0; resource_i < res_cache->GetResourcesCount(); resource_i++) {
-				Resource* res = res_cache->GetResources()[resource_i];
-				if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
-					MaterialResource* mat_res = (MaterialResource*)res;
-
-					std::string dest_path = mat_res->GetDataDescription().file_path;
-					if(dest_path.size() > 0 && mat_res->GetState() == RESOURCE_STATE_READY)
-						mat_res->GetMaterial()->Serialize(dest_path);
-				}
-			}
-			
+			OnSave();
 		}
 		if (ImGui::MenuItem("Save As..", NULL)) {
 			SaveAs();
@@ -64,4 +45,27 @@ void File_Menu::OnDrawMenu() {
 
 		ImGui::EndMenu();
 	}
+}
+
+void File_Menu::OnSave() {
+	EditorLayer* el = EditorLayer::Get();
+
+	if (el->GetOpenedSceneFile().size() == 0)
+		SaveAs();
+	else
+		SaveScene(el->GetOpenedSceneFile());
+	//save all materials
+
+	ResourceCache* res_cache = ResourceCache::Get();
+	for (uint32 resource_i = 0; resource_i < res_cache->GetResourcesCount(); resource_i++) {
+		Resource* res = res_cache->GetResources()[resource_i];
+		if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+			MaterialResource* mat_res = (MaterialResource*)res;
+
+			std::string dest_path = mat_res->GetDataDescription().file_path;
+			if (dest_path.size() > 0 && mat_res->GetState() == RESOURCE_STATE_READY)
+				mat_res->GetMaterial()->Serialize(dest_path);
+		}
+	}
+
 }

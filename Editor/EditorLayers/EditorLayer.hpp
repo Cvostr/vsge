@@ -38,6 +38,8 @@ namespace VSGEditor {
 			bool right_btn_hold;
 			int cursorx;
 			int cursory;
+
+			bool isLCrtlHold;
 		}InputState;
 
 		std::string _openedSceneFile;
@@ -123,6 +125,7 @@ namespace VSGEditor {
 		void OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd);
 		void OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu);
 		void OnWindowClose(const VSGE::EventWindowClose& close);
+		void OnKeyUp(const VSGE::EventKeyButtonUp& kbd);
 		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
 		void OnFileEvent(const VSGE::FileChageEvent& fce);
 		void OnMessageEvent(const VSGE::MessageEvent& me);

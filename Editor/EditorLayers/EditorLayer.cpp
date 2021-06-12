@@ -64,6 +64,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventMouseScrolled>(event, EVENT_FUNC(EditorLayer::OnMouseScroll));
 	DispatchEvent<VSGE::EventMouseButtonDown>(event, EVENT_FUNC(EditorLayer::OnMouseButtonDown));
 	DispatchEvent<VSGE::EventMouseButtonUp>(event, EVENT_FUNC(EditorLayer::OnMouseButtonUp));
+	DispatchEvent<VSGE::EventKeyButtonUp>(event, EVENT_FUNC(EditorLayer::OnKeyUp));
 	DispatchEvent<VSGE::EventKeyButtonDown>(event, EVENT_FUNC(EditorLayer::OnKeyDown));
 	DispatchEvent<VSGE::FileChageEvent>(event, EVENT_FUNC(EditorLayer::OnFileEvent));
 	DispatchEvent<VSGE::MessageEvent>(event, EVENT_FUNC(EditorLayer::OnMessageEvent));
@@ -127,7 +128,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
 
 				int relx = InputState.cursorx - win->GetPos().x;
-				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y + 20;
+				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y + WINDOW_MENU_OFFSET;
 
 				Vec2 crpos = Vec2((float)relx / win->GetSize().x,
 					(float)rely / win->GetSize().y
@@ -177,16 +178,30 @@ void EditorLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
 	}
 }
 
+void EditorLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
+	switch (kbd.GetKeyCode()) {
+	case KEY_CODE_LCTRL:
+		InputState.isLCrtlHold = false;
+		break;
+	}
+}
+
 void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 	TimePerf* time = TimePerf::Get();
 	Vec3 cam_pos_offset(0.f);
 	switch (kbd.GetKeyCode()) {
+	case KEY_CODE_LCTRL:
+		InputState.isLCrtlHold = true;
+		break;
 	case KEY_CODE_W:
 		cam_pos_offset = mEditorCamera->GetFront() * MONEMENT_COEFF* time->GetDeltaTime();
 		break;
 	
 	case KEY_CODE_S:
-		cam_pos_offset = mEditorCamera->GetFront() * -MONEMENT_COEFF * time->GetDeltaTime();
+		if (InputState.isLCrtlHold) {
+			ImGuiLayer::Get()->GetMenu<File_Menu>()->OnSave();
+		}else
+			cam_pos_offset = mEditorCamera->GetFront() * -MONEMENT_COEFF * time->GetDeltaTime();
 		break;
 
 	case KEY_CODE_A:

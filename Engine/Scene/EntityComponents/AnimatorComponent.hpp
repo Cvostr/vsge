@@ -28,7 +28,7 @@ namespace VSGE {
 			return _animations;
 		}
 
-		void NewAnimation();
+		void AddNewAnimation();
 
 		bool IsPlaying() {
 			return _playing;
@@ -40,9 +40,12 @@ namespace VSGE {
 
 		void Stop();
 
-		void updateNodeTransform(Entity* child);
+		void UpdateNodeTransform(Entity* child);
 
 		void OnPreRender();
+
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
 		
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_ANIMATOR, "Animator")
 	};

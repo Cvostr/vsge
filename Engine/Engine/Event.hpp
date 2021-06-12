@@ -20,7 +20,8 @@ namespace VSGE {
 		EventWindowResized,
 
 		EventFileChanged,
-		EventMessage
+		EventMessage,
+		EventResourceLoaded
 	};
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return type; } \

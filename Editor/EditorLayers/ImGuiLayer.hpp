@@ -65,6 +65,16 @@ namespace VSGEditor {
 			return nullptr;
 		}
 
+		template<typename T>
+		T* GetMenu() {
+			for (auto menu : mMenus) {
+				if (typeid(*menu) == typeid(T)) {
+					return static_cast<T*>(menu);
+				}
+			}
+			return nullptr;
+		}
+
 		void AddMenu(ImGuiMenu* menu);
 
 		void VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore);

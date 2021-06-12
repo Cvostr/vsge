@@ -134,7 +134,7 @@ namespace VSGE {
 
 		EVENT_CLASS_TYPE(EventType::EventKeyButtonUp)
 
-		KeyCode GetKeyCode() { return _keyCode; }
+		KeyCode GetKeyCode() const { return _keyCode; }
 
 		EventKeyButtonUp(KeyCode keyCode) :
 			_keyCode(keyCode) {
