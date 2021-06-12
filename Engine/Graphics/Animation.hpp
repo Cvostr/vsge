@@ -11,25 +11,25 @@ namespace VSGE {
 
     class Animation {
     private:
-        double mDuration;
-        double mTPS;
-        std::string mName;
+        double _duration;
+        double _tps;
+        std::string _name;
         //Amount of animation channels
-        uint32 mNumChannels;
+        uint32 _numChannels;
         //Array of animation channels
         AnimationChannel* channels;
     public:
         
-        double GetDuration() { return mDuration; }
-        void SetDuration(double duration) { mDuration = duration; }
+        double GetDuration();
+        void SetDuration(double duration);
 
-        double GetTPS() { return mTPS; }
-        void SetTPS(double tps) { mTPS = tps; }
+        double GetTPS();
+        void SetTPS(double tps);
 
-        const std::string& GetName() { return mName; }
-        void SetName(const std::string& name) { mName = name; }
+        const std::string& GetName();
+        void SetName(const std::string& name);
         
-        uint32 GetNumChannels() { return mNumChannels; }
+        uint32 GetNumChannels();
         void SetNumChannels(uint32 num_channels);
 
         AnimationChannel* GetChannels() {
@@ -41,7 +41,10 @@ namespace VSGE {
         }
 
         //Get pointer to channel by specified node name
-        AnimationChannel* getChannelByNodeName(std::string node_name);
+        AnimationChannel* getChannelByNodeName(const std::string& node_name);
+        AnimationChannel* GetChannelByEntityName(const std::string& node_name);
+
+        void CopyTo(Animation* anim);
 
         Animation();
         ~Animation();
@@ -122,6 +125,8 @@ namespace VSGE {
         Vec3 getPositionInterpolated(double Time);
         Vec3 getScaleInterpolated(double Time);
         Quat getRotationInterpolated(double Time);
+
+        void CopyTo(AnimationChannel* channel);
 
         AnimationChannel();
         ~AnimationChannel();

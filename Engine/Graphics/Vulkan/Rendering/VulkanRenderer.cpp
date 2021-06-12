@@ -256,10 +256,9 @@ void VulkanRenderer::StoreWorldObjects() {
 
 			if (node != nullptr) {
 				//Calculate result matrix
-				Mat4 matrix = (rootNodeTransform * node->GetWorldTransform() * bone->GetOffsetMatrix());
+				Mat4 matrix = bone->GetOffsetMatrix().transpose() * node->GetWorldTransform() * rootNodeTransform;
 				//Send skinned matrix to skinning uniform buffer
-				//anim[bone_i] = matrix.transpose();
-				anim[bone_i] = Mat4(1);
+				anim[bone_i] = matrix;
 			}
 		}
 	}

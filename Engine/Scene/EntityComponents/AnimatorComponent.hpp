@@ -19,7 +19,7 @@ namespace VSGE {
 		std::vector<AnimationCoeff> _animations;
 		bool _playing;
 		double _startTime;
-		
+		double _current_time;
 	public:
 		
 		AnimatorComponent();
@@ -40,7 +40,7 @@ namespace VSGE {
 
 		void Stop();
 
-		void updateNodeTransform(Entity* child, const Mat4& parent);
+		void updateNodeTransform(Entity* child);
 
 		void OnPreRender();
 		

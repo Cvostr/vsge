@@ -23,21 +23,9 @@ void VSGEditor::AddSubSceneVS3M(Scene* scn, const std::string& file) {
 Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 	Entity* result = w->AddNewEntity(node->GetLabel());
 
-	//set node transform to object transform
-	Mat4 node_transform_transposed = node->GetNodeTransform().transpose();
-	Vec3 pos = node_transform_transposed.GetPosition();
-	Vec3 sca = node_transform_transposed.GetScale();
-	Quat rot = GetRotationFromQuat(node_transform_transposed);
-
-	result->SetPosition(pos);
-	result->SetScale(sca);
-	result->SetRotation(rot.Conjugate());
-
 	result->SetPosition(node->GetTranslation());
 	result->SetScale(node->GetScale());
-	Quat node_rotation = node->GetRotation().Conjugate();
-	result->SetRotation(node_rotation);
-	
+	result->SetRotation(node->GetRotation());
 
 	//Iterate over all children nodes
 	for (uint32 node_i = 0; node_i < node->children.size(); node_i++) {

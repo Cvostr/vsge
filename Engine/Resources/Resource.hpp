@@ -65,6 +65,10 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="State"></param>
 		void SetState(const ResourceState& State) { _resourceState = State; }
+
+		bool IsUnloaded() { return _resourceState == RESOURCE_STATE_UNLOADED; }
+
+		bool IsReady() { return _resourceState == RESOURCE_STATE_READY; }
 		/// <summary>
 		/// Get size of memory, allocated for this resource
 		/// </summary>

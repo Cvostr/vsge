@@ -2,6 +2,7 @@
 
 #include "../Resource.hpp"
 #include <Graphics/Animation.hpp>
+#include "../AnimationParser.hpp"
 
 namespace VSGE {
 	class AnimationResource : public Resource {
@@ -16,7 +17,9 @@ namespace VSGE {
 		Animation* GetAnimation() { return _animation; }
 
 		void PostLoad() {
-			//_texture->CreateFromBuffer(mLoadedData, description.size);
+			ImportedAnimationFile iaf;
+			iaf.loadFromBuffer(_loadedData, _description.size);
+			iaf._Animation->CopyTo(_animation);
 		}
 
 		ResourceType GetResourceType() {

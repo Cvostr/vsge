@@ -25,5 +25,6 @@ namespace VSGE {
         void loadFromFile(const std::string& file);
 
         ImportedAnimationFile();
+        ~ImportedAnimationFile();
     };
 }

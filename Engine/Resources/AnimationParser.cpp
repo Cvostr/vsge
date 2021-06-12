@@ -8,6 +8,10 @@ ImportedAnimationFile::ImportedAnimationFile() {
     _Animation = nullptr;
 }
 
+ImportedAnimationFile::~ImportedAnimationFile() {
+    SAFE_RELEASE(_Animation);
+}
+
 void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
     ByteSolver solver(buffer, size);
     char prefix[6];
@@ -24,10 +28,9 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
     //Read Tick Per Second property
     _Animation->SetTPS(solver.GetValue<double>());
     //Read duration property
-    _Animation->SetDuration(solver.GetValue<float>());
+    _Animation->SetDuration(solver.GetValue<double>());
     //Read Channel amount
-    uint32 channelCount = solver.GetValue<uint32>();
-    _Animation->SetNumChannels(channelCount);
+    _Animation->SetNumChannels(solver.GetValue<uint32>());
     //Allocate all channels
     _Animation->SetChannels(new AnimationChannel[_Animation->GetNumChannels()]);
     uint32 ch_i = 0;
@@ -116,11 +119,11 @@ void AnimationFileExport::writeChannel(ByteSerialize* serializer, uint32 index) 
         serializer->Serialize(channel->GetRotationValues()->times[rot_i]);
     }
     char div = '\n';
-    serializer->Serialize(div);
+    //serializer->Serialize(div);
 }
 void AnimationFileExport::write(const std::string& output_file) {
     ByteSerialize* serializer = new ByteSerialize;
-    serializer->WriteBytes("zs3manim", 8);
+    serializer->WriteBytes("zs3manim", 9);
     serializer->Serialize(_AnimationToExport->GetName());
     //Write main animation data
     serializer->Serialize(_AnimationToExport->GetTPS());

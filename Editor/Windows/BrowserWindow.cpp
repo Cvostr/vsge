@@ -205,8 +205,10 @@ void FileBrowserWindow::OnDrawWindow() {
 
         if (e->isMaterial()) {
             MaterialResource* mat = (MaterialResource*)GetResourceWithFilePath(e->abs_path);
-            if (mat->GetState() != RESOURCE_STATE_READY) {
-                mat->Load();
+            if (mat) {
+                if (mat->GetState() != RESOURCE_STATE_READY) {
+                    mat->Load();
+                }
             }
         }
         if (e->isTexture()) {
