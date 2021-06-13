@@ -7,7 +7,6 @@
 namespace VSGE {
 
 	enum LightType {
-		LIGHT_TYPE_NONE,
 		LIGHT_TYPE_DIRECTIONAL,
 		LIGHT_TYPE_POINT,
 		LIGHT_TYPE_SPOT

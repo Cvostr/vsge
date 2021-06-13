@@ -7,6 +7,7 @@
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
+#include <Scene/Camera.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -99,6 +100,9 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
             }
             if (ImGui::MenuItem("Dublicate")) {
                 entity->Dublicate();
+            }
+            if (ImGui::MenuItem("Save prefab")) {
+                
             }
             ImGui::EndPopup();
         }

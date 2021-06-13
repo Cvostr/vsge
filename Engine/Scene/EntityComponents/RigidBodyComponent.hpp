@@ -16,6 +16,9 @@ namespace VSGE {
 		float GetMass();
 		void SetMass(float mass);
 
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
+
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_RIGIDBODY, "Rigid body")
 	};
 }

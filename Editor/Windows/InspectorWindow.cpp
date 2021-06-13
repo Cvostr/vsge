@@ -11,6 +11,7 @@
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 #include <Scene/EntityComponents/ColliderComponent.hpp>
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
+#include <Scene/Camera.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
@@ -90,6 +91,9 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 		}
 		if (typeid(T) == typeid(ColliderComponent)) {
 			DrawColliderComponent((ColliderComponent*)component);
+		}
+		if (typeid(T) == typeid(Camera)) {
+			DrawCameraComponent((Camera*)component);
 		}
 	}
 }

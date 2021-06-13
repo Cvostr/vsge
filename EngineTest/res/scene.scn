@@ -1337,21 +1337,6 @@ Entities:
         mesh: Mesh
       - Component: 2
         material: material
-  - Entity: Point Light
-    uid: [1562462192, 1467645814, 1312067406, 180605538]
-    active: true
-    static: false
-    view_mask: 18446744073709551551
-    parent: [0, 0, 0, 0]
-    pos: [-20.1670246, 41.8340416, 2.80614376]
-    scale: [1, 1, 1]
-    rot: [0, 0, 0, 1]
-    components:
-      - Component: 1
-        light_type: 2
-        intensity: 2
-        range: 122
-        color: [0.826254845, 0.0319017321, 0.0319017321, 1]
   - Entity: RootNode
     uid: [2686268074, 3481468073, 2879436916, 4176170713]
     active: true
@@ -1408,3 +1393,19 @@ Entities:
         volume: 0.5
         pitch: 0.200000003
         loop: true
+  - Entity: Point Light
+    uid: [2096059344, 1877813765, 3924542226, 1656019522]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 1
+        light_type: 1
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
