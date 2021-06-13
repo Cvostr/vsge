@@ -14,6 +14,7 @@ file(GLOB_RECURSE HEADER_FILES "*.hpp")
 
 include_directories(../Engine REQUIRED)
 include_directories(../ImGui/src REQUIRED)
+include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("../vendor/headers/" REQUIRED)
 
 add_executable (Editor ${SRC_FILES} ${HEADER_FILES})
@@ -29,6 +30,11 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/freetype.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/assimp/assimp.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp.lib)
+#bullet
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletCollision_Debug.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics_Debug.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody_Debug.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
 
 #Win32 libs
 target_link_libraries(Editor winmm.lib)

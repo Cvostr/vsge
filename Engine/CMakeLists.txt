@@ -5,6 +5,8 @@ set(HEADER_DIR "")
 set(SRC_DIR "")
 
 include_directories("../vendor/headers/" REQUIRED)
+include_directories("../vendor/headers/bullet" REQUIRED)
+
 include_directories("./" REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
