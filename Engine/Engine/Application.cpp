@@ -50,6 +50,7 @@ void Application::Run() {
 
 void Application::Stop() { 
 	_running = false;
+	_game_ticking = false;
 	_window->DestroyWindow();
 	RemoveAllLayers();
 }
@@ -75,6 +76,15 @@ void Application::RemoveLayer(IApplicationLayer* layer) {
 void Application::RemoveAllLayers() {
 	while (_layers.size() > 0)
 		RemoveLayer(_layers[0]);
+}
+
+bool Application::IsGameTicking() {
+	return _game_ticking;
+}
+
+void Application::SetGameTicking(bool ticking) {
+	if(_running)
+		_game_ticking = ticking;
 }
 
 int main(int argc, char* argv[]) {

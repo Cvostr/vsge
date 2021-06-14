@@ -6,7 +6,11 @@ using namespace VSGE;
 
 RigidBodyComponent::RigidBodyComponent() {
 	_mass = 1.f;
+	_friction = 0.5f;
+	_restitution = 0.0f;
+
 	_rigidBody = nullptr;
+	_collision_shape = nullptr;
 }
 
 float RigidBodyComponent::GetMass() {
@@ -14,7 +18,13 @@ float RigidBodyComponent::GetMass() {
 }
 
 void RigidBodyComponent::SetMass(float mass) {
-	_mass = mass;
+	if (mass >= 0 && _mass != mass) {
+		_mass = mass;
+
+		if (_rigidBody) {
+			_rigidBody->setMassProps(mass, _rigidBody->getLocalInertia());
+		}
+	}
 }
 
 void RigidBodyComponent::Serialize(YAML::Emitter& e) {
@@ -23,6 +33,20 @@ void RigidBodyComponent::Serialize(YAML::Emitter& e) {
 
 void RigidBodyComponent::Deserialize(YAML::Node& entity) {
 	_mass = entity["mass"].as<float>();
+}
+
+void RigidBodyComponent::Activate() {
+	if (!_rigidBody)
+		return;
+
+	_rigidBody->activate(true);
+}
+
+void RigidBodyComponent::Deactivate() {
+	if (!_rigidBody)
+		return;
+
+	_rigidBody->setActivationState(WANTS_DEACTIVATION);
 }
 
 void RigidBodyComponent::ClearForces() {
@@ -43,4 +67,8 @@ void RigidBodyComponent::ApplyCentralForce(const Vec3& force) {
 		return;
 
 	_rigidBody->applyCentralForce(btVector3(force.x, force.y, force.z));
+}
+
+void RigidBodyComponent::AddToWorld() {
+
 }
