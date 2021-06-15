@@ -1409,3 +1409,19 @@ Entities:
         range: 5.5
         sp_angle: 12.5
         color: [1, 1, 1, 1]
+  - Entity: rigidbody
+    uid: [2251091399, 931857674, 1390459735, 4058352167]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [-118.233109, 0, -25.6389542]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: Default Material
+      - Component: 8
+        mass: 1

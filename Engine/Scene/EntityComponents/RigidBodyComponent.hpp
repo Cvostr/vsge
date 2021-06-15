@@ -2,8 +2,6 @@
 
 #include "../IEntityComponent.hpp"
 #include <Math/Vec3.hpp>
-
-
 #include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
 
 
@@ -13,7 +11,9 @@ namespace VSGE {
 	private:
 		float _mass;
 		float _friction;
+		float _rolling_friction;
 		float _restitution;
+		Vec3 _gravity;
 
 		btRigidBody* _rigidBody;
 		btCollisionShape* _collision_shape;
@@ -28,8 +28,16 @@ namespace VSGE {
 		void ClearForces();
 		void ApplyCentralImpulse(const Vec3& impulse);
 		void ApplyCentralForce(const Vec3& force);
+		void SetLinearVelocity(const Vec3& velocity);
+		void SetAngularVelocity(const Vec3& velocity);
+
+		btTransform GetEntityTransform();
+		btCollisionShape* GetCollisionShape();
 
 		void AddToWorld();
+
+		void OnUpdate();
+		void OnDestroy();
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

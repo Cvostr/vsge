@@ -38,19 +38,11 @@ namespace VSGE {
 		Window* _window;
 
 		bool _running;
-		bool _game_ticking;
 	public:
 
 		static Application* _this;
 
-		Application(ApplicationCreateInfo descr) :
-			_running(false),
-			_game_ticking(false),
-			_window(new Window()),
-			_description(descr)
-		{
-			_this = this;
-		}
+		Application(ApplicationCreateInfo descr);
 
 		const ApplicationCreateInfo& GetDescription() { return _description; }
 
@@ -80,10 +72,6 @@ namespace VSGE {
 		/// Calls OnUpdate on all registered application layers
 		/// </summary>
 		void OnUpdate();
-
-		bool IsGameTicking();
-
-		void SetGameTicking(bool ticking);
 
 		void OnSDL2Event(void* event);
 		void OnEvent(const IEvent& event);

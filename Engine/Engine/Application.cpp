@@ -8,6 +8,14 @@ Application* Application::_this = nullptr;
 
 extern Application* VSGEMain();
 
+Application::Application(ApplicationCreateInfo descr) :
+	_running(false),
+	_window(new Window()),
+	_description(descr)
+{
+	_this = this;
+}
+
 void Application::OnUpdate() {
 	TimePerf::Get()->Tick();
 	for (uint32 event_i = 0; event_i < _scheduledEvents.size(); event_i ++) {
@@ -50,7 +58,6 @@ void Application::Run() {
 
 void Application::Stop() { 
 	_running = false;
-	_game_ticking = false;
 	_window->DestroyWindow();
 	RemoveAllLayers();
 }
@@ -76,15 +83,6 @@ void Application::RemoveLayer(IApplicationLayer* layer) {
 void Application::RemoveAllLayers() {
 	while (_layers.size() > 0)
 		RemoveLayer(_layers[0]);
-}
-
-bool Application::IsGameTicking() {
-	return _game_ticking;
-}
-
-void Application::SetGameTicking(bool ticking) {
-	if(_running)
-		_game_ticking = ticking;
 }
 
 int main(int argc, char* argv[]) {

@@ -2,13 +2,18 @@
 #include <Core/VarTypes/Base.hpp>
 #include <Core/Logger.hpp>
 #include <Core/Time.hpp>
+#include <Scene/SceneLayer.hpp>
 
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
 
 using namespace VSGE;
 
+PhysicsLayer* PhysicsLayer::_this = nullptr;
+
 PhysicsLayer::PhysicsLayer() {
+    _this = this;
+
 	_broadphase = new btDbvtBroadphase();
 	_constraint_solver = new btSequentialImpulseConstraintSolver();
 
@@ -43,6 +48,7 @@ void PhysicsLayer::OnAttach() {
 
 }
 void PhysicsLayer::OnUpdate() {
+    
     float delta_time = TimePerf::Get()->GetDeltaTime();
     _world->stepSimulation(delta_time);
 }

@@ -2,6 +2,7 @@
 #include "EditorLayers/EditorLayer.hpp"
 #include "EditorLayers/ImGuiLayer.hpp"
 #include <Physics/PhysicsLayer.hpp>
+#include <Scene/SceneLayer.hpp>
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -30,6 +31,7 @@ Application* VSGEMain() {
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);
 	app->AddLayer(new PhysicsLayer);
+	app->AddLayer(new SceneLayer);
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();
@@ -37,8 +39,9 @@ Application* VSGEMain() {
 	ResourcePickerWindow* rpw = new ResourcePickerWindow;
 	rpw->Hide();
 	app->GetLayer<ImGuiLayer>()->AddWindow(rpw);
-
 	app->GetLayer<ImGuiLayer>()->AddWindow(new StartWindow);
+
+	app->GetLayer<SceneLayer>()->SetWorkingScene(app->GetLayer<EditorLayer>()->GetScene());
 
 	return app;
 }

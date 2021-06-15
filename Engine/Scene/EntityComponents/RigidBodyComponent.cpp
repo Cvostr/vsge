@@ -1,16 +1,23 @@
 #include "RigidBodyComponent.hpp"
-#include <yaml-cpp/yaml.h>
+#include <bullet/LinearMath/btDefaultMotionState.h>
+#include <bullet/BulletCollision/CollisionShapes/btCollisionShape.h>
+#include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
+#include <Physics/PhysicsLayer.hpp>
+#include "../Entity.hpp"
 
 using namespace YAML;
 using namespace VSGE;
 
-RigidBodyComponent::RigidBodyComponent() {
-	_mass = 1.f;
-	_friction = 0.5f;
-	_restitution = 0.0f;
+RigidBodyComponent::RigidBodyComponent():
+	_mass(1.f),
+	_friction(0.5f),
+	_rolling_friction(0.0f),
+	_restitution(0.0f),
+	_gravity(0, -9.8f, 0),
 
-	_rigidBody = nullptr;
-	_collision_shape = nullptr;
+	_rigidBody(nullptr),
+	_collision_shape(nullptr)
+{
 }
 
 float RigidBodyComponent::GetMass() {
@@ -69,6 +76,92 @@ void RigidBodyComponent::ApplyCentralForce(const Vec3& force) {
 	_rigidBody->applyCentralForce(btVector3(force.x, force.y, force.z));
 }
 
-void RigidBodyComponent::AddToWorld() {
+void RigidBodyComponent::SetLinearVelocity(const Vec3& velocity) {
+	if (!_rigidBody)
+		return;
 
+	_rigidBody->setLinearVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+}
+
+void RigidBodyComponent::SetAngularVelocity(const Vec3& velocity) {
+	if (!_rigidBody)
+		return;
+
+	_rigidBody->setAngularVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+}
+
+btTransform RigidBodyComponent::GetEntityTransform() {
+	btTransform result;
+
+	Vec3 abs_pos = _entity->GetAbsolutePosition();
+	Quat abs_rot = _entity->GetAbsoluteRotation();
+
+	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));
+	result.setRotation(btQuaternion(abs_rot.x, abs_rot.y, abs_rot.z, abs_rot.w));
+
+	return result;
+}
+
+btCollisionShape* RigidBodyComponent::GetCollisionShape() {
+	Vec3 scale = _entity->GetScale();
+
+	btCollisionShape* shape = new btBoxShape(btVector3(btScalar(scale.x),
+		btScalar(scale.y),
+		btScalar(scale.z)));
+	return shape;
+}
+
+void RigidBodyComponent::AddToWorld() {
+	btVector3 local_intertia(0, 0, 0);
+
+	if (_collision_shape && _rigidBody)
+	{
+		local_intertia = _rigidBody ? _rigidBody->getLocalInertia() : local_intertia;
+		_collision_shape->calculateLocalInertia(_mass, local_intertia);
+	}
+	//release old rigidbody
+	SAFE_RELEASE(_rigidBody);
+
+	btTransform startTransform = GetEntityTransform();
+	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
+
+	_collision_shape = GetCollisionShape();
+	// Info
+	btRigidBody::btRigidBodyConstructionInfo constructionInfo(_mass, motionState, _collision_shape, local_intertia);
+	constructionInfo.m_mass = _mass;
+	constructionInfo.m_friction = _friction;
+	constructionInfo.m_rollingFriction = _rolling_friction;
+	constructionInfo.m_restitution = _restitution;
+	constructionInfo.m_collisionShape = _collision_shape;
+	constructionInfo.m_localInertia = local_intertia;
+	constructionInfo.m_motionState = motionState;
+
+	_rigidBody = new btRigidBody(constructionInfo);
+	_rigidBody->setUserPointer(_entity);
+
+	_rigidBody->setGravity(btVector3(_gravity.x, _gravity.y, _gravity.z));
+
+	PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+}
+
+void RigidBodyComponent::OnUpdate() {
+	if (!_rigidBody)
+		AddToWorld();
+
+	btTransform current_transform = _rigidBody->getCenterOfMassTransform();
+	btVector3 bullet_pos = current_transform.getOrigin();
+	btQuaternion bullet_rot = current_transform.getRotation();
+
+	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
+	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
+
+	_entity->SetPosition(pos);
+	_entity->SetRotation(rot);
+}
+
+void RigidBodyComponent::OnDestroy() {
+	if (!_rigidBody) {
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	}
 }

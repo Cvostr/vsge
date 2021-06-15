@@ -18,10 +18,16 @@ namespace VSGE {
 		btSoftBodyWorldInfo* _world_info;
 
 		Vec3 _gravity;
+
+		static PhysicsLayer* _this;
 	public:
 
 		PhysicsLayer();
 		~PhysicsLayer();
+
+		static PhysicsLayer* Get() {
+			return _this;
+		}
 
 		void OnAttach();
 		void OnUpdate();

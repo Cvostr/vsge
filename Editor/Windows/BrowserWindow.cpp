@@ -10,7 +10,6 @@
 #include <Resources/ResourceCache.hpp>
 #include "InspectorWindow.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
-//#include <Core/Logger.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -90,6 +89,8 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         VSGE::SceneSerializer ss;
         ss.SetScene(el->GetScene());
         ss.Deserialize(Entry.abs_path);
+
+
     }
     else if((resource = GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
         if (resource->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
