@@ -3,6 +3,7 @@
 #include "EditorLayers/ImGuiLayer.hpp"
 #include <Physics/PhysicsLayer.hpp>
 #include <Scene/SceneLayer.hpp>
+#include <Scripting/MonoLayer.hpp>
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -32,6 +33,7 @@ Application* VSGEMain() {
 	app->AddLayer(new ImGuiLayer);
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
+	app->AddLayer(new MonoLayer);
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();
