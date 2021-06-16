@@ -28,3 +28,5 @@ Entities:
         mesh: Cube
       - Component: 2
         material: Default Material
+      - Component: 8
+        mass: 1

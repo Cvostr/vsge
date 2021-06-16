@@ -1,8 +1,11 @@
 #include "ToolbarWindow.hpp"
+#include "InspectorWindow.hpp"
+#include "../EditorLayers/ImGuiLayer.hpp"
 #include "../EditorLayers/EditorLayer.hpp"
 #include <Scene/SceneLayer.hpp>
 #include <Engine/Application.hpp>
 #include <ImGuizmo.h>
+#include <Scene/SceneSerialization.hpp>
 
 using namespace VSGEditor;
 
@@ -35,17 +38,33 @@ void ToolbarWindow::OnDrawWindow() {
         if (!scene_layer->IsSceneRunning()) {
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2, 0));
             if (ImGui::Button("Play", ImVec2(BTN_SIZE, BTN_SIZE))) {
+                if (!scene_layer->IsScenePaused()) {
+                    //Save scene
+                    VSGE::SceneSerializer sc;
+                    sc.SetScene(scene_layer->GetWorkingScene());
+                    sc.Serialize("temp_scene.scn");
+                }
+                //Start scene execution
                 scene_layer->StartScene();
             }
         }
         else {
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2 - BTN_SIZE / 2, 0));
             if (ImGui::Button("Pause", ImVec2(BTN_SIZE, BTN_SIZE))) {
-                scene_layer->StopScene();
+                scene_layer->PauseScene();
             }
             ImGui::SameLine();
             if (ImGui::Button("Stop", ImVec2(BTN_SIZE, BTN_SIZE))) {
                 scene_layer->StopScene();
+
+                InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
+                insp->SetShowingEntity(nullptr);
+                //Clear scene
+                scene_layer->GetWorkingScene()->NewScene();
+                //Deserialize temp scene
+                VSGE::SceneSerializer ss;
+                ss.SetScene(scene_layer->GetWorkingScene());
+                ss.Deserialize("temp_scene.scn");
             }
         }
 

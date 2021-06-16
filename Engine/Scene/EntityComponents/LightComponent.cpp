@@ -1,4 +1,5 @@
 #include "LightComponent.hpp"
+#include "../Entity.hpp"
 
 using namespace VSGE;
 using namespace YAML;
@@ -50,4 +51,27 @@ void LightsourceComponent::Deserialize(YAML::Node& entity) {
 	_range = entity["range"].as<float>();
 	_spot_angle = entity["sp_angle"].as<float>();
 	_lightColor = entity["color"].as<Color>();
+}
+
+Vec3 LightsourceComponent::GetDirection() {
+	Vec3 euler_rotation = _entity->GetAbsoluteRotation().GetEulerAngles();
+	euler_rotation *= (3.14159265f / 180.f);
+
+	float yaw = euler_rotation.y;
+	float pitch = euler_rotation.x;
+	float roll = euler_rotation.z;
+
+	Vec3 result;
+	float cy = cosf(yaw * 0.5f);
+	float sy = sinf(yaw * 0.5f);
+	float cr = cosf(roll * 0.5f);
+	float sr = sinf(roll * 0.5f);
+	float cp = cosf(pitch * 0.5f);
+	float sp = sinf(pitch * 0.5f);
+
+	result.z = (cy * sr * cp - sy * cr * sp);
+	result.x = (cy * cr * sp + sy * sr * cp);
+	result.y = (sy * cr * cp - cy * sr * sp);
+
+	return result.GetNormalized();
 }

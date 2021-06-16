@@ -7,10 +7,9 @@ layout(binding = 4) uniform sampler2D normal;
 layout(binding = 5) uniform sampler2D pos;
 layout(binding = 6) uniform sampler2D material;
 
-#define LIGHTSOURCE_NONE 0
-#define LIGHTSOURCE_DIR 1
-#define LIGHTSOURCE_POINT 2
-#define LIGHTSOURCE_SPOT 3
+#define LIGHTSOURCE_DIR 0
+#define LIGHTSOURCE_POINT 1
+#define LIGHTSOURCE_SPOT 2
 
 struct Light{
     int type;           //0

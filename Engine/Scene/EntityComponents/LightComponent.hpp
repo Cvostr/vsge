@@ -2,6 +2,7 @@
 
 #include "../IEntityComponent.hpp"
 #include <Math/Color.hpp>
+#include <Math/Vec3.hpp>
 #include <Core/VarTypes/Base.hpp>
 
 namespace VSGE {
@@ -36,6 +37,8 @@ namespace VSGE {
 		float& GetIntensity() { return _intensity; }
 		float& GetRange() { return _range; }
 		float& GetSpotAngle() { return _spot_angle; }
+
+		Vec3 GetDirection();
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

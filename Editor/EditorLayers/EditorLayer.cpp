@@ -232,5 +232,6 @@ void EditorLayer::OnWindowClose(const VSGE::EventWindowClose& close) {
 void EditorLayer::OnMessageEvent(const VSGE::MessageEvent& me) {
 	ConsoleWindow* cw = ImGuiLayer::Get()->GetWindow<ConsoleWindow>();
 
-	cw->addMsg((VSGE::MessageEvent*)&me);
+	if(cw)
+		cw->addMsg((VSGE::MessageEvent*)&me);
 }

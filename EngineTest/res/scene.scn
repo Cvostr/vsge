@@ -1425,3 +1425,19 @@ Entities:
         material: Default Material
       - Component: 8
         mass: 1
+  - Entity: Directional Light
+    uid: [4083481884, 750590475, 348104871, 1541045202]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, -53.9555359]
+    scale: [1, 1, 1]
+    rot: [0.104875103, 0.0944091082, -0.00137945358, 0.989993036]
+    components:
+      - Component: 1
+        light_type: 0
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]

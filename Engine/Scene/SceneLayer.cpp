@@ -2,9 +2,14 @@
 
 using namespace VSGE;
 
+SceneLayer* SceneLayer::_this = nullptr;
+
 SceneLayer::SceneLayer() {
 	_scene = nullptr;
 	_scene_running = false;
+	_scene_paused = false;
+
+	_this = this;
 }
 void SceneLayer::SetWorkingScene(Scene* scene) {
 	_scene = scene;
@@ -14,7 +19,11 @@ Scene* SceneLayer::GetWorkingScene(){
 }
 
 void SceneLayer::StartScene() {
+	if (_scene_running)
+		return;
+
 	_scene_running = true;
+	_scene_paused = false;
 
 	if (_scene) {
 		CallOnStart(_scene->GetRootEntity());
@@ -22,15 +31,31 @@ void SceneLayer::StartScene() {
 }
 
 void SceneLayer::StopScene() {
+	if (!_scene_running)
+		return;
+
 	_scene_running = false;
+	_scene_paused = false;
 
 	if (_scene) {
 		CallOnStop(_scene->GetRootEntity());
 	}
 }
 
+void SceneLayer::PauseScene() {
+	if (!_scene_running)
+		return;
+
+	_scene_running = false;
+	_scene_paused = true;
+}
+
 bool SceneLayer::IsSceneRunning() {
 	return _scene_running;
+}
+
+bool SceneLayer::IsScenePaused() {
+	return _scene_paused;
 }
 
 void SceneLayer::OnAttach() {

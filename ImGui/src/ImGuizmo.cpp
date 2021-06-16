@@ -2249,9 +2249,9 @@ namespace ImGuizmo
 
             gContext.mRotationAngleOrigin = gContext.mRotationAngle;
 
-            delta[0] = rotationAxisLocalSpace.x * -scalarDelta * 8;
-            delta[1] = rotationAxisLocalSpace.y * -scalarDelta * 8;
-            delta[2] = rotationAxisLocalSpace.z * -scalarDelta * 8;
+            delta[0] = rotationAxisLocalSpace.x * -scalarDelta * 57.2f;
+            delta[1] = rotationAxisLocalSpace.y * -scalarDelta * 57.2f;
+            delta[2] = rotationAxisLocalSpace.z * -scalarDelta * 57.2f;
 
             if (!io.MouseDown[0])
             {

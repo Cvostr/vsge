@@ -161,7 +161,7 @@ void RigidBodyComponent::OnUpdate() {
 }
 
 void RigidBodyComponent::OnDestroy() {
-	if (!_rigidBody) {
+	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
 	}
 }
