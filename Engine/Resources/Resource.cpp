@@ -31,11 +31,6 @@ void Resource::Load() {
 	if (_resourceState == RESOURCE_STATE_UNLOADED) {
 		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(this);
 	}
-	else if (_resourceState == RESOURCE_STATE_LOADED) {
-		PostLoad();
-		SetState(RESOURCE_STATE_READY);
-		FreeLoadedData();
-	}
 }
 
 void Resource::FreeLoadedData() {

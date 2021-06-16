@@ -4,6 +4,7 @@
 #include <Physics/PhysicsLayer.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Scripting/MonoLayer.hpp>
+#include <Resources/ResourceLayer.hpp>
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -34,6 +35,7 @@ Application* VSGEMain() {
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
 	app->AddLayer(new MonoLayer);
+	app->AddLayer(new ResourceLayer);
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();

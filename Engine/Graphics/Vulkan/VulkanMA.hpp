@@ -17,7 +17,6 @@ namespace VSGE {
 	struct VmaVkImage {
 		VkImage Image;
 		void* _allocation;
-		VkDeviceMemory _memory;
 		VmaVkImage() :
 			Image(VK_NULL_HANDLE),
 			_allocation(nullptr)

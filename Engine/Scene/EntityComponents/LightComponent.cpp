@@ -74,4 +74,6 @@ Vec3 LightsourceComponent::GetDirection() {
 	result.y = (sy * cr * cp - cy * sr * sp);
 
 	return result.GetNormalized();
+	//Quat rotation = _entity->GetAbsoluteRotation();
+	//return Vec3(rotation.x, rotation.y, rotation.z).GetNormalized();
 }

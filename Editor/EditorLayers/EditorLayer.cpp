@@ -156,6 +156,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 
 				std::sort(hits.begin(), hits.end(), [](const RayHit& a, const RayHit& b) { return a.GetDistance() < b.GetDistance(); });
 
+			
 				if (hits.size() > 0) {
 					SetPickedEntity((Entity*)hits[0].GetHitObject());
 					insp->SetShowingEntity((Entity*)hits[0].GetHitObject());

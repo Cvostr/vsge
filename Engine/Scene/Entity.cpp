@@ -257,7 +257,7 @@ Entity* Entity::GetChildEntityWithLabelStartsWith(const std::string& label, int&
 	for (auto child : _children) {
 		if (label._Starts_with(child->GetName()) && (len < child->GetName().size())) {
 			result = child;
-			len = child->GetName().size();
+			len = (int)child->GetName().size();
 			int old_len = len;
 
 			Entity* result1 = child->GetChildEntityWithLabelStartsWith(label, len);

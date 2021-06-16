@@ -284,7 +284,7 @@ void VulkanRenderer::StoreWorldObjects() {
 
 		VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
 
-		if (mat->_texturesDirty) {
+		//if (mat->_texturesDirty) {
 			for (MaterialTexture& tex : mat->GetTextures()) {
 				TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
 				if (texture_res == nullptr)
@@ -294,16 +294,12 @@ void VulkanRenderer::StoreWorldObjects() {
 					texture_res->Load();
 				}
 
-				if (texture_res->GetState() == RESOURCE_STATE_LOADED) {
-					texture_res->PostLoad();
-					texture_res->SetState(RESOURCE_STATE_READY);
-				}
 				if (texture_res->GetState() == RESOURCE_STATE_READY) {
 					vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
 					mat->_texturesDirty = false;
 				}
 			}
-		}
+		//}
 
 		if (mat->_paramsDirty) {
 			char* buffer = nullptr;

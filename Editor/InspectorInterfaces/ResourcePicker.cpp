@@ -18,12 +18,17 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 		FileBrowserWindow* fbw = ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
 		ImguiVulkanTexture* texture = fbw->GetCheckerboardTexture();
 
-		if (reference.GetResource()) {
-			texture = fbw->GetTextureResource(reference.GetResource()->GetDataDescription().file_path);
+		Resource* resource = reference.GetResource();
+		
+		if (resource) {
+			if (resource->IsUnloaded())
+				resource->Load();
+			else
+				texture = fbw->GetTextureResource(resource->GetDataDescription().file_path);
 		}
 
-		ImGui::Image(
-			(void*)texture->imtexture, ImVec2(64, 64));
+		if(texture)
+			ImGui::Image((void*)texture->imtexture, ImVec2(64, 64));
 	}else
 		ImGui::Text(reference.GetResourceName().c_str());
 

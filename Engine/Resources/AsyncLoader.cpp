@@ -1,10 +1,12 @@
 #include "AsyncLoader.hpp"
 #include <fstream>
 #include <Core/Logger.hpp>
+#include "ResourceLayer.hpp"
+#include <Engine/Application.hpp>
 
 using namespace VSGE;
 
-void _LDR_load(Resource* resource) {
+void AsyncLoader::LoadResource(Resource* resource) {
     resource->SetState(RESOURCE_STATE_LOADING);
     //Declare blob loader stream
     std::ifstream stream;
@@ -40,6 +42,11 @@ void _LDR_load(Resource* resource) {
     resource->Prepare();
     //Set resource state to loaded
     resource->SetState(RESOURCE_STATE_LOADED);
+    //Send Resource load event
+    mMutex->Lock();
+    ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
+    Application::Get()->ScheduleEvent(rle);
+    mMutex->Release();
 }
 
 void AsyncLoader::AddToQueue(Resource* resource) {
@@ -68,7 +75,7 @@ void AsyncLoader::THRFunc() {
             //unlock thread
             mMutex->Release();
             //Load resource by request
-            _LDR_load(res);
+            LoadResource(res);
         }
     }
 }

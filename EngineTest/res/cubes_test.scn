@@ -6,27 +6,59 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [0, 0, 1]
+    pos: [0.0279635191, -1.1920929e-07, 1]
     scale: [2, 2, 2]
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
         mesh: Cube
       - Component: 2
-        material: Default Material
+        material: emptymat
   - Entity: Cube (1)
     uid: [1400282445, 2539254531, 1237464579, 1897811857]
     active: true
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [0, 0, 8]
+    pos: [-0.225557208, 9.50596809, 8]
     scale: [1, 1, 1]
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
         mesh: Cube
       - Component: 2
-        material: Default Material
+        material: emptymat
       - Component: 8
         mass: 1
+  - Entity: Spot Light
+    uid: [93048231, 4031508709, 3817562668, 694735480]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [13.5469646, 0, 8.17770863]
+    scale: [1, 1, 1]
+    rot: [-0.506645441, 0.348066896, -0.00919812359, -0.788686931]
+    components:
+      - Component: 1
+        light_type: 2
+        intensity: 2
+        range: 15
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+  - Entity: Cube (2)
+    uid: [2278826814, 575420708, 1424792874, 3214824675]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, -8.77754211, 0]
+    scale: [66.77285, 1, 85.5415573]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: material
+      - Component: 8
+        mass: 0

@@ -36,5 +36,7 @@ namespace VSGE {
 		void WaitForLoading(Resource* resource);
 
 		void THRFunc();
+
+		void LoadResource(Resource* resource);
 	};
 }

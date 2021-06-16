@@ -76,16 +76,16 @@ mat4 getBoneTransform(){
 
 void main() { 
     UVCoord = uv;
-    InNormal = normalize(vec3(obj_model * vec4(normal, 0)));
 
     mat4 bone_t = mat4(1.0);
 	if(bones > 0)
 		bone_t = getBoneTransform();
 
+    InNormal = normalize(vec3(obj_model * bone_t * vec4(normal, 0)));
+
     vec3 TangentVec = normalize(vec3(obj_model * vec4(tangent, 0)));
 	vec3 BiTangentVec = normalize(vec3(obj_model * vec4(bitangent, 0)));
-	vec3 NormalVec = normalize(vec3(obj_model * vec4(normal, 0)));
-	TBN = transpose(mat3(TangentVec, BiTangentVec, NormalVec));
+	TBN = transpose(mat3(TangentVec, BiTangentVec, InNormal));
 
     vec4 ModelPos = obj_model * bone_t * vec4(position, 1.0);
     FragPos = ModelPos.xyz;
