@@ -5,6 +5,7 @@
 #include <Scene/SceneLayer.hpp>
 #include <Scripting/MonoLayer.hpp>
 #include <Resources/ResourceLayer.hpp>
+#include <Audio/AudioLayer.hpp>
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -36,6 +37,7 @@ Application* VSGEMain() {
 	app->AddLayer(new SceneLayer);
 	app->AddLayer(new MonoLayer);
 	app->AddLayer(new ResourceLayer);
+	app->AddLayer(new AudioLayer);
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();
