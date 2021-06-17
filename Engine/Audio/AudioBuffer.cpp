@@ -1,5 +1,6 @@
 #include "AudioBuffer.hpp"
 #include <AL/al.h>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -7,15 +8,17 @@ AudioBuffer::AudioBuffer() :
 	_created(false),
 	_audio_buffer(0),
     _channels(1),
-    _bits(16),
+    _bitsPerSample(16),
     _frequency(0)
 {
 
 }
 
 void AudioBuffer::Create() {
-	if(!_created)
-		alGenBuffers(1, &_audio_buffer);
+    if (!_created) {
+        alGenBuffers(1, &_audio_buffer);
+        _created = true;
+    }
 }
 
 void AudioBuffer::Destroy() {
@@ -47,17 +50,17 @@ bool AudioBuffer::loadBufferWAV(byte* buffer) {
     _frequency |= static_cast<uint32>(buffer[25] << 8);
     _frequency |= static_cast<uint32>(buffer[24]);
 
-    _bits = buffer[35] << 8;
-    _bits |= buffer[34];
+    _bitsPerSample = buffer[35] << 8;
+    _bitsPerSample |= buffer[34];
 
-    if (_bits == 8)
+    if (_bitsPerSample == 8)
     {
         if (_channels == 1)
             format = AL_FORMAT_MONO8;
         else if (_channels == 2)
             format = AL_FORMAT_STEREO8;
     }
-    else if (_bits == 16)
+    else if (_bitsPerSample == 16)
     {
         if (_channels == 1)
             format = AL_FORMAT_MONO16;
@@ -66,11 +69,11 @@ bool AudioBuffer::loadBufferWAV(byte* buffer) {
     }
     if (!format)
     {
-       // Logger::Log(LogType::LOG_TYPE_ERROR) << "Incompatible format (" << channels << ", " << bits << ")\n";
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Incompatible format (" << _channels << ", " << _bitsPerSample << ")\n";
         return false;
     }
 
-    int start_offset = 35;
+    int start_offset = 34;
 
     //read 4 bytes, until "data" header found
     while (buffer[start_offset] != 'd' || buffer[start_offset + 1] != 'a' || buffer[start_offset + 2] != 't' || buffer[start_offset + 3] != 'a')
@@ -85,12 +88,16 @@ bool AudioBuffer::loadBufferWAV(byte* buffer) {
 
     start_offset += 4;
 
+    _bitRate = _bitsPerSample * _channels * _frequency / 1000;
+
+    _duration = _size / _bitRate * 8;
+
     //Send data to OpenAL
     alBufferData(_audio_buffer, format, static_cast<void*>(buffer + start_offset), _size, static_cast<int>(_frequency));
     int err = alGetError();
     if (err != AL_NO_ERROR)
     {
-        //Logger::Log(LogType::LOG_TYPE_ERROR) << "Error loading " << err << "\n";
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Error loading " << err << "\n";
         return false;
     }
 

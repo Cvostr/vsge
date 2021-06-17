@@ -62,3 +62,18 @@ Entities:
         material: material
       - Component: 8
         mass: 0
+  - Entity: Audio
+    uid: [475199151, 3866549533, 808755399, 1020744480]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 6
+        clip: file1
+        volume: 1
+        pitch: 1
+        loop: false

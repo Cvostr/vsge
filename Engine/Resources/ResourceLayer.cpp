@@ -9,7 +9,8 @@ void ResourceLayer::OnEvent(const VSGE::IEvent& event) {
 void ResourceLayer::OnResourceEvent(const VSGE::ResourceLoadEvent& event) {
 	if (event.GetResource()->GetResourceType() != RESOURCE_TYPE_TEXTURE
 		&& event.GetResource()->GetResourceType() != RESOURCE_TYPE_MATERIAL
-		&& event.GetResource()->GetResourceType() != RESOURCE_TYPE_ANIMATION)
+		&& event.GetResource()->GetResourceType() != RESOURCE_TYPE_ANIMATION
+		&& event.GetResource()->GetResourceType() != RESOURCE_TYPE_AUDIOCLIP)
 		return;
 
 	event.GetResource()->PostLoad();

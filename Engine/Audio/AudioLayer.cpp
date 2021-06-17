@@ -33,6 +33,11 @@ AudioLayer::AudioLayer() {
 
 	_created = true;
 
+	//set base listener values
+	SetListenerPos(Vec3(0, 0, 0));
+	SetListenerOrientation(Vec3(0, 0, 1), Vec3(0, 1, 0));
+	SetListenerVolume(1.f);
+
 	Logger::Log(LogType::LOG_TYPE_INFO) << "Audio initialized\n";
 }
 

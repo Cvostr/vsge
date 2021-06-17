@@ -9,15 +9,28 @@ namespace VSGE {
 	class AudioSourceComponent : public IEntityComponent {
 	private:
 		bool _playing;
+		bool _playing_queued;
 		uint32 _startTime;
+		uint32 _clipDuration;
 
 		ResourceReference _audioResource;
 
 		bool _loop;
 		float _volume;
 		float _pitch;
+
+		uint32 _audio_source;
+		bool _created;
 	public:
 		AudioSourceComponent();
+		/// <summary>
+		/// Initialize audio source
+		/// </summary>
+		void Create();
+		/// <summary>
+		/// Destroy audio source
+		/// </summary>
+		void Destroy();
 
 		bool IsPlaying();
 
@@ -40,6 +53,8 @@ namespace VSGE {
 		void Pause();
 
 		void Stop();
+
+		void OnPreRender();
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
