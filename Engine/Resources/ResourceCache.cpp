@@ -7,6 +7,7 @@
 #include "ResourceTypes/MeshResource.hpp"
 #include "ResourceTypes/MaterialResource.hpp"
 #include "ResourceTypes/AnimationResource.hpp"
+#include "ResourceTypes/AudioClipResource.hpp"
 
 namespace fs = std::filesystem;
 using namespace VSGE;
@@ -38,6 +39,8 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
         return RESOURCE_TYPE_MATERIAL;
     if (ext == ".vsanim")
         return RESOURCE_TYPE_ANIMATION;
+    if (ext == ".wav")
+        return RESOURCE_TYPE_AUDIOCLIP;
     return RESOURCE_TYPE_NONE;
 }
 
@@ -81,6 +84,9 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     }
     else if (type == RESOURCE_TYPE_ANIMATION) {
         res = new AnimationResource;
+    }
+    else if (type == RESOURCE_TYPE_AUDIOCLIP) {
+        res = new AudioClipResource;
     }
 
     if(res != nullptr)

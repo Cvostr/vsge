@@ -4,7 +4,11 @@
 
 using namespace VSGE;
 
+AudioLayer* AudioLayer::_this = nullptr;
+
 AudioLayer::AudioLayer() {
+	_this = this;
+
 	_openal_device = alcOpenDevice(nullptr);
 
 	if (!_openal_device) {
@@ -27,6 +31,8 @@ AudioLayer::AudioLayer() {
 		return;
 	}
 
+	_created = true;
+
 	Logger::Log(LogType::LOG_TYPE_INFO) << "Audio initialized\n";
 }
 
@@ -45,5 +51,23 @@ void AudioLayer::OnDetach() {
 	if (_openal_device) {
 		alcCloseDevice(_openal_device);
 		_openal_device = nullptr;
+	}
+
+	_created = false;
+}
+
+void AudioLayer::SetListenerPos(const Vec3& pos) {
+	if(_created)
+		alListener3f(AL_POSITION, pos.x, pos.y, pos.z);
+}
+void AudioLayer::SetListenerOrientation(const Vec3& front, const Vec3& up) {
+	if (_created) {
+		ALfloat listenerOri[] = { front.x, front.y, front.z, up.x, up.y, up.z };
+		alListenerfv(AL_ORIENTATION, listenerOri);
+	}
+}
+void AudioLayer::SetListenerVolume(float volume) {
+	if (_created) {
+		alListenerf(AL_GAIN, volume);
 	}
 }

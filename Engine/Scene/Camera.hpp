@@ -161,7 +161,13 @@ namespace VSGE {
 		/// <param name="screen_point">- point on camera surface</param>
 		/// <returns>Position on world</returns>
 		Vec3 ScreenPointToWorldPoint(const Vec2& screen_point);
-
+		/// <summary>
+		/// Project world point to screen point
+		/// </summary>
+		/// <param name="world_point">- point in world</param>
+		/// <returns>Position on screen</returns>
 		Vec2 WorldPointToScreenpoint(const Vec3& world_point);
+
+		void OnPreRender();
 	};
 }

@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "Entity.hpp"
 #include "Engine/Application.hpp"
 #include <Math/MatrixCamera.hpp>
 #include <Math/MathBase.hpp>
@@ -99,4 +100,21 @@ Vec3 Camera::ScreenPointToWorldPoint(const Vec2& screen_point) {
 }
 Vec2 Camera::WorldPointToScreenpoint(const Vec3& world_point) {
 	return Vec2(0, 0);
+}
+
+void Camera::OnPreRender() {
+	Vec3 pos = _entity->GetAbsolutePosition();
+	SetPosition(pos);
+	Quat rot = _entity->GetAbsoluteRotation();
+	Vec3 rot_euler = rot.GetEulerAngles();
+
+	float yaw = rot_euler.y;
+	float pitch = rot_euler.z;
+
+	Vec3 front;
+	front.x = cosf(to_radians(yaw)) * cosf(to_radians(pitch));
+	front.y = -sinf(to_radians(pitch));
+	front.z = sinf(to_radians(yaw)) * cosf(to_radians(pitch));
+
+	SetFront(front.GetNormalized());
 }
