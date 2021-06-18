@@ -1,7 +1,9 @@
 #include "RigidBodyComponent.hpp"
+#include "MeshComponent.hpp"
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <bullet/BulletCollision/CollisionShapes/btCollisionShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
+#include <bullet/BulletCollision/CollisionShapes/btConvexTriangleMeshShape.h>
 #include <Physics/PhysicsLayer.hpp>
 #include "../Entity.hpp"
 
@@ -105,10 +107,26 @@ btTransform RigidBodyComponent::GetEntityTransform() {
 btCollisionShape* RigidBodyComponent::GetCollisionShape() {
 	Vec3 scale = _entity->GetScale();
 
-	btCollisionShape* shape = new btBoxShape(btVector3(btScalar(scale.x),
-		btScalar(scale.y),
-		btScalar(scale.z)));
-	return shape;
+	MeshComponent* mesh_comp = _entity->GetComponent<MeshComponent>();
+
+	if (mesh_comp) {
+		MeshResource* mesh_resource = mesh_comp->GetResourceReference().GetResource<MeshResource>();
+		if (mesh_resource) {
+			if (!mesh_resource->IsReady()) {
+				mesh_resource->Load();
+				return nullptr;
+			}
+
+			Mesh* mesh = mesh_resource->GetMesh();
+			Vec3* pos = mesh->GetPositions();
+
+			btCollisionShape* shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(float) * 3);
+			shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+			return shape;
+		}
+	}
+
+	return nullptr;
 }
 
 void RigidBodyComponent::AddToWorld() {
@@ -122,11 +140,14 @@ void RigidBodyComponent::AddToWorld() {
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
 
+	_collision_shape = GetCollisionShape();
+	if (_collision_shape == nullptr)
+		return;
+
 	btTransform startTransform = GetEntityTransform();
 	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
 
-	_collision_shape = GetCollisionShape();
 	// Info
 	btRigidBody::btRigidBodyConstructionInfo constructionInfo(_mass, motionState, _collision_shape, local_intertia);
 	constructionInfo.m_mass = _mass;
@@ -158,6 +179,8 @@ void RigidBodyComponent::OnUpdate() {
 
 	_entity->SetPosition(pos);
 	_entity->SetRotation(rot);
+
+	Activate();
 }
 
 void RigidBodyComponent::OnDestroy() {

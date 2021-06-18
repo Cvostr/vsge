@@ -23,4 +23,12 @@ void VSGEditor::DrawColliderComponent(VSGE::ColliderComponent* clc) {
 		ImGui::EndCombo();
 	}
 
+	Vec3 center = clc->GetCenter();
+	Vec3 size = clc->GetSize();
+
+	ImGui::InputFloat3("Center", &center.x);
+	ImGui::InputFloat3("Size", &size.x);
+
+	clc->SetCenter(center);
+	clc->SetSize(size);
 }

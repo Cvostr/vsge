@@ -16,6 +16,7 @@ namespace VSGE {
 	protected:
 		std::vector<VertexBufferData> _vertexBuffers;
 		uint32* _indexArray;
+		Vec3* _positions_array; //array of vertex positions, useful for physics
 
 		AABB _meshBoundingBox; //Bounding box of mesh
 		tBonesList _bones; //Bones, attached to this mesh
@@ -47,8 +48,14 @@ namespace VSGE {
 		/// <param name="indices">- Array of indices</param>
 		/// <param name="indicesCount">- Count of indices</param>
 		void SetIndexBuffer(uint32* indices, uint32 indicesCount);
-
+		/// <summary>
+		/// Create mesh for using graphics API
+		/// </summary>
+		/// <returns></returns>
 		virtual bool Create() = 0;
+		/// <summary>
+		/// Destroy created mesh
+		/// </summary>
 		virtual void Destroy() = 0;
 		/// <summary>
 		/// Get count of mesh vertices
@@ -66,6 +73,13 @@ namespace VSGE {
 		/// <summary>
 		/// get aabb of this mesh
 		/// </summary>
+		Vec3* GetPositions() {
+			return _positions_array;
+		}
+		/// <summary>
+		/// Get AABB of mesh
+		/// </summary>
+		/// <returns></returns>
 		const AABB& GetBoundingBox() { return _meshBoundingBox; }
 
 		tBonesList& GetBones() {
@@ -74,11 +88,8 @@ namespace VSGE {
 
 		void SetBones(Bone* bones, uint32 size);
 
-		Mesh() : 
-			_indexArray(nullptr),
-			_verticesCount(0),
-			_indicesCount(0)
-		{}
+		Mesh();
+		~Mesh();
 	};
 
 	Mesh* CreateMesh();

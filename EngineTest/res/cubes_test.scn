@@ -60,8 +60,8 @@ Entities:
         mesh: Cube
       - Component: 2
         material: material
-      - Component: 8
-        mass: 0
+      - Component: 9
+        shape: 0
   - Entity: Audio
     uid: [475199151, 3866549533, 808755399, 1020744480]
     active: true

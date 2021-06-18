@@ -8,6 +8,7 @@
 #include "EntityComponents/ParticleEmitterComponent.hpp"
 #include "EntityComponents/AudioSourceComponent.hpp"
 #include "EntityComponents/RigidBodyComponent.hpp"
+#include "EntityComponents/ColliderComponent.hpp"
 
 using namespace VSGE;
 using namespace YAML;
@@ -149,6 +150,9 @@ void SceneSerializer::DeserializeEntityComponent(Entity* ent, YAML::Node& comp) 
 	}
 	if (component_id == ENTITY_COMPONENT_RIGIDBODY) {
 		component = new RigidBodyComponent;
+	}
+	if (component_id == ENTITY_COMPONENT_COLLIDER) {
+		component = new ColliderComponent;
 	}
 
 	if (component == nullptr)
