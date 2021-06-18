@@ -19,17 +19,22 @@ void VSGEditor::DrawAudioSourceComponent(VSGE::AudioSourceComponent* asc) {
 	ImGui::Checkbox("Loop", &loop);
 	asc->SetLoop(loop);
 
-	if (!asc->IsPlaying()) {
-		if (ImGui::Button("Play")) {
+	if (asc->IsPaused()) {
+		if (ImGui::Button("Resume", ImVec2(ImGui::GetWindowWidth(), 0))) {
 			asc->Play();
 		}
 	}
-	else {
-		if (ImGui::Button("Stop")) {
+	if (!asc->IsPlaying() && !asc->IsPaused()) {
+		if (ImGui::Button("Play", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			asc->Play();
+		}
+	}
+	else if(!asc->IsPaused()) {
+		if (ImGui::Button("Stop", ImVec2(ImGui::GetWindowWidth() / 2, 0))) {
 			asc->Stop();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Pause")) {
+		if (ImGui::Button("Pause", ImVec2(ImGui::GetWindowWidth() / 2, 0))) {
 			asc->Pause();
 		}
 	}

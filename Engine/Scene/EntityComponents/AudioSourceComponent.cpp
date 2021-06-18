@@ -13,7 +13,10 @@ AudioSourceComponent::AudioSourceComponent() :
 
 	_playing(false),
 	_playing_queued(false),
+	_paused(false),
+
 	_startTime(0),
+	_clipDuration(0),
 	_created(false)
 {
 	_audioResource.SetResourceType(RESOURCE_TYPE_AUDIOCLIP);
@@ -52,6 +55,10 @@ bool AudioSourceComponent::IsPlaying() {
 	return _playing;
 }
 
+bool AudioSourceComponent::IsPaused() {
+	return _paused;
+}
+
 float AudioSourceComponent::GetPitch() {
 	return _pitch;
 }
@@ -81,7 +88,7 @@ ResourceReference& AudioSourceComponent::GetResourceReference() {
 }
 
 void AudioSourceComponent::Play() {
-	if (_playing)
+	if (_playing )
 		return;
 
 	if (!_created)
@@ -101,6 +108,7 @@ void AudioSourceComponent::Play() {
 
 			_startTime = (uint32)TimePerf::Get()->GetCurrentTime();
 			_playing = true;
+			_paused = false;
 			_playing_queued = false;
 		}
 	}
@@ -109,6 +117,8 @@ void AudioSourceComponent::Play() {
 void AudioSourceComponent::Pause() {
 	if (_created && _playing) {
 		alSourcePause(_audio_source);
+		_paused = true;
+		_playing = false;
 
 		uint32 current_time = (uint32)TimePerf::Get()->GetCurrentTime();
 		uint32 delta = current_time - _startTime;
@@ -118,12 +128,13 @@ void AudioSourceComponent::Pause() {
 }
 
 void AudioSourceComponent::Stop() {
-	if (!_playing)
+	if (!_playing && !_paused)
 		return;
 
 	alSourceStop(_audio_source);
 
 	_playing = false;
+	_paused = false;
 }
 
 void AudioSourceComponent::OnPreRender() {
@@ -136,9 +147,13 @@ void AudioSourceComponent::OnPreRender() {
 		uint32 delta = current_time - _startTime;
 
 		if (delta >= _clipDuration) {
-			_playing = false;
+			Stop();
 		}
 	}
+}
+
+void AudioSourceComponent::OnDestroy() {
+	Stop();
 }
 
 void AudioSourceComponent::Serialize(YAML::Emitter& e) {

@@ -10,10 +10,11 @@
 #include "../VulkanCommandBuffer.hpp"
 #include "../VulkanPipeline.hpp"
 
-#define MAX_OBJECTS_RENDER 10000
-#define MAX_ANIMATION_MATRICES 10000
+#define MAX_OBJECTS_RENDER 20000
+#define MAX_ANIMATION_MATRICES 20480
 #define UNI_ALIGN 256
 #define MATERIAL_SIZE 512
+#define VERTEX_DESCR_SETS 20
 
 namespace VSGE {
 
@@ -91,6 +92,8 @@ namespace VSGE {
 		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
 
 		void BindMaterial(Material* mat);
+
+		uint32 _writtenBones;
 
 	public:
 

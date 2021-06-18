@@ -10,6 +10,7 @@ namespace VSGE {
 	private:
 		bool _playing;
 		bool _playing_queued;
+		bool _paused;
 		uint32 _startTime;
 		uint32 _clipDuration;
 
@@ -34,6 +35,8 @@ namespace VSGE {
 
 		bool IsPlaying();
 
+		bool IsPaused();
+
 		bool IsLoop();
 
 		void SetLoop(bool loop);
@@ -55,6 +58,7 @@ namespace VSGE {
 		void Stop();
 
 		void OnPreRender();
+		void OnDestroy();
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

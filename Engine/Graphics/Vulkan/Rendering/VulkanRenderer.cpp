@@ -75,10 +75,10 @@ void VulkanRenderer::SetupRenderer() {
 	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mCameraShaderBuffer->Create(UNI_ALIGN, LOCATION_GPU);
 
-	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mTransformsShaderBuffer->Create(UNI_ALIGN * MAX_OBJECTS_RENDER, LOCATION_GPU);
+	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNBUFFER);
+	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN, LOCATION_GPU);
 
-	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNBUFFER);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
 
 	_lightsBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -112,14 +112,15 @@ void VulkanRenderer::SetupRenderer() {
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;
 	mMaterialsDescriptorPool->SetDescriptorSetsCount(8000);
 	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8000);
-	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VERTEX_DESCR_SETS);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VERTEX_DESCR_SETS * 2);
 	mMaterialsDescriptorPool->Create();
 
-	for (uint32 desc_i = 0; desc_i < MAX_OBJECTS_RENDER; desc_i++) {
+	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_VERTEX_BIT); //Animation
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_VERTEX_BIT); //Animation
 
 		mVertexDescriptorSets.push_back(set);
 	}
@@ -135,13 +136,13 @@ void VulkanRenderer::SetupRenderer() {
 	//Create POOL
 	mObjectsPool->Create();
 	//Create descriptor sets
-	for (uint32 desc_i = 0; desc_i < MAX_OBJECTS_RENDER; desc_i++) {
+	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = mVertexDescriptorSets[desc_i];
 		set->Create();
 
 		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
-		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * UNI_ALIGN, sizeof(Mat4));
-		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, 0, 64 * 201);
+		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
+		set->WriteDescriptorBuffer(2, mAnimationTransformsShaderBuffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
 	}
 	
 	mDeferredPassSet->Create();
@@ -231,7 +232,10 @@ void VulkanRenderer::StoreWorldObjects() {
 
 
 	Mat4* transforms = new Mat4[_entitiesToRender.size() * 4];
-	Mat4* anim = new Mat4[1000];
+	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / 64];
+
+	_writtenBones = 0;
+
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i ++) {
 		Entity* entity = _entitiesToRender[e_i];
 		transforms[e_i * 4] = entity->GetWorldTransform();
@@ -258,15 +262,20 @@ void VulkanRenderer::StoreWorldObjects() {
 				//Calculate result matrix
 				Mat4 matrix = bone->GetOffsetMatrix().transpose() * node->GetWorldTransform() * rootNodeTransform;
 				//Send skinned matrix to skinning uniform buffer
-				anim[bone_i] = matrix;
+				anim[_writtenBones] = matrix;
+				_writtenBones++;
 			}
+		}
+
+		if (_writtenBones % 4 > 0) {
+			_writtenBones += 4 - (_writtenBones % 4);
 		}
 	}
 
 	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * _entitiesToRender.size(), transforms);
 	delete[] transforms;
 
-	mAnimationTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 1000, anim);
+	mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
 	delete[] anim;
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
@@ -314,6 +323,7 @@ void VulkanRenderer::StoreWorldObjects() {
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
+	_writtenBones = 0;
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
 		Entity* entity = _entitiesToRender[e_i];
@@ -334,13 +344,19 @@ void VulkanRenderer::StoreWorldObjects() {
 		if (mresource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mresource->GetMesh();
 			
-			
-			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[e_i]);
+			uint32 offsets[2] = { e_i * UNI_ALIGN, _writtenBones * 64 };
+			_writtenBones += mesh->GetBones().size();
+
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets);
 			mGBufferCmdbuf->BindMesh(*mesh);
 			if (mesh->GetIndexCount() > 0)
 				mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
 			else
 				mGBufferCmdbuf->Draw(mesh->GetVerticesCount());
+		}
+
+		if (_writtenBones % 4 > 0) {
+			_writtenBones += 4 - (_writtenBones % 4);
 		}
 	}
 

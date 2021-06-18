@@ -16,16 +16,16 @@ void VSGEditor::DrawAnimatorComponent(VSGE::AnimatorComponent* anic) {
 		anic->AddNewAnimation();
 	}
 	if (!anic->IsPlaying()) {
-		if (ImGui::Button("Play")) {
+		if (ImGui::Button("Play", ImVec2(ImGui::GetWindowWidth(), 0))) {
 			anic->Play();
 		}
 	}
 	else {
-		if (ImGui::Button("Stop")) {
+		if (ImGui::Button("Stop", ImVec2(ImGui::GetWindowWidth() / 2, 0))) {
 			anic->Stop();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Pause")) {
+		if (ImGui::Button("Pause", ImVec2(ImGui::GetWindowWidth() / 2, 0))) {
 			anic->Pause();
 		}
 	}
