@@ -98,6 +98,8 @@ KeyCode GetKeyCode(int sdl_code) {
         return KEY_CODE_LEFT;
     case SDLK_RIGHT:
         return KEY_CODE_RIGHT;
+    case SDLK_DELETE:
+        return KEY_CODE_DELETE;
 
     case SDLK_F1:
         return KEY_CODE_F1;

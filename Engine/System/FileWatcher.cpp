@@ -80,6 +80,35 @@ void FileWatcher::WatchWin32() {
                 delete[] mb_filepath;
             }
 
+            if (record->Action == FILE_ACTION_RENAMED_OLD_NAME) {
+                char* mb_filepath = new char[record->FileNameLength / sizeof(WCHAR) + 1];
+                wcstombs(mb_filepath, record->FileName, record->FileNameLength / sizeof(WCHAR));
+                mb_filepath[record->FileNameLength / sizeof(WCHAR)] = '\0';
+
+                _oldFileName = std::string(mb_filepath);
+                delete[] mb_filepath;
+            }
+
+            if (record->Action == FILE_ACTION_RENAMED_NEW_NAME) {
+                char* mb_filepath = new char[record->FileNameLength / sizeof(WCHAR) + 1];
+                wcstombs(mb_filepath, record->FileName, record->FileNameLength / sizeof(WCHAR));
+                mb_filepath[record->FileNameLength / sizeof(WCHAR)] = '\0';
+
+                std::string newFileName = std::string(mb_filepath);
+                delete[] mb_filepath;
+
+                FileChageEvent* fc = new FileChageEvent(
+                    _oldFileName,
+                    this->mWatchingDirectory + "\\" + _oldFileName,
+                    FCAT_RENAMED,
+                    newFileName,
+                    this->mWatchingDirectory + "\\" + newFileName);
+
+                mMutex->Lock();
+                Application::Get()->ScheduleEvent(fc);
+                mMutex->Release();
+            }
+
             if (!record->NextEntryOffset)
                 break;
             else

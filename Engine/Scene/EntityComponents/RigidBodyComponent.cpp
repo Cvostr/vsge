@@ -147,6 +147,9 @@ void RigidBodyComponent::AddToWorld() {
 	if (_collision_shape == nullptr)
 		return;
 
+	if(!_rigidBody)
+		_collision_shape->calculateLocalInertia(_mass, local_intertia);
+
 	btTransform startTransform = GetEntityTransform();
 	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
@@ -173,12 +176,11 @@ void RigidBodyComponent::OnUpdate() {
 	if (!_rigidBody)
 		AddToWorld();
 
-	btTransform current_transform = _rigidBody->getCenterOfMassTransform();
-	btVector3 bullet_pos = current_transform.getOrigin();
-	btQuaternion bullet_rot = current_transform.getRotation();
+	btVector3 bullet_pos = _rigidBody->getCenterOfMassPosition();
+	btQuaternion bullet_rot = _rigidBody->getOrientation();
 
 	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
-	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
+	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), -bullet_rot.getZ(), bullet_rot.getW());
 
 	_entity->SetPosition(pos);
 	_entity->SetRotation(rot);
