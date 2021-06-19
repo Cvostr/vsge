@@ -87,6 +87,8 @@ KeyCode GetKeyCode(int sdl_code) {
         return KEY_CODE_LALT;
     case SDLK_RALT:
         return KEY_CODE_RALT;
+    case SDLK_BACKSPACE:
+        return KEY_CODE_BACKSPACE;
 
     case SDLK_UP:
         return KEY_CODE_UP;
@@ -96,6 +98,31 @@ KeyCode GetKeyCode(int sdl_code) {
         return KEY_CODE_LEFT;
     case SDLK_RIGHT:
         return KEY_CODE_RIGHT;
+
+    case SDLK_F1:
+        return KEY_CODE_F1;
+    case SDLK_F2:
+        return KEY_CODE_F2;
+    case SDLK_F3:
+        return KEY_CODE_F3;
+    case SDLK_F4:
+        return KEY_CODE_F4;
+    case SDLK_F5:
+        return KEY_CODE_F5;
+    case SDLK_F6:
+        return KEY_CODE_F6;
+    case SDLK_F7:
+        return KEY_CODE_F7;
+    case SDLK_F8:
+        return KEY_CODE_F8;
+    case SDLK_F9:
+        return KEY_CODE_F9;
+    case SDLK_F10:
+        return KEY_CODE_F10;
+    case SDLK_F11:
+        return KEY_CODE_F11;
+    case SDLK_F12:
+        return KEY_CODE_F12;
     }
     return (KeyCode)sdl_code;
 }

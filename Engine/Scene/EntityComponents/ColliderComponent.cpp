@@ -44,6 +44,8 @@ void ColliderComponent::SetCenter(const Vec3& center) {
 void ColliderComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
+	//release old collider shape
+	//SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
 
@@ -86,6 +88,10 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 	}
 	}
 
+	if (shape) {
+		shape->setLocalScaling(btVector3(_size.x, _size.y, _size.z));
+	}
+
 	return shape;
 }
 
@@ -114,7 +120,9 @@ void ColliderComponent::OnUpdate() {
 void ColliderComponent::OnDestroy() {
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+		//delete _rigidBody;
 	}
+	SAFE_RELEASE(_collision_shape)
 }
 
 template<>

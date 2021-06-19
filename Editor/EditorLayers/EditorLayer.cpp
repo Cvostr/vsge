@@ -185,12 +185,24 @@ void EditorLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
 		InputState.isLCrtlHold = false;
 		break;
 	}
+
 }
 
 void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
+	ImGuiLayer* imgui = ImGuiLayer::Get();
+	ToolbarWindow* tlbw = imgui->GetWindow<ToolbarWindow>();
 	TimePerf* time = TimePerf::Get();
 	Vec3 cam_pos_offset(0.f);
 	switch (kbd.GetKeyCode()) {
+	case KEY_CODE_BACKSPACE:
+		imgui->GetWindow<FileBrowserWindow>()->cd_up();
+		break;
+	case KEY_CODE_F5:
+		tlbw->PlayScene();
+		break;
+	case KEY_CODE_F6:
+		tlbw->PauseScene();
+		break;
 	case KEY_CODE_LCTRL:
 		InputState.isLCrtlHold = true;
 		break;

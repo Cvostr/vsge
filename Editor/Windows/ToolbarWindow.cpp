@@ -38,33 +38,17 @@ void ToolbarWindow::OnDrawWindow() {
         if (!scene_layer->IsSceneRunning()) {
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2, 0));
             if (ImGui::Button("Play", ImVec2(BTN_SIZE, BTN_SIZE))) {
-                if (!scene_layer->IsScenePaused()) {
-                    //Save scene
-                    VSGE::SceneSerializer sc;
-                    sc.SetScene(scene_layer->GetWorkingScene());
-                    sc.Serialize("temp_scene.scn");
-                }
-                //Start scene execution
-                scene_layer->StartScene();
+                PlayScene();
             }
         }
         else {
             ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2 - BTN_SIZE / 2, 0));
             if (ImGui::Button("Pause", ImVec2(BTN_SIZE, BTN_SIZE))) {
-                scene_layer->PauseScene();
+                PauseScene();
             }
             ImGui::SameLine();
             if (ImGui::Button("Stop", ImVec2(BTN_SIZE, BTN_SIZE))) {
-                scene_layer->StopScene();
-
-                InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
-                insp->SetShowingEntity(nullptr);
-                //Clear scene
-                scene_layer->GetWorkingScene()->NewScene();
-                //Deserialize temp scene
-                VSGE::SceneSerializer ss;
-                ss.SetScene(scene_layer->GetWorkingScene());
-                ss.Deserialize("temp_scene.scn");
+                StopScene();
             }
         }
 
@@ -73,6 +57,41 @@ void ToolbarWindow::OnDrawWindow() {
 
     
     SetSize(app->GetWindow().GetWindowWidth(), 50);
+}
+
+void ToolbarWindow::PlayScene() {
+    VSGE::Application* app = VSGE::Application::Get();
+    VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
+
+    if (!scene_layer->IsScenePaused()) {
+        //Save scene
+        VSGE::SceneSerializer sc;
+        sc.SetScene(scene_layer->GetWorkingScene());
+        sc.Serialize("temp_scene.scn");
+    }
+    //Start scene execution
+    scene_layer->StartScene();
+}
+void ToolbarWindow::PauseScene() {
+    VSGE::Application* app = VSGE::Application::Get();
+    VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
+
+    scene_layer->PauseScene();
+}
+void ToolbarWindow::StopScene() {
+    VSGE::Application* app = VSGE::Application::Get();
+    VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
+
+    scene_layer->StopScene();
+
+    InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
+    insp->SetShowingEntity(nullptr);
+    //Clear scene
+    scene_layer->GetWorkingScene()->NewScene();
+    //Deserialize temp scene
+    VSGE::SceneSerializer ss;
+    ss.SetScene(scene_layer->GetWorkingScene());
+    ss.Deserialize("temp_scene.scn");
 }
 
 ToolbarWindow::ToolbarWindow() {

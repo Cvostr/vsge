@@ -137,6 +137,9 @@ void RigidBodyComponent::AddToWorld() {
 		local_intertia = _rigidBody ? _rigidBody->getLocalInertia() : local_intertia;
 		_collision_shape->calculateLocalInertia(_mass, local_intertia);
 	}
+
+	//release old collider shape
+	//SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
 
@@ -184,7 +187,11 @@ void RigidBodyComponent::OnUpdate() {
 }
 
 void RigidBodyComponent::OnDestroy() {
+	
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+		//delete _rigidBody->getMotionState();
+		//delete _rigidBody;
 	}
+	SAFE_RELEASE(_collision_shape)
 }
