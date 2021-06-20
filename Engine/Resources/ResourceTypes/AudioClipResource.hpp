@@ -12,7 +12,15 @@ namespace VSGE {
 			_buffer = new AudioBuffer;
 		}
 
+		~AudioClipResource() {
+			delete _buffer;
+		}
+
 		AudioBuffer* GetAudioBuffer() { return _buffer; }
+
+		void Release() {
+			_buffer->Destroy();
+		}
 
 		void PostLoad() {
 			_buffer->loadBufferWAV(_loadedData);

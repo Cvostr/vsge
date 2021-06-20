@@ -1,5 +1,6 @@
 #include "Resource.hpp"
 #include "ResourceCache.hpp"
+#include <Core/Time.hpp>
 
 using namespace VSGE;
 
@@ -25,6 +26,10 @@ byte* Resource::GetLoadedData() {
 
 void Resource::SetLoadedData(byte* data) {
 	_loadedData = data;
+}
+
+void Resource::Use() {
+	_lastUseFrame = TimePerf::Get()->GetFramesCount();
 }
 
 void Resource::Load() {

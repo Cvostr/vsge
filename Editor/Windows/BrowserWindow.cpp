@@ -92,7 +92,7 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
 
 
     }
-    else if((resource = GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
+    else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
         if (resource->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
             MaterialResource* mat = (MaterialResource*)resource;
             InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
@@ -205,7 +205,7 @@ void FileBrowserWindow::OnDrawWindow() {
         if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
 
         if (e->isMaterial()) {
-            MaterialResource* mat = (MaterialResource*)GetResourceWithFilePath(e->abs_path);
+            MaterialResource* mat = (MaterialResource*)ResourceCache::Get()->GetResourceWithFilePath(e->abs_path);
             if (mat) {
                 if (mat->GetState() != RESOURCE_STATE_READY) {
                     mat->Load();
@@ -286,16 +286,6 @@ void FileBrowserWindow::OnDrawWindow() {
     ImGui::End();
 }
 
-VSGE::Resource* FileBrowserWindow::GetResourceWithFilePath(const std::string& fpath) {
-    VSGE::ResourceCache* cache = VSGE::ResourceCache::Get();
-    for (uint32 res_i = 0; res_i < cache->GetResourcesCount(); res_i++) {
-        VSGE::Resource* res = cache->GetResources()[res_i];
-        if (res->GetDataDescription().file_path == fpath)
-            return res;
-    }
-    return nullptr;
-}
-
 ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fname) {
     STRIMGVKT* ptr = nullptr;
     for (auto& texture_res : mTextureResources) {
@@ -313,7 +303,7 @@ ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fna
 
     if (ptr != nullptr) {
         if (ptr->second == nullptr) {
-            TextureResource* texture = (TextureResource*)GetResourceWithFilePath(fname);
+            TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
             if (texture->IsUnloaded()) {
                 texture->Load();
             }

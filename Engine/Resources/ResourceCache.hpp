@@ -47,6 +47,8 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="res"></param>
 		void PushResource(Resource* res);
+
+		void RemoveResource(Resource* resource);
 		/// <summary>
 		/// Get resource with specified name
 		/// </summary>
@@ -54,6 +56,11 @@ namespace VSGE {
 		/// <returns>pointer to resource</returns>
 		Resource* GetResource(const std::string& name);
 
+		Resource* GetResourceWithFilePath(const std::string& fpath);
+		/// <summary>
+		/// Add resource from specified file on disk
+		/// </summary>
+		/// <param name="path"></param>
 		void AddResourceFile(const std::string& path);
 		/// <summary>
 		/// Add all resource in specified directory and its subdirectories

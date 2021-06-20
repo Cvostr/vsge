@@ -13,7 +13,15 @@ namespace VSGE {
 			_texture = CreateTexture();
 		}
 
+		~TextureResource() {
+			delete _texture;
+		}
+
 		Texture* GetTexture() { return _texture; }
+
+		void Release() {
+			_texture->Destroy();
+		}
 
 		void PostLoad() {
 			_texture->CreateFromBuffer(_loadedData, _description.size);

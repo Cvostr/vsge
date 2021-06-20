@@ -21,28 +21,28 @@ namespace VSGE {
 
 	class GpuBuffer : public IGpuObject {
 	protected:
-		uint32 mSize;
-		GpuBufferType mType;
+		uint32 _size;
+		GpuBufferType _type;
 		byte* mCpuBuffer;
-		BufferDeviceLocation mDeviceLocation;
+		BufferDeviceLocation _deviceLocation;
 	public:
 		GpuBuffer() : 
-			mType(GPU_BUFFER_TYPE_NONE),
-			mSize(0),
+			_type(GPU_BUFFER_TYPE_NONE),
+			_size(0),
 			mCpuBuffer(nullptr),
-			mDeviceLocation(LOCATION_CPU_GPU)
+			_deviceLocation(LOCATION_CPU_GPU)
 		{}
 		GpuBuffer(GpuBufferType type) : 
-			mType(type), 
-			mSize(0), 
+			_type(type),
+			_size(0),
 			mCpuBuffer(nullptr),
-			mDeviceLocation(LOCATION_CPU_GPU)
+			_deviceLocation(LOCATION_CPU_GPU)
 		{}
 		/// <summary>
 		/// Get size of buffer
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetSize() { return mSize; }
+		uint32 GetSize() { return _size; }
 		/// <summary>
 		/// Create buffer and allocate memory for it
 		/// </summary>

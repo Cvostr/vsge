@@ -10,16 +10,7 @@ VSGE::Animation::Animation() :
     _duration(0) {}
 
 VSGE::Animation::~Animation() {
-    SAFE_RELEASE_ARR(channels)
-}
-
-VSGE::AnimationChannel::AnimationChannel()
-{
-    anim_ptr = nullptr;
-}
-
-VSGE::AnimationChannel::~AnimationChannel() {
-
+    Release();
 }
 
 double Animation::GetDuration() { return _duration; }
@@ -59,6 +50,62 @@ AnimationChannel* Animation::GetChannelByEntityName(const std::string& node_name
         }
     }
     return result;
+}
+
+void Animation::CopyTo(Animation* anim) {
+    anim->SetName(_name);
+    anim->SetDuration(GetDuration());
+    anim->SetTPS(GetTPS());
+    anim->SetNumChannels(_numChannels);
+
+    for (uint32 channel_i = 0; channel_i < _numChannels; channel_i++) {
+        anim->GetChannels()[channel_i].anim_ptr = anim;
+        channels[channel_i].CopyTo(&anim->GetChannels()[channel_i]);
+    }
+}
+
+void Animation::Release() {
+    SAFE_RELEASE_ARR(channels);
+}
+
+
+//--------------------------------------ANIMATION CHANNEL-----------------------------
+
+
+VSGE::AnimationChannel::AnimationChannel()
+{
+    anim_ptr = nullptr;
+}
+
+VSGE::AnimationChannel::~AnimationChannel() {
+
+}
+
+void AnimationChannel::CopyTo(AnimationChannel* channel) {
+    channel->SetBoneName(GetBoneName());
+
+    channel->SetPositionKeysCount(pos.keysCount);
+    channel->SetScaleKeysCount(scale.keysCount);
+    channel->SetRotationKeysCount(rot.keysCount);
+
+    for (uint32 pos_i = 0; pos_i < pos.keysCount; pos_i++) {
+        //copy pos vector
+        channel->GetPosValues()->values[pos_i] = pos.values[pos_i];
+        //copy position timings
+        channel->GetPosValues()->times[pos_i] = pos.times[pos_i];
+    }
+    for (uint32 sca_i = 0; sca_i < scale.keysCount; sca_i++) {
+        //reading scale vector
+        channel->GetScaleValues()->values[sca_i] = scale.values[sca_i];
+        //Read scale timings
+        channel->GetScaleValues()->times[sca_i] = scale.times[sca_i];
+    }
+    for (uint32 rot_i = 0; rot_i < rot.keysCount; rot_i++) {
+        //reading scale vector
+        channel->GetRotationValues()->values[rot_i] = rot.values[rot_i];
+        //Read rotation timings
+        channel->GetRotationValues()->times[rot_i] = rot.times[rot_i];
+    }
 }
 
 uint32 AnimationChannel::getPositionIndex(double Time) {
@@ -128,43 +175,4 @@ Quat AnimationChannel::getRotationInterpolated(double Time) {
     Quat q2 = rot.values[index2];
 
     return q1.slerp(q2, static_cast<float>(delta));
-}
-
-void Animation::CopyTo(Animation* anim) {
-    anim->SetName(_name);
-    anim->SetDuration(GetDuration());
-    anim->SetTPS(GetTPS());
-    anim->SetNumChannels(_numChannels);
-
-    for (uint32 channel_i = 0; channel_i < _numChannels; channel_i++) {
-        anim->GetChannels()[channel_i].anim_ptr = anim;
-        channels[channel_i].CopyTo(&anim->GetChannels()[channel_i]);
-    }
-}
-
-void AnimationChannel::CopyTo(AnimationChannel* channel) {
-    channel->SetBoneName(GetBoneName());
-
-    channel->SetPositionKeysCount(pos.keysCount);
-    channel->SetScaleKeysCount(scale.keysCount);
-    channel->SetRotationKeysCount(rot.keysCount);
-
-    for (uint32 pos_i = 0; pos_i < pos.keysCount; pos_i++) {
-        //copy pos vector
-        channel->GetPosValues()->values[pos_i] = pos.values[pos_i];
-        //copy position timings
-        channel->GetPosValues()->times[pos_i] = pos.times[pos_i];
-    }
-    for (uint32 sca_i = 0; sca_i < scale.keysCount; sca_i++) {
-        //reading scale vector
-        channel->GetScaleValues()->values[sca_i] = scale.values[sca_i];
-        //Read scale timings
-        channel->GetScaleValues()->times[sca_i] = scale.times[sca_i];
-    }
-    for (uint32 rot_i = 0; rot_i < rot.keysCount; rot_i++) {
-        //reading scale vector
-        channel->GetRotationValues()->values[rot_i] = rot.values[rot_i];
-        //Read rotation timings
-        channel->GetRotationValues()->times[rot_i] = rot.times[rot_i];
-    }
 }

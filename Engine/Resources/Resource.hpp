@@ -37,7 +37,8 @@ namespace VSGE {
 	class Resource {
 	protected:
 		ResourceState _resourceState;
-		uint32 mMemoryUse;
+		uint32 _memoryUse;
+		uint64 _lastUseFrame;
 		std::string _name;
 
 		byte* _loadedData;
@@ -66,16 +67,22 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="State"></param>
 		void SetState(const ResourceState& State) { _resourceState = State; }
-
+		/// <summary>
+		/// Is resource fully unloaded
+		/// </summary>
+		/// <returns></returns>
 		bool IsUnloaded() { return _resourceState == RESOURCE_STATE_UNLOADED; }
-
+		/// <summary>
+		/// Is resource loaded and ready to use
+		/// </summary>
+		/// <returns></returns>
 		bool IsReady() { return _resourceState == RESOURCE_STATE_READY; }
 		/// <summary>
 		/// Get size of memory, allocated for this resource
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetMemoryUse() { return mMemoryUse; }
-		void SetMemoryUse(uint32 memory) { mMemoryUse = memory; }
+		uint32 GetMemoryUse() { return _memoryUse; }
+		void SetMemoryUse(uint32 memory) { _memoryUse = memory; }
 		/// <summary>
 		/// Get pointer to parent resource
 		/// </summary>
@@ -86,18 +93,41 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="resource"></param>
 		void SetParent(Resource* resource);
-
+		/// <summary>
+		/// Set data description
+		/// </summary>
+		/// <param name="desc"> - resource description</param>
 		void SetDataDescription(const DataDescription& desc);
-
+		/// <summary>
+		/// Get data description
+		/// </summary>
+		/// <returns></returns>
 		const DataDescription& GetDataDescription();
 
 		void SetLoadedData(byte* data);
-
+		/// <summary>
+		/// Free memory of loaded data
+		/// </summary>
 		void FreeLoadedData();
-
+		/// <summary>
+		/// Get loaded data
+		/// </summary>
+		/// <returns></returns>
 		byte* GetLoadedData();
+		/// <summary>
+		/// Get last frame number, where this resource was used
+		/// </summary>
+		/// <returns></returns>
+		uint64 GetLastUseFrame() {
+			return _lastUseFrame;
+		}
+		/// <summary>
+		/// Mark texture as used in this frame
+		/// </summary>
+		void Use();
 
 		virtual void Load();
+		virtual void Release() {}
 		virtual void Prepare() {}
 		virtual void PostLoad() {}
 		 
@@ -106,7 +136,8 @@ namespace VSGE {
 		Resource() :
 			_parent(nullptr),
 			_resourceState(RESOURCE_STATE_UNLOADED),
-			mMemoryUse(0),
+			_memoryUse(0),
+			_lastUseFrame(0),
 			_loadedData(nullptr)
 		{}
 	};

@@ -14,7 +14,15 @@ namespace VSGE {
 			_animation = new Animation;
 		}
 
+		~AnimationResource() {
+			delete _animation;
+		}
+
 		Animation* GetAnimation() { return _animation; }
+
+		void Release() {
+			_animation->Release();
+		}
 
 		void PostLoad() {
 			ImportedAnimationFile iaf;

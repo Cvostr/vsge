@@ -16,6 +16,10 @@ namespace VSGE {
 
 		Material* GetMaterial() { return _material; }
 
+		void Release() {
+
+		}
+
 		void PostLoad() {
 			_material->Deserialize(_loadedData, _description.size);
 		}

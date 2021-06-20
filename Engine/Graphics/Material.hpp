@@ -176,8 +176,8 @@ namespace VSGE {
 		/// <summary>
 		/// Generate buffer of params that ready to send on gpu shader
 		/// </summary>
-		/// <param name="out"></param>
-		/// <returns></returns>
+		/// <param name="out">- buffer to copy to</param>
+		/// <returns>size of copied data</returns>
 		uint32 CopyParamsToBuffer(char** out);
 		/// <summary>
 		/// Set texture resource to slot with specified name

@@ -242,6 +242,40 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 		//Try to add this file as resource
 		ResourceCache::Get()->AddResourceFile(fce.GetAbsFilePath());
 	}
+	if (fce.GetActionType() == FCAT_DELETED) {
+		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
+		if (res) {
+			ResourceCache::Get()->RemoveResource(res);
+			delete res;
+		}
+	}
+	if (fce.GetActionType() == FCAT_RENAMED) {
+		//Try to add this file as resource
+		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
+		if (res) {
+			DataDescription res_desc = res->GetDataDescription();
+			res_desc.file_path = fce.GetNewAbsFilePath();
+			uint32 filename_pos = 0;
+			uint32 ext_pos = 0;
+
+			for (uint32 i = 0; i < res_desc.file_path.size(); i++) {
+				char cur_char = res_desc.file_path[i];
+				if (cur_char == '\\' || cur_char == '/')
+					filename_pos = i;
+				if (cur_char == '.')
+					ext_pos = i;
+			}
+
+			std::string res_name = "";
+			for (uint32 i = filename_pos + 1; i < ext_pos; i++) {
+				char cur_char = res_desc.file_path[i];
+				res_name.push_back(cur_char);
+			}
+
+			res->SetName(res_name);
+			res->SetDataDescription(res_desc);
+		}
+	}
 }
 
 void EditorLayer::OnWindowClose(const VSGE::EventWindowClose& close) {

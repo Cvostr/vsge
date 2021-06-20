@@ -45,6 +45,7 @@ namespace VSGE {
         AnimationChannel* GetChannelByEntityName(const std::string& node_name);
 
         void CopyTo(Animation* anim);
+        void Release();
 
         Animation();
         ~Animation();

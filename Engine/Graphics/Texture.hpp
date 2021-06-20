@@ -54,6 +54,10 @@ namespace VSGE {
             _format(FORMAT_RGBA)
         {}
 
+        ~Texture() {
+            Destroy();
+        }
+
         TextureFormat GetFormat() { return _format; }
         uint32 GetMipsCount() { return _mipLevels; }
         uint32 GetLayersCount() { return _layers; }

@@ -30,6 +30,15 @@ Resource* ResourceCache::GetResource(const std::string& name) {
     return nullptr;
 }
 
+Resource* ResourceCache::GetResourceWithFilePath(const std::string& fpath) {
+    for (uint32 res_i = 0; res_i < GetResourcesCount(); res_i++) {
+        VSGE::Resource* res = GetResources()[res_i];
+        if (res->GetDataDescription().file_path == fpath)
+            return res;
+    }
+    return nullptr;
+}
+
 ResourceType GetTypeByFileExt(const std::string& ext) {
     if (ext == ".png" || ext == ".dds")
         return RESOURCE_TYPE_TEXTURE;
@@ -68,6 +77,10 @@ void ResourceCache::AddResourceDir(const std::string& path) {
             AddResourceFile(entry.path().string());
         }
     }
+}
+
+void ResourceCache::RemoveResource(Resource* resource) {
+    std::remove(_resources.begin(), _resources.end(), resource);
 }
 
 void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
