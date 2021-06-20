@@ -13,6 +13,7 @@ void IRenderer::CreateRenderList() {
 	_entitiesToRender.clear();
 	_lightsources.clear();
 	_particleEmitters.clear();
+	_cameras.clear();
 	if(mScene)
 		ProcessEntity(mScene->GetRootEntity());
 }
@@ -29,6 +30,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	bool HasMaterial = entity->HasComponent<MaterialComponent>();
 	bool hasLightsource = entity->HasComponent<LightsourceComponent>();
 	bool hasParticleEmitter = entity->HasComponent<ParticleEmitterComponent>();
+	bool hasCamera = entity->HasComponent<Camera>();
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
 		if (mesh->GetMeshResource()) {
@@ -58,8 +60,12 @@ void IRenderer::ProcessEntity(Entity* entity) {
 		_lightsources.push_back(entity);
 	}
 
-	if (hasLightsource) {
+	if (hasParticleEmitter) {
 		_particleEmitters.push_back(entity);
+	}
+
+	if (hasCamera) {
+		_cameras.push_back(entity);
 	}
 
 	for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i ++) {

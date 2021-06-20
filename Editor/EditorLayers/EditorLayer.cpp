@@ -112,6 +112,7 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 }
 
 void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
+
 	if (mbd.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
 		InputState.right_btn_hold = true;
 	}
@@ -128,7 +129,17 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
 
 				int relx = InputState.cursorx - win->GetPos().x;
-				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y + WINDOW_MENU_OFFSET;
+				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y;
+
+				/*bool picking_allowed = true;
+				if (_pickedEntity) {
+					Vec3 aabb_center = _pickedEntity->GetAABB().GetCenter();
+					Vec2 aabb_center_screen = mEditorCamera->WorldPointToScreenpoint(Vec3(0, 0, 0));
+					aabb_center_screen.x *= win->GetSize().x;
+					aabb_center_screen.y *= win->GetSize().y;
+					//aabb_center_screen.y -= WINDOW_MENU_OFFSET;
+					Logger::Log() << "Point on " << aabb_center_screen.x << " " << aabb_center_screen.y;
+				}*/
 
 				Vec2 crpos = Vec2((float)relx / win->GetSize().x,
 					(float)rely / win->GetSize().y
@@ -185,7 +196,6 @@ void EditorLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
 		InputState.isLCrtlHold = false;
 		break;
 	}
-
 }
 
 void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {

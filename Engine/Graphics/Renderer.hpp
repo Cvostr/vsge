@@ -18,6 +18,8 @@ namespace VSGE {
 		tEntityList _lightsources;
 		//Entities with particle emitter
 		tEntityList _particleEmitters;
+		//Entities with camera
+		tEntityList _cameras;
 	public:
 
 		IRenderer() : 

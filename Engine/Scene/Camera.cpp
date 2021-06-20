@@ -99,7 +99,12 @@ Vec3 Camera::ScreenPointToWorldPoint(const Vec2& screen_point) {
 	return position_world;
 }
 Vec2 Camera::WorldPointToScreenpoint(const Vec3& world_point) {
-	return Vec2(0, 0);
+	Vec3 position_z = _projectionViewMatrix * world_point;
+	Vec2 position;
+	position.x = (position_z.x / position_z.z) * 0.5f + 0.5f;
+	position.y = (position_z.y / position_z.z) * -0.5f + 0.5f;
+
+	return position;
 }
 
 void Camera::OnPreRender() {

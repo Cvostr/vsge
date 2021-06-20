@@ -12,10 +12,9 @@ void SceneViewWindow::OnDrawWindow() {
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
     if (Draw("World view", ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar)) {
         ImGui::PopStyleColor();
-        ImVec2 c = ImGui::GetCursorPos();
         ImGuizmo::SetDrawlist();
 
-        const ImRect bb(_pos + c, _pos + c + _size);
+        const ImRect bb(_pos, _pos + _size);
 
         if (texture == nullptr) {
             VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
@@ -45,7 +44,7 @@ void SceneViewWindow::OnDrawWindow() {
             bool snap = (op == ImGuizmo::OPERATION::ROTATE);
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
-            ImGuizmo::SetRect(_pos.x, _pos.y + WINDOW_MENU_OFFSET, _size.x, _size.y);
+            ImGuizmo::SetRect(_pos.x, _pos.y, _size.x, _size.y);
 
             Vec3 rotDelta;
 

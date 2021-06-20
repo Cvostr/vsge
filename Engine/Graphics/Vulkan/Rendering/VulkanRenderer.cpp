@@ -72,8 +72,8 @@ void VulkanRenderer::SetupRenderer() {
 	mEndSemaphore->Create();
 
 	//---------------------Buffers--------------------------------
-	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mCameraShaderBuffer->Create(UNI_ALIGN, LOCATION_GPU);
+	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNBUFFER);
+	mCameraShaderBuffer->Create(MAX_CAMERAS * UNI_ALIGN, LOCATION_GPU);
 
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNBUFFER);
 	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN, LOCATION_GPU);
@@ -113,12 +113,12 @@ void VulkanRenderer::SetupRenderer() {
 	mMaterialsDescriptorPool->SetDescriptorSetsCount(8000);
 	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8000);
 	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VERTEX_DESCR_SETS);
-	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VERTEX_DESCR_SETS * 2);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VERTEX_DESCR_SETS * 2 + 1);
 	mMaterialsDescriptorPool->Create();
 
 	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_VERTEX_BIT); //Animation
 
@@ -344,10 +344,10 @@ void VulkanRenderer::StoreWorldObjects() {
 		if (mresource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mresource->GetMesh();
 			
-			uint32 offsets[2] = { e_i * UNI_ALIGN, _writtenBones * 64 };
+			uint32 offsets[3] = {0, e_i * UNI_ALIGN, _writtenBones * 64 };
 			_writtenBones += mesh->GetBones().size();
 
-			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets);
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 3, offsets);
 			mGBufferCmdbuf->BindMesh(*mesh);
 			if (mesh->GetIndexCount() > 0)
 				mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
@@ -381,6 +381,15 @@ void VulkanRenderer::StoreWorldObjects() {
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	cam->UpdateMatrices();
 	mCameraShaderBuffer->WriteData(0, sizeof(Mat4), (void*)&cam->GetProjectionViewMatrix());
+
+	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
+		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();
+		camera->UpdateMatrices();
+		mCameraShaderBuffer->WriteData(
+			camera_i * UNI_ALIGN,
+			sizeof(Mat4),
+			(void*)&camera->GetProjectionViewMatrix());
+	}
 
 	StoreWorldObjects();
 

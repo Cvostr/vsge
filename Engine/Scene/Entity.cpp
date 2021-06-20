@@ -4,6 +4,7 @@
 #include "EntityComponents/MeshComponent.hpp"
 #include "EntityComponents/AnimatorComponent.hpp"
 #include <Math/MatrixTransform.hpp>
+#include "SceneSerialization.hpp"
 
 using namespace VSGE;
 
@@ -290,6 +291,17 @@ Entity* Entity::Dublicate() {
 	new_entity->SetActive(_active);
 	new_entity->SetStatic(_static);
 	new_entity->SetViewMask(GetViewMask());
+
+	SceneSerializer serializer;
+	serializer.SetScene(_scene);
+	for (auto component : _components) {
+		YAML::Emitter e;
+		serializer.SerializeEntityComponent(component, e);
+		
+		YAML::Node data = YAML::Load(e.c_str());
+		serializer.DeserializeEntityComponent(new_entity, data);
+
+	}
 
 	for (uint32 child_i = 0; child_i < _children.size(); child_i ++) {
 		Entity* new_child = _children[child_i]->Dublicate();

@@ -8,6 +8,16 @@ bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _si
     int frame_padding,
     const ImVec4& bg_col,
     const ImVec4& tint_col) {
+
+    char* short_text = nullptr;
+    if (strlen(label) > 16) {
+        short_text = new char[19];
+        memset(short_text, 0, 19);
+        strncpy(short_text, label, 15);
+        memset(short_text + 15, '.', 3);
+        label = short_text;
+    }
+
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
         return false;
@@ -64,5 +74,8 @@ bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _si
     window->DrawList->AddImage(texId, image_bb.Min, image_bb.Max, uv0, uv1, ImGui::GetColorU32(tint_col));
 
     if (textSize.x > 0) ImGui::RenderText(start, label);
+
+    delete[] short_text;
+
     return pressed;
 }
