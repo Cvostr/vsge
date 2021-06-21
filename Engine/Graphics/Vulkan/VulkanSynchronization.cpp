@@ -10,7 +10,7 @@ bool VulkanSemaphore::Create() {
 	VkSemaphoreCreateInfo semaphoreInfo = {};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-	if (vkCreateSemaphore(device->getVkDevice(), &semaphoreInfo, nullptr, &mSemaphore) != VK_SUCCESS) {
+	if (vkCreateSemaphore(device->getVkDevice(), &semaphoreInfo, nullptr, &_semaphore) != VK_SUCCESS) {
 		return false;
 	}
 
@@ -22,7 +22,7 @@ void VulkanSemaphore::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan->GetDevice();
-		vkDestroySemaphore(device->getVkDevice(), mSemaphore, nullptr);
+		vkDestroySemaphore(device->getVkDevice(), _semaphore, nullptr);
 		mCreated = false;
 	}
 }

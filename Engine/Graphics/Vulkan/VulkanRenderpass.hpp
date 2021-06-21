@@ -29,8 +29,12 @@ namespace VSGE {
 			mHasDepthAttachment(false),
 			mRenderPass(VK_NULL_HANDLE),
 			mColorAttachmentsCount(0),
-			mClearValuesCount(0)
-		{}
+			mClearValuesCount(0),
+			mClearValues(nullptr)
+		{
+			ClearExtent.width = 0;
+			ClearExtent.height = 0;
+		}
 
 		~VulkanRenderPass() {
 			Destroy();

@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "ConsoleWindow.hpp"
 #include <ctime>
 
@@ -6,7 +8,30 @@ using namespace VSGEditor;
 void ConsoleWindow::OnDrawWindow() {
 	if (Draw("Console")) {
 
+
 		std::vector<VSGE::MessageEvent*>* msg_array = &_infoMessages;
+		if (_type == VSGE::LogType::LOG_TYPE_ERROR) {
+			msg_array = &_errorMessages;
+		}
+		if (_type == VSGE::LogType::LOG_TYPE_WARN) {
+			msg_array = &_warnMessages;
+		}
+
+		if (ImGui::Button("Clear")) {
+			msg_array->clear();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("INFO")) {
+			_type = VSGE::LogType::LOG_TYPE_INFO;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("WARN")) {
+			_type = VSGE::LogType::LOG_TYPE_WARN;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("ERROR")) {
+			_type = VSGE::LogType::LOG_TYPE_ERROR;
+		}
 		
 		for (auto msg : *msg_array) {
 			ImGui::Separator();

@@ -1,4 +1,5 @@
 #include "LightComponent.hpp"
+#include <Core/YamlHelper.hpp>
 #include "../Entity.hpp"
 
 using namespace VSGE;
@@ -30,13 +31,6 @@ struct convert<VSGE::Color>
 		return true;
 	}
 };
-
-Emitter& operator<<(YAML::Emitter& out, const Color& v)
-{
-	out << YAML::Flow;
-	out << YAML::BeginSeq << v.r << v.g << v.b << v.a << YAML::EndSeq;
-	return out;
-}
 
 void LightsourceComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "light_type" << Value << _lightType;

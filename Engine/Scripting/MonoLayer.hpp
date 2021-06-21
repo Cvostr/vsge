@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Engine/ApplicationLayer.hpp"
+#include <string>
 //mono headers
 #include <mono/metadata/appdomain.h>
 #include <mono/jit/jit.h>
@@ -17,8 +18,14 @@
 namespace VSGE {
 	class MonoLayer : public IApplicationLayer {
 	private:
+		std::string _mono_dir;
 		MonoDomain* _domain;
+
+		bool CreateDomain();
 	public:
+
+		void SetMonoDir(std::string dir);
+
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();

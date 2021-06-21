@@ -66,3 +66,13 @@ void Thread::SetThreadPriority_(int priority) {
 		pthread_setschedprio(*thread, priority);
 #endif
 }
+
+void Thread::SetThreadName(const std::string& name) {
+#ifdef _WIN32
+	WCHAR* thr_name = new WCHAR[name.size() + 1];
+	thr_name[name.size()] = L'\0';
+	mbstowcs(thr_name, name.c_str(), name.size());
+	SetThreadDescription((HANDLE)mThreadHandle, thr_name);
+	delete[] thr_name;
+#endif
+}

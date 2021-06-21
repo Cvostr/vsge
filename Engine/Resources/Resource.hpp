@@ -32,6 +32,10 @@ namespace VSGE {
 		std::string file_path;
 		uint32 offset;
 		uint32 size;
+
+		DataDescription() :
+			offset(0),
+			size(0) {}
 	};
 
 	class Resource {

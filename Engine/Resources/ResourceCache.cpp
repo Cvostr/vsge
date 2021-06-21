@@ -20,6 +20,7 @@ ResourceCache::ResourceCache() {
     _this = this;
     _loader = new AsyncLoader;
     _loader->Run();
+    _loader->SetThreadName("Resource Async Loader");
 }
 
 Resource* ResourceCache::GetResource(const std::string& name) {

@@ -1,8 +1,9 @@
 #include "EditorSettingsWindow.hpp"
-#include "../EditorLayers/EditorLayer.hpp"
+#include "../EditorLayers/EditorSettingsLayer.hpp"
 #include <imgui_stdlib.h>
 
 using namespace VSGEditor;
+
 
 void EditorSettingsWindow::OnDrawWindow() {
 	if (Draw("Settings")) {
@@ -65,6 +66,7 @@ void EditorSettingsWindow::DrawBuilding() {
 
 }
 void EditorSettingsWindow::DrawMonoSettings() {
-    EditorSettings* settings = &EditorLayer::Get()->GetEditorSettings();
-    ImGui::InputText("Path to mono", &settings->_mono_path);
+    EditorSettingsLayer* es = EditorSettingsLayer::Get();
+    
+    ImGui::InputText("Path to mono", &es->_mono_path);
 }

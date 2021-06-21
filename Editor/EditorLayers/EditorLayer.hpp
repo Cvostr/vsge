@@ -11,16 +11,6 @@
 
 namespace VSGEditor {
 
-	class EditorSettings {
-	public:
-		uint32 icons_size;
-		std::string _mono_path;
-
-		EditorSettings() {
-			icons_size = 64;
-		}
-	};
-
 	class EditorLayer : public VSGE::IApplicationLayer {
 	private:
 		static EditorLayer* _this;
@@ -46,8 +36,6 @@ namespace VSGEditor {
 		VSGE::Entity* _pickedEntity;
 		int _transformMode;
 
-		EditorSettings _editor_settings;
-
 	public:
 
 		EditorLayer() {
@@ -71,10 +59,6 @@ namespace VSGEditor {
 			delete mScene;
 			delete mEditorCamera;
 			delete mResourcesWatcher;
-		}
-
-		EditorSettings& GetEditorSettings() {
-			return _editor_settings;
 		}
 
 		std::string& GetOpenedSceneFile() {

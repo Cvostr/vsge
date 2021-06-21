@@ -22,6 +22,7 @@ public:
 
 	ImguiVulkanTexture() {
 		texture = nullptr;
+		imtexture = nullptr;
 	}
 
 	~ImguiVulkanTexture() {

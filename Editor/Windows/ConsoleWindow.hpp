@@ -13,6 +13,10 @@ namespace VSGEditor {
 		VSGE::LogType _type;
 	public:
 
+		ConsoleWindow() {
+			_type = VSGE::LogType::LOG_TYPE_INFO;
+		}
+
 		void addMsg(VSGE::MessageEvent* msg_event);
 
 		void OnDrawWindow();

@@ -23,6 +23,7 @@ namespace VSGEditor {
 
 		EditorSettingsWindow() {
 			_showCloseCross = true;
+			_mode = Settings_General;
 		}
 
 		void OnDrawWindow();

@@ -73,6 +73,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns>height of the window</returns>
 		int32 GetWindowHeight() { return mWindowHeight; }
+
+		int32 GetWindowPositionX() { return mWindowPosX; }
+
+		int32 GetWindowPositionY() { return mWindowPosY; }
 		/// <summary>
 		/// Create window with specified params
 		/// </summary>

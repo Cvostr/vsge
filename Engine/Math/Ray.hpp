@@ -40,7 +40,8 @@ namespace VSGE {
 		void* _hit;
 	public:
 		RayHit():
-			_distance(0)
+			_distance(0),
+			_hit(nullptr)
 		{}
 
 		RayHit(float dist, const Vec3& hitPoint, void* hit = nullptr):

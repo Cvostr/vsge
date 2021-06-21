@@ -6,6 +6,7 @@
 #include <Scripting/MonoLayer.hpp>
 #include <Resources/ResourceLayer.hpp>
 #include <Audio/AudioLayer.hpp>
+#include "EditorLayers/EditorSettingsLayer.hpp"
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -35,9 +36,16 @@ Application* VSGEMain() {
 	app->AddLayer(new ImGuiLayer);
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
-	app->AddLayer(new MonoLayer);
+	EditorSettingsLayer* settings = new EditorSettingsLayer;
+	app->AddLayer(settings);
+	auto mono = new MonoLayer;
+	mono->SetMonoDir(settings->_mono_path);
+	app->AddLayer(mono);
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
+
+	app->GetWindow().SetWindowSize(settings->_windowWidth, settings->_windowHeight);
+	app->GetWindow().SetPosition(settings->_windowPosX, settings->_windowPosY);
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();

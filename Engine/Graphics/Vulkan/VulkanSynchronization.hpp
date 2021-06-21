@@ -7,10 +7,15 @@
 namespace VSGE {
 	class VulkanSemaphore : public IGpuObject {
 	private:
-		VkSemaphore mSemaphore;
+		VkSemaphore _semaphore;
 	public:
 
-		VkSemaphore GetSemaphore() { return mSemaphore; }
+		VulkanSemaphore() :
+			_semaphore(VK_NULL_HANDLE)
+		{}
+
+
+		VkSemaphore GetSemaphore() { return _semaphore; }
 
 		bool Create();
 		void Destroy();

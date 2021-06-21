@@ -304,6 +304,7 @@ void VulkanRenderer::StoreWorldObjects() {
 				}
 
 				if (texture_res->GetState() == RESOURCE_STATE_READY) {
+					texture_res->Use();
 					vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
 					mat->_texturesDirty = false;
 				}

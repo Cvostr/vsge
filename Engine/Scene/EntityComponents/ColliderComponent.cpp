@@ -3,7 +3,7 @@
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
-#include <yaml-cpp/yaml.h>
+#include <Core/YamlHelper.hpp>
 #include <Physics/PhysicsLayer.hpp>
 
 using namespace YAML;
@@ -125,6 +125,12 @@ void ColliderComponent::OnDestroy() {
 	SAFE_RELEASE(_collision_shape)
 }
 
+void ColliderComponent::Serialize(YAML::Emitter& e) {
+	e << Key << "shape" << Value << _shape;
+	e << Key << "center" << Value << _center;
+	e << Key << "size" << Value << _size;
+}
+
 template<>
 struct convert<Vec3>
 {
@@ -140,7 +146,7 @@ struct convert<Vec3>
 
 	static bool decode(const Node& node, Vec3& rhs)
 	{
-		if (!node.IsSequence() || node.size() != 4)
+		if (!node.IsSequence() || node.size() != 3)
 			return false;
 
 		rhs.x = node[0].as<float>();
@@ -150,12 +156,8 @@ struct convert<Vec3>
 	}
 };
 
-void ColliderComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "shape" << Value << _shape;
-	//e << Key << "center" << Value << _center;
-	//e << Key << "size" << Value << _size;
-}
-
 void ColliderComponent::Deserialize(YAML::Node& entity) {
 	_shape = (ColliderShape)entity["shape"].as<int>();
+	_center = entity["center"].as<Vec3>();
+	_size = entity["size"].as<Vec3>();
 }

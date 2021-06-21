@@ -1,4 +1,5 @@
 #include "SceneSerialization.hpp"
+#include <Core/YamlHelper.hpp>
 #include <fstream>
 
 #include "EntityComponents/MeshComponent.hpp"
@@ -13,7 +14,6 @@
 using namespace VSGE;
 using namespace YAML;
 
-namespace YAML {
 
 	template<>
 	struct convert<VSGE::Guid>
@@ -93,28 +93,6 @@ namespace YAML {
 			return true;
 		}
 	};
-}
-
-Emitter& operator<<(YAML::Emitter& out, const Guid& v)
-{
-	out << YAML::Flow;
-	out << YAML::BeginSeq << v.a << v.b << v.c << v.d << YAML::EndSeq;
-	return out;
-}
-
-Emitter& operator<<(YAML::Emitter& out, const Vec3& v)
-{
-	out << YAML::Flow;
-	out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
-	return out;
-}
-
-Emitter& operator<<(YAML::Emitter& out, const Quat& v)
-{
-	out << YAML::Flow;
-	out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
-	return out;
-}
 
 
 void SceneSerializer::SerializeEntityComponent(IEntityComponent* component, YAML::Emitter& e) {
@@ -153,6 +131,9 @@ void SceneSerializer::DeserializeEntityComponent(Entity* ent, YAML::Node& comp) 
 	}
 	if (component_id == ENTITY_COMPONENT_COLLIDER) {
 		component = new ColliderComponent;
+	}
+	if (component_id == ENTITY_COMPONENT_CAMERA) {
+		component = new Camera;
 	}
 
 	if (component == nullptr)
