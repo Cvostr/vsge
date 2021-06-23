@@ -252,8 +252,7 @@ void VulkanRenderer::StoreWorldObjects() {
 
 			if (rootNode != nullptr) {
 				//if RootNode is specified
-				int len = 0;
-				node = rootNode->GetChildEntityWithLabelStartsWith(bone->GetName(), len);
+				node = rootNode->GetChildEntityWithLabel(bone->GetName());
 				//Get root transform
 				rootNodeTransform = rootNode->GetLocalTransform().invert();
 			}

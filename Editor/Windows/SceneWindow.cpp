@@ -11,14 +11,16 @@
 
 using namespace VSGEditor;
 using namespace VSGE;
+using namespace std;
 
 void SceneWindow::OnDrawWindow() {
     Scene* scene = EditorLayer::Get()->GetScene();
     
     if (Draw("Scene Hierarchy")) {
-
+        //clear counter
+        _drawn_entities = 0;
         //Draw hierarchy from root object
-        DrawObjectTreeHierarchy(scene->GetRootEntity());
+        DrawEntityTreeHierarchy(scene->GetRootEntity());
 
         if (ImGui::BeginPopupContextWindow(0, 1, false))
         {
@@ -73,10 +75,10 @@ void SceneWindow::OnDrawWindow() {
     }
 }
 
-void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
+void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
     if (_entityRemoved)
         return;
-
+    
     bool isRoot = entity->GetName().compare("Root") == 0;
     ImGuiTreeNodeFlags flags = 0;
     //If entity has no children, then remove arrow on the left side
@@ -89,7 +91,8 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
     }
     //Draw Tree Node
-    bool tree_open = ImGui::TreeNodeEx(entity->GetName().c_str(), flags);
+    string _unique_name = entity->GetName().c_str() + string("##") + to_string(_drawn_entities);
+    bool tree_open = ImGui::TreeNodeEx(_unique_name.c_str(), flags);
     if (!isRoot) {
         if (ImGui::BeginPopupContextItem())
         {
@@ -173,8 +176,9 @@ void SceneWindow::DrawObjectTreeHierarchy(Entity* entity) {
     if (tree_open) {
         for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i++) {
             Entity* child_entity = entity->GetChildren()[child_i];
-            DrawObjectTreeHierarchy(child_entity);
+            DrawEntityTreeHierarchy(child_entity);
         }
         ImGui::TreePop();
     }
+    _drawn_entities++;
 }

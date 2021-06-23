@@ -90,14 +90,7 @@ Entity* Entity::GetEntityWithGuid(const Guid& id) {
 }
 
 void Entity::SetName(const std::string& name) {
-	int addition = 0;
-	std::string name_to_test = name;
-	Entity* ent = nullptr;
-	while ((ent = _scene->GetEntityWithName(name_to_test)) && ent != this) {
-		addition++;
-		name_to_test = name + " (" + std::to_string(addition) + ")";
-	}
-	_name = name_to_test;
+	_name = name;
 }
 
 void Entity::Destroy() {
@@ -256,27 +249,18 @@ Entity* Entity::GetRootSkinningEntity() {
 	return _parent->GetRootSkinningEntity();
 }
 
-Entity* Entity::GetChildEntityWithLabelStartsWith(const std::string& label, int& len) {
-	Entity* result = nullptr;
-	for (auto child : _children) {
-		if (label._Starts_with(child->GetName()) && (len < child->GetName().size())) {
-			result = child;
-			len = (int)child->GetName().size();
-			int old_len = len;
-
-			Entity* result1 = child->GetChildEntityWithLabelStartsWith(label, len);
-
-			if (len > old_len)
-				result = result1;
-		}
-		else {
-			Entity* result = child->GetChildEntityWithLabelStartsWith(label, len);
-
-			if (result)
-				return result;
+Entity* Entity::GetChildEntityWithLabel(const std::string& label) {
+	if (label == GetName()) {
+		return this;
+	}
+	else {
+		for (auto child : _children) {
+			Entity* out = child->GetChildEntityWithLabel(label);
+			if (out)
+				return out;
 		}
 	}
-	return result;
+	return nullptr;
 }
 
 Entity* Entity::Dublicate() {

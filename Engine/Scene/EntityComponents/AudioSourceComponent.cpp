@@ -7,6 +7,7 @@ using namespace VSGE;
 using namespace YAML;
 
 AudioSourceComponent::AudioSourceComponent() :
+	_audio_source(0),
 	_volume(1.f),
 	_pitch(1.f),
 	_loop(false),
@@ -146,7 +147,7 @@ void AudioSourceComponent::OnPreRender() {
 		uint32 current_time = (uint32)TimePerf::Get()->GetCurrentTime();
 		uint32 delta = current_time - _startTime;
 
-		if (delta >= _clipDuration) {
+		if (delta >= _clipDuration && !_loop) {
 			Stop();
 		}
 	}

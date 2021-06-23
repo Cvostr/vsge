@@ -14,16 +14,9 @@ void Scene::NewScene() {
 }
 
 Entity* Scene::AddNewEntity(const std::string& name) {
-	int addition = 0;
-	std::string name_to_test = name;
-	while (GetEntityWithName(name_to_test)) {
-		addition++;
-		name_to_test = name + " (" + std::to_string(addition) + ")";
-	}
-
 	auto entity = new Entity;
 	entity->SetScene(this);
-	entity->SetName(name_to_test);
+	entity->SetName(name);
 
 	if (mRootEntity)
 		mRootEntity->AddChild(entity);

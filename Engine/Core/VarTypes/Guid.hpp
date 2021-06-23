@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.hpp"
+#include <string>
 
 namespace VSGE {
 	class Guid {

@@ -285,6 +285,6 @@ namespace VSGE {
 
 		//-----SKINNING----
 		Entity* GetRootSkinningEntity();
-		Entity* GetChildEntityWithLabelStartsWith(const std::string& label, int& len);
+		Entity* GetChildEntityWithLabel(const std::string& label);
 	};
 }

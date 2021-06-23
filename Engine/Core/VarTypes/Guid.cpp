@@ -23,6 +23,8 @@ std::string Guid::ToBinaryView() {
 	for (uint32 i = 0; i < 16; i++) {
 		out.push_back(RawValues[i]);
 	}
+
+	return out;
 }
 
 void Guid::FromBinaryView(const std::string& bytes) {

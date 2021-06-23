@@ -58,14 +58,26 @@ void PhysicsLayer::OnDetach() {
 }
 
 void PhysicsLayer::AddRigidbody(btRigidBody* rigidbody) {
-    if (!_world)
+    if (!_world && rigidbody)
         return;
 
     _world->addRigidBody(rigidbody);
 }
 void PhysicsLayer::RemoveRigidbody(btRigidBody* rigidbody) {
-    if (!_world)
+    if (!_world && rigidbody)
         return;
 
     _world->removeRigidBody(rigidbody);
+}
+void PhysicsLayer::AddSoftBody(btSoftBody* softbody) {
+    if (!_world && softbody)
+        return;
+
+    _world->addSoftBody(softbody);
+}
+void PhysicsLayer::RemoveSoftBody(btSoftBody* softbody) {
+    if (!_world && softbody)
+        return;
+
+    _world->removeSoftBody(softbody);
 }
