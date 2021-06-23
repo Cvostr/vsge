@@ -16,7 +16,17 @@ namespace VSGE {
 				uint32 d;
 			};
 		};
+		/// <summary>
+		/// Compare two guids
+		/// </summary>
+		/// <param name="g"></param>
+		/// <returns></returns>
 		bool operator==(const Guid& g);
+
+		std::string ToBinaryView();
+
+		void FromBinaryView(const std::string& bytes);
+
 		/// <summary>
 		/// Generate random guid
 		/// </summary>

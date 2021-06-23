@@ -11,6 +11,7 @@ namespace VSGE {
 		}
 
 		void OnUpdate();
+		void OnDestroy();
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_AUDIO_LISTENER, "Audio Listener")
 	};

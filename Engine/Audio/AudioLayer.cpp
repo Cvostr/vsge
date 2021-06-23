@@ -8,6 +8,8 @@ AudioLayer* AudioLayer::_this = nullptr;
 
 AudioLayer::AudioLayer() {
 	_this = this;
+	_created = false;
+	_openal_context = nullptr;
 
 	_openal_device = alcOpenDevice(nullptr);
 

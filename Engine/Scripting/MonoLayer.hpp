@@ -19,12 +19,18 @@ namespace VSGE {
 	class MonoLayer : public IApplicationLayer {
 	private:
 		std::string _mono_dir;
+
+		std::string _compiler_path;
+
 		MonoDomain* _domain;
 
 		bool CreateDomain();
 	public:
 
 		void SetMonoDir(std::string dir);
+		const std::string& GetCompilerPath() {
+			return _compiler_path;
+		}
 
 		void OnAttach();
 		void OnUpdate();

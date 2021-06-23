@@ -20,3 +20,14 @@ void AudioListenerComponent::OnUpdate() {
 	audio->SetListenerPos(cam->GetPosition());
 	audio->SetListenerOrientation(front, up);
 }
+
+void AudioListenerComponent::OnDestroy() {
+	AudioLayer* audio = AudioLayer::Get();
+
+	if (!audio)
+		return;
+
+	audio->SetListenerPos(Vec3(0, 0, 0));
+	audio->SetListenerOrientation(Vec3(0, 0, 1), Vec3(0, 1, 0));
+	audio->SetListenerVolume(1.f);
+}

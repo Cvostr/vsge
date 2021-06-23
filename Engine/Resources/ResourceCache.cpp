@@ -51,6 +51,8 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
         return RESOURCE_TYPE_ANIMATION;
     if (ext == ".wav")
         return RESOURCE_TYPE_AUDIOCLIP;
+    if (ext == ".cs")
+        return RESOURCE_TYPE_SCRIPT;
     return RESOURCE_TYPE_NONE;
 }
 

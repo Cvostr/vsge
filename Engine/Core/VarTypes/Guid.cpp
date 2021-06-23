@@ -16,3 +16,17 @@ bool Guid::operator==(const Guid& g) {
 	}
 	return true;
 }
+
+std::string Guid::ToBinaryView() {
+	std::string out;
+
+	for (uint32 i = 0; i < 16; i++) {
+		out.push_back(RawValues[i]);
+	}
+}
+
+void Guid::FromBinaryView(const std::string& bytes) {
+	for (uint32 i = 0; i < 16; i++) {
+		RawValues[i] = bytes[i];
+	}
+}

@@ -42,6 +42,9 @@ void File_Menu::OnDrawMenu() {
 			std::string result = GetOpenFilePath("All supported formats\0*.dds; *.png; *fbx\0\0");
 			ImportFile(result);
 		}
+		if (ImGui::MenuItem("Build", NULL)) {
+			
+		}
 
 		ImGui::EndMenu();
 	}
