@@ -8,6 +8,7 @@
 #include "ResourceTypes/MaterialResource.hpp"
 #include "ResourceTypes/AnimationResource.hpp"
 #include "ResourceTypes/AudioClipResource.hpp"
+#include "ResourceTypes/ScriptResource.hpp"
 
 namespace fs = std::filesystem;
 using namespace VSGE;
@@ -104,6 +105,9 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     else if (type == RESOURCE_TYPE_AUDIOCLIP) {
         res = new AudioClipResource;
     }
+    else if (type == RESOURCE_TYPE_SCRIPT) {
+        res = new ScriptResource;
+    }
 
     if(res != nullptr)
         res->SetDataDescription(descr);
@@ -131,6 +135,10 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     if (type == RESOURCE_TYPE_MESHGROUP) {
         _loader->AddToQueue(res);
     }
+    if (type == RESOURCE_TYPE_SCRIPT) {
+        res->Load();
+    }
+    
 
     _resources.push_back(res);
 }

@@ -7,10 +7,12 @@ namespace VSGE {
 	class ScriptResource : public Resource {
 	private:
 		MonoScript* _script;
-	private:
+		bool _resource_compiled;
+	public:
 
 		ScriptResource() {
 			_script = new MonoScript;
+			_resource_compiled = true;
 		}
 
 		~ScriptResource() {
@@ -26,7 +28,7 @@ namespace VSGE {
 		}
 
 		void PostLoad() {
-			
+			_script->CreateFromSourceFile(_description.file_path);
 			//_texture->CreateFromBuffer(_loadedData, _description.size);
 		}
 
@@ -34,5 +36,5 @@ namespace VSGE {
 			return RESOURCE_TYPE_SCRIPT;
 		}
 
-	}
+	};
 }
