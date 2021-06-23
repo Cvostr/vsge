@@ -11,8 +11,8 @@ namespace VSGE {
         MonoImage* _image;
         MonoClass* _main_class;
         //base class methods
-        //MonoMethod* _start;
-        //MonoMethod* _update;
+        MonoMethod* _start_method;
+        MonoMethod* _update_method;
     public:
         MonoScript();
         ~MonoScript();
@@ -21,5 +21,8 @@ namespace VSGE {
 
         bool CreateFromSourceFile(const std::string& source_path);
         bool CreateFromBytes(const byte* data, uint32 size, const std::string& class_name);
+        MonoMethod* GetMethod(const std::string& method);
+        MonoMethod* GetStartMethod();
+        MonoMethod* GetUpdateMethod();
 	};
 }

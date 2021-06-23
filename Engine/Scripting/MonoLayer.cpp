@@ -65,7 +65,7 @@ bool MonoLayer::CreateDomain() {
 
     mono_thread_set_main(mono_thread_current());
 
-    _compiler_path = dir_mono_lib + "/mono/4.5/csc.exe";
+    _compiler_path = dir_mono_lib + "/mono/builder/csc.exe";
 
     Logger::Log(LogType::LOG_TYPE_INFO) << "Mono VM initialized\n";
 

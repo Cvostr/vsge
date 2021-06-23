@@ -45,7 +45,7 @@ void ColliderComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
 	//release old collider shape
-	//SAFE_RELEASE(_collision_shape);
+	SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
 
@@ -98,7 +98,7 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 btTransform ColliderComponent::GetEntityTransform() {
 	btTransform result;
 
-	Vec3 abs_pos = _entity->GetAbsolutePosition();
+	Vec3 abs_pos = _entity->GetAbsolutePosition() + _center;
 	Quat abs_rot = _entity->GetAbsoluteRotation();
 
 	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));

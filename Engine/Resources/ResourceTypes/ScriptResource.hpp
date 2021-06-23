@@ -19,6 +19,10 @@ namespace VSGE {
 			delete _script;
 		}
 
+		void SetCompiled(bool compiled) {
+			_resource_compiled = compiled;
+		}
+
 		MonoScript* GetScript() {
 			return _script;
 		}

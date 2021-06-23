@@ -4,7 +4,8 @@
 using namespace VSGE;
 
 MonoScriptInstance::MonoScriptInstance() :
-	_object(nullptr)
+	_object(nullptr),
+	_script(nullptr)
 {
 
 }
@@ -16,5 +17,25 @@ MonoObject* MonoScriptInstance::GetObject() {
 void MonoScriptInstance::CreateFromScript(MonoScript* script) {
 	MonoLayer* mono = MonoLayer::Get();
 	_object = mono_object_new(mono->GetDomain(), script->GetMainClass());
-	//mono_runtime_object_init(script.object);
+	_script = script;
+}
+
+void MonoScriptInstance::CallConstructor() {
+	if(_object)
+		mono_runtime_object_init(_object);
+}
+
+void MonoScriptInstance::CallStart() {
+	if(_script && _object)
+		mono_runtime_invoke(_script->GetStartMethod(), _object, nullptr, nullptr);
+}
+
+void MonoScriptInstance::CallUpdate() {
+	if (_script && _object) {
+		float deltaTime = 1;
+		void* args[1];
+		args[0] = &deltaTime;
+
+		mono_runtime_invoke(_script->GetUpdateMethod(), _object, args, nullptr);
+	}
 }

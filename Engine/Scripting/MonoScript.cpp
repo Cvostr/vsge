@@ -37,7 +37,35 @@ bool MonoScript::CreateFromBytes(const byte* data, uint32 size, const std::strin
 	
 	_main_class = mono_class_from_name(_image, "", class_name.c_str());
 
-
+	_start_method = GetMethod(class_name + ":Start()");
+	_update_method = GetMethod(class_name + ":Update(single)");
 
 	return true;
+}
+
+MonoMethod* MonoScript::GetStartMethod() {
+	return _start_method;
+
+}
+MonoMethod* MonoScript::GetUpdateMethod() {
+	return _update_method;
+}
+
+MonoMethod* MonoScript::GetMethod(const std::string& method)
+{
+    // Get method description
+    MonoMethodDesc* mono_method_desc = mono_method_desc_new(method.c_str(), NULL);
+    if (!mono_method_desc)
+    {
+        return nullptr;
+    }
+
+    // Search the method in the image
+    MonoMethod* mono_method = mono_method_desc_search_in_image(mono_method_desc, _image);
+    if (!mono_method)
+    {
+        return nullptr;
+    }
+
+    return mono_method;
 }

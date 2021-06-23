@@ -139,7 +139,7 @@ void RigidBodyComponent::AddToWorld() {
 	}
 
 	//release old collider shape
-	//SAFE_RELEASE(_collision_shape);
+	SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
 
