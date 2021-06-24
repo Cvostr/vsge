@@ -26,8 +26,6 @@ namespace VSGE {
 			_buffer->loadBufferWAV(_loadedData);
 		}
 
-		ResourceType GetResourceType() {
-			return RESOURCE_TYPE_AUDIOCLIP;
-		}
+		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_AUDIOCLIP)
 	};
 }

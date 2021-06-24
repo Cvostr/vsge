@@ -22,7 +22,7 @@ MonoClass* MonoScript::GetMainClass() {
 
 bool MonoScript::CreateFromSourceFile(const std::string& source_path) {
 	MonoLayer* mono = MonoLayer::Get();
-	mono->CompileFile(source_path, "D:\\test.dll");
+	//mono->CompileFile(source_path, "D:\\test.dll");
 
 	return true;
 }

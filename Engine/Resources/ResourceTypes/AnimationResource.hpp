@@ -30,9 +30,7 @@ namespace VSGE {
 			iaf._Animation->CopyTo(_animation);
 		}
 
-		ResourceType GetResourceType() {
-			return RESOURCE_TYPE_ANIMATION;
-		}
+		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_ANIMATION)
 
 	};
 }

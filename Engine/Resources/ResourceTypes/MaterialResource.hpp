@@ -24,9 +24,7 @@ namespace VSGE {
 			_material->Deserialize(_loadedData, _description.size);
 		}
 
-		ResourceType GetResourceType() {
-			return RESOURCE_TYPE_MATERIAL;
-		}
+		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_MATERIAL)
 
 	};
 }

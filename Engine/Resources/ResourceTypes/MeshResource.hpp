@@ -18,9 +18,7 @@ namespace VSGE {
 
 		void Prepare();
 
-		ResourceType GetResourceType() {
-			return RESOURCE_TYPE_MESHGROUP;
-		}
+		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_MESHGROUP)
 
 	};
 
@@ -39,7 +37,7 @@ namespace VSGE {
 
 		Mesh* GetMesh();
 
-		ResourceType GetResourceType();
+		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_MESH)
 
 		void Load();
 	};

@@ -107,6 +107,7 @@ void AnimatorComponent::Deserialize(YAML::Node& entity) {
 
         AnimationCoeff anim_coeff;
         anim_coeff._animResource.SetResource(resource_name);
+        anim_coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
         anim_coeff.coeff = coeff;
         _animations.push_back(anim_coeff);
     }

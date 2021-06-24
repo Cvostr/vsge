@@ -27,9 +27,6 @@ namespace VSGE {
 			_texture->CreateFromBuffer(_loadedData, _description.size);
 		}
 
-		ResourceType GetResourceType() {
-			return RESOURCE_TYPE_TEXTURE;
-		}
-
+		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_TEXTURE)
 	};
 }

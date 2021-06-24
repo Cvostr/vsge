@@ -307,12 +307,11 @@ ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fna
             if (texture->IsUnloaded()) {
                 texture->Load();
             }
-                if (texture->GetState() == RESOURCE_STATE_READY) {
-                    ptr->second = new ImguiVulkanTexture;
-                    ptr->second->texture = (VulkanTexture*)texture->GetTexture();
-                    ptr->second->CreateImgui(sampler);
-                }
-            //}
+            if (texture->GetState() == RESOURCE_STATE_READY) {
+                ptr->second = new ImguiVulkanTexture;
+                ptr->second->texture = (VulkanTexture*)texture->GetTexture();
+                ptr->second->CreateImgui(sampler);
+            }
         }
     }
 

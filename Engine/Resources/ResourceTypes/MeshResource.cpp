@@ -50,7 +50,3 @@ void MeshResource::Load() {
 Mesh* MeshResource::GetMesh() {
 	return mesh;
 }
-
-ResourceType MeshResource::GetResourceType() {
-	return RESOURCE_TYPE_MESH;
-}

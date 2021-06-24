@@ -39,6 +39,9 @@ namespace VSGE {
 			size(0) {}
 	};
 
+#define RESOURCE_CLASS_TYPE(type) static ResourceType GetStaticType() { return type; } \
+								virtual ResourceType GetResourceType() const { return GetStaticType(); }
+
 	class Resource {
 	protected:
 		ResourceState _resourceState;
@@ -136,7 +139,7 @@ namespace VSGE {
 		virtual void Prepare() {}
 		virtual void PostLoad() {}
 		 
-		virtual ResourceType GetResourceType() = 0;
+		virtual ResourceType GetResourceType() const = 0;
 
 		Resource() :
 			_parent(nullptr),

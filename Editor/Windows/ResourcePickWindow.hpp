@@ -15,6 +15,8 @@ namespace VSGEditor {
 			this->reference = reference;
 		}
 
+		void SetResourceToReference(VSGE::Resource* resource);
+
 		void OnDrawWindow();
 	};
 }

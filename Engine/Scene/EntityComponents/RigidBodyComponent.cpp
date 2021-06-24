@@ -92,6 +92,18 @@ void RigidBodyComponent::SetAngularVelocity(const Vec3& velocity) {
 	_rigidBody->setAngularVelocity(btVector3(velocity.x, velocity.y, velocity.z));
 }
 
+float RigidBodyComponent::GetFriction() {
+	return _friction;
+}
+
+void RigidBodyComponent::SetFriction(float friction) {
+	_friction = friction;
+
+	if (_rigidBody) {
+		_rigidBody->setFriction(_friction);
+	}
+}
+
 btTransform RigidBodyComponent::GetEntityTransform() {
 	btTransform result;
 

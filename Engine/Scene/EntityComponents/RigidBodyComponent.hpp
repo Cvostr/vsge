@@ -30,6 +30,8 @@ namespace VSGE {
 		void ApplyCentralForce(const Vec3& force);
 		void SetLinearVelocity(const Vec3& velocity);
 		void SetAngularVelocity(const Vec3& velocity);
+		float GetFriction();
+		void SetFriction(float friction);
 
 		btTransform GetEntityTransform();
 		btCollisionShape* GetCollisionShape();
