@@ -17,6 +17,7 @@ namespace VSGE {
 	class AnimatorComponent : public IEntityComponent {
 	private:
 		std::vector<AnimationCoeff> _animations;
+		std::vector<Animation*> _anims_ready;
 		bool _playing;
 		double _startTime;
 		double _current_time;

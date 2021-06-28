@@ -30,6 +30,7 @@ Entities:
         material: emptymat
       - Component: 8
         mass: 1
+        friction: 0.5
   - Entity: Spot Light
     uid: [93048231, 4031508709, 3817562668, 694735480]
     active: true

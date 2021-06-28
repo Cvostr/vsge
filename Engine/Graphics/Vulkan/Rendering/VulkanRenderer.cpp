@@ -296,14 +296,18 @@ void VulkanRenderer::StoreWorldObjects() {
 			for (MaterialTexture& tex : mat->GetTextures()) {
 				TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
 				if (texture_res == nullptr)
+					//if no texture bound, then skip it
 					continue;
 
 				if (texture_res->GetState() == RESOURCE_STATE_UNLOADED) {
+					//Load texture
 					texture_res->Load();
 				}
 
 				if (texture_res->GetState() == RESOURCE_STATE_READY) {
+					//Mark texture resource as used in this frame
 					texture_res->Use();
+					//Write texture to descriptor
 					vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
 					mat->_texturesDirty = false;
 				}
@@ -327,7 +331,7 @@ void VulkanRenderer::StoreWorldObjects() {
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
 		Entity* entity = _entitiesToRender[e_i];
-		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
 		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
 		
 		//bind material
@@ -341,8 +345,12 @@ void VulkanRenderer::StoreWorldObjects() {
 		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
 		mGBufferCmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 		
-		if (mresource->GetState() == RESOURCE_STATE_READY) {
-			VulkanMesh* mesh = (VulkanMesh*)mresource->GetMesh();
+		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			//Mark mesh resource used in this frame
+			mesh_resource->Use();
+			//Mark material resource used in this frame
+			mat_resource->Use();
 			
 			uint32 offsets[3] = {0, e_i * UNI_ALIGN, _writtenBones * 64 };
 			_writtenBones += mesh->GetBones().size();

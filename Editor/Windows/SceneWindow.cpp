@@ -61,6 +61,11 @@ void SceneWindow::OnDrawWindow() {
                     Entity* newEntity = scene->AddNewEntity("Audio");
                     AudioSourceComponent* light = newEntity->AddComponent<AudioSourceComponent>();
                 }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Camera")) {
+                    Entity* newEntity = scene->AddNewEntity("Camera");
+                    Camera* cam = newEntity->AddComponent<Camera>();
+                }
                 ImGui::EndMenu();
             }
 

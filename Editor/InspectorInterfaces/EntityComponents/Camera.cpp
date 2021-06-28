@@ -1,5 +1,8 @@
 #include "EntityComponents.hpp"
+#include "../ViewMaskEdit.hpp"
 #include <imgui.h>
+
+using namespace VSGE;
 
 void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	float near = cac->GetNearPlane();
@@ -13,4 +16,8 @@ void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	float fov = cac->GetFOV();
 	ImGui::InputFloat("Field of view", &fov);
 	cac->SetFOV(fov);
+
+	ViewMask current_view_mask = cac->GetViewMask();
+	DrawViewMaskEditor(current_view_mask);
+	cac->SetViewMask(current_view_mask);
 }

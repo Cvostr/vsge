@@ -144,6 +144,9 @@ void AudioSourceComponent::OnPreRender() {
 	}
 
 	if (_playing) {
+		AudioClipResource* resource = (AudioClipResource*)_audioResource.GetResource();
+		resource->Use();
+
 		uint32 current_time = (uint32)TimePerf::Get()->GetCurrentTime();
 		uint32 delta = current_time - _startTime;
 

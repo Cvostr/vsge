@@ -44,28 +44,15 @@ void AnimatorComponent::Stop() {
 
 void AnimatorComponent::UpdateNodeTransform(Entity* child) {
     if (!child && !_playing) return;
-
     //Assign base node transform
     Mat4 abs = child->GetLocalTransform();
-    
-    for (auto& anim : _animations) {
-        ResourceReference* ref = &anim._animResource;
-        if (!ref->GetResource())
-            continue;
-
-        AnimationResource* resource = ref->GetResource<AnimationResource>();
-
-        if (!ref->GetResource()->IsReady()) {
-            ref->GetResource()->Load();
-            continue;
-        }
-
-        Animation* animation = resource->GetAnimation();
+    //iterate over all loaded animations
+    for (auto animation : _anims_ready) {
         //Time in animation ticks
         double ticks = animation->GetTPS() * _current_time;
         //Calculate current animation time
         double animTime = fmod(ticks, animation->GetDuration());
-
+        //Get channel with entity name
         AnimationChannel* cha = animation->GetChannelByEntityName(child->GetName());
         if (cha) {
             child->SetPosition(cha->getPositionInterpolated(animTime));
@@ -73,7 +60,6 @@ void AnimatorComponent::UpdateNodeTransform(Entity* child) {
             child->SetRotation(cha->getRotationInterpolated(animTime).Conjugate());
         }
     }
-    
     //Go deeper in tree
     for (uint32 i = 0; i < child->GetChildrenCount(); i++) {
         UpdateNodeTransform(child->GetChildren()[i]);
@@ -85,6 +71,24 @@ void AnimatorComponent::OnPreRender() {
         TimePerf* time = TimePerf::Get();
         _current_time = static_cast<double>(time->GetCurrentTime()) / 1000 - _startTime;
         
+        _anims_ready.clear();
+
+        for (auto& anim : _animations) {
+            ResourceReference* ref = &anim._animResource;
+            AnimationResource* resource = ref->GetResource<AnimationResource>();
+            if (!resource)
+                continue;
+            //if anim isn't ready, then queue it to load
+            if (!resource->IsReady()) {
+                resource->Load();
+                continue;
+            }
+            //Mark animation used in this frame
+            resource->Use();
+            //Get animation class from resource
+            _anims_ready.push_back(resource->GetAnimation());
+        }
+        //process root entity
         UpdateNodeTransform(GetEntity());
     }
 }

@@ -5,6 +5,7 @@
 #include <Math/MathBase.hpp>
 
 using namespace VSGE;
+using namespace YAML;
 
 void Camera::SetNearPlane(float nearPlane) { 
 	_nearPlane = nearPlane; 
@@ -19,6 +20,10 @@ void Camera::SetAspectRatio(float aspectRatio) {
 	_aspectRatio = aspectRatio; 
 }
 
+void Camera::SetViewMask(ViewMask mask) {
+	_viewMask = mask;
+}
+
 float Camera::GetNearPlane() { 
 	return _nearPlane; 
 }
@@ -30,6 +35,10 @@ float Camera::GetFOV() {
 }
 float Camera::GetAspectRatio() { 
 	return _aspectRatio; 
+}
+
+ViewMask Camera::GetViewMask() {
+	return _viewMask;
 }
 
 void Camera::SetPosition(const Vec3& position) { 
@@ -122,4 +131,18 @@ void Camera::OnPreRender() {
 	front.z = sinf(to_radians(yaw)) * cosf(to_radians(pitch));
 
 	SetFront(front.GetNormalized());
+}
+
+void Camera::Serialize(YAML::Emitter& e) {
+	e << Key << "fov" << Value << _fov;
+	e << Key << "znear" << Value << _nearPlane;
+	e << Key << "zfar" << Value << _farPlane;
+	e << Key << "view_mask" << Value << _viewMask;
+}
+
+void Camera::Deserialize(YAML::Node& entity) {
+	_fov = entity["fov"].as<float>();
+	_nearPlane = entity["znear"].as<float>();
+	_farPlane = entity["zfar"].as<float>();
+	_viewMask = entity["view_mask"].as<ViewMask>();
 }

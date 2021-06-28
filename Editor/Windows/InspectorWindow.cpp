@@ -1,5 +1,8 @@
 #include "InspectorWindow.hpp"
 #include <imgui_stdlib.h>
+#include "../Base/ImguiHelper.hpp"
+#include "../InspectorInterfaces/ViewMaskEdit.hpp"
+#include "../InspectorInterfaces/MaterialEditor.hpp"
 
 #include "Scene/Scene.hpp"
 
@@ -104,7 +107,7 @@ void VSGEditor::InspectorWindow::OnDrawWindow() {
 		if (mShowingEntity)
 			DrawEntityContents();
 		if (mShowingMaterial)
-			DrawMaterialContents();
+			DrawMaterialEditor(mShowingMaterial);
 
 		ImGui::End();
 	}
@@ -125,35 +128,14 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 
 	ImGui::Separator();
 
-	ViewMask current_view_mask = mShowingEntity->GetViewMask();
-	for (uint64 vm_i = 0; vm_i < 32; vm_i ++) {
-		bool vm = (current_view_mask >> vm_i) & 0x1;
-
-		if (!vm) 
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(120, 120, 120, 0));
-
-		std::string btn_id = "##vmb" + std::to_string(vm_i);
-		if (ImGui::Button(btn_id.c_str(), ImVec2(10, 10))) {
-			if (vm) {
-				ViewMask submask = 0;
-				for (uint64 sb = 0; sb < 32; sb++) {
-					if (sb != vm_i)
-						submask |= ((uint64)1 << sb);
-				}
-				current_view_mask &= submask;
-			}
-			else {
-				current_view_mask |= ((uint64)1 << vm_i);
-			}
-			mShowingEntity->SetViewMask(current_view_mask);
-		}
-		if(!vm)
-			ImGui::PopStyleColor();
-		if ((vm_i + 1) % 16 > 0)
-			ImGui::SameLine();
+	Camera* cam_component = mShowingEntity->GetComponent<Camera>();
+	if (!cam_component) {
+		ViewMask current_view_mask = mShowingEntity->GetViewMask();
+		DrawViewMaskEditor(current_view_mask);
+		mShowingEntity->SetViewMask(current_view_mask);
+		ImGui::Separator();
 	}
-
-    ImGui::Separator();
+    
 	Vec3 translation = mShowingEntity->GetPosition();
     ImGui::InputFloat3("Translation", (float*)&translation.x);
 	mShowingEntity->SetPosition(translation);
@@ -166,10 +148,6 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 
     ImGui::Separator();
 
-	//for (uint32 comp_i = 0; comp_i < mShowingEntity->GetComponentsCount(); comp_i) {
-	//	auto component = mShowingEntity->GetComponents()[comp_i];
-		//DrawComponent(component, "Mesh Renderer");
-	//}
 
 	DrawComponent<VSGE::MeshComponent>();
 	DrawComponent<VSGE::MaterialComponent>();
@@ -203,42 +181,5 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		AddComponentButton<VSGE::Camera>();
 
 		ImGui::EndPopup();
-	}
-}
-
-void VSGEditor::InspectorWindow::DrawMaterialContents() {
-	MaterialTemplateCache* mtemplates = MaterialTemplateCache::Get();
-
-	MaterialTemplate* _template = mShowingMaterial->GetTemplate();
-	std::string current_template_name = "";
-	if(_template)
-		current_template_name = _template->GetName();
-
-	if (ImGui::BeginCombo("##Template", current_template_name.c_str())) {
-		for (auto mtemplate : mtemplates->GetTemplates()) {
-			bool is_selected = (current_template_name == mtemplate->GetName());
-			if (ImGui::Selectable(mtemplate->GetName().c_str(), is_selected)) {
-				current_template_name = mtemplate->GetName();
-				mShowingMaterial->SetTemplate(current_template_name);
-				_template = mShowingMaterial->GetTemplate();
-			}
-		}
-
-		ImGui::EndCombo();
-	}
-
-	if (_template == nullptr)
-		return;
-
-	for (MaterialTexture& texture : mShowingMaterial->GetTextures()) {
-		DrawResourcePicker(texture._name.c_str(), texture._resource);
-		mShowingMaterial->SetTexture(texture._name, texture._resource);
-	}
-
-	for (MaterialParameter& param : mShowingMaterial->GetParams()) {
-		if (param.name[0] != '@') {
-			DrawVariantInput(param.name, param.value);
-			mShowingMaterial->SetParameter(param.name, param.value);
-		}
 	}
 }

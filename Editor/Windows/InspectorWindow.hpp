@@ -24,7 +24,6 @@ namespace VSGEditor {
 
 		void OnDrawWindow();
 		void DrawEntityContents();
-		void DrawMaterialContents();
 
 		static InspectorWindow* Get()
 		{

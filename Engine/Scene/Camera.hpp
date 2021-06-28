@@ -92,6 +92,11 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		float GetAspectRatio();
+
+		ViewMask GetViewMask();
+
+		void SetViewMask(ViewMask mask);
+
 		/// <summary>
 		/// Move camera to new position
 		/// </summary>
@@ -169,5 +174,8 @@ namespace VSGE {
 		Vec2 WorldPointToScreenpoint(const Vec3& world_point);
 
 		void OnPreRender();
+
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
 	};
 }
