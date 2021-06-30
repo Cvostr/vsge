@@ -227,7 +227,3 @@ bool SceneSerializer::Deserialize(const std::string& path) {
 		}
 	}
 }
-
-void SceneSerializer::SerializeBinary(const std::string& path) {
-
-}

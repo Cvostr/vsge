@@ -196,7 +196,7 @@ uint32 ParticleEmitterComponent::GetFreeParticleIndex() {
 		if (!_particles[i]->_alive)
 			return i;
 	}
-	return UINT64_MAX;
+	return UINT32_MAX;
 }
 
 Vec3 ParticleEmitterComponent::GetRandomDirection() {

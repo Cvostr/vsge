@@ -1,5 +1,6 @@
 #include "MonoScriptInstance.hpp"
 #include "MonoLayer.hpp"
+#include <Core/Time.hpp>
 
 using namespace VSGE;
 
@@ -32,7 +33,7 @@ void MonoScriptInstance::CallStart() {
 
 void MonoScriptInstance::CallUpdate() {
 	if (_script && _object) {
-		float deltaTime = 1;
+		float deltaTime = TimePerf::Get()->GetDeltaTime();
 		void* args[1];
 		args[0] = &deltaTime;
 

@@ -48,9 +48,11 @@ void ColliderComponent::AddToWorld() {
 	SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
-
+	//Create new collision shape
 	_collision_shape = GetBtShape();
+	//check new shape
 	if (_collision_shape == nullptr)
+		//shape wasn't created, exiting
 		return;
 
 	btTransform startTransform = GetEntityTransform();
@@ -62,9 +64,9 @@ void ColliderComponent::AddToWorld() {
 
 	_rigidBody = new btRigidBody(constructionInfo);
 	_rigidBody->setUserPointer(_entity);
-
+	//apply gravity
 	_rigidBody->setGravity(btVector3(0, 0, 0));
-
+	//add rigidbody to world
 	PhysicsLayer::Get()->AddRigidbody(_rigidBody);
 }
 
@@ -120,9 +122,21 @@ void ColliderComponent::OnUpdate() {
 void ColliderComponent::OnDestroy() {
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
-		//delete _rigidBody;
+		SAFE_RELEASE(_rigidBody)
 	}
 	SAFE_RELEASE(_collision_shape)
+}
+
+void ColliderComponent::OnActivate() {
+	if (_rigidBody) {
+		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+	}
+}
+
+void ColliderComponent::OnDeactivate() {
+	if (_rigidBody) {
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	}
 }
 
 void ColliderComponent::Serialize(YAML::Emitter& e) {

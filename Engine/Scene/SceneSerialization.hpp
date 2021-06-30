@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include <yaml-cpp/yaml.h>
+#include <Core/ByteSerialize.hpp>
 #include "Entity.hpp"
 
 namespace VSGE {

@@ -8,10 +8,46 @@
 
 using namespace VSGE;
 
+const Guid& Entity::GetGuid() const {
+	return _id; 
+}
+
+void Entity::SetGuid(Guid& id) { 
+	_id = id; 
+}
+
+void Entity::SetScene(Scene* scene) {
+	_scene = scene;
+}
+
+Scene* Entity::GetScene() const{
+	return _scene;
+}
+
+void Entity::SetParent(Entity* parent) {
+	_parent = parent; 
+}
+
+Entity* Entity::GetParent() const {
+	return _parent; 
+}
+
+void Entity::SetActive(bool active) {
+	_active = active; 
+}
+
 bool Entity::IsActive() const {
 	if (!GetParent())
 		return _active;
 	return _active && GetParent()->IsActive();
+}
+
+void Entity::SetStatic(bool _static) {
+	_static = _static; 
+}
+
+bool Entity::IsStatic() const {
+	return _static; 
 }
 
 void Entity::RemoveChild(Entity* entityToRemove) {
@@ -91,6 +127,10 @@ Entity* Entity::GetEntityWithGuid(const Guid& id) {
 
 void Entity::SetName(const std::string& name) {
 	_name = name;
+}
+
+const std::string& Entity::GetName() const {
+	return _name; 
 }
 
 void Entity::Destroy() {

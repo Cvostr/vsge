@@ -7,7 +7,10 @@ using namespace VSGE;
 MonoScript::MonoScript() :
 	_assembly(nullptr),
 	_image(nullptr),
-	_main_class(nullptr)
+	_main_class(nullptr),
+
+	_start_method(nullptr),
+	_update_method(nullptr)
 {
 
 }

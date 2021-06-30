@@ -64,32 +64,32 @@ namespace VSGE {
 		/// get guid of entity
 		/// </summary>
 		/// <returns>entity's guid</returns>
-		const Guid& GetGuid() const { return _id; }
+		const Guid& GetGuid() const;
 		/// <summary>
 		/// Set new guid to entity
 		/// </summary>
 		/// <param name="id"></param>
-		void SetGuid(Guid& id) { _id = id; }
+		void SetGuid(Guid& id);
 		/// <summary>
 		/// Stores pointer to scene in entity class
 		/// </summary>
 		/// <param name="scene"> - pointer to scene</param>
-		void SetScene(Scene* scene) { _scene = scene; }
+		void SetScene(Scene* scene);
 		/// <summary>
 		/// Get pointer to scene in entity class
 		/// </summary>
 		/// <returns>pointer to scene</returns>
-		Scene* GetScene() { return _scene; }
+		Scene* GetScene() const;
 		/// <summary>
 		/// Stores pointer to parent entity in entity class
 		/// </summary>
 		/// <param name="parent"> - pointer to parent entity</param>
-		void SetParent(Entity* parent) { _parent = parent; }
+		void SetParent(Entity* parent);
 		/// <summary>
 		/// Set active/inactive state of entity
 		/// </summary>
 		/// <param name="active"></param>
-		void SetActive(bool active) { _active = active; }
+		void SetActive(bool active);
 		/// <summary>
 		/// Return whether entity is active.
 		/// </summary>
@@ -99,12 +99,12 @@ namespace VSGE {
 		/// Set static/dynamic param of entity
 		/// </summary>
 		/// <param name="static"></param>
-		void SetStatic(bool _static) { this->_static = _static; }
+		void SetStatic(bool _static);
 		/// <summary>
 		/// Return whether entity is static.
 		/// </summary>
 		/// <returns></returns>
-		bool IsStatic() const { return _static; }
+		bool IsStatic() const;
 		/// <summary>
 		/// Set new name string to entity
 		/// </summary>
@@ -114,7 +114,7 @@ namespace VSGE {
 		/// get name of entity
 		/// </summary>
 		/// <returns></returns>
-		const std::string& GetName() const { return _name; }
+		const std::string& GetName() const;
 
 		ViewMask GetViewMask() {
 			return _viewMask;
@@ -152,7 +152,7 @@ namespace VSGE {
 		/// Returns pointer to parent entity
 		/// </summary>
 		/// <returns></returns>
-		Entity* GetParent() const { return _parent; }
+		Entity* GetParent() const;
 		/// <summary>
 		/// Tries to find the entity with the given name in this entity hierarchy
 		/// </summary>

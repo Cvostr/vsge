@@ -32,9 +32,7 @@ namespace VSGE {
 	class IEntityComponent {
 	public:
 
-		IEntityComponent() : 
-			_active(true), _entity(nullptr)
-		{}
+		IEntityComponent();
 		/// <summary>
 		/// Calls on scene start if object and component are both active
 		/// </summary>
@@ -51,6 +49,14 @@ namespace VSGE {
 		/// Calls on scene destroy, object or component deletion
 		/// </summary>
 		virtual void OnDestroy() {}
+		/// <summary>
+		/// Calls on component or entity activation
+		/// </summary>
+		virtual void OnActivate(){}
+		/// <summary>
+		/// Calls on component or entity deactivation
+		/// </summary>
+		virtual void OnDeactivate() {}
 
 		virtual void Serialize(YAML::Emitter& e) {}
 		virtual void Deserialize(YAML::Node& entity) {}
@@ -58,6 +64,7 @@ namespace VSGE {
 		virtual void SerializeBinary(ByteSerialize& serializer){}
 		virtual void DeserializeBinary(ByteSolver& solver){}
 
+		
 		virtual EntityComponentType GetType() const = 0;
 		virtual std::string GetTypeString() const = 0;
 
@@ -65,24 +72,22 @@ namespace VSGE {
 		/// Set active/inactive state of entity
 		/// </summary>
 		/// <param name="active"></param>
-		void SetActive(bool active) { _active = active; }
+		void SetActive(bool active);
 		/// <summary>
 		/// Return whether component is active.
 		/// </summary>
 		/// <returns></returns>
-		bool IsActive() const { return _active; }
+		bool IsActive() const;
 		/// <summary>
 		/// Store pointer to entity, that contains this component
 		/// </summary>
 		/// <param name="entity">- pointer to entity</param>
-		void SetEntity(Entity* entity) { _entity = entity; }
+		void SetEntity(Entity* entity);
 		/// <summary>
 		/// Get entity, that owns this object
 		/// </summary>
 		/// <returns></returns>
-		Entity* GetEntity() const {
-			return _entity;
-		}
+		Entity* GetEntity() const;
 	protected:
 		bool _active;
 		Entity* _entity;

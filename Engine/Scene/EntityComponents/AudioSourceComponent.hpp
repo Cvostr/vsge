@@ -60,6 +60,9 @@ namespace VSGE {
 		void OnPreRender();
 		void OnDestroy();
 
+		void OnActivate();
+		void OnDeactivate();
+
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
 

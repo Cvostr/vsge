@@ -89,7 +89,7 @@ ResourceReference& AudioSourceComponent::GetResourceReference() {
 }
 
 void AudioSourceComponent::Play() {
-	if (_playing )
+	if (_playing && !IsActive())
 		return;
 
 	if (!_created)
@@ -116,7 +116,7 @@ void AudioSourceComponent::Play() {
 }
 
 void AudioSourceComponent::Pause() {
-	if (_created && _playing) {
+	if (_created && _playing && !IsActive()) {
 		alSourcePause(_audio_source);
 		_paused = true;
 		_playing = false;
@@ -129,7 +129,7 @@ void AudioSourceComponent::Pause() {
 }
 
 void AudioSourceComponent::Stop() {
-	if (!_playing && !_paused)
+	if (!_playing && !_paused && !IsActive())
 		return;
 
 	alSourceStop(_audio_source);
@@ -158,6 +158,21 @@ void AudioSourceComponent::OnPreRender() {
 
 void AudioSourceComponent::OnDestroy() {
 	Stop();
+}
+
+void AudioSourceComponent::OnActivate() {
+	if (_playing && !_paused) {
+		_playing = false;
+		_paused = true;
+		Play();
+	}
+}
+void AudioSourceComponent::OnDeactivate() {
+	if (_playing && !_paused) {
+		Pause();
+		_playing = true;
+		_paused = false;
+	}
 }
 
 void AudioSourceComponent::Serialize(YAML::Emitter& e) {

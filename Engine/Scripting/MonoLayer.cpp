@@ -38,7 +38,7 @@ const std::string& MonoLayer::GetCompilerPath() {
 
 void MonoLayer::CompileFile(const std::string& file_path, const std::string& out_path) {
     std::string cmd_str = _compiler_path + " -target:library -nologo";
-    // command += " -reference:" + dll_reference;
+    cmd_str += " -reference:api.dll";
     cmd_str += " -out:" + out_path + " " + file_path;
     std::string result = ExecuteShellCommand(cmd_str);
     Logger::Log() << result << "\n";

@@ -206,8 +206,19 @@ void RigidBodyComponent::OnDestroy() {
 	
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
-		//delete _rigidBody->getMotionState();
-		//delete _rigidBody;
+		SAFE_RELEASE(_rigidBody)
 	}
 	SAFE_RELEASE(_collision_shape)
+}
+
+void RigidBodyComponent::OnActivate() {
+	if (_rigidBody) {
+		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+	}
+}
+
+void RigidBodyComponent::OnDeactivate() {
+	if (_rigidBody) {
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	}
 }
