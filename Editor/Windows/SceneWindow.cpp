@@ -36,6 +36,13 @@ void SceneWindow::OnDrawWindow() {
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
                     mat->SetMaterialName("Default Material");
                 }
+                if (ImGui::MenuItem("Sphere")) {
+                    Entity* newEntity = scene->AddNewEntity("Sphere");
+                    MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
+                    mesh->SetMeshName("Sphere");
+                    MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
+                    mat->SetMaterialName("Default Material");
+                }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Directional Light")) {
                     Entity* newEntity = scene->AddNewEntity("Directional Light");
