@@ -38,7 +38,7 @@ const std::string& MonoLayer::GetCompilerPath() {
 
 void MonoLayer::CompileFile(const std::string& file_path, const std::string& out_path) {
     std::string cmd_str = _compiler_path + " -target:library -nologo";
-    cmd_str += " -reference:api.dll";
+   // cmd_str += " -reference:Facades/System.Text.Encoding.CodePages.dll";
     cmd_str += " -out:" + out_path + " " + file_path;
     std::string result = ExecuteShellCommand(cmd_str);
     Logger::Log() << result << "\n";
@@ -65,7 +65,7 @@ bool MonoLayer::CreateDomain() {
 
     mono_thread_set_main(mono_thread_current());
 
-    _compiler_path = dir_mono_lib + "/mono/builder/csc.exe";
+    _compiler_path = dir_mono_lib + "/mono/4.5/csc.exe";
 
     Logger::Log(LogType::LOG_TYPE_INFO) << "Mono VM initialized\n";
 

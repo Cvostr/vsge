@@ -98,10 +98,13 @@ void AudioSourceComponent::Play() {
 	AudioClipResource* resource = (AudioClipResource*)_audioResource.GetResource();
 	if (resource) {
 		if (resource->IsUnloaded()) {
+			//if resource isn't loaded, queue playing
 			_playing_queued = true;
+			//load resource
 			resource->Load();
 		}
 		else if (resource->IsReady()) {
+			//resource ready
 			AudioBuffer* buffer = resource->GetAudioBuffer();
 			_clipDuration = buffer->GetDuration();
 			alSourcei(_audio_source, AL_BUFFER, static_cast<ALint>(buffer->GetBuffer()));
@@ -140,6 +143,7 @@ void AudioSourceComponent::Stop() {
 
 void AudioSourceComponent::OnPreRender() {
 	if (_playing_queued) {
+		//playing queued
 		Play();
 	}
 
@@ -149,7 +153,7 @@ void AudioSourceComponent::OnPreRender() {
 
 		uint32 current_time = (uint32)TimePerf::Get()->GetCurrentTime();
 		uint32 delta = current_time - _startTime;
-
+		//check, if track is over
 		if (delta >= _clipDuration && !_loop) {
 			Stop();
 		}

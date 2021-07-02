@@ -226,4 +226,6 @@ bool SceneSerializer::Deserialize(const std::string& path) {
 			DeserializeEntity(ent, entity);
 		}
 	}
+
+	return true;
 }

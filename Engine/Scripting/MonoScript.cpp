@@ -1,6 +1,7 @@
 #include "MonoScript.hpp"
 #include "MonoLayer.hpp"
 #include <mono/metadata/assembly.h>
+#include <Core/FileLoader.hpp>
 
 using namespace VSGE;
 
@@ -25,7 +26,9 @@ MonoClass* MonoScript::GetMainClass() {
 
 bool MonoScript::CreateFromSourceFile(const std::string& source_path) {
 	MonoLayer* mono = MonoLayer::Get();
-	//mono->CompileFile(source_path, "D:\\test.dll");
+	mono->CompileFile(source_path, "D:\\test.dll");
+
+	LoadFile("D:\\test.dll", (char**)&script_data, &script_size);
 
 	return true;
 }

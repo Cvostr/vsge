@@ -7,6 +7,9 @@
 namespace VSGE {
 	class MonoScript {
 	private:
+        byte* script_data;
+        uint32 script_size;
+
         MonoAssembly* _assembly;
         MonoImage* _image;
         MonoClass* _main_class;

@@ -3,6 +3,7 @@
 #include <Core/VarTypes/Base.hpp>
 #include <Core/VarTypes/Guid.hpp>
 #include "IEntityComponent.hpp"
+#include "EntityComponents/EntityScriptComponent.hpp"
 #include <string>
 #include <typeinfo>
 #include "Math/Vec3.hpp"
@@ -33,6 +34,8 @@ namespace VSGE {
 		Scene* _scene; 
 		//Array of components, attached to entity
 		tComponentList _components;
+		//Array of scripts, attached to entity
+		tEntityScriptsList _scripts;
 		//Array of children, attached to entity
 		tEntityList _children; 
 
@@ -115,13 +118,16 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		const std::string& GetName() const;
-
-		ViewMask GetViewMask() {
-			return _viewMask;
-		}
-		void SetViewMask(ViewMask viewMask) {
-			_viewMask = viewMask;
-		}
+		/// <summary>
+		/// Get view mask of this entity
+		/// </summary>
+		/// <returns></returns>
+		ViewMask GetViewMask() const;
+		/// <summary>
+		/// Set view mask to this entity
+		/// </summary>
+		/// <param name="viewMask"></param>
+		void SetViewMask(ViewMask viewMask);
 		/// <summary>
 		/// Add new child to this entity
 		/// </summary>
@@ -136,7 +142,9 @@ namespace VSGE {
 		/// Get amount of children, connected to this object
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetChildrenCount() const { return static_cast<uint32>(_children.size()); }
+		uint32 GetChildrenCount() const;
+
+		uint32 GetTotalChildrenCount();
 		/// <summary>
 		/// Return child entity by index.
 		/// </summary>
@@ -168,7 +176,7 @@ namespace VSGE {
 
 		Entity* Dublicate();
 
-		void ToPrefab(char** out);
+		void ToPrefab(byte** out, uint32& size);
 		/// <summary>
 		/// Get local position of entity
 		/// </summary>
@@ -225,7 +233,9 @@ namespace VSGE {
 		/// Get amount of components, attached to this entity
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetComponentsCount() { return static_cast<uint32>(_components.size()); }
+		uint32 GetComponentsCount();
+
+		uint32 GetScriptsCount();
 		/// <summary>
 		/// Create and add new component to entity
 		/// </summary>
@@ -258,6 +268,10 @@ namespace VSGE {
 
 		IEntityComponent** GetComponents() {
 			return _components.data();
+		}
+
+		IEntityScript** GetScripts() {
+			return _scripts.data();
 		}
 
 		template<typename T>

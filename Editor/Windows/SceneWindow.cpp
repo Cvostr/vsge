@@ -1,6 +1,9 @@
 #include "SceneWindow.hpp"
 #include "../EditorLayers/EditorLayer.hpp"
+#include "../EditorLayers/ImGuiLayer.hpp"
 #include "InspectorWindow.hpp"
+#include "BrowserWindow.hpp"
+#include <fstream>
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
@@ -117,7 +120,19 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
                 entity->Dublicate();
             }
             if (ImGui::MenuItem("Save prefab")) {
+                unsigned char* prefab_data = nullptr;
+                uint32 size = 0;
+
+                entity->ToPrefab(&prefab_data, size);
+
+                delete[] prefab_data;
+
+                FileBrowserWindow* fbw = VSGEditor::ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
+                std::string prefab_name = fbw->GetCurrentDir() + "/" + entity->GetName() + ".prefab";
                 
+                std::ofstream stream(prefab_name, std::ios::binary);
+                stream.write((const char*)prefab_data, size);
+                stream.close();
             }
             ImGui::EndPopup();
         }

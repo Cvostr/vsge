@@ -4,13 +4,17 @@
 using namespace VSGE;
 
 void Scene::NewScene() {
-	if (mRootEntity) {
-		mRootEntity->Destroy();
+	if (_rootEntity) {
+		_rootEntity->Destroy();
 	}
-	mRootEntity = new Entity;
-	mRootEntity->SetScene(this);
-	mRootEntity->SetName("Root");
-	mRootEntity->SetGuid(Guid(0, 0, 0, 0));
+	_rootEntity = new Entity;
+	_rootEntity->SetScene(this);
+	_rootEntity->SetName("Root");
+	_rootEntity->SetGuid(Guid(0, 0, 0, 0));
+}
+
+Entity* Scene::GetRootEntity() {
+	return _rootEntity; 
 }
 
 Entity* Scene::AddNewEntity(const std::string& name) {
@@ -18,15 +22,19 @@ Entity* Scene::AddNewEntity(const std::string& name) {
 	entity->SetScene(this);
 	entity->SetName(name);
 
-	if (mRootEntity)
-		mRootEntity->AddChild(entity);
+	if (_rootEntity)
+		_rootEntity->AddChild(entity);
 	return entity;
 }
 
 Entity* Scene::GetEntityWithName(const std::string& name) {
-	return mRootEntity->GetEntityWithName(name);
+	return _rootEntity->GetEntityWithName(name);
 }
 
 Entity* Scene::GetEntityWithGuid(const Guid& id) {
-	return mRootEntity->GetEntityWithGuid(id);
+	return _rootEntity->GetEntityWithGuid(id);
+}
+
+uint32 Scene::GetEntitiesCount() {
+	return _rootEntity->GetTotalChildrenCount();
 }

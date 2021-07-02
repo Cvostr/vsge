@@ -12,7 +12,7 @@ namespace VSGE {
 
 	class Scene {
 	private:
-		Entity* mRootEntity;
+		Entity* _rootEntity;
 
 	public:
 		/// <summary>
@@ -29,7 +29,9 @@ namespace VSGE {
 		/// Returns pointer to root entity of scene
 		/// </summary>
 		/// <returns>pointer to root entity</returns>
-		Entity* GetRootEntity() { return mRootEntity; }
+		Entity* GetRootEntity();
+
+		uint32 GetEntitiesCount();
 		/// <summary>
 		/// Tries to find the entity with the given name in this entity hierarchy
 		/// </summary>
@@ -43,6 +45,6 @@ namespace VSGE {
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
 
-		Scene() : mRootEntity(nullptr) {}
+		Scene() : _rootEntity(nullptr) {}
 	};
 }

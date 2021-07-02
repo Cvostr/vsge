@@ -50,6 +50,28 @@ bool Entity::IsStatic() const {
 	return _static; 
 }
 
+ViewMask Entity::GetViewMask() const {
+	return _viewMask;
+}
+
+void Entity::SetViewMask(ViewMask viewMask) {
+	_viewMask = viewMask;
+}
+
+uint32 Entity::GetChildrenCount() const {
+	return static_cast<uint32>(_children.size()); 
+}
+
+uint32 Entity::GetTotalChildrenCount() {
+	uint32 result = GetChildrenCount();
+
+	for (auto child : _children) {
+		result += child->GetTotalChildrenCount();
+	}
+
+	return result;
+}
+
 void Entity::RemoveChild(Entity* entityToRemove) {
 	if (entityToRemove) {
 		if (HasChild(entityToRemove)) {
@@ -149,6 +171,14 @@ void Entity::Destroy() {
 	RemoveAllComponents();
 
 	delete this;
+}
+
+uint32 Entity::GetComponentsCount() {
+	return static_cast<uint32>(_components.size()); 
+}
+
+uint32 Entity::GetScriptsCount() {
+	return static_cast<uint32>(_scripts.size());
 }
 
 void Entity::AddComponent(IEntityComponent* component) {
@@ -333,4 +363,17 @@ Entity* Entity::Dublicate() {
 	}
 
 	return new_entity;
+}
+
+void Entity::ToPrefab(byte** out, uint32& size) {
+	ByteSerialize serializer;
+
+	SceneSerializer s_serializer;
+	s_serializer.SetScene(GetScene());
+
+	s_serializer.SerializeEntityBinary(this, serializer);
+
+	size = serializer.GetSerializedSize();
+	*out = new byte[size];
+	memcpy(*out, serializer.GetBytes(), size);
 }
