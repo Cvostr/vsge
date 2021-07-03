@@ -52,10 +52,28 @@ void Scene::AddFromPrefab(byte* data, uint32 size) {
 	SceneSerializer serializer;
 	serializer.SetScene(this);
 
+	std::vector<tGuidPair> aliases;
+	Guid zero_id = Guid(0, 0, 0, 0);
+	aliases.push_back(std::make_pair(zero_id, zero_id));
+
 	for (uint32 entity_i = 0; entity_i < entities_count; entity_i++) {
 		Entity* ent = new Entity;
-		serializer.DeserializeEntityBinary(ent, solver);
-		//_rootEntity->AddChild(ent);
+		Guid parent_id;
+		serializer.DeserializeEntityBinary(ent, solver, &parent_id);
+		Guid old_id = ent->GetGuid();
+		ent->SetGuid(Guid());
+		Guid new_id = ent->GetGuid();
+		aliases.push_back(std::make_pair(old_id, new_id));
+
+		Guid new_parent_id;
+
+		for (auto alias : aliases) {
+			if (alias.first == parent_id) {
+				new_parent_id = alias.second;
+			}
+		}
+
+		GetEntityWithGuid(new_parent_id)->AddChild(ent);
 	}
 }
 

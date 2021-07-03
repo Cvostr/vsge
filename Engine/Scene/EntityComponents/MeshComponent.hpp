@@ -18,10 +18,11 @@ namespace VSGE {
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
 
+		void Serialize(ByteSerialize& e);
+		void Deserialize(ByteSolver& solver);
+
 		void SetMeshName(const std::string& mesh);
-		MeshResource* GetMeshResource() { return _meshResource.GetResource<MeshResource>(); }
-		ResourceReference& GetResourceReference() {
-			return _meshResource;
-		}
+		MeshResource* GetMeshResource();
+		ResourceReference& GetResourceReference();
 	};
 }

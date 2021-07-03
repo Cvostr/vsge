@@ -8,24 +8,19 @@ namespace VSGE {
 	private:
 		ResourceReference _materialResource;
 	public:
-		MaterialComponent(){
-			_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
-		}
+		MaterialComponent();
 
-		MaterialResource* GetMaterialResource() {
-			return _materialResource.GetResource<MaterialResource>();
-		}
+		MaterialResource* GetMaterialResource();
 
-		ResourceReference& GetResourceReference() {
-			return _materialResource;
-		}
+		ResourceReference& GetResourceReference();
 
-		void SetMaterialName(const std::string& mesh) {
-			_materialResource.SetResource(mesh);
-		}
+		void SetMaterialName(const std::string& mesh);
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
+
+		void Serialize(ByteSerialize& e);
+		void Deserialize(ByteSolver& solver);
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_MATERIAL, "Material")
 	};

@@ -11,6 +11,8 @@ namespace VSGE {
 		Entity* _sun;
 	};
 
+	typedef std::pair<Guid, Guid> tGuidPair;
+
 	class Scene {
 	private:
 		Entity* _rootEntity;

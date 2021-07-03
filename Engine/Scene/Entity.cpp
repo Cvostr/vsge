@@ -93,14 +93,15 @@ void Entity::RemoveChild(Entity* entityToRemove) {
 void Entity::AddChild(Entity* entityToAdd, bool retransform) {
 	if (entityToAdd) {
 		if (!HasChild(entityToAdd)) {
-
+			//Check, if child already has parent
 			if (entityToAdd->GetParent()) {
+				//make entity orphan
 				entityToAdd->GetParent()->RemoveChild(entityToAdd);
 			}
-
+			//Add entity to new parent
 			_children.push_back(entityToAdd);
 			entityToAdd->SetParent(this);
-
+			//retransform entity
 			if (retransform) {
 				UpdateTransformMatrices();
 				entityToAdd->UpdateTransformMatrices();

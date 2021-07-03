@@ -63,7 +63,7 @@ namespace VSGE {
 		virtual void Deserialize(YAML::Node& entity) {}
 
 		virtual void Serialize(ByteSerialize& e) {}
-		virtual void Deserialize(ByteSolver& entity) {}
+		virtual void Deserialize(ByteSolver& solver) {}
 
 		
 		virtual EntityComponentType GetType() const = 0;
@@ -93,6 +93,8 @@ namespace VSGE {
 		bool _active;
 		Entity* _entity;
 	};
+
+	IEntityComponent* CreateEntityComponent(EntityComponentType type);
 
 	typedef std::vector<IEntityComponent*> tComponentList;
 }

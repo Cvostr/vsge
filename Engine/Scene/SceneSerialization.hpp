@@ -30,7 +30,7 @@ namespace VSGE {
 		void DeserializeEntityComponentBinary(Entity* ent, ByteSolver& solver);
 
 		void DeserializeEntity(Entity* ent, YAML::Node& entity);
-		void DeserializeEntityBinary(Entity* ent, ByteSolver& solver);
+		void DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id = nullptr);
 
 		bool Deserialize(const std::string& path);
 		bool DeserializeBinary(byte* data, uint32 size);

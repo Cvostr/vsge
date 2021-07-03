@@ -32,11 +32,11 @@ void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializ
 	uint32 components_count = ent->GetComponentsCount();
 	uint32 children_count = ent->GetChildrenCount();
 	serializer.Serialize(components_count);
-
+	//Serialize components
 	for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
 		SerializeEntityComponentBinary(ent->GetComponents()[comp_i], serializer);
 	}
-
+	//Serialize children
 	for (uint32 child_i = 0; child_i < ent->GetChildrenCount(); child_i++) {
 		SerializeEntityBinary(ent->GetChildren()[child_i], serializer);
 	}
@@ -68,7 +68,7 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size) {
 	return true;
 }
 
-void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver) {
+void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) {
 	ent->SetName(solver.ReadNextString());
 	ent->SetGuid(solver.GetValue<Guid>());
 	ent->SetActive(solver.GetValue<bool>());
@@ -80,22 +80,26 @@ void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver) {
 	ent->SetRotation(solver.GetValue<Quat>());
 
 	uint32 components_count = solver.GetValue<uint32>();
-
-	for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
+	//Deserialize components
+	for (uint32 comp_i = 0; comp_i < components_count; comp_i++) {
 		DeserializeEntityComponentBinary(ent, solver);
 	}
-
+	
+	if (parent_id != nullptr) {
+		*parent_id = parent;
+	}
+	//Find parent
 	Entity* parent_ent = _scene->GetEntityWithGuid(parent);
 	//Add child to parent without retransforming
-	parent_ent->AddChild(ent, false);
+	if(parent_ent != nullptr)
+		parent_ent->AddChild(ent, false);
 }
 
 void SceneSerializer::DeserializeEntityComponentBinary(Entity* ent, ByteSolver& solver) {
 	EntityComponentType component_id = solver.GetValue<EntityComponentType>();
 
-	IEntityComponent* component = nullptr;
+	IEntityComponent* component = CreateEntityComponent(component_id);
 	
-
 	if (component == nullptr)
 		return;
 

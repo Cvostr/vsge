@@ -2,15 +2,6 @@
 #include <Core/YamlHelper.hpp>
 #include <fstream>
 
-#include "EntityComponents/MeshComponent.hpp"
-#include "EntityComponents/AnimatorComponent.hpp"
-#include "EntityComponents/MaterialComponent.hpp"
-#include "EntityComponents/LightComponent.hpp"
-#include "EntityComponents/ParticleEmitterComponent.hpp"
-#include "EntityComponents/AudioSourceComponent.hpp"
-#include "EntityComponents/RigidBodyComponent.hpp"
-#include "EntityComponents/ColliderComponent.hpp"
-
 using namespace VSGE;
 using namespace YAML;
 
@@ -107,35 +98,8 @@ void SceneSerializer::SerializeEntityComponent(IEntityComponent* component, YAML
 void SceneSerializer::DeserializeEntityComponent(Entity* ent, YAML::Node& comp) {
 	int component_id = comp["Component"].as<int>();
 
-	IEntityComponent* component = nullptr;
-	if (component_id == ENTITY_COMPONENT_MESH) {
-		component = new MeshComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_MATERIAL) {
-		component = new MaterialComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_ANIMATOR) {
-		component = new AnimatorComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_LIGHTSOURCE) {
-		component = new LightsourceComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_PARTICLE_EMITTER) {
-		component = new ParticleEmitterComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_AUDIO_SOURCE) {
-		component = new AudioSourceComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_RIGIDBODY) {
-		component = new RigidBodyComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_COLLIDER) {
-		component = new ColliderComponent;
-	}
-	if (component_id == ENTITY_COMPONENT_CAMERA) {
-		component = new Camera;
-	}
-
+	IEntityComponent* component = CreateEntityComponent((EntityComponentType)component_id);
+	
 	if (component == nullptr)
 		return;
 
