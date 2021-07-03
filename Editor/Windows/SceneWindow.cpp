@@ -75,6 +75,12 @@ void SceneWindow::OnDrawWindow() {
                 if (ImGui::MenuItem("Camera")) {
                     Entity* newEntity = scene->AddNewEntity("Camera");
                     Camera* cam = newEntity->AddComponent<Camera>();
+
+                    AudioListenerComponent* listener = newEntity->GetScene()->GetAudioListener();
+                    if (!listener) {
+                        newEntity->AddComponent<AudioListenerComponent>();
+                    }
+
                 }
                 ImGui::EndMenu();
             }
@@ -123,9 +129,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
                 unsigned char* prefab_data = nullptr;
                 uint32 size = 0;
 
-                entity->ToPrefab(&prefab_data, size);
-
-                delete[] prefab_data;
+                entity->ToPrefab(&prefab_data, size);             
 
                 FileBrowserWindow* fbw = VSGEditor::ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
                 std::string prefab_name = fbw->GetCurrentDir() + "/" + entity->GetName() + ".prefab";
@@ -133,6 +137,8 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
                 std::ofstream stream(prefab_name, std::ios::binary);
                 stream.write((const char*)prefab_data, size);
                 stream.close();
+
+                delete[] prefab_data;
             }
             ImGui::EndPopup();
         }

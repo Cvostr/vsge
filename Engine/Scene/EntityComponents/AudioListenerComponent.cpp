@@ -1,5 +1,6 @@
 #include "AudioListenerComponent.hpp"
 #include <Scene/Entity.hpp>
+#include <Scene/Scene.hpp>
 #include <Audio/AudioLayer.hpp>
 #include "../Camera.hpp"
 
@@ -7,7 +8,7 @@ using namespace VSGE;
 
 void AudioListenerComponent::OnUpdate() {
 	Camera* cam = _entity->GetComponent<Camera>();
-	if (!cam)
+	if (!cam && !IsWorking())
 		return;
 	Vec3 front = cam->GetFront();
 	Vec3 up = cam->GetFront();
@@ -30,4 +31,9 @@ void AudioListenerComponent::OnDestroy() {
 	audio->SetListenerPos(Vec3(0, 0, 0));
 	audio->SetListenerOrientation(Vec3(0, 0, 1), Vec3(0, 1, 0));
 	audio->SetListenerVolume(1.f);
+}
+
+bool AudioListenerComponent::IsWorking() {
+	AudioListenerComponent* listener = GetEntity()->GetScene()->GetAudioListener();
+	return this == listener;
 }

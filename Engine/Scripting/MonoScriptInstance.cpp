@@ -25,7 +25,6 @@ void MonoScriptInstance::CallConstructor() {
 	if(_object)
 		mono_runtime_object_init(_object);
 }
-
 void MonoScriptInstance::CallStart() {
 	if(_script && _object)
 		mono_runtime_invoke(_script->GetStartMethod(), _object, nullptr, nullptr);

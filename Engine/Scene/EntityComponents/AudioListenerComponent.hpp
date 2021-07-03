@@ -10,6 +10,8 @@ namespace VSGE {
 
 		}
 
+		bool IsWorking();
+
 		void OnUpdate();
 		void OnDestroy();
 

@@ -367,12 +367,14 @@ Entity* Entity::Dublicate() {
 
 void Entity::ToPrefab(byte** out, uint32& size) {
 	ByteSerialize serializer;
-
+	//Write amount of objects
+	uint32 objects_count = GetTotalChildrenCount() + 1;
+	serializer.Serialize(objects_count);
+	//Serialize objects
 	SceneSerializer s_serializer;
 	s_serializer.SetScene(GetScene());
-
 	s_serializer.SerializeEntityBinary(this, serializer);
-
+	//Copy results to buffer
 	size = serializer.GetSerializedSize();
 	*out = new byte[size];
 	memcpy(*out, serializer.GetBytes(), size);

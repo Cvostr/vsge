@@ -40,6 +40,8 @@ namespace VSGEditor {
 			}
 		}
 
+		void AddScriptButton();
+
 		template<class T>
 		void DrawComponent();
 

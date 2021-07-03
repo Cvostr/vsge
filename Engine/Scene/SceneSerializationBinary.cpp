@@ -31,7 +31,6 @@ void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializ
 	serializer.Serialize(ent->GetRotation());
 	uint32 components_count = ent->GetComponentsCount();
 	uint32 children_count = ent->GetChildrenCount();
-	serializer.Serialize(children_count);
 	serializer.Serialize(components_count);
 
 	for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
@@ -46,6 +45,7 @@ void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializ
 void SceneSerializer::SerializeEntityComponentBinary(IEntityComponent* component, ByteSerialize& serializer) {
 	EntityComponentType type = component->GetType();
 	serializer.Serialize(type);
+	component->Serialize(serializer);
 }
 
 //DESERIALIZE
@@ -79,17 +79,28 @@ void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver) {
 	ent->SetScale(solver.GetValue<Vec3>());
 	ent->SetRotation(solver.GetValue<Quat>());
 
-	uint32 children_count = solver.GetValue<uint32>();
 	uint32 components_count = solver.GetValue<uint32>();
 
 	for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
-		//SerializeEntityComponentBinary(ent->GetComponents()[comp_i], serializer);
+		DeserializeEntityComponentBinary(ent, solver);
 	}
-	for (uint32 child_i = 0; child_i < ent->GetChildrenCount(); child_i++) {
-		//SerializeEntityBinary(ent->GetChildren()[child_i], serializer);
-	}
+
+	Entity* parent_ent = _scene->GetEntityWithGuid(parent);
+	//Add child to parent without retransforming
+	parent_ent->AddChild(ent, false);
 }
 
 void SceneSerializer::DeserializeEntityComponentBinary(Entity* ent, ByteSolver& solver) {
+	EntityComponentType component_id = solver.GetValue<EntityComponentType>();
 
+	IEntityComponent* component = nullptr;
+	
+
+	if (component == nullptr)
+		return;
+
+	component->SetEntity(ent);
+	component->Deserialize(solver);
+
+	ent->AddComponent(component);
 }

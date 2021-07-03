@@ -62,8 +62,8 @@ namespace VSGE {
 		virtual void Serialize(YAML::Emitter& e) {}
 		virtual void Deserialize(YAML::Node& entity) {}
 
-		virtual void SerializeBinary(ByteSerialize& serializer){}
-		virtual void DeserializeBinary(ByteSolver& solver){}
+		virtual void Serialize(ByteSerialize& e) {}
+		virtual void Deserialize(ByteSolver& entity) {}
 
 		
 		virtual EntityComponentType GetType() const = 0;

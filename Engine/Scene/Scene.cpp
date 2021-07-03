@@ -1,7 +1,13 @@
 #include "Scene.hpp"
 #include "Core/Random.hpp"
+#include <Core/ByteSolver.hpp>
+#include "SceneSerialization.hpp"
 
 using namespace VSGE;
+
+Scene::Scene() :
+	_rootEntity(nullptr) 
+{}
 
 void Scene::NewScene() {
 	if (_rootEntity) {
@@ -37,4 +43,38 @@ Entity* Scene::GetEntityWithGuid(const Guid& id) {
 
 uint32 Scene::GetEntitiesCount() {
 	return _rootEntity->GetTotalChildrenCount();
+}
+
+void Scene::AddFromPrefab(byte* data, uint32 size) {
+	ByteSolver solver(data, size);
+
+	uint32 entities_count = solver.GetValue<uint32>();
+	SceneSerializer serializer;
+	serializer.SetScene(this);
+
+	for (uint32 entity_i = 0; entity_i < entities_count; entity_i++) {
+		Entity* ent = new Entity;
+		serializer.DeserializeEntityBinary(ent, solver);
+		//_rootEntity->AddChild(ent);
+	}
+}
+
+AudioListenerComponent* Scene::GetAudioListener(Entity* ent) {
+	if (ent == nullptr)
+		ent = _rootEntity;
+
+	AudioListenerComponent* listener = ent->GetComponent<AudioListenerComponent>();
+
+	if (listener)
+		return listener;
+	else
+		for (uint32 child_i = 0; child_i < ent->GetChildrenCount(); child_i++) {
+			listener = GetAudioListener(ent->GetChildren()[child_i]);
+
+			if (listener)
+				return listener;
+		}
+
+
+	return listener;
 }

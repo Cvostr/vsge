@@ -1,6 +1,7 @@
 #include "BrowserWindow.hpp"
 #include <filesystem>
 #include <imgui_internal.h>
+#include <Core/FileLoader.hpp>
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
 #include "../EditorLayers/EditorLayer.hpp"
@@ -227,10 +228,23 @@ void FileBrowserWindow::OnDrawWindow() {
         if (ImGui::BeginPopupContextItem())
         {
 
-            if (e->ext.compare(".vs3m") == 0) {
+            if (e->is3dModel()) {
                 if (ImGui::MenuItem("Add to scene")) {
                     EditorLayer* el = EditorLayer::Get();
                     AddSubSceneVS3M(el->GetScene(), e->abs_path);
+                }
+            }
+            if (e->isPrefab()) {
+                if (ImGui::MenuItem("Add to scene")) {
+                    EditorLayer* el = EditorLayer::Get();
+                    char* out = nullptr;
+                    uint32 size = 0;
+                    //read prefab file
+                    LoadFile(e->abs_path, &out, &size);
+                    //Create entities from prefab
+                    el->GetScene()->AddFromPrefab((byte*)out, size);
+                    //clean memory
+                    delete[] out;
                 }
             }
             if (ImGui::MenuItem("Open")) {

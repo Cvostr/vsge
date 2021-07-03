@@ -2,6 +2,7 @@
 
 #include <Math/Color.hpp>
 #include "Entity.hpp"
+#include "EntityComponents/AudioListenerComponent.hpp"
 
 namespace VSGE {
 
@@ -30,7 +31,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns>pointer to root entity</returns>
 		Entity* GetRootEntity();
-
+		/// <summary>
+		/// Get count of entities in scene
+		/// </summary>
+		/// <returns></returns>
 		uint32 GetEntitiesCount();
 		/// <summary>
 		/// Tries to find the entity with the given name in this entity hierarchy
@@ -45,6 +49,10 @@ namespace VSGE {
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
 
-		Scene() : _rootEntity(nullptr) {}
+		void AddFromPrefab(byte* data, uint32 size);
+
+		AudioListenerComponent* GetAudioListener(Entity* ent = nullptr);
+
+		Scene();
 	};
 }

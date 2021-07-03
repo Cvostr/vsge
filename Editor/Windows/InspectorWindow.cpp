@@ -16,6 +16,8 @@
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/Camera.hpp>
 
+#include <Scripting/MonoScriptComponent.hpp>
+
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
 
@@ -29,7 +31,7 @@ using namespace VSGE;
 InspectorWindow* InspectorWindow:: _this = nullptr;
 
 template<class T>
-void VSGEditor::InspectorWindow::DrawComponent() {
+void InspectorWindow::DrawComponent() {
 	if (mShowingEntity->HasComponent<T>()) {
 
 		T* component = mShowingEntity->GetComponent<T>();
@@ -101,7 +103,7 @@ void VSGEditor::InspectorWindow::DrawComponent() {
 	}
 }
 
-void VSGEditor::InspectorWindow::OnDrawWindow() {
+void InspectorWindow::OnDrawWindow() {
 	if (Draw("Inspector")) {
 
 		if (mShowingEntity)
@@ -113,7 +115,14 @@ void VSGEditor::InspectorWindow::OnDrawWindow() {
 	}
 }
 
-void VSGEditor::InspectorWindow::DrawEntityContents() {
+void InspectorWindow::AddScriptButton() {
+	if (ImGui::Selectable("Mono Script"))
+	{
+		mShowingEntity->AddScript(new MonoScriptComponent); 
+	}
+}
+
+void InspectorWindow::DrawEntityContents() {
     bool IsActive = mShowingEntity->IsActive();
 	bool IsStatic = mShowingEntity->IsStatic();
     ImGui::Checkbox("Active", &IsActive);
@@ -158,6 +167,8 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::ColliderComponent>();
 	DrawComponent<VSGE::RigidBodyComponent>();
 	DrawComponent<VSGE::Camera>();
+	DrawComponent<VSGE::AudioListenerComponent>();
+
 
 	ImGui::Separator();
 
@@ -179,6 +190,8 @@ void VSGEditor::InspectorWindow::DrawEntityContents() {
 		AddComponentButton<VSGE::ColliderComponent>();
 		AddComponentButton<VSGE::RigidBodyComponent>();
 		AddComponentButton<VSGE::Camera>();
+
+		AddScriptButton();
 
 		ImGui::EndPopup();
 	}

@@ -274,6 +274,10 @@ namespace VSGE {
 			return _scripts.data();
 		}
 
+		void AddScript(IEntityScript* script) {
+			_scripts.push_back(script);
+		}
+
 		template<typename T>
 		bool HasComponent() {
 			return GetComponent<T>() == nullptr ? false : true;

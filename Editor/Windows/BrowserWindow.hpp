@@ -16,7 +16,7 @@ namespace VSGEditor {
 		std::string ext; //file extension
 		std::string directory; //directory path of file
 		bool is3dModel() {
-			return !ext.compare(".rp3m");
+			return !ext.compare(".vs3m");
 		}
 		bool isTexture() {
 			return !ext.compare(".DDS") || !ext.compare(".dds") || !ext.compare(".PNG") || !ext.compare(".png");
@@ -26,6 +26,9 @@ namespace VSGEditor {
 		}
 		bool isMaterial() {
 			return !ext.compare(".vsmt");
+		}
+		bool isPrefab() {
+			return !ext.compare(".prefab");
 		}
 	};
 
