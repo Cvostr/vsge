@@ -20,27 +20,41 @@ namespace VSGE {
 		float _intensity;
 		float _range;
 		float _spot_angle;
+
+		bool _castShadows;
+		float _shadowStrength;
+		float _shadowsBias;
+		uint32 _shadowsPCF;
+		uint32 _shadowsCascadesCount;
+		std::vector<Mat4> _shadowCascades;
 	public:
 
-		LightsourceComponent() : 
-			_intensity(1.f),
-			_range(5.5f),
-			_spot_angle(12.5f),
-			_lightType(LIGHT_TYPE_DIRECTIONAL)
-		{}
+		LightsourceComponent();
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_LIGHTSOURCE, "Light Source")
 
-		LightType& GetLightType() { return _lightType; }
-		Color& GetColor() { return _lightColor; }
+		LightType& GetLightType();
+		Color& GetColor();
 
-		float& GetIntensity() { return _intensity; }
-		float& GetRange() { return _range; }
-		float& GetSpotAngle() { return _spot_angle; }
+		float& GetIntensity();
+		float& GetRange();
+		float& GetSpotAngle();
+
+		bool GetCastShadows();
+		void SetCastShadows(bool castShadows);
+
+		float GetShadowStrength();
+		void SetShadowStrength(float strength);
+
+		float GetShadowsBias();
+		void SetShadowsBias(float bias);
 
 		Vec3 GetDirection();
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
+
+		void Serialize(ByteSerialize& serializer);
+		void Deserialize(ByteSolver& solver);
 	};
 }

@@ -116,3 +116,27 @@ void AnimatorComponent::Deserialize(YAML::Node& entity) {
         _animations.push_back(anim_coeff);
     }
 }
+
+void AnimatorComponent::Serialize(ByteSerialize& serializer) {
+    uint32 anims_count = _animations.size();
+    serializer.Serialize(anims_count);
+
+    for (auto& anim : _animations) {
+        serializer.Serialize(anim._animResource.GetResourceName());
+        serializer.Serialize(anim.coeff);
+    }
+}
+void AnimatorComponent::Deserialize(ByteSolver& solver) {
+    uint32 count = solver.GetValue<uint32>();
+
+    for (uint32 anim_i = 0; anim_i < count; anim_i++) {
+        std::string resource_name = solver.ReadNextString();
+        float coeff = solver.GetValue<float>();
+
+        AnimationCoeff anim_coeff;
+        anim_coeff._animResource.SetResource(resource_name);
+        anim_coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
+        anim_coeff.coeff = coeff;
+        _animations.push_back(anim_coeff);
+    }
+}

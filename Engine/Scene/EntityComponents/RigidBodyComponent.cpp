@@ -46,6 +46,16 @@ void RigidBodyComponent::Deserialize(YAML::Node& entity) {
 	_friction = entity["friction"].as<float>();
 }
 
+void RigidBodyComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_mass);
+	serializer.Serialize(_friction);
+}
+
+void RigidBodyComponent::Deserialize(ByteSolver& solver) {
+	_mass = solver.GetValue<float>();
+	_friction = solver.GetValue<float>();
+}
+
 void RigidBodyComponent::Activate() {
 	if (!_rigidBody)
 		return;

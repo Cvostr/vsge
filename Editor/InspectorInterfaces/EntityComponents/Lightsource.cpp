@@ -33,4 +33,18 @@ void VSGEditor::DrawLightsourceComponent(VSGE::LightsourceComponent* light) {
 	if (light->GetLightType() == LIGHT_TYPE_SPOT) {
 		ImGui::InputFloat("Spot Angle", &light->GetSpotAngle());
 	}
+
+	bool castShadows = light->GetCastShadows();
+	ImGui::Checkbox("Cast shadows", &castShadows);
+	light->SetCastShadows(castShadows);
+
+	if (castShadows) {
+		float shadowStrength = light->GetShadowStrength();
+		ImGui::InputFloat("Shadow strength", &shadowStrength);
+		light->SetShadowStrength(shadowStrength);
+
+		float shadowsBias = light->GetShadowsBias();
+		ImGui::InputFloat("Shadows Bias", &shadowsBias);
+		light->SetShadowsBias(shadowsBias);
+	}
 }

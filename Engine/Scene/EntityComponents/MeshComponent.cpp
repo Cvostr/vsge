@@ -23,8 +23,8 @@ void MeshComponent::Deserialize(YAML::Node& entity) {
 	SetMeshName(entity["mesh"].as<std::string>());
 }
 
-void MeshComponent::Serialize(ByteSerialize& e) {
-	e.Serialize(this->_meshResource.GetResourceName());
+void MeshComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(this->_meshResource.GetResourceName());
 }
 
 void MeshComponent::Deserialize(ByteSolver& solver) {

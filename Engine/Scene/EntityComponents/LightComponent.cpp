@@ -32,6 +32,55 @@ struct convert<VSGE::Color>
 	}
 };
 
+LightsourceComponent::LightsourceComponent() :
+	_intensity(1.f),
+	_range(5.5f),
+	_spot_angle(12.5f),
+	_lightType(LIGHT_TYPE_DIRECTIONAL),
+
+	_castShadows(false),
+	_shadowStrength(0.6f),
+	_shadowsCascadesCount(3),
+	_shadowsPCF(4),
+	_shadowsBias(0.005f)
+{}
+
+LightType& LightsourceComponent::GetLightType()
+{ 
+	return _lightType; 
+}
+Color& LightsourceComponent::GetColor() { 
+	return _lightColor; 
+}
+
+float& LightsourceComponent::GetIntensity() { 
+	return _intensity; 
+}
+float& LightsourceComponent::GetRange() {
+	return _range; 
+}
+float& LightsourceComponent::GetSpotAngle() { 
+	return _spot_angle; 
+}
+bool LightsourceComponent::GetCastShadows() {
+	return _castShadows; 
+}
+void LightsourceComponent::SetCastShadows(bool castShadows) { 
+	_castShadows = castShadows; 
+}
+float LightsourceComponent::GetShadowStrength() {
+	return _shadowStrength; 
+}
+void LightsourceComponent::SetShadowStrength(float strength) {
+	_shadowStrength = strength; 
+}
+float LightsourceComponent::GetShadowsBias() {
+	return _shadowsBias;
+}
+void LightsourceComponent::SetShadowsBias(float bias) {
+	_shadowsBias = bias;
+}
+
 void LightsourceComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "light_type" << Value << _lightType;
 	e << Key << "intensity" << Value << _intensity;
@@ -45,6 +94,21 @@ void LightsourceComponent::Deserialize(YAML::Node& entity) {
 	_range = entity["range"].as<float>();
 	_spot_angle = entity["sp_angle"].as<float>();
 	_lightColor = entity["color"].as<Color>();
+}
+
+void LightsourceComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_lightType);
+	serializer.Serialize(_intensity);
+	serializer.Serialize(_range);
+	serializer.Serialize(_spot_angle);
+	serializer.Serialize(_lightColor);
+}
+void LightsourceComponent::Deserialize(ByteSolver& solver) {
+	_lightType = solver.GetValue<LightType>();
+	_intensity = solver.GetValue<float>();
+	_range = solver.GetValue<float>();
+	_spot_angle = solver.GetValue<float>();
+	_lightColor = solver.GetValue<Color>();
 }
 
 Vec3 LightsourceComponent::GetDirection() {

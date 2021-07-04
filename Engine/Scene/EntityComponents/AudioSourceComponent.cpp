@@ -191,3 +191,16 @@ void AudioSourceComponent::Deserialize(YAML::Node& entity) {
 	_pitch = entity["pitch"].as<float>();
 	_loop = entity["loop"].as<bool>();
 }
+
+void AudioSourceComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_audioResource.GetResourceName());
+	serializer.Serialize(_volume);
+	serializer.Serialize(_pitch);
+	serializer.Serialize(_loop);
+}
+void AudioSourceComponent::Deserialize(ByteSolver& solver) {
+	_audioResource.SetResource(solver.ReadNextString());
+	_volume = solver.GetValue<float>();
+	_pitch = solver.GetValue<float>();
+	_loop = solver.GetValue<bool>();
+}

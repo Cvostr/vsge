@@ -65,6 +65,9 @@ namespace VSGE {
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
+		
+		void Serialize(ByteSerialize& serializer);
+		void Deserialize(ByteSolver& solver);
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_AUDIO_SOURCE, "Audio Source")
 	};

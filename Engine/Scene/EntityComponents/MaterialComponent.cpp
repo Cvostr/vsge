@@ -26,8 +26,8 @@ void MaterialComponent::Deserialize(YAML::Node& entity) {
 	SetMaterialName(entity["material"].as<std::string>());
 }
 
-void MaterialComponent::Serialize(ByteSerialize& e) {
-	e.Serialize(this->_materialResource.GetResourceName());
+void MaterialComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(this->_materialResource.GetResourceName());
 }
 
 void MaterialComponent::Deserialize(ByteSolver& solver) {

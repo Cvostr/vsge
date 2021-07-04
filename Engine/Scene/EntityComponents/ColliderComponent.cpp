@@ -175,3 +175,14 @@ void ColliderComponent::Deserialize(YAML::Node& entity) {
 	_center = entity["center"].as<Vec3>();
 	_size = entity["size"].as<Vec3>();
 }
+
+void ColliderComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_shape);
+	serializer.Serialize(_center);
+	serializer.Serialize(_size);
+}
+void ColliderComponent::Deserialize(ByteSolver& solver) {
+	_shape = solver.GetValue<ColliderShape>();
+	_center = solver.GetValue<Vec3>();
+	_size = solver.GetValue<Vec3>();
+}

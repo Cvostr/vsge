@@ -62,7 +62,7 @@ namespace VSGE {
 		virtual void Serialize(YAML::Emitter& e) {}
 		virtual void Deserialize(YAML::Node& entity) {}
 
-		virtual void Serialize(ByteSerialize& e) {}
+		virtual void Serialize(ByteSerialize& serializer) {}
 		virtual void Deserialize(ByteSolver& solver) {}
 
 		
