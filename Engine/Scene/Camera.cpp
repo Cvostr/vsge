@@ -146,3 +146,17 @@ void Camera::Deserialize(YAML::Node& entity) {
 	_farPlane = entity["zfar"].as<float>();
 	_viewMask = entity["view_mask"].as<ViewMask>();
 }
+
+void Camera::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_fov);
+	serializer.Serialize(_nearPlane);
+	serializer.Serialize(_farPlane);
+	serializer.Serialize(_viewMask);
+}
+
+void Camera::Deserialize(ByteSolver& solver) {
+	_fov = solver.GetValue<float>();
+	_nearPlane = solver.GetValue<float>();
+	_farPlane = solver.GetValue<float>();
+	_viewMask = solver.GetValue<ViewMask>();
+}

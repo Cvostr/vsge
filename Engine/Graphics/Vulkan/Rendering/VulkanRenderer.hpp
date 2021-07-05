@@ -10,12 +10,17 @@
 #include "../VulkanCommandBuffer.hpp"
 #include "../VulkanPipeline.hpp"
 
-#define MAX_OBJECTS_RENDER 20000
-#define MAX_ANIMATION_MATRICES 20480
+#define MAX_OBJECTS_RENDER 40000
+#define MAX_ANIMATION_MATRICES 20000
+#define MAX_PARTICLES_MATRICES 20000
+
 #define MAX_CAMERAS 10
 #define UNI_ALIGN 256
 #define MATERIAL_SIZE 512
-#define VERTEX_DESCR_SETS 20
+
+#define VERTEX_DESCR_SETS 40
+#define ANIMATIONS_DESCR_SETS 20
+#define PARTICLES_DESCR_SETS 20
 
 namespace VSGE {
 
@@ -65,11 +70,15 @@ namespace VSGE {
 		VulkanDescriptorPool* mObjectsPool;
 		VulkanDescriptorPool* mMaterialsDescriptorPool;
 		std::vector<VulkanDescriptorSet*> mVertexDescriptorSets;
+		std::vector<VulkanDescriptorSet*> mAnimationsDescriptorSets;
+		std::vector<VulkanDescriptorSet*> mParticlesDescriptorSets;
+
 		VulkanDescriptorSet* mDeferredPassSet;
 		//--------------------Buffers--------------------
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
+		VulkanBuffer* mParticlesTransformShaderBuffer;
 		VulkanBuffer* _lightsBuffer;
 		//--------------------Meshes--------------------
 		VulkanMesh* mSpriteMesh;

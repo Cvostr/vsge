@@ -31,6 +31,10 @@
 			return sqrtf(x * x + y * y + z * z);
 		}
 
+		float DistanceTo(const tVec3& v) const {
+			return (*this - v).Length();
+		}
+
 		float Dot(const tVec3& v) const {
 			return x * v.x + y * v.y + z * v.z;
 		}

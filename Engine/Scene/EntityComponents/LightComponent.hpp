@@ -3,6 +3,7 @@
 #include "../IEntityComponent.hpp"
 #include <Math/Color.hpp>
 #include <Math/Vec3.hpp>
+#include <Math/Mat4.hpp>
 #include <Core/VarTypes/Base.hpp>
 
 namespace VSGE {
@@ -48,6 +49,9 @@ namespace VSGE {
 
 		float GetShadowsBias();
 		void SetShadowsBias(float bias);
+
+		void SetShadowCascadesCount(uint32 cascades);
+		uint32 GetShadowCascadesCount();
 
 		Vec3 GetDirection();
 

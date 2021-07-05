@@ -13,7 +13,7 @@ layout (std140, binding = 0) uniform CamMatrices{
 };
 
 layout (std140, binding = 1) uniform Transform{
-    uniform mat4 obj_model[1000];
+    uniform mat4 obj_model[64];
 };
 
 void main(){

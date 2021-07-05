@@ -47,6 +47,7 @@ Entities:
         range: 15
         sp_angle: 12.5
         color: [1, 1, 1, 1]
+        castShadows: true
   - Entity: Cube (2)
     uid: [2278826814, 575420708, 1424792874, 3214824675]
     active: true

@@ -4,6 +4,7 @@
 #include <Resources/ResourceTypes/MeshResource.hpp>
 #include <Math/Color.hpp>
 #include <string>
+#include "../Camera.hpp"
 
 namespace VSGE {
 
@@ -157,6 +158,8 @@ namespace VSGE {
 		void SetDampingForce(float damping);
 		void SetRotation(float min, float max);
 		void SetRotationSpeed(float min, float max);
+		
+		bool IsSimulating();
 
 		bool EmitNewParticle();
 		void StartSimulation();
@@ -166,6 +169,7 @@ namespace VSGE {
 		void DestroyParticle(Particle* particle);
 		uint32 GetAliveParticlesCount();
 		uint32 GetFreeParticleIndex();
+		void GetParticlesTransforms(Mat4** Transforms, Camera& cam);
 
 		Vec3 GetRandomDirection();
 		Vec2 GetRandomSize();

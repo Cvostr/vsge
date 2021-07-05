@@ -40,4 +40,16 @@ void VSGEditor::DrawParticleEmitterComponent(VSGE::ParticleEmitterComponent* pec
 	ImGui::InputFloat3("Min", &direction.Min.x);
 	ImGui::InputFloat3("Max", &direction.Max.x);
 	pec->SetDirection(direction.Min, direction.Max);
+
+
+	if (!pec->IsSimulating()) {
+		if (ImGui::Button("Play", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			pec->StartSimulation();
+		}
+	}
+	else {
+		if (ImGui::Button("Stop", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			pec->StopSimulation();
+		}
+	}
 }

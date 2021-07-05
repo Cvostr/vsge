@@ -133,3 +133,20 @@ Mat4 Scale(Mat4& origin, const Vec3& scale) {
 
     return result;
 }
+Mat4 RemoveRotationFromTransform(const Mat4& transform, const Mat4& camera_view) {
+    Mat4 result = transform;
+
+    result.Values[0][0] = camera_view.Values[0][0];
+    result.Values[0][1] = camera_view.Values[1][0];
+    result.Values[0][2] = camera_view.Values[2][0];
+
+    result.Values[1][0] = camera_view.Values[0][1];
+    result.Values[1][1] = camera_view.Values[1][1];
+    result.Values[1][2] = camera_view.Values[2][1];
+
+    result.Values[2][0] = camera_view.Values[0][2];
+    result.Values[2][1] = camera_view.Values[1][2];
+    result.Values[2][2] = camera_view.Values[2][2];
+
+    return result;
+}

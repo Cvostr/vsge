@@ -39,6 +39,12 @@ void VSGEditor::DrawLightsourceComponent(VSGE::LightsourceComponent* light) {
 	light->SetCastShadows(castShadows);
 
 	if (castShadows) {
+		int32 cascades = light->GetShadowCascadesCount();
+		ImGui::InputInt("cascades", &cascades);
+		if (cascades <= 0)
+			cascades = 2;
+		light->SetShadowCascadesCount(cascades);
+
 		float shadowStrength = light->GetShadowStrength();
 		ImGui::InputFloat("Shadow strength", &shadowStrength);
 		light->SetShadowStrength(shadowStrength);

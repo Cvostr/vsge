@@ -11,6 +11,8 @@ Mat4 GetRotationXMatrixEuler(float angle);
 Mat4 GetRotationYMatrixEuler(float angle);
 Mat4 GetRotationZMatrixEuler(float angle);
 
+Mat4 RemoveRotationFromTransform(const Mat4& transform, const Mat4& camera_view);
+
 Mat4 GetRotationMatrix(const Vec3 Rotation);
 Mat4 GetRotationMatrix(const Quat Rotation);
 

@@ -80,6 +80,15 @@ float LightsourceComponent::GetShadowsBias() {
 void LightsourceComponent::SetShadowsBias(float bias) {
 	_shadowsBias = bias;
 }
+void LightsourceComponent::SetShadowCascadesCount(uint32 cascades) {
+	if (cascades != _shadowsCascadesCount)
+		_shadowCascades.resize(cascades);
+
+	_shadowsCascadesCount = cascades;
+}
+uint32 LightsourceComponent::GetShadowCascadesCount() {
+	return _shadowsCascadesCount;
+}
 
 void LightsourceComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "light_type" << Value << _lightType;
@@ -87,6 +96,14 @@ void LightsourceComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "range" << Value << _range;
 	e << Key << "sp_angle" << Value << _spot_angle;
 	e << Key << "color" << Value << _lightColor;
+	e << Key << "castShadows" << Value << _castShadows;
+
+	if (_castShadows) {
+		e << Key << "shadowStrength" << Value << _shadowStrength;
+		e << Key << "shadowBias" << Value << _shadowsBias;
+		e << Key << "pcf" << Value << _shadowsPCF;
+		e << Key << "cascades" << Value << _shadowCascades;
+	}
 }
 void LightsourceComponent::Deserialize(YAML::Node& entity) {
 	_lightType = (LightType)entity["light_type"].as<int>();
@@ -94,6 +111,7 @@ void LightsourceComponent::Deserialize(YAML::Node& entity) {
 	_range = entity["range"].as<float>();
 	_spot_angle = entity["sp_angle"].as<float>();
 	_lightColor = entity["color"].as<Color>();
+	_castShadows = entity["castShadows"].as<bool>();
 }
 
 void LightsourceComponent::Serialize(ByteSerialize& serializer) {
@@ -102,6 +120,14 @@ void LightsourceComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_range);
 	serializer.Serialize(_spot_angle);
 	serializer.Serialize(_lightColor);
+	serializer.Serialize(_castShadows);
+
+	if (_castShadows) {
+		serializer.Serialize(_shadowStrength);
+		serializer.Serialize(_shadowsBias);
+		serializer.Serialize(_shadowsPCF);
+		serializer.Serialize(_shadowCascades);
+	}
 }
 void LightsourceComponent::Deserialize(ByteSolver& solver) {
 	_lightType = solver.GetValue<LightType>();
@@ -109,6 +135,7 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 	_range = solver.GetValue<float>();
 	_spot_angle = solver.GetValue<float>();
 	_lightColor = solver.GetValue<Color>();
+	_castShadows = solver.GetValue<bool>();
 }
 
 Vec3 LightsourceComponent::GetDirection() {
