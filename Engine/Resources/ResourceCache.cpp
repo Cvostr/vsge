@@ -52,7 +52,7 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
         return RESOURCE_TYPE_ANIMATION;
     if (ext == ".wav")
         return RESOURCE_TYPE_AUDIOCLIP;
-    if (ext == ".cs")
+    if (ext == ".as")
         return RESOURCE_TYPE_SCRIPT;
     return RESOURCE_TYPE_NONE;
 }
@@ -135,12 +135,13 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     if (type == RESOURCE_TYPE_MESHGROUP) {
         _loader->AddToQueue(res);
     }
+    //if resource is script, then load it
     if (type == RESOURCE_TYPE_SCRIPT) {
         res->Load();
     }
     
-
-    _resources.push_back(res);
+    //Push resource
+    PushResource(res);
 }
 
 bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {

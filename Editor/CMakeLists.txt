@@ -45,10 +45,8 @@ target_link_libraries(Editor Winmm.lib)
 target_link_libraries(Editor Setupapi.lib)
 target_link_libraries(Editor Version.lib)
 target_link_libraries(Editor Imm32.lib)
-target_link_libraries(Editor Bcrypt.lib)
-target_link_libraries(Editor ws2_32.lib)
 
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/mono/libmono-static-sgen.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/angelscript/angelscript64d.lib)
 
 ENDIF()
 

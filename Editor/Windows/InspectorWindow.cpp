@@ -16,7 +16,7 @@
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/Camera.hpp>
 
-#include <Scripting/MonoScriptComponent.hpp>
+//#include <Scripting/MonoScriptComponent.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
@@ -118,7 +118,7 @@ void InspectorWindow::OnDrawWindow() {
 void InspectorWindow::AddScriptButton() {
 	if (ImGui::Selectable("Mono Script"))
 	{
-		mShowingEntity->AddScript(new MonoScriptComponent); 
+		//mShowingEntity->AddScript(new MonoScriptComponent); 
 	}
 }
 
