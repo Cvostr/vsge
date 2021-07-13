@@ -11,7 +11,8 @@ namespace VSGE {
 		LOG_TYPE_NONE,
 		LOG_TYPE_INFO,
 		LOG_TYPE_WARN,
-		LOG_TYPE_ERROR
+		LOG_TYPE_ERROR,
+		LOG_TYPE_SCRIPT_COMPILE_ERROR
 	};
 
 	class OpLogger;
@@ -53,13 +54,9 @@ namespace VSGE {
 	private:
 		MessageEvent* _lastEvent;
 	public:
-		OpLogger() {
-			_lastEvent = nullptr;
-		}
+		OpLogger();
 
-		void SetEvent(MessageEvent* _event) {
-			_lastEvent = _event;
-		}
+		void SetEvent(MessageEvent* _event);
 
 		OpLogger& operator<<(int var);
 		OpLogger& operator<<(unsigned int var);

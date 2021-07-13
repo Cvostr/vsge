@@ -94,6 +94,14 @@ Quat Quat::operator*(float rhs) {
     return Quat(x * rhs, y * rhs, z * rhs, w * rhs);
 }
 
+Quat Quat::operator*(const Quat& q) const {
+    return MultiplyTo(q);
+}
+
+void Quat::operator*=(const Quat& q) {
+    *this = MultiplyTo(q);
+}
+
 Vec3 Quat::GetEulerAngles() const {
     float RAD_TO_DEG = 180.f / 3.14159265f;
 

@@ -270,11 +270,11 @@ namespace VSGE {
 			return _components.data();
 		}
 
-		IEntityScript** GetScripts() {
+		EntityScriptComponent** GetScripts() {
 			return _scripts.data();
 		}
 
-		void AddScript(IEntityScript* script) {
+		void AddScript(EntityScriptComponent* script) {
 			_scripts.push_back(script);
 		}
 

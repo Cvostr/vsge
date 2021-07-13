@@ -8,6 +8,7 @@
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/EntityComponents/ColliderComponent.hpp>
+#include <Scene/EntityComponents/EntityScriptComponent.hpp>
 #include <Scene/Camera.hpp>
 
 namespace VSGEditor {
@@ -19,5 +20,6 @@ namespace VSGEditor {
 	void DrawAudioSourceComponent(VSGE::AudioSourceComponent* asc);
 	void DrawRigidbodyComponent(VSGE::RigidBodyComponent* rgbc);
 	void DrawColliderComponent(VSGE::ColliderComponent* clc);
+	void DrawScriptComponent(VSGE::EntityScriptComponent* esc);
 	void DrawCameraComponent(VSGE::Camera* cac);
 }

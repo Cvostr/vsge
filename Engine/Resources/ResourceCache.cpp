@@ -138,6 +138,8 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     //if resource is script, then load it
     if (type == RESOURCE_TYPE_SCRIPT) {
         res->Load();
+        _loader->WaitForLoading(res);
+        res->PostLoad();
     }
     
     //Push resource

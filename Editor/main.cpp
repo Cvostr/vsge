@@ -39,6 +39,7 @@ Application* VSGEMain() {
 	EditorSettingsLayer* settings = new EditorSettingsLayer;
 	app->AddLayer(settings);
 	auto mono = new AngelScriptLayer;
+	mono->CreateEngine();
 	app->AddLayer(mono);
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);

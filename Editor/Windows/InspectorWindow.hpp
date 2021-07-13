@@ -3,6 +3,7 @@
 #include "../Base/ImGuiWindow.hpp"
 #include <Scene/Entity.hpp>
 #include <Graphics/Material.hpp>
+#include <Scene/EntityComponents/EntityScriptComponent.hpp>
 
 namespace VSGEditor {
 	class InspectorWindow : public EditorWindow {
@@ -44,6 +45,8 @@ namespace VSGEditor {
 
 		template<class T>
 		void DrawComponent();
+
+		void DrawScript(VSGE::EntityScriptComponent* script);
 
 		InspectorWindow() :
 			mShowingEntity(nullptr),

@@ -9,6 +9,7 @@ namespace VSGEditor {
 		std::vector<VSGE::MessageEvent*> _infoMessages;
 		std::vector<VSGE::MessageEvent*> _warnMessages;
 		std::vector<VSGE::MessageEvent*> _errorMessages;
+		std::vector<VSGE::MessageEvent*> _scriptErrors;
 
 		VSGE::LogType _type;
 	public:

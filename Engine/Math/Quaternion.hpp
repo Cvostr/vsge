@@ -43,11 +43,7 @@ public:
 
 	Quat& operator *=(float rhs);
 
-	Quat operator*(const Quat& q) const {
-		return MultiplyTo(q);
-	}
+	Quat operator*(const Quat& q) const;
 
-	void operator*=(const Quat& q) {
-		*this = MultiplyTo(q);
-	}
+	void operator*=(const Quat& q);
 };

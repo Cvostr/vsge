@@ -48,6 +48,10 @@ union MultitypeData{
 	{
 		
 	}
+
+	void operator=(MultitypeData& data) {
+		memcpy(this, &data, sizeof(MultitypeData));
+	}
 };
 
 class MultitypeValue {

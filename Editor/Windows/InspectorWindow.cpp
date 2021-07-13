@@ -16,8 +16,6 @@
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/Camera.hpp>
 
-//#include <Scripting/MonoScriptComponent.hpp>
-
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
 
@@ -52,8 +50,6 @@ void InspectorWindow::DrawComponent() {
 		{
 			ImGui::OpenPopup(T::GetTypeStringStatic().c_str());
 		}
-
-		
 
 		bool removeComponent = false;
 		if (ImGui::BeginPopup(T::GetTypeStringStatic().c_str()))
@@ -103,6 +99,49 @@ void InspectorWindow::DrawComponent() {
 	}
 }
 
+void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script) {
+
+	if (!script->IsActive()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
+	}
+
+	std::string header = "Script";
+
+	bool is_down = ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+	if (!script->IsActive()) {
+		ImGui::PopStyleColor();
+	}
+
+	if (!is_down)
+		return;
+
+	if (ImGui::IsItemClicked(1))
+	{
+		ImGui::OpenPopup(header.c_str());
+	}
+
+	bool removeComponent = false;
+	if (ImGui::BeginPopup(header.c_str()))
+	{
+		bool active = script->IsActive();
+		ImGui::MenuItem("Active", NULL, &active);
+		script->SetActive(active);
+
+		if (ImGui::MenuItem("Remove component"))
+			removeComponent = true;
+
+		ImGui::EndPopup();
+	}
+
+	if (removeComponent) {
+		//mShowingEntity->RemoveComponent(component);
+		return;
+	}
+
+	DrawScriptComponent(script);
+}
+
 void InspectorWindow::OnDrawWindow() {
 	if (Draw("Inspector")) {
 
@@ -118,7 +157,7 @@ void InspectorWindow::OnDrawWindow() {
 void InspectorWindow::AddScriptButton() {
 	if (ImGui::Selectable("Mono Script"))
 	{
-		//mShowingEntity->AddScript(new MonoScriptComponent); 
+		mShowingEntity->AddScript(new EntityScriptComponent); 
 	}
 }
 
@@ -168,6 +207,10 @@ void InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::RigidBodyComponent>();
 	DrawComponent<VSGE::Camera>();
 	DrawComponent<VSGE::AudioListenerComponent>();
+
+	for (uint32 script_i = 0; script_i < mShowingEntity->GetScriptsCount(); script_i++) {
+		DrawScript(mShowingEntity->GetScripts()[script_i]);
+	}
 
 
 	ImGui::Separator();

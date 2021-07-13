@@ -61,6 +61,12 @@
 			return tVec3(x * v.x, y * v.y, z * v.z);
 		}
 
+		void operator=(const tVec3& v) {
+			x = v.x;
+			y = v.y;
+			z = v.z;
+		}
+
 		void operator+=(const tVec3& v) {
 			x += v.x;
 			y += v.y;

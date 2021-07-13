@@ -42,7 +42,6 @@ void Logger::Log(const std::string& msg, LogType type) {
 		break;
 	}
 
-    //SetConsoleColor(FOREGROUND_GREEN);
 	PrintText(msg + "\n");
 }
 
@@ -67,6 +66,12 @@ OpLogger& Logger::Log(LogType type) {
 	return mOpLogger;
 }
 
+OpLogger::OpLogger() {
+	_lastEvent = nullptr;
+}
+void OpLogger::SetEvent(MessageEvent* _event) {
+	_lastEvent = _event;
+}
 OpLogger& OpLogger::operator<<(int var) {
 	printf("%i", var);
 	_lastEvent->GetContent() += std::to_string(var);

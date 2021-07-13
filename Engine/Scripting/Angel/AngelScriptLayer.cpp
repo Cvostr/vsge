@@ -3,12 +3,14 @@
 
 using namespace VSGE;
 
+AngelScriptLayer* AngelScriptLayer::_this = nullptr;
+
 AngelScriptLayer::AngelScriptLayer() :
 	_engine(nullptr),
 	_context(nullptr),
 	_module(new AngelScriptModule)
 {
-
+	_this = this;
 }
 
 AngelScriptLayer::~AngelScriptLayer() {
@@ -19,6 +21,9 @@ void AngelScriptLayer::CreateEngine() {
 	_engine = asCreateScriptEngine();
 	_engine->SetMessageCallback(asFUNCTION(MessageCallback), 0, asCALL_CDECL);
 	_context = _engine->CreateContext();
+
+	//Add base script class
+	RegisterInterface("ZPScript");
 
 	_module->CreateModule(_engine, "vsge");
 }
@@ -52,6 +57,10 @@ int AngelScriptLayer::ContextExecute() {
 
 void* AngelScriptLayer::GetAddressOfReturnValue() {
 	return _context->GetAddressOfReturnValue();
+}
+
+void AngelScriptLayer::ContextSetObject(void* object) {
+	_context->SetObject(object);
 }
 
 int AngelScriptLayer::ContextSetArgumentObject(uint32 slot, void* object) {
@@ -100,19 +109,21 @@ int AngelScriptLayer::RegisterGlobalFunction(const std::string& func_name,
 
 void VSGE::MessageCallback(const asSMessageInfo* msg, void* param)
 {
-	LogType log_type = LogType::LOG_TYPE_NONE;
+	std::string prefix;
 	switch (msg->type)
 	{
 	case asMSGTYPE_WARNING:
-		log_type = LogType::LOG_TYPE_WARN;
+		prefix = "WARN";
 		break;
 	case asMSGTYPE_ERROR:
-		log_type = LogType::LOG_TYPE_ERROR;
+		prefix = "ERROR";
 		break;
 	default:
 		break;
 	}
 
-	std::string _msg = "(" + std::string(msg->section) + ") " + "(" + std::to_string(msg->row)
+	std::string _msg = prefix + "(" + std::string(msg->section) + ") " + "(" + std::to_string(msg->row)
 		+ ":" + std::to_string(msg->col) + ") " + msg->message;
+
+	Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << _msg;
 }

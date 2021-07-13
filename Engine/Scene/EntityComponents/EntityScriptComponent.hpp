@@ -2,31 +2,40 @@
 
 #include "../IEntityComponent.hpp"
 #include <Resources/ResourceTypes/ScriptResource.hpp>
+#include <Scripting/Angel/AngelScriptInstance.hpp>
 #include <vector>
 
 namespace VSGE {
 
-	class IEntityScript : public IEntityComponent {
+	class EntityScriptComponent : public IEntityComponent {
 	private:
-		ResourceReference _script_resource;
+		std::string _scriptClassName;
+		AngelScriptInstance* instance;
 	public:
-		IEntityScript(){
-			_script_resource.SetResourceType(RESOURCE_TYPE_SCRIPT);
+		EntityScriptComponent(){
+			instance = new AngelScriptInstance;
 		}
 
-		virtual void OnUpdate() = 0;
-		virtual void OnStart() = 0;
-		virtual void OnDestroy() = 0;
-		virtual void OnPreRender() = 0;
+		~EntityScriptComponent() {
+			delete instance;
+		}
 
-		virtual void OnActivate() = 0;
-		virtual void OnDeactivate() = 0;
+		void SetScriptName(const std::string& script);
+		const std::string& GetScriptName();
 
-		virtual void Serialize(YAML::Emitter& e) = 0;
-		virtual void Deserialize(YAML::Node& entity) = 0;
+		void OnUpdate();
+		void OnStart();
+		void OnDestroy();
+		void OnPreRender();
+
+		void OnActivate();
+		void OnDeactivate();
+
+		void Serialize(YAML::Emitter& e){}
+		void Deserialize(YAML::Node& entity) {}
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_SCRIPT, "Script")
 	};
 
-	typedef std::vector<IEntityScript*> tEntityScriptsList;
+	typedef std::vector<EntityScriptComponent*> tEntityScriptsList;
 }

@@ -1,7 +1,7 @@
 #pragma once 
 
 #include <Engine/ApplicationLayer.hpp>
-#include <Scripting/Angel/AngelScriptModule.hpp>
+#include "AngelScriptModule.hpp"
 #include <angelscript/angelscript.h>
 #include <string>
 
@@ -41,6 +41,7 @@ namespace VSGE {
         void SetContextFunction(asIScriptFunction* function);
         int ContextExecute();
         void* GetAddressOfReturnValue();
+        void ContextSetObject(void* object);
         int ContextSetArgumentObject(uint32 slot, void* object);
 
         int RegisterInterface(const std::string& name);

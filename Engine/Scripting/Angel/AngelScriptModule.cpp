@@ -89,7 +89,12 @@ void AngelScriptModule::UpdateClassInfos() {
 				for (uint32 field_i = 0; field_i < desc->_classFieldsNum; field_i++) {
 					ClassFieldDesc cf_desc;
 					const char* _Name;
-					type->GetProperty(field_i, &_Name, &cf_desc.typeID, &cf_desc.isPrivate, &cf_desc.isProtected);
+					type->GetProperty(field_i, &_Name, 
+						&cf_desc.typeID, 
+						&cf_desc.isPrivate, 
+						&cf_desc.isProtected,
+						0,
+						&cf_desc.isReference);
 					cf_desc.name = std::string(_Name);
 					cf_desc.index = field_i;
 					desc->_fields.push_back(cf_desc);
@@ -113,19 +118,25 @@ MainClassDesc* AngelScriptModule::GetMainClassDescByName(const std::string& clas
 	return nullptr;
 }
 
-int AngelScriptModule::CreateMainClassObject(const std::string& className, asIScriptObject** ClassObj) {
-	int result = 0;
+int AngelScriptModule::CreateMainClassObject(const std::string& className, Entity* entity, asIScriptObject** ClassObj) {
 
 	MainClassDesc* mainClassDesc = GetMainClassDescByName(className);
 	AngelScriptLayer* layer = AngelScriptLayer::Get();
 
-	std::string construct_str = className + " @" + className + "(GameObject@)";
-	asIScriptFunction* factory = (mainClassDesc->_info)->GetFactoryByDecl(construct_str.c_str());
+	return CreateMainClassObject(mainClassDesc, entity, ClassObj);
+}
+
+int AngelScriptModule::CreateMainClassObject(MainClassDesc* desc, Entity* entity, asIScriptObject** ClassObj) {
+	int result = 0;
+	AngelScriptLayer* layer = AngelScriptLayer::Get();
+
+	std::string construct_str = desc->_name + " @" + desc->_name + "(GameObject@)";
+	asIScriptFunction* factory = (desc->_info)->GetFactoryByDecl(construct_str.c_str());
 	//Allocate class by Constructor
 	{
 		layer->SetContextFunction(factory);
-		//if (obj != nullptr)
-		//	mContext->SetArgObject(0, obj);
+		if (entity != nullptr)
+			layer->ContextSetArgumentObject(0, entity);
 		result = layer->ContextExecute();
 	}
 	//Get returned created class

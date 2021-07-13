@@ -16,6 +16,9 @@ void ConsoleWindow::OnDrawWindow() {
 		if (_type == VSGE::LogType::LOG_TYPE_WARN) {
 			msg_array = &_warnMessages;
 		}
+		if (_type == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
+			msg_array = &_scriptErrors;
+		}
 
 		if (ImGui::Button("Clear")) {
 			msg_array->clear();
@@ -31,6 +34,10 @@ void ConsoleWindow::OnDrawWindow() {
 		ImGui::SameLine();
 		if (ImGui::Button("ERROR")) {
 			_type = VSGE::LogType::LOG_TYPE_ERROR;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Scripts Errors")) {
+			_type = VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR;
 		}
 		
 		for (auto msg : *msg_array) {
@@ -53,5 +60,8 @@ void ConsoleWindow::addMsg(VSGE::MessageEvent* msg_event) {
 	}
 	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_WARN) {
 		_warnMessages.push_back(msg_event);
+	}
+	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
+		_scriptErrors.push_back(msg_event);
 	}
 }
