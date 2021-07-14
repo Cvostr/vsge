@@ -144,6 +144,10 @@ namespace VSGE {
 		uint32 GetMaxParticlesCount();
 		MinMaxValue<int>& GetEmissionRate();
 		MinMaxValue<Vec3>& GetDirection();
+		MinMaxValue<float>& GetVelocity();
+		DeltaValue<MinMaxValue<Vec2>>& GetSize();
+		const Vec3& GetConstantForce();
+		float GetDampingForce();
 
 		void SetEmitterShape(ParticleEmitterShape shape);
 		void SetDuration(float duration);
@@ -153,6 +157,7 @@ namespace VSGE {
 		void SetMaxParticlesCount(uint32 maxParticles);
 		void SetEmissionRate(int min, int max);
 		void SetDirection(const Vec3& min, const Vec3& max);
+		void SetSize(DeltaValue<MinMaxValue<Vec2>>& size);
 		void SetVelocity(float min, float max);
 		void SetConstantForce(const Vec3& force);
 		void SetDampingForce(float damping);

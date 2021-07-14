@@ -70,8 +70,8 @@ namespace VSGE {
 		VulkanDescriptorPool* mObjectsPool;
 		VulkanDescriptorPool* mMaterialsDescriptorPool;
 		std::vector<VulkanDescriptorSet*> mVertexDescriptorSets;
-		std::vector<VulkanDescriptorSet*> mAnimationsDescriptorSets;
-		std::vector<VulkanDescriptorSet*> mParticlesDescriptorSets;
+		VulkanDescriptorSet* mAnimationsDescriptorSet;
+		VulkanDescriptorSet* mParticlesDescriptorSet;
 
 		VulkanDescriptorSet* mDeferredPassSet;
 		//--------------------Buffers--------------------
@@ -104,6 +104,10 @@ namespace VSGE {
 		void BindMaterial(Material* mat);
 
 		uint32 _writtenBones;
+
+		//TEMPORARY 
+		Camera* cam;
+		//-----------------------
 
 	public:
 

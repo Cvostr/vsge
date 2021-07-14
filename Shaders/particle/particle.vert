@@ -12,14 +12,13 @@ layout (std140, binding = 0) uniform CamMatrices{
     uniform vec3 cam_position;
 };
 
-layout (std140, binding = 1) uniform Transform{
-    uniform mat4 obj_model[64];
+layout (std140, set = 2, binding = 0) readonly buffer Transforms {
+    mat4 transforms[];
 };
 
 void main(){
 	UVCoord = uv;
 
-	FragPos = (obj_model[gl_InstanceIndex] * vec4(position, 1.0)).xyz;
-    gl_Position = cam_view_projection * vec4(FragPos, 1);
-	
+	FragPos = (transforms[gl_InstanceIndex] * vec4(position, 1.0)).xyz;
+    gl_Position = cam_view_projection * vec4(FragPos, 1);	
 }

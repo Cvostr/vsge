@@ -73,16 +73,16 @@ void VulkanRenderer::SetupRenderer() {
 	mEndSemaphore->Create();
 
 	//---------------------Buffers--------------------------------
-	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNAMIC_UNIFORM);
+	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mCameraShaderBuffer->Create(MAX_CAMERAS * UNI_ALIGN, LOCATION_GPU);
 
-	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNAMIC_UNIFORM);
-	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN, LOCATION_GPU);
+	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN);
 
-	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNAMIC_UNIFORM);
+	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
 
-	mParticlesTransformShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_DYNAMIC_UNIFORM);
+	mParticlesTransformShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	mParticlesTransformShaderBuffer->Create(sizeof(Mat4) * MAX_PARTICLES_MATRICES);
 
 	_lightsBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -125,18 +125,12 @@ void VulkanRenderer::SetupRenderer() {
 		mVertexDescriptorSets.push_back(set);
 	}
 
-	for (uint32 desc_i = 0; desc_i < ANIMATIONS_DESCR_SETS; desc_i++) {
-		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Animation
-		mAnimationsDescriptorSets.push_back(set);
-	}
+	mAnimationsDescriptorSet = new VulkanDescriptorSet(mObjectsPool);
+	mAnimationsDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Animation
+
 	//Create base particles descriptors sets
-	for (uint32 desc_i = 0; desc_i < PARTICLES_DESCR_SETS; desc_i++) {
-		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
-		mParticlesDescriptorSets.push_back(set);
-	}
+	mParticlesDescriptorSet = new VulkanDescriptorSet(mObjectsPool);
+	mParticlesDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
 
 	mDeferredPassSet = new VulkanDescriptorSet(mObjectsPool);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -157,19 +151,11 @@ void VulkanRenderer::SetupRenderer() {
 		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
 	}
 
-	for (uint32 desc_i = 0; desc_i < ANIMATIONS_DESCR_SETS; desc_i++) {
-		VulkanDescriptorSet* set = mAnimationsDescriptorSets[desc_i];
-		set->Create();
-
-		set->WriteDescriptorBuffer(0, mAnimationTransformsShaderBuffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
-	}
-
-	/*for (uint32 desc_i = 0; desc_i < PARTICLES_DESCR_SETS; desc_i++) {
-		VulkanDescriptorSet* set = mParticlesDescriptorSets[desc_i];
-		set->Create();	
+	mAnimationsDescriptorSet->Create();
+	mAnimationsDescriptorSet->WriteDescriptorBuffer(0, mAnimationTransformsShaderBuffer, 0);
 	
-		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
-	}*/
+	mParticlesDescriptorSet->Create();
+	mParticlesDescriptorSet->WriteDescriptorBuffer(0, mParticlesTransformShaderBuffer);
 	
 	mDeferredPassSet->Create();
 	mDeferredPassSet->WriteDescriptorBuffer(1, mCameraShaderBuffer);
@@ -358,24 +344,15 @@ void VulkanRenderer::StoreWorldObjects() {
 
 		if (!emitter->IsSimulating())
 			return;
+		//TEMPORARY
+		emitter->StepSimulation();
+		//--------------------
 
 		Mat4* ParticleTransforms = nullptr;
-		//emitter->GetParticlesTransforms(&ParticleTransforms, *CurrentCamera);
+		emitter->GetParticlesTransforms(&ParticleTransforms, *cam);
 
-		int particles_left = emitter->GetAliveParticlesCount();
-
-		//int parts = particles_left / INSTANCED_RENDER_BUFFER_SIZE;
-		//parts += (particles_left % INSTANCED_RENDER_BUFFER_SIZE > 0) ? 1 : 0;
-
-		/*for (int part = 0; part < parts; part++) {
-
-			int amount = particles_left / INSTANCED_RENDER_BUFFER_SIZE > 0 ? INSTANCED_RENDER_BUFFER_SIZE : particles_left;
-			particles_left /= INSTANCED_RENDER_BUFFER_SIZE;
-
-			GetInstancedUniformBuffer()->writeData(0, sizeof(Mat4) * amount, ParticleTransforms + part * INSTANCED_RENDER_BUFFER_SIZE);
-
-			ParticleEmitter->mParticleMesh->DrawInstanced(amount);
-		}*/
+		int particles_count = emitter->GetAliveParticlesCount();
+		mParticlesTransformShaderBuffer->WriteData(0, sizeof(Mat4) * particles_count, ParticleTransforms);
 	}
 
 	mGBufferCmdbuf->Begin();
@@ -413,7 +390,7 @@ void VulkanRenderer::StoreWorldObjects() {
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
 
 			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[vertexDescriptorID], 2, offsets);
-			mGBufferCmdbuf->BindDescriptorSets(*ppl, 2, 1, mAnimationsDescriptorSets[0], 1, &anim_offset);
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 2, 1, mAnimationsDescriptorSet, 1, &anim_offset);
 			mGBufferCmdbuf->BindMesh(*mesh);
 			if (mesh->GetIndexCount() > 0)
 				mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount());
@@ -423,6 +400,47 @@ void VulkanRenderer::StoreWorldObjects() {
 
 		if (_writtenBones % 4 > 0) {
 			_writtenBones += 4 - (_writtenBones % 4);
+		}
+	}
+
+	for (uint32 particle_em_i = 0; particle_em_i < _particleEmitters.size(); particle_em_i++) {
+		Entity* entity = _particleEmitters[particle_em_i];
+		ParticleEmitterComponent* particle_emitter = entity->GetComponent<ParticleEmitterComponent>();
+		
+		if (!particle_emitter->IsSimulating())
+			return;
+		
+		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
+
+		//bind material
+		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+		Material* mat = mat_resource->GetMaterial();
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+
+		mGBufferCmdbuf->BindPipeline(*pipl);
+		mGBufferCmdbuf->SetViewport(0, 0, mOutputWidth, mOutputHeight);
+		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+		mGBufferCmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+
+		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			//Mark mesh resource used in this frame
+			mesh_resource->Use();
+			//Mark material resource used in this frame
+			mat_resource->Use();
+
+			uint32 offsets[2] = { 0, 0 };
+
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets);
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 2, 1, mParticlesDescriptorSet, 1, offsets);
+			mGBufferCmdbuf->BindMesh(*mesh);
+			uint32 instances_count = particle_emitter->GetAliveParticlesCount();
+			if (mesh->GetIndexCount() > 0)
+				mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount(), instances_count);
+			else
+				mGBufferCmdbuf->Draw(mesh->GetVerticesCount(), instances_count);
 		}
 	}
 
@@ -445,6 +463,10 @@ void VulkanRenderer::StoreWorldObjects() {
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
+	//TEMPORARY
+	this->cam = cam;
+	//---------------------
+
 	cam->UpdateMatrices();
 	mCameraShaderBuffer->WriteData(0, sizeof(Mat4), (void*)&cam->GetProjectionViewMatrix());
 
@@ -477,7 +499,7 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 	VulkanDescriptorSet* materialsDescrSet = CreateDescriptorSetFromMaterialTemplate(mat_template);
 	p_layout->PushDescriptorSet(materialsDescrSet);
 
-	p_layout->PushDescriptorSet(mAnimationsDescriptorSets[0]);
+	p_layout->PushDescriptorSet(mAnimationsDescriptorSet);
 
 	//Create pipeline layout
 	p_layout->Create();

@@ -47,7 +47,7 @@ Entities:
         range: 15
         sp_angle: 12.5
         color: [1, 1, 1, 1]
-        castShadows: true
+        castShadows: false
   - Entity: Cube (2)
     uid: [2278826814, 575420708, 1424792874, 3214824675]
     active: true
@@ -81,3 +81,18 @@ Entities:
         volume: 1
         pitch: 1
         loop: false
+  - Entity: Particles
+    uid: [3924579556, 2624839655, 1849585852, 332250944]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 5
+      - Component: 2
+        material: particle_mat
+      - Component: 3
+        mesh: Cube

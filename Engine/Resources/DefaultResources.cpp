@@ -54,6 +54,15 @@ static Vertex cube_vertices[] = {
     Vertex(Vec3(-1.0f,  1.0f,  1.0f), Vec2(0.0f, 0.0f), Vec3(0.0f,  1.0f,  0.0f))  // bottom-left
 };
 
+Vertex plane_vertices[] = {
+    // positions              // texture coords
+    Vertex(Vec3(1.0f,  1.0f, 0.0f),   Vec2(1.0f, 1.0f),   Vec3(0, 0, 1)),   // top right
+    Vertex(Vec3(1.0f, -1.0f, 0.0f),   Vec2(1.0f, 0.0f),   Vec3(0, 0, 1)),   // bottom right
+    Vertex(Vec3(-1.0f, -1.0f, 0.0f),  Vec2(0.0f, 0.0f),   Vec3(0, 0, 1)),   // bottom left
+    Vertex(Vec3(-1.0f,  1.0f, 0.0f),  Vec2(0.0f, 1.0f),   Vec3(0, 0, 1))   // top left
+};
+
+unsigned int plane_indices[] = { 0,1,2, 0,2,3 };
 
 void VSGE::AddDefaultMaterial() {
 	MaterialResource* default_mat = new MaterialResource;
@@ -72,6 +81,18 @@ void VSGE::AddDefaultMeshes() {
     cube_mesh->GetMesh()->Create();
     cube_mesh->SetState(RESOURCE_STATE_READY);
 	ResourceCache::Get()->PushResource(cube_mesh);
+
+
+    MeshResource* plane_mesh = new MeshResource;
+    plane_mesh->SetName("Plane");
+    plane_mesh->GetMesh()->SetVertexBuffer(plane_vertices, 4);
+    plane_mesh->GetMesh()->SetIndexBuffer(plane_indices, 6);
+    plane_mesh->GetMesh()->AddVertexBuffer(verts);
+    plane_mesh->GetMesh()->Create();
+    plane_mesh->SetState(RESOURCE_STATE_READY);
+    ResourceCache::Get()->PushResource(plane_mesh);
+
+
     delete[] verts;
 
 

@@ -31,8 +31,8 @@ layout (std140, binding = 1) uniform Transform{
     uniform mat4 obj_model[4];
 };
 
-layout (std140, set = 2, binding = 0) uniform Animation{
-    uniform mat4 bone_transform[200];
+layout (std140, set = 2, binding = 0) readonly buffer Animation{
+    mat4 bone_transform[];
 };
 
 mat4 getBoneTransform(){

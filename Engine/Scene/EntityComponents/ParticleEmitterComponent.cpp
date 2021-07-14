@@ -276,6 +276,10 @@ void ParticleEmitterComponent::SetVelocity(float min, float max) {
 	_velocity.Max = max;
 }
 
+void ParticleEmitterComponent::SetSize(DeltaValue<MinMaxValue<Vec2>>& size) {
+	_size = size;
+}
+
 void ParticleEmitterComponent::SetConstantForce(const Vec3& force) {
 	_constantForce = force;
 }
@@ -320,6 +324,19 @@ MinMaxValue<int>& ParticleEmitterComponent::GetEmissionRate() {
 MinMaxValue<Vec3>& ParticleEmitterComponent::GetDirection() {
 	return _direction;
 }
+MinMaxValue<float>& ParticleEmitterComponent::GetVelocity() {
+	return _velocity;
+}
+DeltaValue<MinMaxValue<Vec2>>& ParticleEmitterComponent::GetSize() {
+	return _size;
+}
+const Vec3& ParticleEmitterComponent::GetConstantForce() {
+	return _constantForce;
+}
+float ParticleEmitterComponent::GetDampingForce() {
+	return _dampingForce;
+}
+
 void ParticleEmitterComponent::GetParticlesTransforms(Mat4** Transforms, Camera& cam) {
 	uint32_t aliveParticlesCount = GetAliveParticlesCount();
 	if (aliveParticlesCount == 0)
