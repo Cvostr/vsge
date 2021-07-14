@@ -102,6 +102,13 @@ void Quat::operator*=(const Quat& q) {
     *this = MultiplyTo(q);
 }
 
+void Quat::operator=(const Quat& q) {
+    x = q.x;
+    y = q.y;
+    z = q.z;
+    w = q.w;
+}
+
 Vec3 Quat::GetEulerAngles() const {
     float RAD_TO_DEG = 180.f / 3.14159265f;
 

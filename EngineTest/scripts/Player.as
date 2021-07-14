@@ -1,6 +1,6 @@
 class Player : ZPScript{
 
-	Player(GameObject@ o)
+	Player(Entity@ o)
 	{
 		
 	}

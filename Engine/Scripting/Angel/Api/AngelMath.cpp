@@ -1,9 +1,14 @@
 #include "AngelApi.hpp"
 #include <Scripting/Angel/AngelScriptLayer.hpp>
+#include <Math/MathBase.hpp>
 #include <Math/Vec3.hpp>
 #include <Math/Quaternion.hpp>
 
 using namespace VSGE;
+
+float ctg(float a) {
+	return 1.f / tan(a);
+}
 
 static void CreateVec3(float x, float y, float z, Vec3* ptr) {
 	new (ptr) Vec3(x, y, z);
@@ -39,7 +44,15 @@ void VSGE::BindMath() {
 	layer->RegisterObjectProperty(QUAT_TYPE_NAME, "float z", offsetof(Quat, z));
 	layer->RegisterObjectProperty(QUAT_TYPE_NAME, "float w", offsetof(Quat, w));
 	layer->RegisterObjectMethod(QUAT_TYPE_NAME, "void Normalize()", asMETHOD(Quat, GetNormalized), asCALL_THISCALL);
-	//layer->RegisterObjectMethod(QUAT_TYPE_NAME, "Quat &opAssign(Quat &in)", asMETHODPR(Quat, operator =, (Quat), Quat&), asCALL_THISCALL);
+	layer->RegisterObjectMethod(QUAT_TYPE_NAME, "void opAssign(Quat &in)", asMETHOD(Quat, operator=), asCALL_THISCALL);
 
-
+	layer->RegisterGlobalFunction("float sqrt(float)", asFUNCTION(sqrtf), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float sin(float)", asFUNCTION(sinf), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float cos(float)", asFUNCTION(cosf), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float tan(float)", asFUNCTION(tanf), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float ctg(float)", asFUNCTION(ctg), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float log(float)", asFUNCTION(logf), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float lg(float)", asFUNCTION(log10f), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float abs(float)", asFUNCTION(fabsf), asCALL_CDECL);
+	layer->RegisterGlobalFunction("float rad(float)", asFUNCTION(to_radians), asCALL_CDECL);
 }

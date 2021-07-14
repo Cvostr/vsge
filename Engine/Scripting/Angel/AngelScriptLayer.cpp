@@ -1,5 +1,7 @@
 #include "AngelScriptLayer.hpp"
 #include <Core/Logger.hpp>
+#include "Api/AngelApi.hpp"
+#include <angelscript/scriptstdstring.h>
 
 using namespace VSGE;
 
@@ -24,6 +26,11 @@ void AngelScriptLayer::CreateEngine() {
 
 	//Add base script class
 	RegisterInterface("ZPScript");
+	RegisterStdString(_engine);
+	//RegisterStdStringUtils(_engine);
+	BindMath();
+	BindIO();
+	BindScene();
 
 	_module->CreateModule(_engine, "vsge");
 }

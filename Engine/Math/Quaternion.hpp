@@ -46,4 +46,6 @@ public:
 	Quat operator*(const Quat& q) const;
 
 	void operator*=(const Quat& q);
+
+	void operator=(const Quat& q);
 };

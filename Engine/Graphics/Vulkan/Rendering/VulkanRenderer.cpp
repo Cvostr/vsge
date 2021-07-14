@@ -131,12 +131,12 @@ void VulkanRenderer::SetupRenderer() {
 		mAnimationsDescriptorSets.push_back(set);
 	}
 	//Create base particles descriptors sets
-	/*for (uint32 desc_i = 0; desc_i < PARTICLES_DESCR_SETS; desc_i++) {
+	for (uint32 desc_i = 0; desc_i < PARTICLES_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 		mParticlesDescriptorSets.push_back(set);
-	}*/
+	}
 
 	mDeferredPassSet = new VulkanDescriptorSet(mObjectsPool);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -166,8 +166,8 @@ void VulkanRenderer::SetupRenderer() {
 
 	/*for (uint32 desc_i = 0; desc_i < PARTICLES_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = mParticlesDescriptorSets[desc_i];
-		set->Create();
-
+		set->Create();	
+	
 		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
 	}*/
 	
