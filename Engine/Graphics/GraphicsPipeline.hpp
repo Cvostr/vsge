@@ -1,19 +1,21 @@
 #pragma once
 
+#include <Core/VarTypes/Base.hpp>
+#include <map>
 #include "GpuObject.hpp"
 
 namespace VSGE {
 
 	enum FrontFaceMode {
-		FRONT_FACE_CCW = 0,
+		FRONT_FACE_MODE_CCW = 0,
 		FRONT_FACE_MODE_CW = 1
 	};
 
 	enum CullMode {
 		CULL_MODE_NONE = 0,
-		CULL_MODE_FRONT = 0x00000001,
-		CULL_MODE_BACK = 0x00000002,
-		CULL_MODE_FRONT_BACK = 0x00000003
+		CULL_MODE_FRONT = 1,
+		CULL_MODE_BACK = 2,
+		CULL_MODE_FRONT_BACK = 3
 	};
 
 	enum PolygonMode {
@@ -47,8 +49,48 @@ namespace VSGE {
 		PRIMITIVE_TOPOLOGY_PATCH_LIST = 10,
 	};
 
+	typedef enum ColorBits {
+		COLOR_R = 1,
+		COLOR_G = 2,
+		COLOR_B = 4,
+		COLOR_A = 8,
+		COLOR_ALL = 15
+	}ColorBits;
+
+	typedef enum BlendFactor {
+		BLEND_FACTOR_ZERO = 0,
+		BLEND_FACTOR_ONE = 1,
+		BLEND_FACTOR_SRC_COLOR = 2,
+		BLEND_FACTOR_ONE_MINUS_SRC_COLOR = 3,
+		BLEND_FACTOR_DST_COLOR = 4,
+		BLEND_FACTOR_ONE_MINUS_DST_COLOR = 5,
+		BLEND_FACTOR_SRC_ALPHA = 6,
+		BLEND_FACTOR_ONE_MINUS_SRC_ALPHA = 7,
+		BLEND_FACTOR_DST_ALPHA = 8,
+		BLEND_FACTOR_ONE_MINUS_DST_ALPHA = 9
+	};
+
+	typedef struct BlendAttachmentDesc {
+		bool _blending;
+		uint32 _colorMask;
+		BlendFactor _srcColor;
+		BlendFactor _dstColor;
+
+		BlendAttachmentDesc() {
+			_blending = true;
+			_colorMask = COLOR_R | COLOR_G | COLOR_B | COLOR_A;
+
+			_srcColor = BLEND_FACTOR_ONE;
+			_dstColor = BLEND_FACTOR_ZERO;
+		}
+
+	}BlendAttachmentDesc;
+
+	typedef std::map<uint32, BlendAttachmentDesc> BlendAttachmentDescsMap;
+
 	class GraphicsPipeline : public IGpuObject {
 	protected:
+		BlendAttachmentDescsMap _blendDescs;
 		PrimitiveTopology _primitiveTopology;
 		FrontFaceMode _frontFace;
 		CullMode _cullMode;
@@ -101,6 +143,10 @@ namespace VSGE {
 
 		void SetDepthTest(bool depthTest){
 			_depthTest = depthTest;
+		}
+
+		void SetBlendingDescs(const BlendAttachmentDescsMap& map) {
+			_blendDescs = map;
 		}
 
 		GraphicsPipeline() 

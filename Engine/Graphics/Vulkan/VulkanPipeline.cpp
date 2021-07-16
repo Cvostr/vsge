@@ -148,11 +148,24 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
 
 	for (uint32 attachment_i = 0; attachment_i < rpass->GetColorAttachmentsCount(); attachment_i++) {
+		bool blend_enable = false;
+		uint32 color_writemask = COLOR_R | COLOR_G | COLOR_B | COLOR_A;
+		BlendFactor srcColor = BLEND_FACTOR_ONE;
+		BlendFactor dstColor = BLEND_FACTOR_ZERO;
+
+		if (_blendDescs.count(attachment_i) == 1) {
+			BlendAttachmentDesc desc = _blendDescs.at(attachment_i);
+			blend_enable = desc._blending;
+			color_writemask = desc._colorMask;
+			srcColor = desc._srcColor;
+			dstColor = desc._dstColor;
+		}
+
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
-		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
-		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+		colorBlendAttachment.colorWriteMask = color_writemask;
+		colorBlendAttachment.blendEnable = blend_enable;
+		colorBlendAttachment.srcColorBlendFactor = (VkBlendFactor)srcColor;
+		colorBlendAttachment.dstColorBlendFactor = (VkBlendFactor)dstColor;
 		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
 		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
 		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional

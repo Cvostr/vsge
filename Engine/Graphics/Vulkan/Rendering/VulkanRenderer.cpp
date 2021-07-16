@@ -206,8 +206,15 @@ void VulkanRenderer::SetupRenderer() {
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
 
+	BlendAttachmentDesc particle_blend_desc;
+	particle_blend_desc._blending = true;
+	particle_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
+	particle_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+
 	particle_template = new MaterialTemplate;
 	particle_template->SetName("default_particle");
+	particle_template->SetCullMode(CULL_MODE_NONE);
+	particle_template->SetBlendingAttachmentDesc(0, particle_blend_desc);
 	particle_template->AddTexture("Diffuse", 1);
 	particle_template->AddParameter("Color", Color(1,1,1,1));
 	particle_template->SetShader("Particle");
@@ -343,7 +350,7 @@ void VulkanRenderer::StoreWorldObjects() {
 		ParticleEmitterComponent* emitter = entity->GetComponent<ParticleEmitterComponent>();
 
 		if (!emitter->IsSimulating())
-			return;
+			continue;
 		//TEMPORARY
 		emitter->StepSimulation();
 		//--------------------
@@ -408,7 +415,7 @@ void VulkanRenderer::StoreWorldObjects() {
 		ParticleEmitterComponent* particle_emitter = entity->GetComponent<ParticleEmitterComponent>();
 		
 		if (!particle_emitter->IsSimulating())
-			return;
+			continue;
 		
 		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
 		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
@@ -498,18 +505,17 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 	//Add materials descriptor
 	VulkanDescriptorSet* materialsDescrSet = CreateDescriptorSetFromMaterialTemplate(mat_template);
 	p_layout->PushDescriptorSet(materialsDescrSet);
-
 	p_layout->PushDescriptorSet(mAnimationsDescriptorSet);
-
 	//Create pipeline layout
 	p_layout->Create();
 
 	//Create pipeline
 	VulkanPipeline* pipeline = new VulkanPipeline;
 	pipeline->SetDepthTest(true);
-	pipeline->SetCullMode(CULL_MODE_FRONT);
+	pipeline->SetCullMode(mat_template->GetCullMode());
+	pipeline->SetBlendingDescs(mat_template->GetBlendingAttachmentDescs());
 	pipeline->Create((VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
-	//Store pipeline pointer in material template
+	//Store pipeline pointer in material template	
 	mat_template->SetPipeline(pipeline);
 
 	return pipeline;

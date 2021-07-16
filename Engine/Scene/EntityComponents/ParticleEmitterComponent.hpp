@@ -148,6 +148,8 @@ namespace VSGE {
 		DeltaValue<MinMaxValue<Vec2>>& GetSize();
 		const Vec3& GetConstantForce();
 		float GetDampingForce();
+		const MinMaxValue<float>& GetRotation();
+		const MinMaxValue<float>& GetRotationSpeed();
 
 		void SetEmitterShape(ParticleEmitterShape shape);
 		void SetDuration(float duration);

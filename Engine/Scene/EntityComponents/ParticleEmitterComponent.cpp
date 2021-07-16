@@ -4,8 +4,10 @@
 #include <Scene/Entity.hpp>
 #include <Core/Time.hpp>
 #include <Math/MatrixTransform.hpp>
+#include <Core/YamlHelper.hpp>
 
 using namespace VSGE;
+using namespace YAML;
 
 ParticleEmitterComponent::ParticleEmitterComponent() :
 	_simulating(false),
@@ -15,7 +17,7 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 	_prewarm(true),
 	_lifetime(2),
 	_maxParticles(100),
-	_direction(Vec3(0.f, 1.f, 0.f)),
+	_direction(Vec3(-1.f, -1.f, -1.f), Vec3(1.f, 1.f, 1.f)),
 	_velocity(8.f, 10.f),
 	_constantForce(0, -9.8f, 0),
 	_dampingForce(0),
@@ -28,7 +30,34 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 }
 
 void ParticleEmitterComponent::Serialize(YAML::Emitter& e) {
+	e << Key << "shape" << Value << _shape;
+	e << Key << "duration" << Value << _duration;
+	e << Key << "loop" << Value << _looping;
+	e << Key << "prewarm" << Value << _prewarm;
+	e << Key << "lifetime" << Value << _lifetime;
+	e << Key << "max_particles" << Value << _maxParticles;
+	e << Key << "emrate_min" << Value << _emissionRate.Min;
+	e << Key << "emrate_max" << Value << _emissionRate.Max;
 
+	e << Key << "direction_min" << Value << _direction.Min;
+	e << Key << "direction_max" << Value << _direction.Max;
+
+	e << Key << "size_min" << Value << _size.OriginalValue.Min;
+	e << Key << "size_max" << Value << _size.OriginalValue.Max;
+	e << Key << "size_add" << Value << _size.Add;
+	e << Key << "size_mul" << Value << _size.Mul;
+
+	e << Key << "velocity_min" << Value << _velocity.Min;
+	e << Key << "velocity_max" << Value << _velocity.Max;
+
+	e << Key << "constant_force" << Value << _constantForce;
+	e << Key << "damping_force" << Value << _dampingForce;
+
+	e << Key << "rotation_min" << Value << _rotation.Min;
+	e << Key << "rotation_max" << Value << _rotation.Max;
+
+	e << Key << "rotation_speed_min" << Value << _rotationSpeed.Min;
+	e << Key << "rotation_speed_max" << Value << _rotationSpeed.Max;
 }
 void ParticleEmitterComponent::Deserialize(YAML::Node& entity) {
 
@@ -335,6 +364,12 @@ const Vec3& ParticleEmitterComponent::GetConstantForce() {
 }
 float ParticleEmitterComponent::GetDampingForce() {
 	return _dampingForce;
+}
+const MinMaxValue<float>& ParticleEmitterComponent::GetRotation() {
+	return _rotation;
+}
+const MinMaxValue<float>& ParticleEmitterComponent::GetRotationSpeed() {
+	return _rotationSpeed;
 }
 
 void ParticleEmitterComponent::GetParticlesTransforms(Mat4** Transforms, Camera& cam) {

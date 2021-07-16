@@ -71,6 +71,22 @@ void VSGEditor::DrawParticleEmitterComponent(VSGE::ParticleEmitterComponent* pec
 	ImGui::InputFloat("Multiply", &size.Mul);
 	pec->SetSize(size);
 
+	ImGui::Separator();
+
+	MinMaxValue<float> rotation = pec->GetRotation();
+	ImGui::Text("Rotation");
+	ImGui::InputFloat("Min##rotation", &rotation.Min);
+	ImGui::InputFloat("Max##rotation", &rotation.Max);
+	pec->SetRotation(rotation.Min, rotation.Max);
+
+	ImGui::Separator();
+
+	MinMaxValue<float> rotationSpeed = pec->GetRotationSpeed();
+	ImGui::Text("Rotation speed");
+	ImGui::InputFloat("Min##rotationspeed", &rotationSpeed.Min);
+	ImGui::InputFloat("Max##rotationspeed", &rotationSpeed.Max);
+	pec->SetRotationSpeed(rotationSpeed.Min, rotationSpeed.Max);
+
 	if (!pec->IsSimulating()) {
 		if (ImGui::Button("Play", ImVec2(ImGui::GetWindowWidth(), 0))) {
 			pec->StartSimulation();

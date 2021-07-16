@@ -8,6 +8,7 @@
 #include <vector>
 #include "GraphicsPipeline.hpp"
 #include "GpuBuffer.hpp"
+#include <map>
 
 namespace VSGE {
 
@@ -46,57 +47,47 @@ namespace VSGE {
 		VertexLayout _vertexLayout;
 		GraphicsPipeline* _pipeline;
 
+		CullMode _cullMode;
+		std::map<uint32, BlendAttachmentDesc> _blendDescs;
+
 		void SetupDefaultVertexLayout();
 	public:
 		
-		MaterialTemplate() :
-			_shader(nullptr),
-			_pipeline(nullptr)
-		{
-			SetupDefaultVertexLayout();
-		}
+		MaterialTemplate();
 
-		~MaterialTemplate() {
-			SAFE_RELEASE(_pipeline);
-		}
+		~MaterialTemplate();
 
-		const std::string& GetName() {
-			return _name;
-		}
+		const std::string& GetName();
 
-		void SetName(const std::string& name) {
-			_name = name;
-		}
+		void SetName(const std::string& name);
 
-		void SetPipeline(GraphicsPipeline* pipeline) {
-			_pipeline = pipeline;
-		}
+		void SetPipeline(GraphicsPipeline* pipeline);
 
-		GraphicsPipeline* GetPipeline() {
-			return _pipeline;
-		}
+		GraphicsPipeline* GetPipeline();
 
-		tMaterialTexturesList& GetTextures() {
-			return _materialTextures;
-		}
+		tMaterialTexturesList& GetTextures();
 
-		tMaterialParamsList& GetParams() {
-			return _materialParams;
-		}
+		tMaterialParamsList& GetParams();
 
 		void AddParameter(const std::string& name, MultitypeValue baseValue);
 		
 		void AddTexture(const std::string& name, uint32 binding);
 
-		Shader* GetShader() {
-			return _shader;
-		}
+		Shader* GetShader();
 
-		void SetShader(Shader* shader) {
-			_shader = shader;
-		}
+		void SetShader(Shader* shader);
 
 		void SetShader(const std::string& shader_name);
+
+		CullMode GetCullMode();
+
+		void SetCullMode(CullMode mode);
+
+		void SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc);
+
+		const BlendAttachmentDescsMap& GetBlendingAttachmentDescs() {
+			return _blendDescs;
+		}
 
 		VertexLayout& GetLayout() {
 			return _vertexLayout;

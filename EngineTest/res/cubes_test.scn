@@ -92,7 +92,29 @@ Entities:
     rot: [0, 0, 0, 1]
     components:
       - Component: 5
+        shape: 1
+        duration: 5
+        loop: true
+        prewarm: true
+        lifetime: 2
+        max_particles: 100
+        emrate_min: 200
+        emrate_max: 200
+        direction_min: [0, 1, 0]
+        direction_max: [0, 1, 0]
+        size_min: [0, 0]
+        size_max: [10, 10]
+        size_add: 0
+        size_mul: 1
+        velocity_min: 8
+        velocity_max: 10
+        constant_force: [0, -9.80000019, 0]
+        damping_force: 0
+        rotation_min: 0
+        rotation_max: 0
+        rotation_speed_min: 0
+        rotation_speed_max: 0
       - Component: 2
         material: particle_mat
       - Component: 3
-        mesh: Cube
+        mesh: Plane
