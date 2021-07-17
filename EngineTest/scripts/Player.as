@@ -1,8 +1,10 @@
 class Player : ZPScript{
 
-	Player(Entity@ o)
+	Entity@ _this;
+
+	Player(Entity@ entity)
 	{
-		
+		@_this = entity;
 	}
 	
 	void Start() {

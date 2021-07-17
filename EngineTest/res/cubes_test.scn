@@ -93,6 +93,43 @@ Entities:
     components:
       - Component: 5
         shape: 1
+        duration: 3
+        loop: true
+        prewarm: true
+        lifetime: 1
+        max_particles: 300
+        emrate_min: 500
+        emrate_max: 500
+        direction_min: [-1, -1, -1]
+        direction_max: [1, 1, 1]
+        size_min: [1, 1]
+        size_max: [1, 1]
+        size_add: 0
+        size_mul: 1
+        velocity_min: 8
+        velocity_max: 10
+        constant_force: [0, 9.80000019, 0]
+        damping_force: 0
+        rotation_min: 0
+        rotation_max: 0
+        rotation_speed_min: 0
+        rotation_speed_max: 0
+      - Component: 2
+        material: particle_mat
+      - Component: 3
+        mesh: Plane
+  - Entity: Particles
+    uid: [2604799160, 1957353781, 568189493, 1247167554]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 41]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 5
+        shape: 1
         duration: 5
         loop: true
         prewarm: true
@@ -100,10 +137,10 @@ Entities:
         max_particles: 100
         emrate_min: 200
         emrate_max: 200
-        direction_min: [0, 1, 0]
-        direction_max: [0, 1, 0]
-        size_min: [0, 0]
-        size_max: [10, 10]
+        direction_min: [-1, -1, -1]
+        direction_max: [1, 1, 1]
+        size_min: [5, 5]
+        size_max: [5, 5]
         size_add: 0
         size_mul: 1
         velocity_min: 8

@@ -45,14 +45,12 @@ namespace VSGE {
 		Quat _rotation;
 		Mat4 LocalTransform;
 		Mat4 WorldTransform;
-		bool mTransformDirty;
 	public:
 
 		Entity() :	_parent(nullptr),
 					_scene(nullptr),
 					_active(true),
 					_static(false),
-					mTransformDirty(false),
 					_scale(1.f),
 					LocalTransform(1.f),
 					WorldTransform(1.f),
@@ -144,12 +142,14 @@ namespace VSGE {
 		/// <returns></returns>
 		uint32 GetChildrenCount() const;
 
-		uint32 GetTotalChildrenCount();
+		uint32 GetTotalChildrenCount() const;
 		/// <summary>
 		/// Return child entity by index.
 		/// </summary>
 		/// <returns></returns>
 		Entity** GetChildren() { return _children.data(); }
+
+		Entity* GetChild(uint32 child) { return _children[child]; }
 		/// <summary>
 		/// Does this entity contain child entity with pointer
 		/// </summary>
@@ -173,9 +173,16 @@ namespace VSGE {
 		/// <param name="id">- guid to find</param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
-
+		/// <summary>
+		/// Create new entity with same content
+		/// </summary>
+		/// <returns>pointer to new entity</returns>
 		Entity* Dublicate();
-
+		/// <summary>
+		/// Store entity in prefab
+		/// </summary>
+		/// <param name="out">-prefab bytes</param>
+		/// <param name="size">-size of prefab</param>
 		void ToPrefab(byte** out, uint32& size);
 		/// <summary>
 		/// Get local position of entity
@@ -207,18 +214,43 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		Vec3 GetAbsoluteScale() const;
-		Quat GetAbsoluteRotation();
-
+		/// <summary>
+		/// Get absolute rotation in quaternion of entity
+		/// </summary>
+		/// <returns></returns>
+		Quat GetAbsoluteRotation() const;
+		/// <summary>
+		/// Set new position for entity
+		/// </summary>
+		/// <param name="position">- new position</param>
 		void SetPosition(const Vec3& position);
+		/// <summary>
+		/// Set new scale for entity
+		/// </summary>
+		/// <param name="scale">- new scale</param>
 		void SetScale(const Vec3& scale);
+		/// <summary>
+		/// Set new rotation for entity
+		/// </summary>
+		/// <param name="rotation">- new rotation</param>
 		void SetRotation(const Quat& rotation);
+		/// <summary>
+		/// Set new rotation for entity in euler angles
+		/// </summary>
+		/// <param name="rotation">- new rotation</param>
 		void SetRotationEuler(const Vec3& rotation);
 
 		const AABB& GetAABB(bool extendChildren = true);
-
+		/// <summary>
+		/// Get local transform matrix
+		/// </summary>
+		/// <returns></returns>
 		const Mat4& GetLocalTransform() { return LocalTransform; }
 		void SetLocalTransform(const Mat4& transform) { LocalTransform = transform; }
-
+		/// <summary>
+		/// Get world transform matrix
+		/// </summary>
+		/// <returns></returns>
 		const Mat4& GetWorldTransform() { return WorldTransform; }
 		void SetWorldTransform(const Mat4& transform);
 		/// <summary>

@@ -152,6 +152,8 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 		uint32 color_writemask = COLOR_R | COLOR_G | COLOR_B | COLOR_A;
 		BlendFactor srcColor = BLEND_FACTOR_ONE;
 		BlendFactor dstColor = BLEND_FACTOR_ZERO;
+		BlendFactor srcAlpha = BLEND_FACTOR_ONE;
+		BlendFactor dstAlpha = BLEND_FACTOR_ZERO;
 
 		if (_blendDescs.count(attachment_i) == 1) {
 			BlendAttachmentDesc desc = _blendDescs.at(attachment_i);
@@ -159,6 +161,8 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 			color_writemask = desc._colorMask;
 			srcColor = desc._srcColor;
 			dstColor = desc._dstColor;
+			srcAlpha = desc._srcAlpha;
+			dstAlpha = desc._dstAlpha;
 		}
 
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -167,8 +171,8 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 		colorBlendAttachment.srcColorBlendFactor = (VkBlendFactor)srcColor;
 		colorBlendAttachment.dstColorBlendFactor = (VkBlendFactor)dstColor;
 		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
-		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+		colorBlendAttachment.srcAlphaBlendFactor = (VkBlendFactor)srcAlpha;
+		colorBlendAttachment.dstAlphaBlendFactor = (VkBlendFactor)dstAlpha;
 		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
 
 		colorBlendAttachments.push_back(colorBlendAttachment);

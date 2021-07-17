@@ -6,6 +6,8 @@
 #include <Math/Mat4.hpp>
 #include <Core/VarTypes/Base.hpp>
 
+#define MAX_SHADOW_CASCADES 10
+
 namespace VSGE {
 
 	enum LightType {

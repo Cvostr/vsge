@@ -29,6 +29,54 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 	_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 }
 
+template<>
+struct convert<Vec3>
+{
+	static Node encode(const Vec3& rhs)
+	{
+		Node node;
+		node.push_back(rhs.x);
+		node.push_back(rhs.y);
+		node.push_back(rhs.z);
+		node.SetStyle(EmitterStyle::Flow);
+		return node;
+	}
+
+	static bool decode(const Node& node, Vec3& rhs)
+	{
+		if (!node.IsSequence() || node.size() != 3)
+			return false;
+
+		rhs.x = node[0].as<float>();
+		rhs.y = node[1].as<float>();
+		rhs.z = node[2].as<float>();
+		return true;
+	}
+};
+
+template<>
+struct convert<Vec2>
+{
+	static Node encode(const Vec2& rhs)
+	{
+		Node node;
+		node.push_back(rhs.x);
+		node.push_back(rhs.y);
+		node.SetStyle(EmitterStyle::Flow);
+		return node;
+	}
+
+	static bool decode(const Node& node, Vec2& rhs)
+	{
+		if (!node.IsSequence() || node.size() != 2)
+			return false;
+
+		rhs.x = node[0].as<float>();
+		rhs.y = node[1].as<float>();
+		return true;
+	}
+};
+
 void ParticleEmitterComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "shape" << Value << _shape;
 	e << Key << "duration" << Value << _duration;
@@ -60,7 +108,35 @@ void ParticleEmitterComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "rotation_speed_max" << Value << _rotationSpeed.Max;
 }
 void ParticleEmitterComponent::Deserialize(YAML::Node& entity) {
+	_shape = (ParticleEmitterShape)entity["shape"].as<int>();
+	_duration = entity["duration"].as<float>();
+	_looping = entity["loop"].as<bool>();
+	_prewarm = entity["prewarm"].as<bool>();
+	_lifetime = entity["lifetime"].as<float>();
+	_maxParticles = entity["max_particles"].as<uint32>();
 
+	_emissionRate.Min = entity["emrate_min"].as<int>();
+	_emissionRate.Max = entity["emrate_max"].as<int>();
+
+	_direction.Min = entity["direction_min"].as<Vec3>();
+	_direction.Max = entity["direction_max"].as<Vec3>();
+
+	_size.OriginalValue.Min = entity["size_min"].as<Vec2>();
+	_size.OriginalValue.Max = entity["size_max"].as<Vec2>();
+	_size.Add = entity["size_add"].as<float>();
+	_size.Mul = entity["size_mul"].as<float>();
+
+	_velocity.Min = entity["velocity_min"].as<float>();
+	_velocity.Max = entity["velocity_max"].as<float>();
+
+	_constantForce = entity["constant_force"].as<Vec3>();
+	_dampingForce = entity["damping_force"].as<float>();
+
+	_rotation.Min = entity["rotation_min"].as<float>();
+	_rotation.Max = entity["rotation_max"].as<float>();
+
+	_rotationSpeed.Min = entity["rotation_speed_min"].as<float>();
+	_rotationSpeed.Max = entity["rotation_speed_max"].as<float>();
 }
 
 void ParticleEmitterComponent::OnPreRender() {
@@ -97,12 +173,12 @@ bool ParticleEmitterComponent::IsSimulating() {
 bool ParticleEmitterComponent::EmitNewParticle() {
 	Entity* ent = GetEntity();
 
-	uint32_t FreeIndex = GetFreeParticleIndex();
+	uint32_t freeIndex = GetFreeParticleIndex();
 
-	if (FreeIndex == 0xFFFFFFFF || FreeIndex > (_maxParticles - 1))
+	if (freeIndex == 0xFFFFFFFF || freeIndex > (_maxParticles - 1))
 		return false;
 
-	Particle* particlePtr = _particles[FreeIndex];
+	Particle* particlePtr = _particles[freeIndex];
 
 	Vec3 BaseDir;// = _getDirection(transform->abs_rotation);
 

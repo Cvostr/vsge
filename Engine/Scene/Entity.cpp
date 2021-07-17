@@ -62,7 +62,7 @@ uint32 Entity::GetChildrenCount() const {
 	return static_cast<uint32>(_children.size()); 
 }
 
-uint32 Entity::GetTotalChildrenCount() {
+uint32 Entity::GetTotalChildrenCount() const {
 	uint32 result = GetChildrenCount();
 
 	for (auto child : _children) {
@@ -213,15 +213,15 @@ void Entity::RemoveAllComponents() {
 
 void Entity::SetPosition(const Vec3& position) {
 	_position = position;
-	mTransformDirty = true;
+	//mTransformDirty = true;
 }
 void Entity::SetScale(const Vec3& scale) {
 	_scale = scale;
-	mTransformDirty = true;
+	//mTransformDirty = true;
 }
 void Entity::SetRotation(const Quat& rotation) {
 	_rotation = rotation;
-	mTransformDirty = true;
+	//mTransformDirty = true;
 }
 
 const AABB& Entity::GetAABB(bool extendChildren) {
@@ -282,7 +282,7 @@ Vec3 Entity::GetAbsolutePosition() const {
 Vec3 Entity::GetAbsoluteScale() const {
 	return WorldTransform.GetScale();
 }
-Quat Entity::GetAbsoluteRotation() {
+Quat Entity::GetAbsoluteRotation() const {
 	return GetRotationFromQuat(WorldTransform);
 }
 
@@ -296,8 +296,6 @@ void Entity::SetRotationEuler(const Vec3& rotation) {
 }
 
 void Entity::UpdateTransformMatrices() {
-	//if (!this->mTransformDirty)
-	//	return;
 	//Calculate local transformation matrix
 	Mat4 localTransform = GetTransform(GetPosition(), GetScale(), GetRotation());
 	//Set local transform matrix to entity
@@ -310,7 +308,6 @@ void Entity::UpdateTransformMatrices() {
 
 	//Update entity absolute transform matrix
 	SetWorldTransform(worldTransform);
-	mTransformDirty = false;
 }
 
 Entity* Entity::GetRootSkinningEntity() {

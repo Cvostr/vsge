@@ -49,15 +49,15 @@ namespace VSGE {
 		PRIMITIVE_TOPOLOGY_PATCH_LIST = 10,
 	};
 
-	typedef enum ColorBits {
+	enum ColorBits {
 		COLOR_R = 1,
 		COLOR_G = 2,
 		COLOR_B = 4,
 		COLOR_A = 8,
 		COLOR_ALL = 15
-	}ColorBits;
+	};
 
-	typedef enum BlendFactor {
+	enum BlendFactor {
 		BLEND_FACTOR_ZERO = 0,
 		BLEND_FACTOR_ONE = 1,
 		BLEND_FACTOR_SRC_COLOR = 2,
@@ -75,6 +75,8 @@ namespace VSGE {
 		uint32 _colorMask;
 		BlendFactor _srcColor;
 		BlendFactor _dstColor;
+		BlendFactor _srcAlpha;
+		BlendFactor _dstAlpha;
 
 		BlendAttachmentDesc() {
 			_blending = true;
@@ -82,6 +84,9 @@ namespace VSGE {
 
 			_srcColor = BLEND_FACTOR_ONE;
 			_dstColor = BLEND_FACTOR_ZERO;
+
+			_srcAlpha = BLEND_FACTOR_ONE;
+			_dstAlpha = BLEND_FACTOR_ZERO;
 		}
 
 	}BlendAttachmentDesc;

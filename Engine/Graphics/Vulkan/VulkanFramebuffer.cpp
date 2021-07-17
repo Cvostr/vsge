@@ -4,10 +4,20 @@
 
 using namespace VSGE;
 
+VulkanFramebuffer::VulkanFramebuffer() :
+	mFramebuffer(VK_NULL_HANDLE),
+	mLayers(1) 
+{}
+
+
+VulkanFramebuffer::~VulkanFramebuffer() {
+	Destroy();
+}
+
 void VulkanFramebuffer::AddAttachment(Texture* attachment) {
 	if (attachment->IsRenderTarget()) {
 		mAttachments.push_back(attachment);
-		Views.push_back(((VulkanTexture*)attachment)->GetImageView());
+		_views.push_back(((VulkanTexture*)attachment)->GetImageView());
 	}
 }
 
@@ -28,7 +38,7 @@ void VulkanFramebuffer::AddDepth(TextureFormat Format, uint32 Layers) {
 		new_attachment->CreateImageView();
 
 		mDepthAttachment = new_attachment;
-		Views.push_back(((VulkanTexture*)new_attachment)->GetImageView());
+		_views.push_back(((VulkanTexture*)new_attachment)->GetImageView());
 	}
 }
 
@@ -38,13 +48,17 @@ void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 
 	Framebuffer::SetSize(swapchain->GetExtent().width, swapchain->GetExtent().height);
 	
-	Views.push_back(vulkan_rapi->GetSwapChain()->GetImageViewAtIndex(Index));
+	_views.push_back(vulkan_rapi->GetSwapChain()->GetImageViewAtIndex(Index));
 }
 
 void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
 	if (mWidth != width || mHeight != height) {
 		Framebuffer::SetSize(width, height);
 	}
+}
+
+void VulkanFramebuffer::SetLayersCount(uint32 layers) {
+	mLayers = layers;
 }
 
 bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
@@ -55,8 +69,8 @@ bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = renderpass->GetRenderPass();
-		framebufferInfo.attachmentCount = static_cast<uint32_t>(Views.size());
-		framebufferInfo.pAttachments = Views.data();
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(_views.size());
+		framebufferInfo.pAttachments = _views.data();
 		framebufferInfo.width = mWidth;
 		framebufferInfo.height = mHeight;
 		framebufferInfo.layers = mLayers;
@@ -77,7 +91,7 @@ void VulkanFramebuffer::Destroy() {
 		VulkanDevice* device = vulkan_rapi->GetDevice();
 
 		vkDestroyFramebuffer(device->getVkDevice(), mFramebuffer, nullptr);
-		Views.clear();
+		_views.clear();
 		mCreated = false;
 	}
 }

@@ -81,6 +81,9 @@ void LightsourceComponent::SetShadowsBias(float bias) {
 	_shadowsBias = bias;
 }
 void LightsourceComponent::SetShadowCascadesCount(uint32 cascades) {
+	if (cascades > MAX_SHADOW_CASCADES)
+		cascades = MAX_SHADOW_CASCADES;
+
 	if (cascades != _shadowsCascadesCount)
 		_shadowCascades.resize(cascades);
 

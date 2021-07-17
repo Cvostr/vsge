@@ -256,6 +256,7 @@ void VulkanRenderer::StoreWorldObjects() {
 	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / 64];
 
 	_writtenBones = 0;
+	_writtenParticleTransforms = 0;
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i ++) {
 		Entity* entity = _entitiesToRender[e_i];
@@ -358,14 +359,21 @@ void VulkanRenderer::StoreWorldObjects() {
 		Mat4* ParticleTransforms = nullptr;
 		emitter->GetParticlesTransforms(&ParticleTransforms, *cam);
 
-		int particles_count = emitter->GetAliveParticlesCount();
-		mParticlesTransformShaderBuffer->WriteData(0, sizeof(Mat4) * particles_count, ParticleTransforms);
+		uint32 particles_count = emitter->GetAliveParticlesCount();
+		mParticlesTransformShaderBuffer->WriteData(_writtenParticleTransforms * sizeof(Mat4), sizeof(Mat4) * particles_count, ParticleTransforms);
+
+		_writtenParticleTransforms += particles_count;
+
+		if (_writtenParticleTransforms % 4 > 0) {
+			_writtenParticleTransforms += 4 - (_writtenParticleTransforms % 4);
+		}
 	}
 
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
 	_writtenBones = 0;
+	_writtenParticleTransforms = 0;
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
 		Entity* entity = _entitiesToRender[e_i];
@@ -438,16 +446,23 @@ void VulkanRenderer::StoreWorldObjects() {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
-			uint32 offsets[2] = { 0, 0 };
+			uint32 offsets1[2] = { 0, 0 };
+			uint32 offset2 = _writtenParticleTransforms * sizeof(Mat4);
 
-			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets);
-			mGBufferCmdbuf->BindDescriptorSets(*ppl, 2, 1, mParticlesDescriptorSet, 1, offsets);
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets1);
+			mGBufferCmdbuf->BindDescriptorSets(*ppl, 2, 1, mParticlesDescriptorSet, 1, &offset2);
 			mGBufferCmdbuf->BindMesh(*mesh);
 			uint32 instances_count = particle_emitter->GetAliveParticlesCount();
 			if (mesh->GetIndexCount() > 0)
 				mGBufferCmdbuf->DrawIndexed(mesh->GetIndexCount(), instances_count);
 			else
 				mGBufferCmdbuf->Draw(mesh->GetVerticesCount(), instances_count);
+
+			uint32 particles_count = particle_emitter->GetAliveParticlesCount();
+			_writtenParticleTransforms += particles_count;
+			if (_writtenParticleTransforms % 4 > 0) {
+				_writtenParticleTransforms += 4 - (_writtenParticleTransforms % 4);
+			}
 		}
 	}
 

@@ -19,18 +19,9 @@
 #define MATERIAL_SIZE 512
 
 #define VERTEX_DESCR_SETS 40
-#define ANIMATIONS_DESCR_SETS 20
-#define PARTICLES_DESCR_SETS 20
 
 namespace VSGE {
 
-	class VulkanDrawCall {
-	public:
-		Entity* entity;
-		Mat4 transformMatrix;
-		VulkanPipeline* pipeline;
-		VulkanDescriptorSet* sets[4];
-	};
 
 	class VulkanMaterial {
 	public:
@@ -48,6 +39,12 @@ namespace VSGE {
 		}
 	};
 
+	class VulkanShadowCaster {
+	public:
+		VulkanFramebuffer* _framebuffer;
+		VulkanCommandBuffer* _cmdbuf;
+	};
+
 	class VulkanRenderer : public IRenderer {
 	private:
 
@@ -58,6 +55,8 @@ namespace VSGE {
 
 		VulkanFramebuffer* mOutputBuffer;
 		VulkanRenderPass* mOutputPass;
+
+		VulkanRenderPass* mShadowmapPass;
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
 		VulkanSemaphore* mGBufferSemaphore;
@@ -90,8 +89,6 @@ namespace VSGE {
 		//--------------------Pipelines------------------
 		VulkanPipeline* mDeferredPipeline;
 
-		std::vector<VulkanDrawCall> drawCalls;
-
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;
 
@@ -102,8 +99,9 @@ namespace VSGE {
 		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
 
 		void BindMaterial(Material* mat);
-
+	
 		uint32 _writtenBones;
+		uint32 _writtenParticleTransforms;
 
 		//TEMPORARY 
 		Camera* cam;

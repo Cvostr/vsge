@@ -9,16 +9,23 @@ void VSGE::BindScene() {
 	layer->RegisterObjectType(ENTITY_TYPE_NAME, 0, asOBJ_REF | asOBJ_NOCOUNT);
 	layer->RegisterObjectBehaviour(ENTITY_TYPE_NAME, asBEHAVE_FACTORY, "Entity@ f()", asFUNCTION(new_as_ref_T<Entity>), asCALL_CDECL);
 
-	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetActive(bool)", asMETHOD(Entity, SetActive), asCALL_THISCALL);
 	//layer->RegisterObjectProperty(ENTITY_TYPE_NAME, "int propsNum", offsetof(Engine::GameObject, props_num));
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "const string& GetName() const", asMETHOD(Entity, GetName), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetName(const string& in)", asMETHOD(Entity, SetName), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "bool IsActive() const", asMETHOD(Entity, IsActive), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetActive(bool)", asMETHOD(Entity, SetActive), asCALL_THISCALL);
 	//layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "ZPScript@ getScriptClass(const string&in)", asMETHOD(Engine::GameObject, getScriptObjectWithName), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "uint32 GetChildrenCount() const", asMETHOD(Entity, GetChildrenCount), asCALL_THISCALL);
-	/*layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "Entity@ getChild(uint)", asMETHOD(Engine::GameObject, getChild), asCALL_THISCALL);
-	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void addChild(GameObject@)", asMETHODPR(Engine::GameObject, addChildObject, (GameObject*, bool), void), asCALL_THISCALL);
-	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void removeChild(GameObject@)", asMETHODPR(Engine::GameObject, removeChildObject, (GameObject*), void), asCALL_THISCALL);
-	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetViewMask(uint64)", asMETHOD(Engine::GameObject, setViewMask), asCALL_THISCALL);
-	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "uint64 GetViewMask()", asMETHOD(Engine::GameObject, getViewMask), asCALL_THISCALL);
-	*/
-	}
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "Entity@ GetChild(uint)", asMETHOD(Entity, GetChild), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void AddChild(Entity@)", asMETHODPR(Entity, AddChild, (Entity*, bool), void), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void RemoveChild(Entity@)", asMETHODPR(Entity, RemoveChild, (Entity*), void), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetViewMask(uint64)", asMETHOD(Entity, SetViewMask), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "uint64 GetViewMask()", asMETHOD(Entity, GetViewMask), asCALL_THISCALL);
+	
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "const Vec3& GetPosition() const", asMETHOD(Entity, GetPosition), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "const Vec3& GetScale() const", asMETHOD(Entity, GetScale), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "const Quat& GetRotation() const", asMETHOD(Entity, GetRotation), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetPosition(const Vec3& in)", asMETHOD(Entity, SetPosition), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetScale(const Vec3& in)", asMETHOD(Entity, SetScale), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetRotation(const Quat& in)", asMETHOD(Entity, SetRotation), asCALL_THISCALL);
+}

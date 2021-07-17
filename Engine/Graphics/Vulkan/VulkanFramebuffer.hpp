@@ -10,16 +10,11 @@ namespace VSGE {
 		VkFramebuffer mFramebuffer;
 		uint32 mLayers;
 
-		std::vector<VkImageView> Views;
+		std::vector<VkImageView> _views;
 	public:
-		VulkanFramebuffer() : 
-			mFramebuffer(VK_NULL_HANDLE),
-			mLayers(1) {}
+		VulkanFramebuffer();
 
-
-		~VulkanFramebuffer() {
-			Destroy();
-		}
+		~VulkanFramebuffer();
 
 		VkFramebuffer GetFramebuffer() { return mFramebuffer; }
 
@@ -48,6 +43,11 @@ namespace VSGE {
 		/// <param name="width">- new width of fb</param>
 		/// <param name="height">- new height of fb</param>
 		void SetSize(uint32 width, uint32 height);
+		/// <summary>
+		/// Set count of layers in framebuffer
+		/// </summary>
+		/// <param name="layers">- amount of layers</param>
+		void SetLayersCount(uint32 layers);
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>
