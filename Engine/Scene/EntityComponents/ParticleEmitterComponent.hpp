@@ -142,10 +142,10 @@ namespace VSGE {
 		bool GetPrewarm();
 		float GetParticleLifetime();
 		uint32 GetMaxParticlesCount();
-		MinMaxValue<int>& GetEmissionRate();
-		MinMaxValue<Vec3>& GetDirection();
-		MinMaxValue<float>& GetVelocity();
-		DeltaValue<MinMaxValue<Vec2>>& GetSize();
+		const MinMaxValue<int>& GetEmissionRate();
+		const MinMaxValue<Vec3>& GetDirection();
+		const MinMaxValue<float>& GetVelocity();
+		const DeltaValue<MinMaxValue<Vec2>>& GetSize();
 		const Vec3& GetConstantForce();
 		float GetDampingForce();
 		const MinMaxValue<float>& GetRotation();

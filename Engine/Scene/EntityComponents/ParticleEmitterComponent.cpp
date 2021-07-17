@@ -423,16 +423,16 @@ float ParticleEmitterComponent::GetParticleLifetime(){
 uint32 ParticleEmitterComponent::GetMaxParticlesCount() {
 	return _maxParticles;
 }
-MinMaxValue<int>& ParticleEmitterComponent::GetEmissionRate() {
+const MinMaxValue<int>& ParticleEmitterComponent::GetEmissionRate() {
 	return _emissionRate;
 }
-MinMaxValue<Vec3>& ParticleEmitterComponent::GetDirection() {
+const MinMaxValue<Vec3>& ParticleEmitterComponent::GetDirection() {
 	return _direction;
 }
-MinMaxValue<float>& ParticleEmitterComponent::GetVelocity() {
+const MinMaxValue<float>& ParticleEmitterComponent::GetVelocity() {
 	return _velocity;
 }
-DeltaValue<MinMaxValue<Vec2>>& ParticleEmitterComponent::GetSize() {
+const DeltaValue<MinMaxValue<Vec2>>& ParticleEmitterComponent::GetSize() {
 	return _size;
 }
 const Vec3& ParticleEmitterComponent::GetConstantForce() {

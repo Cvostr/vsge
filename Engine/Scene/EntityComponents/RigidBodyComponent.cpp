@@ -5,6 +5,7 @@
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btConvexTriangleMeshShape.h>
 #include <Physics/PhysicsLayer.hpp>
+#include <Math/MatrixTransform.hpp>
 #include "../Entity.hpp"
 
 using namespace YAML;
@@ -129,7 +130,7 @@ btTransform RigidBodyComponent::GetEntityTransform() {
 }
 
 btCollisionShape* RigidBodyComponent::GetCollisionShape() {
-	Vec3 scale = _entity->GetScale();
+	Vec3 scale = _entity->GetAbsoluteScale();
 
 	MeshComponent* mesh_comp = _entity->GetComponent<MeshComponent>();
 
@@ -204,10 +205,12 @@ void RigidBodyComponent::OnUpdate() {
 	btQuaternion bullet_rot = _rigidBody->getOrientation();
 
 	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
-	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), -bullet_rot.getZ(), bullet_rot.getW());
+	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
 
-	_entity->SetPosition(pos);
-	_entity->SetRotation(rot);
+	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
+
+	_entity->SetPosition(parent_tranform.invert() * pos);
+	_entity->SetRotation(rot * GetRotationFromQuat(parent_tranform).Inverse());
 
 	Activate();
 }

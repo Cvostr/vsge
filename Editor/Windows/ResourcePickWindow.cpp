@@ -58,6 +58,7 @@ void ResourcePickerWindow::OnDrawWindow() {
 
             if (ImGui::Button(class_desc->_name.c_str())) {
                 *script_name = class_desc->_name;
+                Hide();
             }
         }
 

@@ -10,6 +10,10 @@ void VSGEditor::DrawScriptPicker(std::string label, std::string& script_out, boo
 
 	ImGui::SameLine();
 
+	ImGui::Text(script_out.c_str());
+
+	ImGui::SameLine();
+
 	std::string btn_text = "Select " + label;
 
 	if (ImGui::Button(btn_text.c_str())) {
