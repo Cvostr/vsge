@@ -123,9 +123,9 @@ bool Entity::HasChild(Entity* entity) {
 	return false;
 }
 
-Entity* Entity::GetEntityWithName(std::string name) {
+Entity* Entity::GetEntityWithName(const std::string& name) {
 	for (auto child : _children) {
-		if (child->GetName().compare(name) == 0)
+		if (child->GetName() == name)
 			return child;
 		Entity* result_from_child = child->GetEntityWithName(name);
 		if (result_from_child)
@@ -255,6 +255,11 @@ void Entity::CallOnStart() {
 	for (auto component : _components) {
 		if(component->IsActive())
 			component->OnStart();
+	}
+
+	for (auto script : _scripts) {
+		if (script->IsActive())
+			script->OnStart();
 	}
 }
 void Entity::CallOnUpdate() {

@@ -5,12 +5,12 @@
 using namespace VSGEditor;
 //using namespace VSGE;
 
-void VSGEditor::DrawScriptPicker(std::string label, std::string& script_out, bool& changed) {
+void VSGEditor::DrawScriptPicker(std::string label, VSGE::EntityScriptComponent* script) {
 	ImGui::Text(label.c_str());
 
 	ImGui::SameLine();
 
-	ImGui::Text(script_out.c_str());
+	ImGui::Text(script->GetScriptName().c_str());
 
 	ImGui::SameLine();
 
@@ -18,7 +18,7 @@ void VSGEditor::DrawScriptPicker(std::string label, std::string& script_out, boo
 
 	if (ImGui::Button(btn_text.c_str())) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
-		rpw->SetScriptReference(&script_out);
+		rpw->SetScriptReference(script);
 		rpw->Show();
 	}
 }

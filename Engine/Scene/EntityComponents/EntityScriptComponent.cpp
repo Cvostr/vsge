@@ -4,7 +4,6 @@ using namespace VSGE;
 
 void EntityScriptComponent::SetScriptName(const std::string& script) {
 	_scriptClassName = script;
-
 	instance->CreateInstance(script, GetEntity());
 }
 
@@ -16,6 +15,7 @@ void EntityScriptComponent::OnUpdate() {
 	instance->CallOnUpdate();
 }
 void EntityScriptComponent::OnStart() {
+	instance->CreateInstance(_scriptClassName, GetEntity());
 	instance->CallOnStart();
 }
 void EntityScriptComponent::OnDestroy() {

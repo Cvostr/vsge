@@ -12,3 +12,6 @@ shader DeferredLight/deferred.frag
 
 shader skybox/skybox.vert
 shader skybox/skybox.frag
+
+shader shadowmap/shadowmap.vert
+shader shadowmap/shadowmap.geom

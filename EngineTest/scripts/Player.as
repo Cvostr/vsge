@@ -8,7 +8,8 @@ class Player : ZPScript{
 	}
 	
 	void Start() {
-		
+		_this.SetName("scripted");
+		_this.SetActive(false);
 	}
 	void Update(){
 		

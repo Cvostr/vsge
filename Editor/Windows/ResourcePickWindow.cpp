@@ -21,7 +21,7 @@ void ResourcePickerWindow::OnDrawWindow() {
         if (reference == nullptr)
             resources_size = 0;
 
-        if (script_name == nullptr)
+        if (script == nullptr)
             scripts_size = 0;
 
         for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) {
@@ -57,7 +57,7 @@ void ResourcePickerWindow::OnDrawWindow() {
             MainClassDesc* class_desc = AngelScriptLayer::Get()->GetModule()->GetMainClassDescs()[script_i];
 
             if (ImGui::Button(class_desc->_name.c_str())) {
-                *script_name = class_desc->_name;
+                script->SetScriptName(class_desc->_name);
                 Hide();
             }
         }
@@ -73,10 +73,10 @@ void ResourcePickerWindow::SetResourceToReference(Resource* resource) {
 
 void ResourcePickerWindow::SetResourceReference(VSGE::ResourceReference* reference) {
     this->reference = reference;
-    script_name = nullptr;
+    script = nullptr;
 }
 
-void ResourcePickerWindow::SetScriptReference(std::string* script) {
+void ResourcePickerWindow::SetScriptReference(VSGE::EntityScriptComponent* script) {
     this->reference = nullptr;
-    script_name = script;
+    this->script = script;
 }

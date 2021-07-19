@@ -155,6 +155,18 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 	}
 }
 
+void LightsourceComponent::OnPreRender() {
+	int sizes[] = { 20, 50, 80, 130, 160, 190 };
+	if (_castShadows) {
+		for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
+			int Dist = sizes[i] * 2 - 2;
+
+			//Vec3 cam_pos = cam->getCameraPosition() + cam->getCameraFrontVec() * static_cast<float>(sizes[i]);
+			//Mat4 matview = matrixLookAt(cam_pos, cam_pos + light->direction * -1, Vec3(0, 1, 0));
+		}
+	}
+}
+
 Vec3 LightsourceComponent::GetDirection() {
 	Vec3 euler_rotation = _entity->GetAbsoluteRotation().GetEulerAngles();
 	euler_rotation *= (3.14159265f / 180.f);

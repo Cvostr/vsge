@@ -18,6 +18,7 @@ void AngelScriptInstance::CreateInstance(const std::string& class_name, Entity* 
 	}
 
 	AngelScriptLayer* layer = AngelScriptLayer::Get();
+	_class_desc = layer->GetModule()->GetMainClassDescByName(class_name);
 	layer->GetModule()->CreateMainClassObject(class_name, entity, &_mainclass_obj);
 }
 
@@ -40,12 +41,19 @@ void AngelScriptInstance::CallOnStart() {
 
 	if (func) {
 		layer->SetContextFunction(func);
-		//layer->ContextSetObject();
+		layer->ContextSetObject(_mainclass_obj);
 		layer->ContextExecute();
 	}
 }
 void AngelScriptInstance::CallOnStop() {
-	asIScriptFunction* func = _class_desc->GetFuncOnMainClass("void Stop()");
+	asIScriptFunction* func = _class_desc->GetFuncOnMainClass("void Stop()"); 
+	AngelScriptLayer* layer = AngelScriptLayer::Get();
+
+	if (func) {
+		layer->SetContextFunction(func);
+		layer->ContextSetObject(_mainclass_obj);
+		layer->ContextExecute();
+	}
 }
 void AngelScriptInstance::CallOnUpdate() {
 	asIScriptFunction* func = _class_desc->GetFuncOnMainClass("void Update()");
@@ -53,7 +61,7 @@ void AngelScriptInstance::CallOnUpdate() {
 
 	if (func) {
 		layer->SetContextFunction(func);
-		//layer->ContextSetObject();
+		layer->ContextSetObject(_mainclass_obj);
 		layer->ContextExecute();
 	}
 }

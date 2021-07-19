@@ -16,6 +16,12 @@ namespace VSGE {
 		LIGHT_TYPE_SPOT
 	};
 
+	class ShadowCascade {
+	public:
+		Mat4 _cascadeViewProjection;
+		uint32 _distance;
+	};
+
 	class LightsourceComponent : public IEntityComponent {
 	private:
 		LightType _lightType;
@@ -29,7 +35,7 @@ namespace VSGE {
 		float _shadowsBias;
 		uint32 _shadowsPCF;
 		uint32 _shadowsCascadesCount;
-		std::vector<Mat4> _shadowCascades;
+		std::vector<ShadowCascade> _shadowCascades;
 	public:
 
 		LightsourceComponent();
@@ -56,6 +62,8 @@ namespace VSGE {
 		uint32 GetShadowCascadesCount();
 
 		Vec3 GetDirection();
+
+		void OnPreRender();
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

@@ -3,6 +3,7 @@
 #define VEC3_TYPE_NAME "Vec3"
 #define QUAT_TYPE_NAME "Quat"
 
+#define SCENE_TYPE_NAME "Scene"
 #define ENTITY_TYPE_NAME "Entity"
 
 namespace VSGE {

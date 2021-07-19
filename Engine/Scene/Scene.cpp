@@ -33,7 +33,7 @@ Entity* Scene::AddNewEntity(const std::string& name) {
 	return entity;
 }
 
-Entity* Scene::GetEntityWithName(const std::string& name) {
+Entity* Scene::GetEntityWithName(const std::string& name) const {
 	return _rootEntity->GetEntityWithName(name);
 }
 

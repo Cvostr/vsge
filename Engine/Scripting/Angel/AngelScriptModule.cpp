@@ -130,7 +130,7 @@ int AngelScriptModule::CreateMainClassObject(MainClassDesc* desc, Entity* entity
 	int result = 0;
 	AngelScriptLayer* layer = AngelScriptLayer::Get();
 
-	std::string construct_str = desc->_name + " @" + desc->_name + "(GameObject@)";
+	std::string construct_str = desc->_name + " @" + desc->_name + "(Entity@)";
 	asIScriptFunction* factory = (desc->_info)->GetFactoryByDecl(construct_str.c_str());
 	//Allocate class by Constructor
 	{

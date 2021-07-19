@@ -166,7 +166,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns>pointer to entity</returns>
-		Entity* GetEntityWithName(std::string name);
+		Entity* GetEntityWithName(const std::string& name);
 		/// <summary>
 		/// Tries to find the entity with the given Guid in this entity hierarchy
 		/// </summary>
@@ -307,6 +307,7 @@ namespace VSGE {
 		}
 
 		void AddScript(EntityScriptComponent* script) {
+			script->SetEntity(this);
 			_scripts.push_back(script);
 		}
 
