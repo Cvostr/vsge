@@ -82,7 +82,7 @@ void Entity::RemoveChild(Entity* entityToRemove) {
 			UpdateTransformMatrices();
 			entityToRemove->UpdateTransformMatrices();
 
-			Mat4 new_transform_mat = entityToRemove->GetLocalTransform() * WorldTransform;
+			Mat4 new_transform_mat = entityToRemove->GetLocalTransform() * _worldTransform;
 			entityToRemove->SetPosition(new_transform_mat.GetPosition());
 			entityToRemove->SetScale(new_transform_mat.GetScale());
 			entityToRemove->SetRotation(GetRotationFromQuat(new_transform_mat));
@@ -106,7 +106,7 @@ void Entity::AddChild(Entity* entityToAdd, bool retransform) {
 				UpdateTransformMatrices();
 				entityToAdd->UpdateTransformMatrices();
 
-				Mat4 new_transform_mat = entityToAdd->GetLocalTransform() * WorldTransform.invert();
+				Mat4 new_transform_mat = entityToAdd->GetLocalTransform() * _worldTransform.invert();
 				entityToAdd->SetPosition(new_transform_mat.GetPosition());
 				entityToAdd->SetScale(new_transform_mat.GetScale());
 				entityToAdd->SetRotation(GetRotationFromQuat(new_transform_mat));
@@ -236,7 +236,7 @@ const AABB& Entity::GetAABB(bool extendChildren) {
 		}
 	}
 
-	_boundingBox.ApplyTransform(WorldTransform);
+	_boundingBox.ApplyTransform(_worldTransform);
 	if (extendChildren) {
 		for (auto child : _children) {
 			child->GetAABB();
@@ -247,8 +247,13 @@ const AABB& Entity::GetAABB(bool extendChildren) {
 	return _boundingBox;
 }
 
+const Mat4& Entity::GetWorldTransform() const
+{ 
+	return _worldTransform; 
+}
+
 void Entity::SetWorldTransform(const Mat4& transform) { 
-	WorldTransform = transform;
+	_worldTransform = transform;
 }
 
 void Entity::CallOnStart() {
@@ -282,13 +287,13 @@ void Entity::CallOnPreRender() {
 }
 
 Vec3 Entity::GetAbsolutePosition() const {
-	return WorldTransform.GetPosition();
+	return _worldTransform.GetPosition();
 }
 Vec3 Entity::GetAbsoluteScale() const {
-	return WorldTransform.GetScale();
+	return _worldTransform.GetScale();
 }
 Quat Entity::GetAbsoluteRotation() const {
-	return GetRotationFromQuat(WorldTransform);
+	return GetRotationFromQuat(_worldTransform);
 }
 
 void Entity::SetRotationEuler(const Vec3& rotation) {
@@ -381,4 +386,16 @@ void Entity::ToPrefab(byte** out, uint32& size) {
 	size = serializer.GetSerializedSize();
 	*out = new byte[size];
 	memcpy(*out, serializer.GetBytes(), size);
+}
+
+asIScriptObject* Entity::GetScriptObjectWithName(const std::string& name) {
+	for (uint32 script_i = 0; script_i < GetScriptsCount(); script_i++) {
+		EntityScriptComponent* script = _scripts[script_i];
+		if (script->GetScriptName().compare(name) == 0) {
+			asIScriptObject* object = script->GetInstance()->GetMainClassObject();
+			object->AddRef();
+			return object;
+		}
+	}
+	return nullptr;
 }

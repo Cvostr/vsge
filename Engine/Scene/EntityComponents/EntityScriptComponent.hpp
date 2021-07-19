@@ -22,6 +22,9 @@ namespace VSGE {
 
 		void SetScriptName(const std::string& script);
 		const std::string& GetScriptName();
+		AngelScriptInstance* GetInstance() {
+			return instance;
+		}
 
 		void OnUpdate();
 		void OnStart();

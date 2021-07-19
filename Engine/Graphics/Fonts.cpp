@@ -36,7 +36,7 @@ GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     loadGlyphs(WorkX, WorkY, MaxY);
     //Create texture from buffer
     mGlyphTexture->Create(texSize, texSize, TextureFormat::FORMAT_R);
-    mGlyphTexture->AddMipLevel(mGlyphTextureBuffer, texSize * texSize, texSize, texSize, 0);
+    mGlyphTexture->AddMipLevel(mGlyphTextureBuffer, texSize * texSize, texSize, texSize, 0, 0);
     //Delete temporary buffer
     delete[] mGlyphTextureBuffer;
 }

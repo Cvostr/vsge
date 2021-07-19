@@ -180,7 +180,7 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 			writtenBytes += 4;
 		}
-		if (param.value.GetType() == VALUE_TYPE_INT) {
+		if (param.value.GetType() == VALUE_TYPE_INT32) {
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 			writtenBytes += 4;
 		}

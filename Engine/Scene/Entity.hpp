@@ -43,8 +43,8 @@ namespace VSGE {
 		Vec3 _position;
 		Vec3 _scale;
 		Quat _rotation;
-		Mat4 LocalTransform;
-		Mat4 WorldTransform;
+		Mat4 _localTransform;
+		Mat4 _worldTransform;
 	public:
 
 		Entity() :	_parent(nullptr),
@@ -52,8 +52,8 @@ namespace VSGE {
 					_active(true),
 					_static(false),
 					_scale(1.f),
-					LocalTransform(1.f),
-					WorldTransform(1.f),
+					_localTransform(1.f),
+					_worldTransform(1.f),
 					_viewMask(MAX_INT64)
 		{}
 
@@ -239,19 +239,27 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="rotation">- new rotation</param>
 		void SetRotationEuler(const Vec3& rotation);
-
+		/// <summary>
+		/// Get Axis aligned bounding box of this entity
+		/// </summary>
+		/// <param name="extendChildren"></param>
+		/// <returns></returns>
 		const AABB& GetAABB(bool extendChildren = true);
 		/// <summary>
 		/// Get local transform matrix
 		/// </summary>
 		/// <returns></returns>
-		const Mat4& GetLocalTransform() { return LocalTransform; }
-		void SetLocalTransform(const Mat4& transform) { LocalTransform = transform; }
+		const Mat4& GetLocalTransform() { return _localTransform; }
+		void SetLocalTransform(const Mat4& transform) { _localTransform = transform; }
 		/// <summary>
 		/// Get world transform matrix
 		/// </summary>
 		/// <returns></returns>
-		const Mat4& GetWorldTransform() { return WorldTransform; }
+		const Mat4& GetWorldTransform() const;
+		/// <summary>
+		/// Set world transform matrix to entity, without updating pos, scale, rotation
+		/// </summary>
+		/// <param name="transform"></param>
 		void SetWorldTransform(const Mat4& transform);
 		/// <summary>
 		/// Recalculate local and world-space matrices
@@ -305,6 +313,8 @@ namespace VSGE {
 		EntityScriptComponent** GetScripts() {
 			return _scripts.data();
 		}
+
+		asIScriptObject* GetScriptObjectWithName(const std::string& name);
 
 		void AddScript(EntityScriptComponent* script) {
 			script->SetEntity(this);

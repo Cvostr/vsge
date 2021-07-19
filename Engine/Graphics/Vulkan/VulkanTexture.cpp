@@ -101,24 +101,29 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VkImageLayout imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	if (_isRenderTarget)
 	{
-		usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
-		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
 	{
-		//imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
-		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
 	if (!_isRenderTarget) {
-		usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		_usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	}
 	
+	VkImageCreateFlags imageFlags = 0;
+	if (_isCubemap) {
+		imageFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+		layers = 6;
+	}
+
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	imageInfo.flags = 0; // Optional
+	imageInfo.flags = imageFlags;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
 	imageInfo.extent.width = width;
 	imageInfo.extent.height = height;
@@ -128,7 +133,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	imageInfo.format = TexFormat;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 	imageInfo.initialLayout = imageLayout;
-	imageInfo.usage = usage | VK_IMAGE_USAGE_SAMPLED_BIT;
+	imageInfo.usage = _usage | VK_IMAGE_USAGE_SAMPLED_BIT;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -151,7 +156,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	}
 }
 
-void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) {
+void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer) {
 
 	if (_layout == VK_IMAGE_LAYOUT_UNDEFINED)
 		ChangeLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -165,7 +170,7 @@ void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 he
 	memcpy(temp_map, data, size);
 	ma->unmap(&temp_buf);
 	//Copy temporary buffer to image
-	Transition(temp_buf, level, width, height);
+	Transition(temp_buf, level, layer, width, height);
 	//Free temporary buffer
 	ma->destroyBuffer(&temp_buf);
 }
@@ -178,7 +183,8 @@ bool VulkanTexture::CreateImageView() {
 	VkImageViewType ImageViewType = VK_IMAGE_VIEW_TYPE_2D;
 	if (_layers > 1)
 		ImageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-
+	if (_isCubemap)
+		ImageViewType = VK_IMAGE_VIEW_TYPE_CUBE;
 	
 	VkImageViewCreateInfo textureImageViewInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
 	textureImageViewInfo.image = _image.Image;
@@ -199,7 +205,7 @@ bool VulkanTexture::CreateImageView() {
 	return true;
 }
 
-void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 Width, uint32 Height) {
+void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 layer, uint32 Width, uint32 Height) {
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();
 	VulkanMA* ma = rapi->GetAllocator();
@@ -217,6 +223,7 @@ void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 Widt
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
 	region.imageSubresource.aspectMask = GetAspect();
+	region.imageSubresource.baseArrayLayer = layer;
 	region.imageSubresource.layerCount = 1;
 	region.imageSubresource.mipLevel = MipLevel;
 	region.imageExtent.width = Width;

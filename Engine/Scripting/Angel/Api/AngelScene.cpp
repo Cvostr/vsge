@@ -19,7 +19,7 @@ void VSGE::BindScene() {
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetName(const string& in)", asMETHOD(Entity, SetName), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "bool IsActive() const", asMETHOD(Entity, IsActive), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetActive(bool)", asMETHOD(Entity, SetActive), asCALL_THISCALL);
-	//layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "ZPScript@ getScriptClass(const string&in)", asMETHOD(Engine::GameObject, getScriptObjectWithName), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, MAINCLASS_TYPE_NAME + std::string("@ GetScriptObject(const string&in)"), asMETHOD(Entity, GetScriptObjectWithName), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "uint32 GetChildrenCount() const", asMETHOD(Entity, GetChildrenCount), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "Entity@ GetChild(uint)", asMETHOD(Entity, GetChild), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void AddChild(Entity@)", asMETHODPR(Entity, AddChild, (Entity*, bool), void), asCALL_THISCALL);

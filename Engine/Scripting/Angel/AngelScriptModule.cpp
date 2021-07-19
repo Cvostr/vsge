@@ -1,5 +1,7 @@
 #include "AngelScriptModule.hpp"
 #include "AngelScriptLayer.hpp"
+#include "Api/AngelApi.hpp"
+#include <Scene/Entity.hpp>
 
 using namespace VSGE;
 
@@ -71,6 +73,8 @@ void AngelScriptModule::AddScript(byte* data, uint32 size, std::string label) {
 void AngelScriptModule::UpdateClassInfos() {
 	_classInfos.clear();
 
+	Entity* temp_entity = new Entity;
+
 	uint32 tc = _module->GetObjectTypeCount();
 	for (uint32 n = 0; n < tc; n++)
 	{
@@ -79,13 +83,17 @@ void AngelScriptModule::UpdateClassInfos() {
 		uint32 ic = type->GetInterfaceCount();
 		for (uint32 i = 0; i < ic; i++)
 		{
-			if (strcmp(type->GetInterface(i)->GetName(), "ZPScript") == 0)
+			if (strcmp(type->GetInterface(i)->GetName(), MAINCLASS_TYPE_NAME) == 0)
 			{
 				MainClassDesc* desc = new MainClassDesc;
 				desc->_name = type->GetName();
 				desc->_info = type;
 				//Get class fields amount
 				desc->_classFieldsNum = type->GetPropertyCount();
+				//Create temporary script object
+				asIScriptObject* temp_object = nullptr;
+				CreateMainClassObject(desc, temp_entity, &temp_object);
+
 				for (uint32 field_i = 0; field_i < desc->_classFieldsNum; field_i++) {
 					ClassFieldDesc cf_desc;
 					const char* _Name;
@@ -97,17 +105,37 @@ void AngelScriptModule::UpdateClassInfos() {
 						&cf_desc.isReference);
 					cf_desc.name = std::string(_Name);
 					cf_desc.index = field_i;
+
+					void* ptr = temp_object->GetAddressOfProperty(field_i);
+					if (cf_desc.typeID == asTYPEID_INT32) {
+						int i = *((int*)ptr);
+						cf_desc.value.SetInt(i);
+					}
+					if (cf_desc.typeID == asTYPEID_FLOAT) {
+						float i = *((float*)ptr);
+						cf_desc.value.SetFloat(i);
+					}
+					if (cf_desc.typeID == asTYPEID_BOOL) {
+						bool i = *((bool*)ptr);
+						cf_desc.value.SetBool(i);
+					}
+					if (cf_desc.typeID == asTYPEID_DOUBLE) {
+						double i = *((double*)ptr);
+						cf_desc.value.SetDouble(i);
+					}
+
 					desc->_fields.push_back(cf_desc);
 				}
 
 				_classInfos.push_back(desc);
+
+				//release temp class object
+				temp_object->Release();
 			}
 		}
 	}
-	for (uint32 i = 0; i < _classInfos.size(); i++) {
-		//asITypeInfo* __ClassInfo;
-		//CreateClass(ZPSClassInfos[i]->Name, new GameObject, &ZPSClassInfos[i]->__SampleObject, &__ClassInfo);
-	}
+	//delete temporary entity
+	delete temp_entity;
 }
 
 MainClassDesc* AngelScriptModule::GetMainClassDescByName(const std::string& className) {

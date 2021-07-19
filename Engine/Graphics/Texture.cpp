@@ -5,6 +5,20 @@
 
 using namespace VSGE;
 
+Texture::Texture() :
+    _maxWidth(0),
+    _maxHeight(0),
+    _mipLevels(0),
+    _layers(1),
+    _isRenderTarget(false),
+    _isCubemap(false),
+    _format(FORMAT_RGBA)
+{}
+
+Texture::~Texture() {
+    Destroy();
+}
+
 bool Texture::CreateFromFile(std::string filePath) {
     byte* texture_data;
     uint32 size;
@@ -42,7 +56,7 @@ bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
     {
         size = ((nwidth + 3) / 4) * ((nheight + 3) / 4) * blockSize; //Calculating mip texture size
 
-        texture->AddMipLevel(bufferT + offset, size, nwidth, nheight, level);
+        texture->AddMipLevel(bufferT + offset, size, nwidth, nheight, level, 0);
 
         offset += size;
         nwidth /= 2;
@@ -66,7 +80,7 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
             return false;
 
         Create(width, height, FORMAT_RGBA, 1, 1);
-        AddMipLevel(image_data, 4 * width * height, width, height, 0);
+        AddMipLevel(image_data, 4 * width * height, width, height, 0, 0);
         CreateImageView();
 
         stbi_image_free(image_data);

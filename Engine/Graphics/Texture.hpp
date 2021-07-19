@@ -41,22 +41,14 @@ namespace VSGE {
         uint32 _mipLevels; //Count of mip levels
         uint32 _layers; //Count of layers in texture array
         bool _isRenderTarget;
+        bool _isCubemap;
 
         TextureFormat _format;
     public:
 
-        Texture() : 
-            _maxWidth(0),
-            _maxHeight(0),
-            _mipLevels(0),
-            _layers(1),
-            _isRenderTarget(false),
-            _format(FORMAT_RGBA)
-        {}
+        Texture();
 
-        ~Texture() {
-            Destroy();
-        }
+        ~Texture();
 
         TextureFormat GetFormat() { return _format; }
         uint32 GetMipsCount() { return _mipLevels; }
@@ -67,6 +59,10 @@ namespace VSGE {
             _isRenderTarget = renderTarget;
         }
         bool IsRenderTarget() { return _isRenderTarget; }
+
+        bool SetCubemap(bool cubemap) { _isCubemap = cubemap; }
+
+        bool IsCubemap() { return _isCubemap; }
 
         /// <summary>
         /// Destroy texture and release memory
@@ -106,7 +102,7 @@ namespace VSGE {
         /// <param name="width">width of mip map level</param>
         /// <param name="height">height of mip map level</param>
         /// <param name="level">index of mip map level</param>
-        virtual void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) = 0;
+        virtual void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer) = 0;
         /// <summary>
         /// Recreate texture with new sizes but with existing format and layers count
         /// </summary>

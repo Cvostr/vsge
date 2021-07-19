@@ -10,7 +10,7 @@ void D3D12Texture::Create(uint32 width, uint32 height, TextureFormat format, uin
 
 }
 
-void D3D12Texture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level) {
+void D3D12Texture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer) {
 
 }
 

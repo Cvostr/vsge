@@ -38,7 +38,7 @@ namespace VSGE {
         /// <param name="layers">- count of layers of new texture</param>
         void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1, uint32 mipLevels = 1);
 
-        void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level);
+        void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer);
 
         /// <summary>
         /// Recreate texture with new sizes but with existing format and layers count

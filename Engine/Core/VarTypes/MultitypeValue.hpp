@@ -9,7 +9,7 @@
 #include <Math/Color.hpp>
 
 enum ValueType {
-	VALUE_TYPE_INT = 1,
+	VALUE_TYPE_INT32 = 1,
 	VALUE_TYPE_BOOL,
 	VALUE_TYPE_FLOAT,
 	VALUE_TYPE_DOUBLE,
@@ -61,7 +61,7 @@ private:
 public:
 
 	MultitypeValue() {
-		_type = VALUE_TYPE_INT;
+		_type = VALUE_TYPE_INT32;
 		memset(&_data, 0, sizeof(MultitypeData));
 	}
 
@@ -85,7 +85,7 @@ public:
 
 	void SetInt(int _int) {
 		_data._int = _int;
-		_type = VALUE_TYPE_INT;
+		_type = VALUE_TYPE_INT32;
 	}
 	void SetBool(bool _bool) {
 		_data._bool = _bool;
@@ -144,7 +144,7 @@ public:
 
 	MultitypeValue(int _int) {
 		_data._int = _int;
-		_type = VALUE_TYPE_INT;
+		_type = VALUE_TYPE_INT32;
 	}
 	MultitypeValue(bool _bool) {
 		_data._bool = _bool;

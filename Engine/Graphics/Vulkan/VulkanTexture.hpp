@@ -13,16 +13,17 @@ namespace VSGE {
         VkImageView _imageView;
         VkImageLayout _layout;
 
-        VkImageUsageFlagBits usage;
+        VkImageUsageFlagBits _usage;
 
         // NOT FULLY IMPLEMENTED
-        void Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 Width, uint32 Height);
+        void Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 layer, uint32 Width, uint32 Height);
 
     public:
 
         VulkanTexture() : 
             Texture(),
             _imageView(VK_NULL_HANDLE),
+            _usage(VK_IMAGE_USAGE_SAMPLED_BIT),
             _layout(VK_IMAGE_LAYOUT_UNDEFINED)
         {}
 
@@ -30,9 +31,16 @@ namespace VSGE {
             Destroy();
         }
 
+        /// <summary>
+        /// Get vulkan image
+        /// </summary>
+        /// <returns></returns>
         VkImage GetImage() { return _image.Image; }
+        /// <summary>
+        /// Get vulkan image view
+        /// </summary>
+        /// <returns></returns>
         VkImageView GetImageView() { return _imageView; }
-
         /// <summary>
         /// Destroy texture and release memory
         /// </summary>
@@ -45,9 +53,15 @@ namespace VSGE {
         /// <param name="format">- format of new texture</param>
         /// <param name="layers">- count of layers of new texture</param>
         void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1, uint32 mipLevels = 1);
-        
-        void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level);
-
+        /// <summary>
+       /// Add mip map level to early created texture
+       /// </summary>
+       /// <param name="data">input bytes</param>
+       /// <param name="size">size of input data in bytes</param>
+       /// <param name="width">width of mip map level</param>
+       /// <param name="height">height of mip map level</param>
+       /// <param name="level">index of mip map level</param>
+        void AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer);
         /// <summary>
         /// Recreate texture with new sizes but with existing format and layers count
         /// </summary>

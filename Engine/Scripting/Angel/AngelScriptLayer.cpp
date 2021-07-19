@@ -25,7 +25,7 @@ void AngelScriptLayer::CreateEngine() {
 	_context = _engine->CreateContext();
 
 	//Add base script class
-	RegisterInterface("ZPScript");
+	RegisterInterface(MAINCLASS_TYPE_NAME);
 	RegisterStdString(_engine);
 	//RegisterStdStringUtils(_engine);
 	BindMath();
