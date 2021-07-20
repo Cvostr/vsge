@@ -5,6 +5,7 @@
 #include <Math/Vec3.hpp>
 #include <Math/Mat4.hpp>
 #include <Core/VarTypes/Base.hpp>
+#include "../Camera.hpp"
 
 #define MAX_SHADOW_CASCADES 10
 
@@ -14,12 +15,6 @@ namespace VSGE {
 		LIGHT_TYPE_DIRECTIONAL,
 		LIGHT_TYPE_POINT,
 		LIGHT_TYPE_SPOT
-	};
-
-	class ShadowCascade {
-	public:
-		Mat4 _cascadeViewProjection;
-		uint32 _distance;
 	};
 
 	class LightsourceComponent : public IEntityComponent {
@@ -35,7 +30,6 @@ namespace VSGE {
 		float _shadowsBias;
 		uint32 _shadowsPCF;
 		uint32 _shadowsCascadesCount;
-		std::vector<ShadowCascade> _shadowCascades;
 	public:
 
 		LightsourceComponent();
@@ -63,7 +57,7 @@ namespace VSGE {
 
 		Vec3 GetDirection();
 
-		void OnPreRender();
+		Mat4* GetShadowcastMatrices(Camera* cam);
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

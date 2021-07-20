@@ -1,6 +1,7 @@
 #include "LightComponent.hpp"
 #include <Core/YamlHelper.hpp>
 #include "../Entity.hpp"
+#include <Math/MatrixCamera.hpp>
 
 using namespace VSGE;
 using namespace YAML;
@@ -84,9 +85,6 @@ void LightsourceComponent::SetShadowCascadesCount(uint32 cascades) {
 	if (cascades > MAX_SHADOW_CASCADES)
 		cascades = MAX_SHADOW_CASCADES;
 
-	if (cascades != _shadowsCascadesCount)
-		_shadowCascades.resize(cascades);
-
 	_shadowsCascadesCount = cascades;
 }
 uint32 LightsourceComponent::GetShadowCascadesCount() {
@@ -155,16 +153,26 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 	}
 }
 
-void LightsourceComponent::OnPreRender() {
+Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 	int sizes[] = { 20, 50, 80, 130, 160, 190 };
-	if (_castShadows) {
-		for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
-			int Dist = sizes[i] * 2 - 2;
+	Vec3 direction = GetDirection();
 
-			//Vec3 cam_pos = cam->getCameraPosition() + cam->getCameraFrontVec() * static_cast<float>(sizes[i]);
-			//Mat4 matview = matrixLookAt(cam_pos, cam_pos + light->direction * -1, Vec3(0, 1, 0));
+	Mat4* result = nullptr;
+	if (_castShadows) {
+		result = new Mat4[_shadowsCascadesCount];
+		for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
+			int Dist = sizes[i] * 2;
+
+			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * static_cast<float>(sizes[i]);
+			Mat4 matview = GetViewRH(cam_pos, cam_pos + direction * -1, Vec3(0, 1, 0));
+
+			float w = sizes[i];
+			Mat4 projectionMat = GetOrthoRH_Default(-w, w, -w, w, -10.f, 100.f);
+
+			result[i] = matview * projectionMat;
 		}
 	}
+	return result;
 }
 
 Vec3 LightsourceComponent::GetDirection() {

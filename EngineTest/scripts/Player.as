@@ -10,8 +10,9 @@ class Player : ZPScript{
 	void Start() {
 		_this.SetName("scripted");
 		_this.SetActive(false);
+		print("OnStart");
 	}
 	void Update(){
-		
+		print(Vec3(12, 13, 14));
 	}
 }

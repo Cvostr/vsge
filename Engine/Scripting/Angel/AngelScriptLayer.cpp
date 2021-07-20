@@ -28,6 +28,7 @@ void AngelScriptLayer::CreateEngine() {
 	RegisterInterface(MAINCLASS_TYPE_NAME);
 	RegisterStdString(_engine);
 	//RegisterStdStringUtils(_engine);
+
 	BindMath();
 	BindIO();
 	BindScene();

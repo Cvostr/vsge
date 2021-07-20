@@ -139,6 +139,41 @@ void ParticleEmitterComponent::Deserialize(YAML::Node& entity) {
 	_rotationSpeed.Max = entity["rotation_speed_max"].as<float>();
 }
 
+void ParticleEmitterComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_shape);
+	serializer.Serialize(_duration);
+	serializer.Serialize(_looping);
+	serializer.Serialize(_prewarm);
+	serializer.Serialize(_lifetime);
+	serializer.Serialize(_maxParticles);
+
+	serializer.Serialize(_emissionRate);
+	serializer.Serialize(_direction);
+	serializer.Serialize(_size);
+	serializer.Serialize(_velocity);
+	serializer.Serialize(_constantForce);
+	serializer.Serialize(_dampingForce);
+	serializer.Serialize(_rotation);
+	serializer.Serialize(_rotationSpeed);
+}
+void ParticleEmitterComponent::Deserialize(ByteSolver& solver) {
+	_shape = solver.GetValue<ParticleEmitterShape>();
+	_duration = solver.GetValue<float>();
+	_looping = solver.GetValue<bool>();
+	_prewarm = solver.GetValue<bool>();
+	_lifetime = solver.GetValue<float>();
+	_maxParticles = solver.GetValue<uint32>();
+
+	_emissionRate = solver.GetValue<MinMaxValue<int>>();
+	_direction = solver.GetValue<MinMaxValue<Vec3>>();
+	_size = solver.GetValue<DeltaValue<MinMaxValue<Vec2>>>();
+	_velocity = solver.GetValue<MinMaxValue<float>>();
+	_constantForce = solver.GetValue<Vec3>();
+	_dampingForce = solver.GetValue<float>();
+	_rotation = solver.GetValue<MinMaxValue<float>>();
+	_rotationSpeed = solver.GetValue<MinMaxValue<float>>();
+}
+
 void ParticleEmitterComponent::OnPreRender() {
 
 }

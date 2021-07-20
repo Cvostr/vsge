@@ -7,6 +7,9 @@
 #define SCENE_TYPE_NAME "Scene"
 #define ENTITY_TYPE_NAME "Entity"
 
+#define STRING_TYPEID 67108877
+#define VEC3_TYPEID 67108878
+
 namespace VSGE {
 	void BindMath();
 	void BindIO();

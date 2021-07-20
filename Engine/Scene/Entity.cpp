@@ -272,6 +272,11 @@ void Entity::CallOnUpdate() {
 		if (component->IsActive())
 			component->OnUpdate();
 	}
+
+	for (auto script : _scripts) {
+		if (script->IsActive())
+			script->OnUpdate();
+	}
 }
 void Entity::CallOnStop() {
 	for (auto component : _components) {

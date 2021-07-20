@@ -123,6 +123,10 @@ void AngelScriptModule::UpdateClassInfos() {
 						double i = *((double*)ptr);
 						cf_desc.value.SetDouble(i);
 					}
+					if (cf_desc.typeID == VEC3_TYPEID) {
+						Vec3 i = *((Vec3*)ptr);
+						cf_desc.value.SetVec3f(i);
+					}
 
 					desc->_fields.push_back(cf_desc);
 				}
