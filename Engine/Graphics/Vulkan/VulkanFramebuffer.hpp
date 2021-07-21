@@ -49,6 +49,11 @@ namespace VSGE {
 		/// <param name="layers">- amount of layers</param>
 		void SetLayersCount(uint32 layers);
 		/// <summary>
+		/// Get count of layers in framebuffer
+		/// </summary>
+		/// <returns></returns>
+		uint32 GetLayersCount();
+		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>
 		bool Create(VulkanRenderPass* renderpass);

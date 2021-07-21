@@ -18,28 +18,14 @@ layout (location = 10) in vec4 Weights2;
 //Amount of bones, that control this vertex
 layout (location = 11) in uint bones;
 
-layout (std140, binding = 2) uniform ShadowData{
-//Shadowmapping stuff
-    uniform float ShadowBias; //4
-    uniform int ShadowmapSize; //4
-    uniform bool HasShadowMap; //4
-    uniform int CascadesNum; //4
-    uniform int PcfPassNum; // 4
-    uniform float ShadowStrength; // 4
-    //32
-    uniform mat4 LightProjViewMat0; // 16 * 4
-    uniform mat4 LightProjViewMat1; // 16 * 4
-    uniform mat4 LightProjViewMat2; // 16 * 4
-    uniform mat4 LightProjViewMat3; // 16 * 4
-    uniform mat4 LightProjViewMat4; // 16 * 4
-    uniform mat4 LightProjViewMat5; // 16 * 4
-    //416   
-    uniform int CasterDistance0; //4
-    uniform int CasterDistance1; //4
-    uniform int CasterDistance2; //4
-    uniform int CasterDistance3; //4
-    uniform int CasterDistance4; //4
-    uniform int CasterDistance5; //4
+layout (std140, set = 1, binding = 0) uniform ShadowData{
+    mat4 projections[10];
+    //640
+    float ShadowBias; //4
+    int ShadowmapSize; //4
+    uint CascadesNum; //4
+    uint PcfPassNum; // 4
+    float ShadowStrength; // 4
 };
 
 layout (std140, binding = 0) uniform CamMatrices{
@@ -107,14 +93,13 @@ void main(){
 		bone_t = getBoneTransform();
 
     mat4 PVs[6];
-    PVs[0] = LightProjViewMat0;
-    PVs[1] = LightProjViewMat1;
-    PVs[2] = LightProjViewMat2;
-    PVs[3] = LightProjViewMat3;
-    PVs[4] = LightProjViewMat4;
-    PVs[5] = LightProjViewMat5;
+    PVs[0] = projections[0];
+    PVs[1] = projections[1];
+    PVs[2] = projections[2];
+    PVs[3] = projections[3];
+    PVs[4] = projections[4];
 
-    vec4 pos = PVs[gl_InstanceIndex] * obj_model[0] * bone_t * vec4(position, 1.0);
+    vec4 pos = projections[gl_InstanceIndex] * obj_model[0] * bone_t * vec4(position, 1.0);
 
 	gl_Position = pos;
 	vsoutput.depth = pos.z;

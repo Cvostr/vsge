@@ -10,6 +10,7 @@
 #include "../VulkanPipeline.hpp"
 
 #include "VulkanMaterials.hpp"
+#include "VulkanShadowmapping.hpp"
 
 #define MAX_OBJECTS_RENDER 40000
 #define MAX_ANIMATION_MATRICES 20000
@@ -33,10 +34,10 @@ namespace VSGE {
 
 		VulkanFramebuffer* mOutputBuffer;
 		VulkanRenderPass* mOutputPass;
-
 		
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
+		VulkanSemaphore* mShadowmappingEndSemaphore;
 		VulkanSemaphore* mGBufferSemaphore;
 		VulkanSemaphore* mEndSemaphore;
 
@@ -67,6 +68,10 @@ namespace VSGE {
 
 		//--------------------Pipelines------------------
 		VulkanPipeline* mDeferredPipeline;
+
+		//--------------------Shadowmapping--------------
+		VulkanShadowmapping* _shadowmapper;
+
 
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;

@@ -56,6 +56,7 @@ void VSGE::endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool co
 bool VulkanCommandPool::Create(uint32 queueFamilyIndex) {
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.pNext = nullptr;
     poolInfo.queueFamilyIndex = queueFamilyIndex;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
 

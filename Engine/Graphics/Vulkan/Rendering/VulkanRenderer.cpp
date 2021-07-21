@@ -73,6 +73,9 @@ void VulkanRenderer::SetupRenderer() {
 	mEndSemaphore = new VulkanSemaphore;
 	mEndSemaphore->Create();
 
+	mShadowmappingEndSemaphore = new VulkanSemaphore;
+	mShadowmappingEndSemaphore->Create();
+
 	
 	//---------------------Buffers--------------------------------
 	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -223,6 +226,9 @@ void VulkanRenderer::SetupRenderer() {
 	
 	MaterialTemplateCache::Get()->AddTemplate(particle_template);
 	CreatePipelineFromMaterialTemplate(particle_template);
+
+	_shadowmapper = new VulkanShadowmapping(&mVertexDescriptorSets, mAnimationsDescriptorSet);
+	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 }
 
 void VulkanRenderer::DestroyRenderer() {
@@ -268,7 +274,6 @@ void VulkanRenderer::StoreWorldObjects() {
 		AnimatorComponent* anim_comp = entity->GetComponent<AnimatorComponent>();
 
 		for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
-			
 			Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
 			Entity* rootNode = entity->GetRootSkinningEntity();
 			Entity* node = nullptr;
@@ -370,6 +375,17 @@ void VulkanRenderer::StoreWorldObjects() {
 			_writtenParticleTransforms += 4 - (_writtenParticleTransforms % 4);
 		}
 	}
+
+	//--------------SHADOWMAPPING------------
+	_shadowmapper->ResetCasters();
+	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
+		_shadowmapper->AddEntity(_shadowcasters[caster_i]);
+	}
+	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
+		_shadowmapper->ProcessShadowCaster(caster_i);
+	}
+	//-----------------------------
+
 
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
@@ -489,6 +505,7 @@ void VulkanRenderer::StoreWorldObjects() {
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	//TEMPORARY
 	this->cam = cam;
+	_shadowmapper->SetCamera(cam);
 	//---------------------
 
 	cam->UpdateMatrices();
@@ -505,7 +522,19 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	StoreWorldObjects();
 
-	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mBeginSemaphore, *mGBufferSemaphore);
+	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
+		VulkanSemaphore* shadowbegin = nullptr;
+		VulkanSemaphore* shadowend = nullptr;
+
+		if (caster_i == 0)
+			shadowbegin = mBeginSemaphore;
+		if (caster_i == _shadowcasters.size() - 1)
+			shadowend = mShadowmappingEndSemaphore;
+
+		_shadowmapper->ExecuteShadowCaster(caster_i, shadowbegin, shadowend);
+	}
+
+	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowmappingEndSemaphore, *mGBufferSemaphore);
 
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *mEndSemaphore);
 }

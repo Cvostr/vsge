@@ -61,6 +61,10 @@ void VulkanFramebuffer::SetLayersCount(uint32 layers) {
 	mLayers = layers;
 }
 
+uint32 VulkanFramebuffer::GetLayersCount() {
+	return mLayers;
+}
+
 bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan_rapi->GetDevice();
@@ -92,6 +96,7 @@ void VulkanFramebuffer::Destroy() {
 
 		vkDestroyFramebuffer(device->getVkDevice(), mFramebuffer, nullptr);
 		_views.clear();
+		mLayers = 1;
 		mCreated = false;
 	}
 }

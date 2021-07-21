@@ -6,7 +6,7 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [0.0279635191, -1.1920929e-07, 1]
+    pos: [-5.55454874, -0.701772869, 6.66112757]
     scale: [2, 2, 2]
     rot: [0, 0, 0, 1]
     components:
@@ -155,3 +155,24 @@ Entities:
         material: particle_mat
       - Component: 3
         mesh: Plane
+  - Entity: Directional Light
+    uid: [4022663197, 3646530176, 2222185782, 1077532849]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 12, 0]
+    scale: [1, 1, 1]
+    rot: [-0.0515532307, 0.295245975, -0.494551867, 0.815834999]
+    components:
+      - Component: 1
+        light_type: 0
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 0.00499999989
+        pcf: 4
+        cascades: 3
