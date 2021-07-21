@@ -32,6 +32,7 @@ void AngelScriptLayer::CreateEngine() {
 	BindMath();
 	BindIO();
 	BindScene();
+	BindInput();
 
 	_module->CreateModule(_engine, "vsge");
 }

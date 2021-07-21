@@ -16,6 +16,8 @@ namespace VSGE {
 		tEntityList _entitiesToRender;
 		//Entities with lightsource
 		tEntityList _lightsources;
+		//Entities with shadowcasters
+		tEntityList _shadowcasters;
 		//Entities with particle emitter
 		tEntityList _particleEmitters;
 		//Entities with camera

@@ -4,11 +4,12 @@
 #include "../../Material.hpp"
 #include "../VulkanFramebuffer.hpp"
 #include "../VulkanRenderpass.hpp"
-#include "../VulkanDescriptors.hpp"
 #include "../VulkanSampler.hpp"
 #include "../VulkanSynchronization.hpp"
 #include "../VulkanCommandBuffer.hpp"
 #include "../VulkanPipeline.hpp"
+
+#include "VulkanMaterials.hpp"
 
 #define MAX_OBJECTS_RENDER 40000
 #define MAX_ANIMATION_MATRICES 20000
@@ -22,29 +23,6 @@
 
 namespace VSGE {
 
-
-	class VulkanMaterial {
-	public:
-		VulkanDescriptorSet* _fragmentDescriptorSet;
-		VulkanBuffer* _paramsBuffer;
-
-		VulkanMaterial() {
-			_fragmentDescriptorSet = nullptr;
-			_paramsBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
-		}
-
-		~VulkanMaterial() {
-			delete _fragmentDescriptorSet;
-			delete _paramsBuffer;
-		}
-	};
-
-	class VulkanShadowCaster {
-	public:
-		VulkanFramebuffer* _framebuffer;
-		VulkanCommandBuffer* _cmdbuf;
-	};
-
 	class VulkanRenderer : public IRenderer {
 	private:
 
@@ -56,11 +34,12 @@ namespace VSGE {
 		VulkanFramebuffer* mOutputBuffer;
 		VulkanRenderPass* mOutputPass;
 
-		VulkanRenderPass* mShadowmapPass;
+		
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
 		VulkanSemaphore* mGBufferSemaphore;
 		VulkanSemaphore* mEndSemaphore;
+
 		//--------------------Command buffers------------
 		VulkanCommandPool* mCmdPool;
 		VulkanCommandBuffer* mGBufferCmdbuf;

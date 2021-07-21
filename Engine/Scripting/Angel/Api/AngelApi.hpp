@@ -4,6 +4,7 @@
 #define QUAT_TYPE_NAME "Quat"
 
 #define MAINCLASS_TYPE_NAME "ZPScript"
+#define KEY_TYPE_NAME "Key"
 #define SCENE_TYPE_NAME "Scene"
 #define ENTITY_TYPE_NAME "Entity"
 
@@ -14,6 +15,7 @@ namespace VSGE {
 	void BindMath();
 	void BindIO();
 	void BindScene();
+    void BindInput();
 
     template <typename T>
     static void new_as_obj_T(T* ptr) {

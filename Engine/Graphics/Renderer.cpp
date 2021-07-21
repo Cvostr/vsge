@@ -12,6 +12,7 @@ using namespace VSGE;
 void IRenderer::CreateRenderList() {
 	_entitiesToRender.clear();
 	_lightsources.clear();
+	_shadowcasters.clear();
 	_particleEmitters.clear();
 	_cameras.clear();
 	if(mScene)
@@ -58,6 +59,9 @@ void IRenderer::ProcessEntity(Entity* entity) {
 
 	if (hasLightsource) {
 		_lightsources.push_back(entity);
+		LightsourceComponent* lightsource = entity->GetComponent<LightsourceComponent>();
+		if (lightsource->GetCastShadows())
+			_shadowcasters.push_back(entity);
 	}
 
 	if (hasParticleEmitter) {
