@@ -11,7 +11,7 @@ namespace VSGE {
 		uint32 mWidth;
 		uint32 mHeight;
 
-		std::vector<Texture*> mAttachments;
+		std::vector<Texture*> _attachments;
 		Texture* mDepthAttachment;
 
 	public:
@@ -43,7 +43,7 @@ namespace VSGE {
 			mHeight = height;
 		}
 		Texture** GetColorAttachments() {
-			return mAttachments.data();
+			return _attachments.data();
 		}
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments

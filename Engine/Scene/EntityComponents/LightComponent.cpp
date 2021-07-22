@@ -85,10 +85,22 @@ void LightsourceComponent::SetShadowCascadesCount(uint32 cascades) {
 	if (cascades > MAX_SHADOW_CASCADES)
 		cascades = MAX_SHADOW_CASCADES;
 
+	if (cascades < 1)
+		cascades = 1;
+
 	_shadowsCascadesCount = cascades;
 }
 uint32 LightsourceComponent::GetShadowCascadesCount() {
 	return _shadowsCascadesCount;
+}
+uint32 LightsourceComponent::GetShadowPCF() {
+	return _shadowsPCF;
+}
+void LightsourceComponent::SetShadowPCF(uint32 pcf) {
+	if (pcf < 1)
+		pcf = 1;
+
+	_shadowsPCF = pcf;
 }
 
 void LightsourceComponent::Serialize(YAML::Emitter& e) {
@@ -164,7 +176,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 			int Dist = sizes[i] * 2;
 
 			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * static_cast<float>(sizes[i]);
-			Mat4 matview = GetViewRH(cam_pos, cam_pos + direction * -1, Vec3(0, 1, 0));
+			Mat4 matview = GetViewRH(cam_pos, cam_pos + direction, Vec3(0, 1, 0));
 
 			float w = sizes[i];
 			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -10.f, 100.f);

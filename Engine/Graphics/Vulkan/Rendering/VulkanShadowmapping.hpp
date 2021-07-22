@@ -13,6 +13,8 @@
 #define UNI_ALIGN 256
 #define MAP_SIZE 2048
 
+#define SHADOWMAP_BUFFER_ELEMENT_SIZE 1024
+
 namespace VSGE {
 
 	class VulkanShadowCaster {
@@ -35,10 +37,11 @@ namespace VSGE {
 	class VulkanShadowmapping {
 	private:
 		//--------------Semaphores------------
-		VulkanSemaphore* _shadowmapBeginSemaphore;
-		VulkanSemaphore* _shadowmapEndSemaphore;
+		VulkanSemaphore* _shadowmapFirstSemaphore;
+		VulkanSemaphore* _shadowmapSecondSemaphore;
 
 		VulkanRenderPass* _shadowmapRenderPass;
+		VulkanRenderPass* _shadowprocessRenderPass;
 
 		VulkanCommandPool* _shadowmapCmdPool;
 		//-----------------Shadow Pipeline------------
@@ -46,6 +49,12 @@ namespace VSGE {
 		VulkanShader* _shadowmap_shader;
 		VulkanPipelineLayout* _shadowmap_layout;
 		VulkanPipeline* _shadowmapPipeline;
+		//-----------------Shadowprocess pipeline
+		VertexLayout _shadowprocess_vertex_layout;
+		VulkanShader* _shadowprocess_shader;
+		VulkanPipelineLayout* _shadowprocess_layout;
+		VulkanPipeline* _shadowprocess_pipeline;
+		VulkanFramebuffer* _shadowprocess_framebuffer;
 
 		std::vector<VulkanShadowCaster*> _casters;
 		uint32 _added_casters;
@@ -73,6 +82,9 @@ namespace VSGE {
 		void SetEntitiesToRender(std::vector<Entity*>* entities) {
 			_entitiesToRender = entities;
 		}
+
+		void ResizeOutput(uint32 width, uint32 height);
+		VulkanTexture* GetOutputTexture();
 
 		void AddEntity(Entity* entity);
 		void ResetCasters();

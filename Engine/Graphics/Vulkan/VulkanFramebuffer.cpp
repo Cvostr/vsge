@@ -5,8 +5,8 @@
 using namespace VSGE;
 
 VulkanFramebuffer::VulkanFramebuffer() :
-	mFramebuffer(VK_NULL_HANDLE),
-	mLayers(1) 
+	_framebuffer(VK_NULL_HANDLE),
+	_layers(1) 
 {}
 
 
@@ -16,7 +16,7 @@ VulkanFramebuffer::~VulkanFramebuffer() {
 
 void VulkanFramebuffer::AddAttachment(Texture* attachment) {
 	if (attachment->IsRenderTarget()) {
-		mAttachments.push_back(attachment);
+		_attachments.push_back(attachment);
 		_views.push_back(((VulkanTexture*)attachment)->GetImageView());
 	}
 }
@@ -58,11 +58,11 @@ void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
 }
 
 void VulkanFramebuffer::SetLayersCount(uint32 layers) {
-	mLayers = layers;
+	_layers = layers;
 }
 
 uint32 VulkanFramebuffer::GetLayersCount() {
-	return mLayers;
+	return _layers;
 }
 
 bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
@@ -77,9 +77,9 @@ bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 		framebufferInfo.pAttachments = _views.data();
 		framebufferInfo.width = mWidth;
 		framebufferInfo.height = mHeight;
-		framebufferInfo.layers = mLayers;
+		framebufferInfo.layers = _layers;
 		//Try to create framebuffer
-		if (vkCreateFramebuffer(device->getVkDevice(), &framebufferInfo, nullptr, &mFramebuffer) != VK_SUCCESS) {
+		if (vkCreateFramebuffer(device->getVkDevice(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS) {
 			return false;
 		}
 	
@@ -94,9 +94,9 @@ void VulkanFramebuffer::Destroy() {
 		VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan_rapi->GetDevice();
 
-		vkDestroyFramebuffer(device->getVkDevice(), mFramebuffer, nullptr);
+		vkDestroyFramebuffer(device->getVkDevice(), _framebuffer, nullptr);
 		_views.clear();
-		mLayers = 1;
+		_layers = 1;
 		mCreated = false;
 	}
 }

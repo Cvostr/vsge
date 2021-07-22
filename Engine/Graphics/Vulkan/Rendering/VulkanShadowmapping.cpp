@@ -14,11 +14,11 @@ VulkanShadowmapping::VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vert
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
-	_shadowmapBeginSemaphore = new VulkanSemaphore;
-	_shadowmapBeginSemaphore->Create();
+	_shadowmapFirstSemaphore = new VulkanSemaphore;
+	_shadowmapFirstSemaphore->Create();
 
-	_shadowmapEndSemaphore = new VulkanSemaphore;
-	_shadowmapEndSemaphore->Create();
+	_shadowmapSecondSemaphore = new VulkanSemaphore;
+	_shadowmapSecondSemaphore->Create();
 
 	_shadowmapRenderPass = new VulkanRenderPass;
 	_shadowmapRenderPass->SetClearSize(2048, 2048);
@@ -73,10 +73,34 @@ VulkanShadowmapping::VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vert
 	_shadowmapPipeline = new VulkanPipeline;
 	_shadowmapPipeline->SetDepthTest(true);
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
+
+	//-------------------------SHADOW PROCESS -----------------------------
+	_shadowprocessRenderPass = new VulkanRenderPass;
+	_shadowprocessRenderPass->PushColorAttachment(FORMAT_RGBA);
+	_shadowprocessRenderPass->Create();
+
+	_shadowprocess_framebuffer = new VulkanFramebuffer;
+	_shadowprocess_framebuffer->SetSize(1280, 720);
+	_shadowprocess_framebuffer->AddAttachment();
+	_shadowprocess_framebuffer->Create(_shadowprocessRenderPass);
+
+	_shadowprocess_shader = new VulkanShader;
+	_shadowprocess_shader->AddShaderFromFile("shadowmap_process.vert", SHADER_STAGE_VERTEX);
+	_shadowprocess_shader->AddShaderFromFile("shadowmap_process.frag", SHADER_STAGE_FRAGMENT);
+	
+	_shadowprocess_vertex_layout.AddBinding(sizeof(Vertex));
+	_shadowprocess_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+	_shadowprocess_vertex_layout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
+
+	_shadowprocess_layout = new VulkanPipelineLayout;
+	_shadowprocess_layout->Create();
+
+	_shadowprocess_pipeline = new VulkanPipeline;
+	_shadowprocess_pipeline->Create(_shadowprocess_shader, _shadowprocessRenderPass, _shadowprocess_vertex_layout, _shadowprocess_layout);
 }
 VulkanShadowmapping::~VulkanShadowmapping() {
-	delete _shadowmapBeginSemaphore;
-	delete _shadowmapEndSemaphore;
+	delete _shadowmapFirstSemaphore;
+	delete _shadowmapSecondSemaphore;
 
 	delete _shadowmapRenderPass;
 
@@ -115,13 +139,13 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	}
 
 	Mat4* cascades_projections = light->GetShadowcastMatrices(cam);
-	_shadowcasters_buffer->WriteData(_added_casters * 1024, sizeof(Mat4) * cascades_count, cascades_projections);
+	_shadowcasters_buffer->WriteData(_added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * cascades_count, cascades_projections);
 	delete[] cascades_projections;
-	uint32 offset = _added_casters * 1024 + sizeof(Mat4) * 10;
+	uint32 offset = _added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * 10;
 
 	float bias = light->GetShadowsBias();
 	int size = MAP_SIZE;
-	uint32 pcf = 1;
+	uint32 pcf = light->GetShadowPCF();
 	float strength = light->GetShadowStrength();
 
 	_shadowcasters_buffer->WriteData(offset, 4, &bias);
@@ -131,6 +155,14 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	_shadowcasters_buffer->WriteData(offset + 16, 4, &strength);
 
 	_added_casters++;
+}
+
+void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
+	_shadowprocess_framebuffer->SetSize(width, height);
+}
+
+VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
+	return (VulkanTexture*)_shadowprocess_framebuffer->GetColorAttachments()[0];
 }
 
 void VulkanShadowmapping::ResetCasters() {
@@ -145,7 +177,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 	VulkanFramebuffer* fb = caster->_framebuffer;
 
 	uint32 vertexOffsets[] = { 0, 0 };
-	uint32 shadowmap_offset = casterIndex * 1024;
+	uint32 shadowmap_offset = casterIndex * SHADOWMAP_BUFFER_ELEMENT_SIZE;
 
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
@@ -195,10 +227,15 @@ void VulkanShadowmapping::ExecuteShadowCaster(uint32 casterIndex, VulkanSemaphor
 	VulkanCommandBuffer* cmdbuf = caster->_cmdbuf;
 
 	if (begin == nullptr)
-		begin = _shadowmapBeginSemaphore;
+		begin = _shadowmapFirstSemaphore;
 
 	if (end == nullptr)
-		end = _shadowmapEndSemaphore;
+		end = _shadowmapSecondSemaphore;
 
 	VulkanGraphicsSubmit(*cmdbuf, *begin, *end);
+
+	VulkanSemaphore* temp = _shadowmapFirstSemaphore;
+
+	_shadowmapFirstSemaphore = _shadowmapSecondSemaphore;
+	_shadowmapSecondSemaphore = temp;
 }

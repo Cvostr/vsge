@@ -28,11 +28,6 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
     float ShadowStrength; // 4
 };
 
-layout (std140, binding = 0) uniform CamMatrices{
-    uniform mat4 cam_view_projection;
-    uniform vec3 cam_position;
-};
-
 layout (std140, binding = 1) uniform Transform{
     uniform mat4 obj_model[4];
 };

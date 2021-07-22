@@ -55,6 +55,9 @@ namespace VSGE {
 		void SetShadowCascadesCount(uint32 cascades);
 		uint32 GetShadowCascadesCount();
 
+		uint32 GetShadowPCF();
+		void SetShadowPCF(uint32 pcf);
+
 		Vec3 GetDirection();
 
 		Mat4* GetShadowcastMatrices(Camera* cam);

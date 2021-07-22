@@ -7,8 +7,8 @@
 namespace VSGE {
 	class VulkanFramebuffer : public Framebuffer {
 	private:
-		VkFramebuffer mFramebuffer;
-		uint32 mLayers;
+		VkFramebuffer _framebuffer;
+		uint32 _layers;
 
 		std::vector<VkImageView> _views;
 	public:
@@ -16,7 +16,7 @@ namespace VSGE {
 
 		~VulkanFramebuffer();
 
-		VkFramebuffer GetFramebuffer() { return mFramebuffer; }
+		VkFramebuffer GetFramebuffer() { return _framebuffer; }
 
 		void PushOutputAttachment(uint32_t Index);
 		/// <summary>
