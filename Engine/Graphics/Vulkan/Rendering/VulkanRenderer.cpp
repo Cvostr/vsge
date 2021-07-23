@@ -76,6 +76,8 @@ void VulkanRenderer::SetupRenderer() {
 	mShadowmappingEndSemaphore = new VulkanSemaphore;
 	mShadowmappingEndSemaphore->Create();
 
+	mShadowprocessingEndSemaphore = new VulkanSemaphore;
+	mShadowprocessingEndSemaphore->Create();
 	
 	//---------------------Buffers--------------------------------
 	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -144,6 +146,7 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Create POOL
 	mObjectsPool->Create();
@@ -162,6 +165,15 @@ void VulkanRenderer::SetupRenderer() {
 	mParticlesDescriptorSet->Create();
 	mParticlesDescriptorSet->WriteDescriptorBuffer(0, mParticlesTransformShaderBuffer);
 	
+	_shadowmapper = new VulkanShadowmapping(
+		&mVertexDescriptorSets,
+		mAnimationsDescriptorSet,
+		mCameraShaderBuffer,
+		mSpriteMesh,
+		(VulkanTexture*)mGBuffer->GetColorAttachments()[2],
+		mAttachmentSampler);
+	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
+
 	mDeferredPassSet->Create();
 	mDeferredPassSet->WriteDescriptorBuffer(1, mCameraShaderBuffer);
 	mDeferredPassSet->WriteDescriptorBuffer(2, _lightsBuffer);
@@ -169,6 +181,7 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->WriteDescriptorImage(4, (VulkanTexture*)mGBuffer->GetColorAttachments()[1], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(6, (VulkanTexture*)mGBuffer->GetColorAttachments()[3], mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(7, _shadowmapper->GetOutputTexture(), mAttachmentSampler);
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -227,8 +240,6 @@ void VulkanRenderer::SetupRenderer() {
 	MaterialTemplateCache::Get()->AddTemplate(particle_template);
 	CreatePipelineFromMaterialTemplate(particle_template);
 
-	_shadowmapper = new VulkanShadowmapping(&mVertexDescriptorSets, mAnimationsDescriptorSet);
-	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 }
 
 void VulkanRenderer::DestroyRenderer() {
@@ -337,6 +348,7 @@ void VulkanRenderer::StoreWorldObjects() {
 					//Mark texture resource as used in this frame
 					texture_res->Use();
 					//Write texture to descriptor
+
 					vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
 					mat->_texturesDirty = false;
 				}
@@ -534,7 +546,9 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 		_shadowmapper->ExecuteShadowCaster(caster_i, shadowbegin, shadowend);
 	}
 
-	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowmappingEndSemaphore, *mGBufferSemaphore);
+	_shadowmapper->RenderShadows(mShadowmappingEndSemaphore, mShadowprocessingEndSemaphore);
+
+	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
 
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *mEndSemaphore);
 }

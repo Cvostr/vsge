@@ -14,7 +14,13 @@ namespace VSGE {
 		SAMPLER_WRAP_NONE,
 		SAMPLER_WRAP_REPEAT,
 		SAMPLER_WRAP_MIRRORED_REPEAT,
-		SAMPLER_WRAP_CLAMP_TO_EDGE
+		SAMPLER_WRAP_CLAMP_TO_EDGE,
+		SAMPLER_WRAP_CLAMP_TO_BORDER
+	};
+
+	enum BorderColor {
+		BORDER_COLOR_WHITE,
+		BORDER_COLOR_BLACK
 	};
 
 	class TextureSampler : public IGpuObject {
@@ -25,6 +31,8 @@ namespace VSGE {
 		TextureWrapMode mWrapU;
 		TextureWrapMode mWrapV;
 		TextureWrapMode mWrapW;
+
+		BorderColor mBorderColor;
 
 		float mMaxAnisotropy;
 	public:

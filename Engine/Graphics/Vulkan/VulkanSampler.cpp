@@ -23,6 +23,8 @@ VkSamplerAddressMode GetSamplerWrapMode(TextureWrapMode TWM) {
 		result = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 	if (TWM == SAMPLER_WRAP_CLAMP_TO_EDGE)
 		result = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	if (TWM == SAMPLER_WRAP_CLAMP_TO_BORDER)
+		result = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 
 	return result;
 }
@@ -43,7 +45,7 @@ bool VulkanSampler::Create() {
 	samplerInfo.anisotropyEnable = (mMaxAnisotropy > 1.f);
 	samplerInfo.maxAnisotropy = mMaxAnisotropy;
 
-	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_WHITE;
 
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 

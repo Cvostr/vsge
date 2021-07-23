@@ -173,13 +173,12 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 	if (_castShadows) {
 		result = new Mat4[_shadowsCascadesCount];
 		for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
-			int Dist = sizes[i] * 2;
 
 			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * static_cast<float>(sizes[i]);
 			Mat4 matview = GetViewRH(cam_pos, cam_pos + direction, Vec3(0, 1, 0));
 
 			float w = sizes[i];
-			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -10.f, 100.f);
+			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, 0.1f, 100.f);
 			projectionMat.Values[1][1] *= -1;
 
 			result[i] = matview * projectionMat;

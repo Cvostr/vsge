@@ -64,11 +64,20 @@ void VulkanDescriptorPool::AddLayoutBinding(VkDescriptorType type) {
     mSizes.push_back(poolSize);
 }
 
-void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags) {
+void VulkanDescriptorSet::SetDescriptorPool(VulkanDescriptorPool* pool) {
+    mDescriptorPool = pool;
+}
+VkDescriptorSet VulkanDescriptorSet::GetDescriptorSet() {
+    return mDescriptorSet; 
+}
+VkDescriptorSetLayout VulkanDescriptorSet::GetDescriptorSetLayout() { 
+    return Layout; 
+}
+void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags, uint32 descriptorsCount) {
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
     samplerLayoutBinding.binding = binding;
     samplerLayoutBinding.descriptorType = type;
-    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorCount = descriptorsCount;
     samplerLayoutBinding.stageFlags = stageFlags;
     samplerLayoutBinding.pImmutableSamplers = nullptr;
     //Push description
@@ -110,7 +119,11 @@ void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* bu
     vkUpdateDescriptorSets(device->getVkDevice(), 1, &descriptorWrite, 0, nullptr);
 }
 
-void VulkanDescriptorSet::WriteDescriptorImage(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler) {
+void VulkanDescriptorSet::WriteDescriptorImage(
+    uint32 binding,
+    VulkanTexture* texture,
+    VulkanSampler* sampler) 
+{
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     imageInfo.imageView = texture->GetImageView();
@@ -128,6 +141,42 @@ void VulkanDescriptorSet::WriteDescriptorImage(uint32 binding, VulkanTexture* te
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pBufferInfo = nullptr;
     descriptorWrite.pImageInfo = &imageInfo; // Optional
+    descriptorWrite.pTexelBufferView = nullptr; // Optional
+
+    VulkanRAPI* vulkan = VulkanRAPI::Get();
+    VulkanDevice* device = vulkan->GetDevice();
+
+    vkUpdateDescriptorSets(device->getVkDevice(), 1, &descriptorWrite, 0, nullptr);
+}
+
+void VulkanDescriptorSet::WriteDescriptorImages(
+    uint32 binding,
+    VulkanTexture** textures, 
+    VulkanSampler* sampler, 
+    uint32 textures_count)
+{
+    if (textures_count == 0)
+        return;
+
+    std::vector<VkDescriptorImageInfo> imageInfos;
+    for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) {
+        VkDescriptorImageInfo imageInfo;
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = textures[texture_i]->GetImageView();
+        imageInfo.sampler = sampler->GetSampler();
+        imageInfos.push_back(imageInfo);
+    }
+
+    VkDescriptorType DescrType = bindings_types.at(binding);
+    VkWriteDescriptorSet descriptorWrite{};
+    descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite.dstSet = mDescriptorSet;
+    descriptorWrite.dstBinding = binding;
+    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.descriptorType = DescrType;
+    descriptorWrite.descriptorCount = textures_count;
+    descriptorWrite.pBufferInfo = nullptr;
+    descriptorWrite.pImageInfo = imageInfos.data(); // Optional
     descriptorWrite.pTexelBufferView = nullptr; // Optional
 
     VulkanRAPI* vulkan = VulkanRAPI::Get();

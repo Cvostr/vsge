@@ -20,12 +20,6 @@ layout (location = 11) in uint bones;
 
 layout (std140, set = 1, binding = 0) uniform ShadowData{
     mat4 projections[10];
-    //640
-    float ShadowBias; //4
-    int ShadowmapSize; //4
-    uint CascadesNum; //4
-    uint PcfPassNum; // 4
-    float ShadowStrength; // 4
 };
 
 layout (std140, binding = 1) uniform Transform{
@@ -86,13 +80,6 @@ void main(){
 
 	if(bones > 0)
 		bone_t = getBoneTransform();
-
-    mat4 PVs[6];
-    PVs[0] = projections[0];
-    PVs[1] = projections[1];
-    PVs[2] = projections[2];
-    PVs[3] = projections[3];
-    PVs[4] = projections[4];
 
     vec4 pos = projections[gl_InstanceIndex] * obj_model[0] * bone_t * vec4(position, 1.0);
 

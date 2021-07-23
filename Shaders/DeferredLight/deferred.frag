@@ -6,6 +6,7 @@ layout(binding = 3) uniform sampler2D color;
 layout(binding = 4) uniform sampler2D normal;
 layout(binding = 5) uniform sampler2D pos;
 layout(binding = 6) uniform sampler2D material;
+layout(binding = 7) uniform sampler2D shadows;
 
 #define LIGHTSOURCE_DIR 0
 #define LIGHTSOURCE_POINT 1
@@ -38,8 +39,9 @@ void main() {
     vec3 normal = texture(normal, UVCoord).rgb;
     vec3 pos = texture(pos, UVCoord).rgb;
     vec4 material = texture(material, UVCoord);
+    float shadow = texture(shadows, UVCoord).r;
 
-    vec3 lightning = CalculateLightning(diffuse.rgb, normal, pos);
+    vec3 lightning = CalculateLightning(diffuse.rgb * (1 - shadow), normal, pos);
 
     tColor = vec4(lightning, 1);
 }

@@ -13,7 +13,8 @@
 #define UNI_ALIGN 256
 #define MAP_SIZE 2048
 
-#define SHADOWMAP_BUFFER_ELEMENT_SIZE 1024
+#define SHADOWMAP_BUFFER_ELEMENT_SIZE 768
+#define SHADOWPROCESS_BUFFER_ELEMENT_SIZE 688
 
 namespace VSGE {
 
@@ -55,25 +56,38 @@ namespace VSGE {
 		VulkanPipelineLayout* _shadowprocess_layout;
 		VulkanPipeline* _shadowprocess_pipeline;
 		VulkanFramebuffer* _shadowprocess_framebuffer;
+		VulkanCommandBuffer* _shadowprocess_cmdbuf;
 
 		std::vector<VulkanShadowCaster*> _casters;
 		uint32 _added_casters;
 
 		VulkanBuffer* _shadowcasters_buffer;
+		VulkanBuffer* _shadowprocess_buffer;
+
 		VulkanDescriptorPool* _shadowcasters_descPool;
 		VulkanDescriptorSet* _shadowcaster_descrSet;
+		VulkanDescriptorSet* _shadowrenderer_descrSet;
 
 		std::vector<VulkanDescriptorSet*>* _vertexDescrSets;
 		VulkanDescriptorSet* animsDescrSet;
 
 		Camera* cam;
 		std::vector<Entity*>* _entitiesToRender;
+		VulkanTexture* _gbuffer_pos;
+		VulkanSampler* _gbuffer_sampler;
+		VulkanMesh* _screenPlane;
+		VulkanSampler* _shadowmap_sampler;
 
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
 	public:
 
-		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets, VulkanDescriptorSet* animsDescrSet);
+		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets,
+			VulkanDescriptorSet* animsDescrSet, 
+			VulkanBuffer* cam_buffer,
+			VulkanMesh* screenPlane,
+			VulkanTexture* pos, 
+			VulkanSampler* gbuffer_sampler);
 		~VulkanShadowmapping();
 	
 		void SetCamera(Camera* cam) {
@@ -91,5 +105,8 @@ namespace VSGE {
 		
 		void ProcessShadowCaster(uint32 casterIndex);
 		void ExecuteShadowCaster(uint32 casterIndex, VulkanSemaphore* begin = nullptr, VulkanSemaphore* end = nullptr);
+		
+		void RecordShadowProcessingCmdbuf();
+		void RenderShadows(VulkanSemaphore* begin, VulkanSemaphore* end);
 	};
 }

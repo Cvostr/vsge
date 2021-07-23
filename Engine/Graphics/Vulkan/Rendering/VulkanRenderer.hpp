@@ -38,6 +38,7 @@ namespace VSGE {
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
 		VulkanSemaphore* mShadowmappingEndSemaphore;
+		VulkanSemaphore* mShadowprocessingEndSemaphore;
 		VulkanSemaphore* mGBufferSemaphore;
 		VulkanSemaphore* mEndSemaphore;
 

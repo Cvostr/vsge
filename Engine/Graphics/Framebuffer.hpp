@@ -45,6 +45,10 @@ namespace VSGE {
 		Texture** GetColorAttachments() {
 			return _attachments.data();
 		}
+
+		Texture* GetDepthAttachment() {
+			return mDepthAttachment;
+		}
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
 		/// </summary>

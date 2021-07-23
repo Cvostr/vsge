@@ -6,7 +6,7 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-5.55454874, -0.701772869, 6.66112757]
+    pos: [-11.4810772, -0.925918102, 8.71854305]
     scale: [2, 2, 2]
     rot: [0, 0, 0, 1]
     components:
@@ -33,7 +33,7 @@ Entities:
         friction: 0.5
   - Entity: Spot Light
     uid: [93048231, 4031508709, 3817562668, 694735480]
-    active: true
+    active: false
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]

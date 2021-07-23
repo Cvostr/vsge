@@ -99,6 +99,8 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     VkPhysicalDeviceFeatures features = {};
     features.geometryShader = true;
     features.multiViewport = true;
+    features.shaderSampledImageArrayDynamicIndexing = true;
+    features.imageCubeArray = true;
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT eds_features = {};
     eds_features.extendedDynamicState = true;
 
