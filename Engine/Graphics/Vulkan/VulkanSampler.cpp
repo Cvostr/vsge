@@ -45,7 +45,7 @@ bool VulkanSampler::Create() {
 	samplerInfo.anisotropyEnable = (mMaxAnisotropy > 1.f);
 	samplerInfo.maxAnisotropy = mMaxAnisotropy;
 
-	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_WHITE;
+	samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 

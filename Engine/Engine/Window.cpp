@@ -89,6 +89,10 @@ KeyCode GetKeyCode(int sdl_code) {
         return KEY_CODE_RALT;
     case SDLK_BACKSPACE:
         return KEY_CODE_BACKSPACE;
+    case SDLK_SPACE:
+        return KEY_CODE_SPACE;
+    case SDLK_ESCAPE:
+        return KEY_CODE_ESCAPE;
 
     case SDLK_UP:
         return KEY_CODE_UP;

@@ -81,7 +81,7 @@ void VulkanRenderer::SetupRenderer() {
 	
 	//---------------------Buffers--------------------------------
 	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mCameraShaderBuffer->Create(MAX_CAMERAS * UNI_ALIGN, LOCATION_GPU);
+	mCameraShaderBuffer->Create(MAX_CAMERAS * UNI_ALIGN);
 
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN);
@@ -522,6 +522,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	cam->UpdateMatrices();
 	mCameraShaderBuffer->WriteData(0, sizeof(Mat4), (void*)&cam->GetProjectionViewMatrix());
+	mCameraShaderBuffer->WriteData(sizeof(Mat4), sizeof(Vec3), (void*)&cam->GetPosition());
 
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
 		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();

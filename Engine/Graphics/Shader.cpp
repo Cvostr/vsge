@@ -41,7 +41,7 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 	std::ifstream bundle_stream;
 	std::ifstream map_stream;
 
-	map_stream.open(map_path);
+	map_stream.open(map_path, std::ifstream::binary);
 
 	if (map_stream.fail())
 	{

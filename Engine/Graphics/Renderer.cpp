@@ -53,7 +53,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 			HasMaterial = false;
 	}
 
-	if (HasMaterial && HasMesh) {
+	if (HasMaterial && HasMesh && !hasParticleEmitter) {
 		_entitiesToRender.push_back(entity);
 	}
 

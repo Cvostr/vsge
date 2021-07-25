@@ -121,8 +121,7 @@ Mat4 GetViewRH(const Vec3& eye, const Vec3& center, const Vec3& up) {
 }
 Mat4 GetViewLH(const Vec3& center, const Vec3& eye, const Vec3& up) {
 	Vec3 f = (center - eye).GetNormalized();
-	Vec3 s = up;
-	s = s.Cross(f).GetNormalized();
+	Vec3 s = up.Cross(f).GetNormalized();
 	Vec3 u = f.Cross(s);
 
 	Mat4 Result(1);

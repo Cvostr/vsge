@@ -176,8 +176,8 @@ void VulkanDescriptorSet::WriteDescriptorImages(
     descriptorWrite.descriptorType = DescrType;
     descriptorWrite.descriptorCount = textures_count;
     descriptorWrite.pBufferInfo = nullptr;
-    descriptorWrite.pImageInfo = imageInfos.data(); // Optional
-    descriptorWrite.pTexelBufferView = nullptr; // Optional
+    descriptorWrite.pImageInfo = imageInfos.data();
+    descriptorWrite.pTexelBufferView = nullptr;
 
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();

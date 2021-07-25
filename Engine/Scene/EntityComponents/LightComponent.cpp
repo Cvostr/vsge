@@ -173,12 +173,11 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 	if (_castShadows) {
 		result = new Mat4[_shadowsCascadesCount];
 		for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
-
-			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * static_cast<float>(sizes[i]);
-			Mat4 matview = GetViewRH(cam_pos, cam_pos + direction, Vec3(0, 1, 0));
-
 			float w = sizes[i];
-			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, 0.1f, 100.f);
+			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
+			Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
+
+			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -30.f, 85.f);
 			projectionMat.Values[1][1] *= -1;
 
 			result[i] = matview * projectionMat;
@@ -188,26 +187,6 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 }
 
 Vec3 LightsourceComponent::GetDirection() {
-	Vec3 euler_rotation = _entity->GetAbsoluteRotation().GetEulerAngles();
-	euler_rotation *= (3.14159265f / 180.f);
-
-	float yaw = euler_rotation.y;
-	float pitch = euler_rotation.x;
-	float roll = euler_rotation.z;
-
-	Vec3 result;
-	float cy = cosf(yaw * 0.5f);
-	float sy = sinf(yaw * 0.5f);
-	float cr = cosf(roll * 0.5f);
-	float sr = sinf(roll * 0.5f);
-	float cp = cosf(pitch * 0.5f);
-	float sp = sinf(pitch * 0.5f);
-
-	result.z = (cy * sr * cp - sy * cr * sp);
-	result.x = (cy * cr * sp + sy * sr * cp);
-	result.y = (sy * cr * cp - cy * sr * sp);
-
-	return result.GetNormalized();
-	//Quat rotation = _entity->GetAbsoluteRotation();
-	//return Vec3(rotation.x, rotation.y, rotation.z).GetNormalized();
+	Quat rotation = _entity->GetAbsoluteRotation();
+	return Vec3(rotation.x, rotation.y, rotation.z).GetNormalized();
 }

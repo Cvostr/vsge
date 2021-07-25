@@ -96,6 +96,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowmapPipeline = new VulkanPipeline;
 	_shadowmapPipeline->SetDepthTest(true);
+	//_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
 
 	//-------------------------SHADOW PROCESS -----------------------------
@@ -126,7 +127,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowmap_sampler = new VulkanSampler;
 	_shadowmap_sampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
-	_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER);
+	_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
 	_shadowmap_sampler->Create();
 
 	//--------------SHADOW PROCESS CMDBUF
