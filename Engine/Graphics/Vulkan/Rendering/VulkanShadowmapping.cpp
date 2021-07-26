@@ -40,10 +40,6 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	shadowmap_vertex_layout.AddBinding(sizeof(Vertex));
 	shadowmap_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	shadowmap_vertex_layout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
-	shadowmap_vertex_layout.AddItem(2, offsetof(Vertex, normal), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	shadowmap_vertex_layout.AddItem(3, offsetof(Vertex, tangent), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	shadowmap_vertex_layout.AddItem(4, offsetof(Vertex, bitangent), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
 	shadowmap_vertex_layout.AddBinding(sizeof(VertexSkinningData));
 	shadowmap_vertex_layout.AddItem(5, offsetof(VertexSkinningData, ids), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
@@ -96,7 +92,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowmapPipeline = new VulkanPipeline;
 	_shadowmapPipeline->SetDepthTest(true);
-	//_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+	_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
 
 	//-------------------------SHADOW PROCESS -----------------------------
@@ -127,7 +123,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowmap_sampler = new VulkanSampler;
 	_shadowmap_sampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
-	_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
+	_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER);
+	_shadowmap_sampler->SetBorderColor(BORDER_COLOR_OPAQUE_WHITE);
 	_shadowmap_sampler->Create();
 
 	//--------------SHADOW PROCESS CMDBUF

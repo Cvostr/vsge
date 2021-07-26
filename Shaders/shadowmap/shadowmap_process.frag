@@ -29,17 +29,17 @@ layout (std140, binding = 2) uniform CamMatrices{
 
 layout(binding = 3) uniform sampler2DArray shadowmaps[64];
 
-float sizes[] = { 40, 100, 160, 260, 320, 380 };
+float sizes[] = { 40, 100, 160, 260, 320, 380, 460, 540 };
 
-int GetCascade(float dist){
-    for(int i = 0; i < 6; i ++){
+uint GetCascade(float dist){
+    for(uint i = 0; i < 8; i ++){
         if(dist < (sizes[i] - 2))
             return i;
     }
     return 0;
 }
 
-float GetShadowmapSample(uint shadowmap, int cascade, vec2 uv){
+float GetShadowmapSample(uint shadowmap, uint cascade, vec2 uv){
     return texture(shadowmaps[shadowmap], vec3(uv, cascade)).r; 
 }
 
@@ -47,10 +47,13 @@ void main(){
   vec3 FragPos = texture(gpos, UVCoord).xyz;
 
   float dist = length(FragPos - cam_position);
-  int cascade = GetCascade(dist);
   float result = 0;
 
   for(uint caster_i = 0; caster_i < casters_count; caster_i ++){
+    uint cascade = GetCascade(dist);
+    if((cascade + 1) > casters[caster_i].CascadesNum)
+        continue;
+
     vec4 objPosLightSpace = casters[caster_i].projections[cascade] * vec4(FragPos, 1);
     vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
     float realDepth = shadowProjection.z;
@@ -58,10 +61,7 @@ void main(){
 
     for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
         for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
-            vec2 offset = vec2(x, y);
-
-            offset.x /= casters[caster_i].ShadowmapSize;
-            offset.y /= casters[caster_i].ShadowmapSize;
+            vec2 offset = vec2(x, y) / casters[caster_i].ShadowmapSize;
 
             vec2 uvoffset = (shadowProjection.xy / 2) + 0.5 + offset;
             float shadowmap_depth = GetShadowmapSample(caster_i, cascade, uvoffset);

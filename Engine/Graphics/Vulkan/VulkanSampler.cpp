@@ -29,23 +29,36 @@ VkSamplerAddressMode GetSamplerWrapMode(TextureWrapMode TWM) {
 	return result;
 }
 
+VkBorderColor GetBorderColor(BorderColor bc) {
+	VkBorderColor result = VK_BORDER_COLOR_MAX_ENUM;
+
+	if (bc == BORDER_COLOR_OPAQUE_WHITE)
+		result = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+	if (bc == BORDER_COLOR_OPAQUE_BLACK)
+		result = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+	if (bc == BORDER_COLOR_TRANSPARENT_BLACK)
+		result = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+
+	return result;
+}
+
 bool VulkanSampler::Create() {
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();
 
 	VkSamplerCreateInfo samplerInfo{};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	samplerInfo.magFilter = GetSamplerFilterGL(mMagFiltering);
-	samplerInfo.minFilter = GetSamplerFilterGL(mMinFiltering);
+	samplerInfo.magFilter = GetSamplerFilterGL(_magFiltering);
+	samplerInfo.minFilter = GetSamplerFilterGL(_minFiltering);
 
-	samplerInfo.addressModeU = GetSamplerWrapMode(mWrapU);
-	samplerInfo.addressModeV = GetSamplerWrapMode(mWrapV);
-	samplerInfo.addressModeW = GetSamplerWrapMode(mWrapW);
+	samplerInfo.addressModeU = GetSamplerWrapMode(_wrapU);
+	samplerInfo.addressModeV = GetSamplerWrapMode(_wrapV);
+	samplerInfo.addressModeW = GetSamplerWrapMode(_wrapW);
 
-	samplerInfo.anisotropyEnable = (mMaxAnisotropy > 1.f);
-	samplerInfo.maxAnisotropy = mMaxAnisotropy;
+	samplerInfo.anisotropyEnable = (_maxAnisotropy > 1.f);
+	samplerInfo.maxAnisotropy = _maxAnisotropy;
 
-	samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+	samplerInfo.borderColor = GetBorderColor(_borderColor);
 
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
@@ -57,7 +70,7 @@ bool VulkanSampler::Create() {
 	samplerInfo.minLod = 0.0f;
 	samplerInfo.maxLod = 0.0f;
 
-	if (vkCreateSampler(device->getVkDevice(), &samplerInfo, nullptr, &this->mSampler)) {
+	if (vkCreateSampler(device->getVkDevice(), &samplerInfo, nullptr, &this->_sampler)) {
 		return false;
 	}
 
@@ -70,7 +83,7 @@ void VulkanSampler::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan->GetDevice();
-		vkDestroySampler(device->getVkDevice(), mSampler, nullptr);
+		vkDestroySampler(device->getVkDevice(), _sampler, nullptr);
 		mCreated = false;
 	}
 }

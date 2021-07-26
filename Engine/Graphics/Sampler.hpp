@@ -19,54 +19,61 @@ namespace VSGE {
 	};
 
 	enum BorderColor {
-		BORDER_COLOR_WHITE,
-		BORDER_COLOR_BLACK
+		BORDER_COLOR_OPAQUE_WHITE,
+		BORDER_COLOR_OPAQUE_BLACK,
+		BORDER_COLOR_TRANSPARENT_BLACK
 	};
 
 	class TextureSampler : public IGpuObject {
 	protected:
-		TextureFilteringMode mMinFiltering;
-		TextureFilteringMode mMagFiltering;
+		TextureFilteringMode _minFiltering;
+		TextureFilteringMode _magFiltering;
 
-		TextureWrapMode mWrapU;
-		TextureWrapMode mWrapV;
-		TextureWrapMode mWrapW;
+		TextureWrapMode _wrapU;
+		TextureWrapMode _wrapV;
+		TextureWrapMode _wrapW;
 
-		BorderColor mBorderColor;
+		BorderColor _borderColor;
 
-		float mMaxAnisotropy;
+		float _maxAnisotropy;
 	public:
 
 		void SetFilteringModes(TextureFilteringMode MinFilter,
 			TextureFilteringMode MagFilter)
 		{
-			mMinFiltering = MinFilter;
-			mMagFiltering = MagFilter;
+			_minFiltering = MinFilter;
+			_magFiltering = MagFilter;
 		}
 
 		void SetWrapModes(TextureWrapMode WrapU, TextureWrapMode WrapV, TextureWrapMode WrapW = SAMPLER_WRAP_NONE) {
-			mWrapU = WrapU;
-			mWrapV = WrapV;
+			_wrapU = WrapU;
+			_wrapV = WrapV;
 
 			if (WrapW != SAMPLER_WRAP_NONE)
-				mWrapW = WrapW;
+				_wrapW = WrapW;
 		}
 
 		void SetMaxAnisotropy(float Anisotropy) {
-			mMaxAnisotropy = Anisotropy;
+			_maxAnisotropy = Anisotropy;
+		}
+
+		void SetBorderColor(BorderColor borderColor) {
+			_borderColor = borderColor;
 		}
 
 		virtual bool Create() = 0;
 
 		explicit TextureSampler() :
-			mMinFiltering(SAMPLER_FILTERING_LINEAR),
-			mMagFiltering(SAMPLER_FILTERING_LINEAR),
+			_minFiltering(SAMPLER_FILTERING_LINEAR),
+			_magFiltering(SAMPLER_FILTERING_LINEAR),
 
-			mWrapU(SAMPLER_WRAP_REPEAT),
-			mWrapV(SAMPLER_WRAP_REPEAT),
-			mWrapW(SAMPLER_WRAP_REPEAT),
+			_wrapU(SAMPLER_WRAP_REPEAT),
+			_wrapV(SAMPLER_WRAP_REPEAT),
+			_wrapW(SAMPLER_WRAP_REPEAT),
 
-			mMaxAnisotropy(1.f)
+			_borderColor(BORDER_COLOR_OPAQUE_BLACK),
+
+			_maxAnisotropy(1.f)
 
 		{}
 	};

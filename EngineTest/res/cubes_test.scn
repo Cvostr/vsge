@@ -8,7 +8,7 @@ Entities:
     parent: [0, 0, 0, 0]
     pos: [-31.4219761, -0.925918102, 8.71854305]
     scale: [2, 2, 2]
-    rot: [0, 0, 0, 1]
+    rot: [0, 0.499091506, 0, 0.866546988]
     components:
       - Component: 3
         mesh: Cube
@@ -54,8 +54,8 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [0, -8.77754211, 0.29228735]
-    scale: [66.77285, 1, 85.5415573]
+    pos: [0, -8.77754211, 9.38389587]
+    scale: [66.77285, 1, 80]
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
@@ -175,7 +175,7 @@ Entities:
         shadowStrength: 0.600000024
         shadowBias: 0.00499999989
         pcf: 8
-        cascades: 4
+        cascades: 3
   - Entity: RootNode
     uid: [186694011, 1344920229, 3883134295, 1663786131]
     active: true

@@ -166,7 +166,7 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 }
 
 Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
-	int sizes[] = { 20, 50, 80, 130, 160, 190 };
+	int sizes[] = { 20, 50, 80, 130, 160, 190, 230, 270 };
 	Vec3 direction = GetDirection();
 
 	Mat4* result = nullptr;
@@ -177,7 +177,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
 			Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
 
-			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -30.f, 85.f);
+			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -40.f, 85.f);
 			projectionMat.Values[1][1] *= -1;
 
 			result[i] = matview * projectionMat;

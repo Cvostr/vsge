@@ -30,6 +30,10 @@ namespace VSGEditor {
 			int cursory;
 
 			bool isLCrtlHold;
+
+			inp_state() {
+				isLCrtlHold = false;
+			}
 		}InputState;
 
 		std::string _openedSceneFile;

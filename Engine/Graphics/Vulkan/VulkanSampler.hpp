@@ -6,16 +6,16 @@
 namespace VSGE {
 	class VulkanSampler : public TextureSampler {
 	private:
-		VkSampler mSampler;
+		VkSampler _sampler;
 	public:
-		VkSampler GetSampler() { return mSampler; }
+		VkSampler GetSampler() { return _sampler; }
 
 		bool Create();
 
 		void Destroy();
 
 		VulkanSampler() :
-			mSampler(VK_NULL_HANDLE)
+			_sampler(VK_NULL_HANDLE)
 		{}
 
 		~VulkanSampler() {
