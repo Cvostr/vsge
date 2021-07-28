@@ -10,7 +10,7 @@ using namespace VSGE;
 
 MaterialTemplateCache* MaterialTemplateCache::_this = nullptr;
 
-MaterialTemplateCache cache;
+MaterialTemplateCache template_cache;
 
 MaterialTemplate::MaterialTemplate() :
 	_shader(nullptr),

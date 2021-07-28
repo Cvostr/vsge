@@ -57,7 +57,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/libfreetype.a)
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/openal/libcommon.a)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/openal/libopenal.a)
 
 
 target_link_libraries(Editor ${CMAKE_DL_LIBS})
