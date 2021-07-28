@@ -15,32 +15,19 @@ namespace VSGE {
         uint32 _verticesAffected;
     public:
 
-        uint32 GetAffectedVerticesCount() { return _verticesAffected; }
+        uint32 GetAffectedVerticesCount();
 
-        void SetOffsetMatrix(const Mat4& offsetMatrix){
-            _offsetMatrix = offsetMatrix;
-        }
+        void SetOffsetMatrix(const Mat4& offsetMatrix);
 
-        const Mat4& GetOffsetMatrix() { return _offsetMatrix; }
+        const Mat4& GetOffsetMatrix();
 
-        const std::string GetName() { return _boneName; }
+        const std::string GetName();
 
-        Bone() :
-            _boneName(""),
-            _verticesAffected(0)
-        {
+        Bone();
 
-        }
+        Bone(const std::string& name, uint32 vertices);
 
-        Bone(const std::string& name, uint32 vertices) :
-            _boneName(name),
-            _verticesAffected(vertices)
-        {}
-
-        Bone(const std::string& name) :
-            _boneName(name),
-            _verticesAffected(0)
-        {}
+        Bone(const std::string& name);
     };
 
     typedef std::vector<Bone> tBonesList;

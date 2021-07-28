@@ -36,8 +36,7 @@ bool VSGEditor::getSizes(std::string file_path, unsigned int* meshes, unsigned i
 
 
 void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
-    const char* mnam = mesh->mName.C_Str();
-    mesh_ptr->meshName = std::string(mnam);
+    mesh_ptr->meshName = std::string(mesh->mName.C_Str());
 
     mesh_ptr->vertexCount = mesh->mNumVertices;
     mesh_ptr->indexCount = mesh->mNumFaces * 3;

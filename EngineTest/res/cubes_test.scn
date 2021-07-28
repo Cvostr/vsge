@@ -1502,3 +1502,44 @@ Entities:
         mesh: Mesh
       - Component: 2
         material: material
+  - Entity: Tree
+    uid: [2650036101, 648505759, 56455176, 2644870154]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, -8.00707817, 0]
+    scale: [0.150000036, 0.150000036, 0.150000036]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 4
+        anims:
+          []
+  - Entity: branch
+    uid: [2404734921, 4023633027, 3041271742, 1349763118]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [2650036101, 648505759, 56455176, 2644870154]
+    pos: [0, 0, 0]
+    scale: [200, 199.999985, 199.999985]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: tree.003
+      - Component: 2
+        material: Default Material
+  - Entity: leaves
+    uid: [3768621815, 845007772, 3663989013, 546752271]
+    active: false
+    static: false
+    view_mask: 18446744073709551615
+    parent: [2650036101, 648505759, 56455176, 2644870154]
+    pos: [0, 0, 0]
+    scale: [200, 199.999985, 199.999985]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: tree.002
+      - Component: 2
+        material: Default Material

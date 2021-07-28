@@ -36,45 +36,29 @@ namespace VSGE {
 		BorderColor _borderColor;
 
 		float _maxAnisotropy;
+
+		float _minLod;
+		float _maxLod;
+		float _mipLodBias;
 	public:
 
 		void SetFilteringModes(TextureFilteringMode MinFilter,
-			TextureFilteringMode MagFilter)
-		{
-			_minFiltering = MinFilter;
-			_magFiltering = MagFilter;
-		}
+			TextureFilteringMode MagFilter);
 
-		void SetWrapModes(TextureWrapMode WrapU, TextureWrapMode WrapV, TextureWrapMode WrapW = SAMPLER_WRAP_NONE) {
-			_wrapU = WrapU;
-			_wrapV = WrapV;
+		void SetWrapModes(TextureWrapMode WrapU,
+						  TextureWrapMode WrapV, 
+						  TextureWrapMode WrapW = SAMPLER_WRAP_NONE);
 
-			if (WrapW != SAMPLER_WRAP_NONE)
-				_wrapW = WrapW;
-		}
+		void SetMaxAnisotropy(float Anisotropy);
 
-		void SetMaxAnisotropy(float Anisotropy) {
-			_maxAnisotropy = Anisotropy;
-		}
+		void SetLodsRanges(float minLOD, float maxLOD);
 
-		void SetBorderColor(BorderColor borderColor) {
-			_borderColor = borderColor;
-		}
+		void SetBorderColor(BorderColor borderColor);
+
+		void SetMipLodBias(float lod_bias);
 
 		virtual bool Create() = 0;
 
-		explicit TextureSampler() :
-			_minFiltering(SAMPLER_FILTERING_LINEAR),
-			_magFiltering(SAMPLER_FILTERING_LINEAR),
-
-			_wrapU(SAMPLER_WRAP_REPEAT),
-			_wrapV(SAMPLER_WRAP_REPEAT),
-			_wrapW(SAMPLER_WRAP_REPEAT),
-
-			_borderColor(BORDER_COLOR_OPAQUE_BLACK),
-
-			_maxAnisotropy(1.f)
-
-		{}
+		explicit TextureSampler();
 	};
 }

@@ -66,9 +66,9 @@ bool VulkanSampler::Create() {
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-	samplerInfo.mipLodBias = 0.0f;
-	samplerInfo.minLod = 0.0f;
-	samplerInfo.maxLod = 0.0f;
+	samplerInfo.mipLodBias = _mipLodBias;
+	samplerInfo.minLod = _minLod;
+	samplerInfo.maxLod = _maxLod;
 
 	if (vkCreateSampler(device->getVkDevice(), &samplerInfo, nullptr, &this->_sampler)) {
 		return false;

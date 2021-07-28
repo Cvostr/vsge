@@ -25,7 +25,7 @@ void VSGE::BindScene() {
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void AddChild(Entity@)", asMETHODPR(Entity, AddChild, (Entity*, bool), void), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void RemoveChild(Entity@)", asMETHODPR(Entity, RemoveChild, (Entity*), void), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "void SetViewMask(uint64)", asMETHOD(Entity, SetViewMask), asCALL_THISCALL);
-	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "uint64 GetViewMask()", asMETHOD(Entity, GetViewMask), asCALL_THISCALL);
+	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "uint64 GetViewMask() const", asMETHOD(Entity, GetViewMask), asCALL_THISCALL);
 	
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "const Vec3& GetPosition() const", asMETHOD(Entity, GetPosition), asCALL_THISCALL);
 	layer->RegisterObjectMethod(ENTITY_TYPE_NAME, "const Vec3& GetScale() const", asMETHOD(Entity, GetScale), asCALL_THISCALL);
