@@ -30,7 +30,7 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 }
 
 template<>
-struct convert<Vec3>
+struct YAML::convert<Vec3>
 {
 	static Node encode(const Vec3& rhs)
 	{
@@ -55,7 +55,7 @@ struct convert<Vec3>
 };
 
 template<>
-struct convert<Vec2>
+struct YAML::convert<Vec2>
 {
 	static Node encode(const Vec2& rhs)
 	{

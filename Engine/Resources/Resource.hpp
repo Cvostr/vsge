@@ -174,7 +174,7 @@ namespace VSGE {
 
 		Resource* GetResource();
 
-		const std::string& GetResourceName();
+		const std::string& GetResourceName() const;
 
 		void SetResource(const std::string& resourceName);
 

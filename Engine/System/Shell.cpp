@@ -1,13 +1,14 @@
 #include "Shell.hpp"
 #include <iostream>
 #include <array>
+#include <memory>
 #include <cstdio>
 #include <Core/Logger.hpp>
 
 using namespace VSGE;
 
 std::string VSGE::ExecuteShellCommand(const std::string& command) {
-    std::array<char, 1024> buffer;
+    /*std::array<char, 1024> buffer;
     const char* cmd = command.c_str();
     std::string result;
     const std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
@@ -22,5 +23,6 @@ std::string VSGE::ExecuteShellCommand(const std::string& command) {
         result += buffer.data();
     }
 
-    return result;
+    return result;*/
+	return "";
 }

@@ -7,7 +7,7 @@ using namespace YAML;
 
 
 	template<>
-	struct convert<VSGE::Guid>
+	struct YAML::convert<VSGE::Guid>
 	{
 		static Node encode(const Guid& rhs)
 		{
@@ -34,7 +34,7 @@ using namespace YAML;
 	};
 
 	template<>
-	struct convert<Vec3>
+	struct YAML::convert<Vec3>
 	{
 		static Node encode(const Vec3& rhs)
 		{
@@ -59,7 +59,7 @@ using namespace YAML;
 	};
 
 	template<>
-	struct convert<Quat>
+	struct YAML::convert<Quat>
 	{
 		static Node encode(const Quat& rhs)
 		{

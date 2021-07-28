@@ -52,8 +52,13 @@ ENDIF()
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/glew/libGLEW.a)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/angelscript/libangelscript.a)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/libfreetype.a)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/openal/libcommon.a)
+
 
 target_link_libraries(Editor ${CMAKE_DL_LIBS})
 target_link_libraries(Editor pthread)

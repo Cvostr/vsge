@@ -105,7 +105,7 @@ void AnimatorComponent::Serialize(YAML::Emitter& e) {
 }
 void AnimatorComponent::Deserialize(YAML::Node& entity) {
     YAML::Node anims = entity["anims"];
-    for (auto& anim : anims) {
+    for (const auto& anim : anims) {
         std::string resource_name = anim["resource"].as<std::string>();
         float coeff = anim["coeff"].as<float>();
 
@@ -121,8 +121,9 @@ void AnimatorComponent::Serialize(ByteSerialize& serializer) {
     uint32 anims_count = _animations.size();
     serializer.Serialize(anims_count);
 
-    for (auto& anim : _animations) {
-        serializer.Serialize(anim._animResource.GetResourceName());
+    for (const auto& anim : _animations) {
+		std::string anim_res_name = anim._animResource.GetResourceName();
+        serializer.Serialize(anim_res_name);
         serializer.Serialize(anim.coeff);
     }
 }

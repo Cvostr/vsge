@@ -14,9 +14,7 @@ add_library (ImGui ${SRC_FILES} ${HEADER_FILES})
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
-target_link_libraries(ImGui ${STATIC_LIBS_DIR}/glew/libGLEW.a)
-
-target_link_libraries(ImGui GL)
-target_link_libraries(ImGui ${GLEW_LIBRARIES})
+target_link_libraries(ImGui ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
+target_link_libraries(ImGui ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)
 
 ENDIF()

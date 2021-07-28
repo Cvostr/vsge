@@ -70,7 +70,7 @@ namespace VSGE {
 		/// Set new guid to entity
 		/// </summary>
 		/// <param name="id"></param>
-		void SetGuid(Guid& id);
+		void SetGuid(const Guid& id);
 		/// <summary>
 		/// Stores pointer to scene in entity class
 		/// </summary>

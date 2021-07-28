@@ -12,7 +12,7 @@ const Guid& Entity::GetGuid() const {
 	return _id; 
 }
 
-void Entity::SetGuid(Guid& id) { 
+void Entity::SetGuid(const Guid& id) { 
 	_id = id; 
 }
 

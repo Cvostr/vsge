@@ -146,7 +146,7 @@ void ColliderComponent::Serialize(YAML::Emitter& e) {
 }
 
 template<>
-struct convert<Vec3>
+struct YAML::convert<Vec3>
 {
 	static Node encode(const Vec3& rhs)
 	{

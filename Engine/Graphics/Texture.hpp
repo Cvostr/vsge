@@ -60,7 +60,7 @@ namespace VSGE {
         }
         bool IsRenderTarget() { return _isRenderTarget; }
 
-        bool SetCubemap(bool cubemap) { _isCubemap = cubemap; }
+        void SetCubemap(bool cubemap) { _isCubemap = cubemap; }
 
         bool IsCubemap() { return _isCubemap; }
 

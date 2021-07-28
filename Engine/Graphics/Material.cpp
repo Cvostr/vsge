@@ -4,6 +4,7 @@
 #include <Core/ByteSolver.hpp>
 #include <Core/Logger.hpp>
 #include <fstream>
+#include "string.h"
 
 using namespace VSGE;
 
@@ -114,6 +115,17 @@ MaterialTemplate* MaterialTemplateCache::GetTemplate(const std::string& name) {
 		}
 	}
 	return nullptr;
+}
+
+Material::Material() :
+			_template(nullptr),
+			_paramsDirty(true),
+			_texturesDirty(true),
+			_descriptors(nullptr)
+		{}
+
+Material::~Material() {
+	SAFE_RELEASE(_descriptors);
 }
 
 void Material::SetTemplate(MaterialTemplate* mat_template) {

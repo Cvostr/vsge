@@ -43,7 +43,7 @@ ENDIF()
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
-target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/glew/libGLEW.a)
+target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
 target_link_libraries(EngineTest ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 
 target_link_libraries(EngineTest ${CMAKE_DL_LIBS})

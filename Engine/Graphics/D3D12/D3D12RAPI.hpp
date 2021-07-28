@@ -4,7 +4,7 @@
 #include "D3D12Device.hpp"
 #include "D3D12SwapChain.hpp"
 
-
+#ifdef _WIN32
 namespace VSGE {
 	class D3D12RAPI : public IRenderingAPI {
 	private:
@@ -33,3 +33,4 @@ namespace VSGE {
 		}
 	};
 }
+#endif

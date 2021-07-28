@@ -46,7 +46,7 @@ Resource* ResourceReference::GetResource() {
 	return _resourcePointer;
 }
 
-const std::string& ResourceReference::GetResourceName() {
+const std::string& ResourceReference::GetResourceName() const {
 	return _resourceName;
 }
 

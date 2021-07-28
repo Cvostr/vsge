@@ -212,8 +212,12 @@ void VSGE::Window::DestroyWindow() {
 }
 
 void* VSGE::Window::GetHWND() {
+	void* result = nullptr;
+#ifdef _WIN32
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
     SDL_GetWindowWMInfo(this->mWindow, &wmInfo);
-    return wmInfo.info.win.window;
+	result = wmInfo.info.win.window;
+#endif
+    return result;
 }

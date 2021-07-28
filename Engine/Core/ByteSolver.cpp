@@ -1,9 +1,10 @@
 #include "ByteSolver.hpp"
+#include "string.h"
 
 using namespace VSGE;
 
 void ByteSolver::Copy(void* dest, uint32 size) {
-	std::memcpy(dest, mBytes + mOffset, size);
+	memcpy(dest, mBytes + mOffset, size);
 	mOffset += size;
 }
 

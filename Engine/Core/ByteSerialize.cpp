@@ -1,5 +1,6 @@
 #include "ByteSerialize.hpp"
 #include <string>
+#include "string.h"
 
 using namespace VSGE;
 

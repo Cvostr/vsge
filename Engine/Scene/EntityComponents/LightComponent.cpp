@@ -7,7 +7,7 @@ using namespace VSGE;
 using namespace YAML;
 
 template<>
-struct convert<VSGE::Color>
+struct YAML::convert<VSGE::Color>
 {
 	static Node encode(const Color& rhs)
 	{

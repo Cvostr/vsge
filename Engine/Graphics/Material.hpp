@@ -139,16 +139,9 @@ namespace VSGE {
 		bool _paramsDirty;
 		bool _texturesDirty;
 
-		Material() :
-			_template(nullptr),
-			_paramsDirty(true),
-			_texturesDirty(true),
-			_descriptors(nullptr)
-		{}
+		Material();
 
-		~Material() {
-			SAFE_RELEASE(_descriptors);
-		}
+		~Material();
 
 		/// <summary>
 		/// Get vector of textures
