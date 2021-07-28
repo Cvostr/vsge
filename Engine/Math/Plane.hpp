@@ -31,19 +31,15 @@ namespace VSGE {
 		float Distance(const Vec3& point) const;
 		
 		float GetD() const;
-		const Vec3& Plane::GetNormal() const;
+		const Vec3& GetNormal() const;
 
-		void SetNormal(const Vec3& normal) {
-			_normal = normal;
-		}
+		void SetNormal(const Vec3& normal);
 
-		void SetD(float d) {
-			_d = d;
-		}
+		void SetD(float d);
 
 		void Normalize();
 
-		Mat4 GetReflectionMatrix();
+		Mat4 GetReflectionMatrix() const;
 
 		void Create(const Vec3& Normal, const Vec3& Point);
 		void Create(const Vec3& v1, const Vec3& v2, const Vec3& v3);

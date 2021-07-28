@@ -121,22 +121,22 @@ Vec3 Quat::GetEulerAngles() const {
     Vec3 v;
 
     if (test > 0.4995f * unit) { // singularity at north pole
-        v.y = 2.f * std::atan2f(y, x);
+        v.y = 2.f * atan2(y, x);
         v.x = PI_FLOAT / 2;
         v.z = 0;
         return NormalizeAngles(v * RAD_TO_DEG);
     }
     if (test < -0.4995f * unit) { // singularity at south pole
-        v.y = -2.f * std::atan2f(y, x);
+        v.y = -2.f * atan2(y, x);
         v.x = -PI_FLOAT / 2;
         v.z = 0;
         return NormalizeAngles(v * RAD_TO_DEG);
     }
 
     Quat q = Quat(w, z, x, y);
-    v.y = std::atan2f(2.f * q.x * q.w + 2.f * q.y * q.z, 1 - 2.f * (q.z * q.z + q.w * q.w));     // Yaw
-    v.x = std::asin(2.f * (q.x * q.z - q.w * q.y));                             // Pitch
-    v.z = std::atan2f(2.f * q.x * q.y + 2.f * q.z * q.w, 1 - 2.f * (q.y * q.y + q.z * q.z));      // Roll
+    v.y = atan2(2.f * q.x * q.w + 2.f * q.y * q.z, 1 - 2.f * (q.z * q.z + q.w * q.w));     // Yaw
+    v.x = asin(2.f * (q.x * q.z - q.w * q.y));                             // Pitch
+    v.z = atan2(2.f * q.x * q.y + 2.f * q.z * q.w, 1 - 2.f * (q.y * q.y + q.z * q.z));      // Roll
 
     return NormalizeAngles(v * RAD_TO_DEG);
 }

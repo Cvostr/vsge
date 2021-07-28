@@ -1,6 +1,7 @@
 #include "ModelParser.hpp"
 #include <Core/ByteSolver.hpp>
 #include <fstream>
+#include "string.h"
 
 using namespace VSGE;
 
@@ -264,10 +265,10 @@ void SceneFileExport::write(std::string output_file) {
     }
     
     std::ofstream stream(output_file, std::ios::binary);
-
     stream.write((const char*)serializer->GetBytes(), serializer->GetSerializedSize());
-
     stream.close();
+
+    delete serializer;
 }
 
 void SceneFileExport::writeNode(ByteSerialize* stream, SceneNode* node) {

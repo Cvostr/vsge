@@ -11,6 +11,15 @@ const Vec3& Plane::GetNormal() const {
 float Plane::GetD() const { 
 	return _d; 
 }
+
+void Plane::SetNormal(const Vec3& normal) {
+	_normal = normal;
+}
+
+void Plane::SetD(float d) {
+	_d = d;
+}
+
 void Plane::Create(const Vec3& Normal, float D) {
 	_normal = Normal.GetNormalized();
 	_d = D;
@@ -37,7 +46,7 @@ void Plane::Normalize() {
 	_d = _d / mag;
 }
 
-Mat4 Plane::GetReflectionMatrix() {
+Mat4 Plane::GetReflectionMatrix() const {
 	Mat4 out = Mat4(1);
 
 	float A = _normal.x;

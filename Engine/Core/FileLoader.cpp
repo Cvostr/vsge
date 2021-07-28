@@ -2,6 +2,7 @@
 #include "FileLoader.hpp"
 #include "Logger.hpp"
 #include "stdio.h"
+#include "string.h"
 
 bool VSGE::LoadFile(const std::string& FilePath, char** out, uint32* Size, bool Terminate) {
 	//Try to open file with read binary

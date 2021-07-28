@@ -3,6 +3,8 @@
 
 using namespace VSGE;
 
+#ifdef _WIN32
+
 D3D12RAPI* D3D12RAPI::_this = 0;
 
 void D3D12RAPI::Create(Window* window) {
@@ -17,3 +19,5 @@ void D3D12RAPI::Create(Window* window) {
 void D3D12RAPI::Destroy() {
 
 }
+
+#endif

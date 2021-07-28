@@ -25,6 +25,10 @@ namespace VSGE {
 		/// <param name="data">- pointer to data to write</param>
 		/// <param name="size">- size of data to write</param>
 		void WriteBytes(void* data, uint32 size);
+
+		void WriteBytes(const void* data, uint32 size) {
+			WriteBytes((void*)data, size);
+		}
 		/// <summary>
 		/// Write string
 		/// </summary>

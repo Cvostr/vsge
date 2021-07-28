@@ -53,7 +53,7 @@ void AudioLayer::OnDetach() {
 	alcMakeContextCurrent(nullptr);
 	if (_openal_context) {
 		alcDestroyContext(_openal_context);
-		_openal_context = false;
+		_openal_context = nullptr;
 	}
 	if (_openal_device) {
 		alcCloseDevice(_openal_device);

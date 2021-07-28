@@ -1,6 +1,7 @@
 #include "AnimationParser.hpp"
 #include <Core/ByteSolver.hpp>
 #include <fstream>
+#include "string.h"
 
 using namespace VSGE;
 
@@ -41,7 +42,7 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
         if (strcmp(prefix, "_CHAN") == 0) {
             //Read node, channel will work with
             //Allocate animation channel
-            AnimationChannel* chan = &_Animation->GetChannels()[ch_i];
+            AnimationChannel* chan = &_Animation->GetChannels()[ch_i++];
             chan->SetBoneName(solver.ReadNextString());
             chan->anim_ptr = _Animation;
 
@@ -67,7 +68,6 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
                 //Read rotation timings
                 chan->GetRotationValues()->times[rot_i] = solver.GetValue<double>();
             }
-            ch_i += 1;
         }
     }
 }
@@ -75,7 +75,7 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
 void ImportedAnimationFile::loadFromFile(const std::string& file) {
     std::ifstream stream;
     stream.open(file, std::iostream::binary | std::iostream::ate);
-    unsigned int zs3m_size = static_cast<unsigned int>(stream.tellg());
+    uint32 zs3m_size = static_cast<uint32>(stream.tellg());
     stream.seekg(0, std::ifstream::beg);
     char* file_buffer = new char[zs3m_size];
     stream.read(file_buffer, zs3m_size);
@@ -118,8 +118,6 @@ void AnimationFileExport::writeChannel(ByteSerialize* serializer, uint32 index) 
         //Write pos key time
         serializer->Serialize(channel->GetRotationValues()->times[rot_i]);
     }
-    char div = '\n';
-    //serializer->Serialize(div);
 }
 void AnimationFileExport::write(const std::string& output_file) {
     ByteSerialize* serializer = new ByteSerialize;
@@ -138,4 +136,6 @@ void AnimationFileExport::write(const std::string& output_file) {
     stream.open(output_file.c_str(), std::ofstream::binary);
     stream.write((const char*)serializer->GetBytes(), serializer->GetSerializedSize());
     stream.close();
+
+    delete serializer;
 }

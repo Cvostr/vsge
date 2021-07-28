@@ -44,7 +44,7 @@ AnimationChannel* Animation::GetChannelByEntityName(const std::string& node_name
     AnimationChannel* result = nullptr;
     for (uint32 i = 0; i < this->_numChannels; i++) {
         AnimationChannel* cha = &this->channels[i];
-        if (node_name._Starts_with(cha->GetBoneName()) && max_size < cha->GetBoneName().size()) {
+        if (node_name.rfind(cha->GetBoneName()) == 0 && max_size < cha->GetBoneName().size()) {
             max_size = (uint32)cha->GetBoneName().size();
             result = cha;
         }
