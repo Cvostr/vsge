@@ -1,8 +1,8 @@
 outputFile engine_out/shaders.bundle
 mapFile engine_out/shaders.map
 
-shader PBR/pbr.vert
-shader PBR/pbr.frag
+shader pbr/pbr.vert
+shader pbr/pbr.frag
 
 shader particle/particle.vert
 shader particle/particle.frag

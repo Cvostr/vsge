@@ -50,21 +50,33 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/angelscript/angelscript64d.lib)
 
 ENDIF()
 
+target_link_libraries(Editor Engine)
+target_link_libraries(Editor ImGui)
+
+
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/angelscript/libangelscript.a)
+target_link_libraries(Engine ${STATIC_LIBS_DIR}/openal/libopenal.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/libfreetype.a)
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/openal/libopenal.a)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/assimp/libassimp.a)
+target_link_libraries(Engine ${STATIC_LIBS_DIR}/yaml/libyaml-cpp.a)
 
+#bullet3 libs should be in this correct order
+target_link_libraries(Engine ${STATIC_LIBS_DIR}/bullet/libBulletSoftBody.a)
+target_link_libraries(Engine ${STATIC_LIBS_DIR}/bullet/libBulletDynamics.a)
+target_link_libraries(Engine ${STATIC_LIBS_DIR}/bullet/libBulletCollision.a)
+target_link_libraries(Engine ${STATIC_LIBS_DIR}/bullet/libLinearMath.a)
 
+target_link_libraries(Engine sndio)
 target_link_libraries(Editor ${CMAKE_DL_LIBS})
 target_link_libraries(Editor pthread)
 
 
 ENDIF()
 
-target_link_libraries(Editor Engine)	
-target_link_libraries(Editor ImGui)
+
+
