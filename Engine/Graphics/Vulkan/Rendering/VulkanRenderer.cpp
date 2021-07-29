@@ -202,7 +202,6 @@ void VulkanRenderer::SetupRenderer() {
 	_vertexLayout.AddBinding(sizeof(Vertex));
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
-	_vertexLayout.AddItem(2, offsetof(Vertex, normal), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
 	mDeferredPipeline = new VulkanPipeline;
 	mDeferredPipeline->Create(deferred_light, mOutputPass, _vertexLayout, p_layout);
@@ -229,8 +228,10 @@ void VulkanRenderer::SetupRenderer() {
 	particle_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
 	particle_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 
+
 	particle_template = new MaterialTemplate;
 	particle_template->SetName("default_particle");
+	particle_template->SetVertexLayout(_vertexLayout);
 	particle_template->SetCullMode(CULL_MODE_NONE);
 	particle_template->SetBlendingAttachmentDesc(0, particle_blend_desc);
 	particle_template->AddTexture("Diffuse", 1);
@@ -326,54 +327,29 @@ void VulkanRenderer::StoreWorldObjects() {
 		if (!resource)
 			continue;
 		Material* mat = resource->GetMaterial();
-		
-
-		CreateVulkanMaterial(mat);
-
-		VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
-
-		//if (mat->_texturesDirty) {
-			for (MaterialTexture& tex : mat->GetTextures()) {
-				TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
-				if (texture_res == nullptr)
-					//if no texture bound, then skip it
-					continue;
-
-				if (texture_res->GetState() == RESOURCE_STATE_UNLOADED) {
-					//Load texture
-					texture_res->Load();
-				}
-
-				if (texture_res->GetState() == RESOURCE_STATE_READY) {
-					//Mark texture resource as used in this frame
-					texture_res->Use();
-					//Write texture to descriptor
-
-					vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
-					mat->_texturesDirty = false;
-				}
-			}
-		//}
-
-		if (mat->_paramsDirty) {
-			char* buffer = nullptr;
-			uint32 size = mat->CopyParamsToBuffer(&buffer);
-
-			vmat->_paramsBuffer->WriteData(0, size, buffer);
-			delete[] buffer;
-			mat->_paramsDirty = false;
-		}
+		BindMaterial(mat);
 	}
 
 	for (uint32 particle_em_i = 0; particle_em_i < _particleEmitters.size(); particle_em_i++) {
 		Entity* entity = _particleEmitters[particle_em_i];
 		ParticleEmitterComponent* emitter = entity->GetComponent<ParticleEmitterComponent>();
 
+		MaterialComponent* component = entity->GetComponent<MaterialComponent>();
+		if (!component)
+			continue;
+		MaterialResource* resource = (MaterialResource*)entity->GetComponent<MaterialComponent>()->GetResourceReference().GetResource();
+		if (!resource)
+			continue;
+
 		if (!emitter->IsSimulating())
 			continue;
+
+		Material* mat = resource->GetMaterial();
+		BindMaterial(mat);
 		//TEMPORARY
 		emitter->StepSimulation();
 		//--------------------
+		
 
 		Mat4* ParticleTransforms = nullptr;
 		emitter->GetParticlesTransforms(&ParticleTransforms, *cam);
@@ -546,14 +522,13 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 		_shadowmapper->ExecuteShadowCaster(caster_i, shadowbegin, shadowend);
 	}
+	VulkanSemaphore* begin = mShadowmappingEndSemaphore;
+	if (_shadowcasters.size() == 0)
+		begin = mBeginSemaphore;
 
-	_shadowmapper->RenderShadows(mShadowmappingEndSemaphore, mShadowprocessingEndSemaphore);
+	_shadowmapper->RenderShadows(begin, mShadowprocessingEndSemaphore);
 
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
 
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *mEndSemaphore);
-}
-
-void VulkanRenderer::BindMaterial(Material* mat) {
-
 }

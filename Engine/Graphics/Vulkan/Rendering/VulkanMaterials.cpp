@@ -60,3 +60,41 @@ VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(Mat
 
 	return set;
 }
+
+void VulkanRenderer::BindMaterial(Material* mat) {
+	CreateVulkanMaterial(mat);
+
+	VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
+
+	//if (mat->_texturesDirty) {
+	for (MaterialTexture& tex : mat->GetTextures()) {
+		TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
+		if (texture_res == nullptr)
+			//if no texture bound, then skip it
+			continue;
+
+		if (texture_res->GetState() == RESOURCE_STATE_UNLOADED) {
+			//Load texture
+			texture_res->Load();
+		}
+
+		if (texture_res->GetState() == RESOURCE_STATE_READY) {
+			//Mark texture resource as used in this frame
+			texture_res->Use();
+			//Write texture to descriptor
+
+			vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
+			mat->_texturesDirty = false;
+		}
+	}
+	//}
+
+	if (mat->_paramsDirty) {
+		char* buffer = nullptr;
+		uint32 size = mat->CopyParamsToBuffer(&buffer);
+
+		vmat->_paramsBuffer->WriteData(0, size, buffer);
+		delete[] buffer;
+		mat->_paramsDirty = false;
+	}
+}

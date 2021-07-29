@@ -88,6 +88,10 @@ void MaterialTemplate::SetCullMode(CullMode mode) {
 	_cullMode = mode;
 }
 
+void MaterialTemplate::SetVertexLayout(const VertexLayout& vertexLayout) {
+	_vertexLayout = vertexLayout;
+}
+
 void MaterialTemplate::SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc) {
 	_blendDescs.insert(std::pair(attachment, desc));
 }

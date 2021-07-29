@@ -83,6 +83,8 @@ namespace VSGE {
 
 		void SetCullMode(CullMode mode);
 
+		void SetVertexLayout(const VertexLayout& vertexLayout);
+
 		void SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc);
 
 		const BlendAttachmentDescsMap& GetBlendingAttachmentDescs() {
