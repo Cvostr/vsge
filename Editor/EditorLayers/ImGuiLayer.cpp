@@ -99,6 +99,9 @@ void ImGuiLayer::OnAttach() {
 #ifdef _WIN32
     ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 #endif
+#ifdef __linux__
+   // ImFont* font = io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/freefont/FreeSans.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+#endif
     cmdbuf.Begin();
     ImGui_ImplVulkan_CreateFontsTexture(cmdbuf.GetCommandBuffer());
     cmdbuf.End();
@@ -159,7 +162,6 @@ void ImGuiLayer::OnUpdate() {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplSDL2_NewFrame(win->GetSdlWinPtr());
     ImGui::NewFrame();
-
 
 	ImGui::BeginMainMenuBar();
 
