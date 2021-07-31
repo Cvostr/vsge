@@ -32,7 +32,7 @@ Mat4 GetPerspectiveRH_ZeroOne(PERSPECTIVE_ARGS) {
 	float _fov = tan(to_radians(fov) / 2.f);
 
 	Result.Values[0][0] = 1.f / (aspect * _fov);
-	Result.Values[1][1] = 1.f / (_fov);
+	Result.Values[1][1] = -1.f / (_fov);
 	Result.Values[2][2] = far / (near - far);
 	Result.Values[2][3] = -1.f;
 	Result.Values[3][2] = -(far * near) / (far - near);

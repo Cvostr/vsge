@@ -171,16 +171,28 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 
 	Mat4* result = nullptr;
 	if (_castShadows) {
-		result = new Mat4[_shadowsCascadesCount];
-		for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
-			float w = sizes[i];
-			Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
-			Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
+		if (_lightType == LIGHT_TYPE_DIRECTIONAL) {
+			result = new Mat4[_shadowsCascadesCount];
+			for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
+				float w = sizes[i];
+				Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
+				Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
 
-			Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -40.f, 85.f);
-			projectionMat.Values[1][1] *= -1;
+				Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -40.f, 85.f);
 
-			result[i] = matview * projectionMat;
+				result[i] = matview * projectionMat;
+			}
+		}
+		else if (_lightType == LIGHT_TYPE_POINT) {
+			result = new Mat4[6];
+			Mat4 projection = GetPerspectiveRH_ZeroOne(to_radians(90.f), 1, 1.f, 100.f);
+			Vec3 pos = GetEntity()->GetAbsolutePosition();
+			result[0] = GetViewRH(pos, pos + Vec3(1, 0, 0), Vec3(0, -1, 0)) * projection;
+			result[1] = GetViewRH(pos, pos + Vec3(-1, 0, 0), Vec3(0, -1, 0)) * projection;
+			result[2] = GetViewRH(pos, pos + Vec3(0, 1	, 0), Vec3(0, 0, 1)) * projection;
+			result[3] = GetViewRH(pos, pos + Vec3(0, -1, 0), Vec3(0, 0, -1)) * projection;
+			result[4] = GetViewRH(pos, pos + Vec3(0, 0, 1), Vec3(0, -1, 0)) * projection;
+			result[5] = GetViewRH(pos, pos + Vec3(0, 0, -1), Vec3(0, -1, 0)) * projection;
 		}
 	}
 	return result;

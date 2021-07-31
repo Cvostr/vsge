@@ -26,7 +26,7 @@ Application* VSGEMain() {
 	auto app = new Application(descr);
 
 	EditorSettingsLayer* settings = new EditorSettingsLayer;
-
+	app->AddLayer(settings);
 	app->GetWindow().CreateWindow(settings->_windowWidth, settings->_windowHeight, "Editor");
 
 	VulkanRAPI* vk = new VulkanRAPI;
@@ -39,7 +39,7 @@ Application* VSGEMain() {
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
 	
-	app->AddLayer(settings);
+	
 	auto mono = new AngelScriptLayer;
 	mono->CreateEngine();
 	app->AddLayer(mono);

@@ -80,7 +80,6 @@ void Camera::UpdateMatrices() {
 
 	if (api == GRAPHICS_API_VULKAN) {
 		_projectionMatrix = GetPerspectiveRH_ZeroOne(_fov, _aspectRatio, _nearPlane, _farPlane);
-		_projectionMatrix.Values[1][1] *= -1;
 		_vewMatrix = GetViewRH(_position, _position + _front, _up);
 		_projectionViewMatrix = _vewMatrix * _projectionMatrix;
 	}

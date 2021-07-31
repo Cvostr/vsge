@@ -12,6 +12,7 @@ struct CasterInfo{  //688
     uint CascadesNum; //4
     uint PcfPassNum; // 4
     float ShadowStrength; // 4
+    int caster_type; //4
     vec3 pos;
 };
 
@@ -44,7 +45,11 @@ float GetShadowmapSample(uint shadowmap, uint cascade, vec2 uv){
 }
 
 void main(){
-  vec3 FragPos = texture(gpos, UVCoord).xyz;
+    vec4 _pos = texture(gpos, UVCoord);
+  vec3 FragPos = _pos.xyz;
+  if(_pos.a == 1){
+      discard;
+  }
 
   float dist = length(FragPos - cam_position);
   float result = 0;
@@ -58,12 +63,12 @@ void main(){
     vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
     float realDepth = shadowProjection.z;
     float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
-
+    vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
     for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
         for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
             vec2 offset = vec2(x, y) / casters[caster_i].ShadowmapSize;
 
-            vec2 uvoffset = (shadowProjection.xy / 2) + 0.5 + offset;
+            vec2 uvoffset = start_offset + offset;
             float shadowmap_depth = GetShadowmapSample(caster_i, cascade, uvoffset);
            
             result += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;

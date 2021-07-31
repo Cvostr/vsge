@@ -111,6 +111,13 @@ void VulkanRenderer::SetupRenderer() {
 	mSpriteMesh->SetIndexBuffer(plane_inds, 6);
 	mSpriteMesh->Create();
 
+	mEmptyTexture = new VulkanTexture;
+	mEmptyTexture->Create(2, 2);
+	char* empty_texture_data = new char[2 * 2 * 4];
+	memset(empty_texture_data, 255, 16);
+	mEmptyTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
+	mEmptyTexture->CreateImageView();
+
 	//---------------------Samplers------------------
 	mMaterialMapsSampler = new VulkanSampler;
 	mMaterialMapsSampler->Create();

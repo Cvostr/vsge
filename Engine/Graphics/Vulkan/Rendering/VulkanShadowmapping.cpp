@@ -189,6 +189,7 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	int size = MAP_SIZE;
 	uint32 pcf = light->GetShadowPCF();
 	float strength = light->GetShadowStrength();
+	LightType type = light->GetLightType();
 	Vec3 pos = light->GetEntity()->GetAbsolutePosition();
 
 	_shadowprocess_buffer->WriteData(offset, 4, &bias);
@@ -196,6 +197,7 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	_shadowprocess_buffer->WriteData(offset + 8, 4, &cascades_count);
 	_shadowprocess_buffer->WriteData(offset + 12, 4, &pcf);
 	_shadowprocess_buffer->WriteData(offset + 16, 4, &strength);
+	_shadowprocess_buffer->WriteData(offset + 20, 4, &type);
 	_shadowprocess_buffer->WriteData(offset + 32, 12, &pos);
 
 	_added_casters++;

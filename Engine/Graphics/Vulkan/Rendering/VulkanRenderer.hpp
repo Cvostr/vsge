@@ -66,6 +66,8 @@ namespace VSGE {
 		//--------------------Samplers-------------------
 		VulkanSampler* mMaterialMapsSampler;
 		VulkanSampler* mAttachmentSampler;
+		//--------------------Empty texture----------
+		VulkanTexture* mEmptyTexture;
 
 		//--------------------Pipelines------------------
 		VulkanPipeline* mDeferredPipeline;
