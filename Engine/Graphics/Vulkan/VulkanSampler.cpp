@@ -3,7 +3,7 @@
 
 using namespace VSGE;
 
-VkFilter GetSamplerFilterGL(TextureFilteringMode TFM) {
+VkFilter GetSamplerFilter(TextureFilteringMode TFM) {
 	VkFilter result = VK_FILTER_NEAREST;
 
 	if (TFM == SAMPLER_FILTERING_LINEAR)
@@ -42,14 +42,37 @@ VkBorderColor GetBorderColor(BorderColor bc) {
 	return result;
 }
 
+VkCompareOp GetCompareOp(CompareOp cop) {
+	VkCompareOp result = VK_COMPARE_OP_NEVER;
+
+	if (cop == COMPARE_OP_NEVER)
+		result = VK_COMPARE_OP_NEVER;
+	if (cop == COMPARE_OP_ALWAYS)
+		result = VK_COMPARE_OP_ALWAYS;
+	if (cop == COMPARE_OP_LESS)
+		result = VK_COMPARE_OP_LESS;
+	if (cop == COMPARE_OP_EQUAL)
+		result = VK_COMPARE_OP_EQUAL;
+	if (cop == COMPARE_OP_NOT_EQUAL)
+		result = VK_COMPARE_OP_NOT_EQUAL;
+	if (cop == COMPARE_OP_GREATER)
+		result = VK_COMPARE_OP_GREATER;
+	if (cop == COMPARE_OP_LESS_OR_EQUAL)
+		result = VK_COMPARE_OP_LESS_OR_EQUAL;
+	if (cop == COMPARE_OP_GREATER_OR_EQUAL)
+		result = VK_COMPARE_OP_GREATER_OR_EQUAL;
+
+	return result;
+}
+
 bool VulkanSampler::Create() {
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();
 
 	VkSamplerCreateInfo samplerInfo{};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	samplerInfo.magFilter = GetSamplerFilterGL(_magFiltering);
-	samplerInfo.minFilter = GetSamplerFilterGL(_minFiltering);
+	samplerInfo.magFilter = GetSamplerFilter(_magFiltering);
+	samplerInfo.minFilter = GetSamplerFilter(_minFiltering);
 
 	samplerInfo.addressModeU = GetSamplerWrapMode(_wrapU);
 	samplerInfo.addressModeV = GetSamplerWrapMode(_wrapV);
@@ -62,8 +85,8 @@ bool VulkanSampler::Create() {
 
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
-	samplerInfo.compareEnable = VK_FALSE;
-	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	samplerInfo.compareEnable = (_compareOp != COMPARE_OP_NEVER);
+	samplerInfo.compareOp = GetCompareOp(_compareOp);
 
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	samplerInfo.mipLodBias = _mipLodBias;

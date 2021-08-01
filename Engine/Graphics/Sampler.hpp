@@ -24,6 +24,17 @@ namespace VSGE {
 		BORDER_COLOR_TRANSPARENT_BLACK
 	};
 
+	enum CompareOp {
+		COMPARE_OP_NEVER = 0,
+		COMPARE_OP_LESS = 1,
+		COMPARE_OP_EQUAL = 2,
+		COMPARE_OP_LESS_OR_EQUAL = 3,
+		COMPARE_OP_GREATER = 4,
+		COMPARE_OP_NOT_EQUAL = 5,
+		COMPARE_OP_GREATER_OR_EQUAL = 6,
+		COMPARE_OP_ALWAYS = 7
+	};
+
 	class TextureSampler : public IGpuObject {
 	protected:
 		TextureFilteringMode _minFiltering;
@@ -34,6 +45,7 @@ namespace VSGE {
 		TextureWrapMode _wrapW;
 
 		BorderColor _borderColor;
+		CompareOp _compareOp;
 
 		float _maxAnisotropy;
 
@@ -54,6 +66,8 @@ namespace VSGE {
 		void SetLodsRanges(float minLOD, float maxLOD);
 
 		void SetBorderColor(BorderColor borderColor);
+
+		void SetCompareOp(CompareOp compareOp);
 
 		void SetMipLodBias(float lod_bias);
 

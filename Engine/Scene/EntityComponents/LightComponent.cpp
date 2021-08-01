@@ -91,6 +91,8 @@ void LightsourceComponent::SetShadowCascadesCount(uint32 cascades) {
 	_shadowsCascadesCount = cascades;
 }
 uint32 LightsourceComponent::GetShadowCascadesCount() {
+	if (_lightType == LIGHT_TYPE_POINT)
+		return 6;
 	return _shadowsCascadesCount;
 }
 uint32 LightsourceComponent::GetShadowPCF() {
@@ -185,11 +187,12 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 		}
 		else if (_lightType == LIGHT_TYPE_POINT) {
 			result = new Mat4[6];
-			Mat4 projection = GetPerspectiveRH_ZeroOne(to_radians(90.f), 1, 1.f, 100.f);
+			Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.5f, 100.f);
+			//projection.Values[1][1] *= -1;
 			Vec3 pos = GetEntity()->GetAbsolutePosition();
 			result[0] = GetViewRH(pos, pos + Vec3(1, 0, 0), Vec3(0, -1, 0)) * projection;
 			result[1] = GetViewRH(pos, pos + Vec3(-1, 0, 0), Vec3(0, -1, 0)) * projection;
-			result[2] = GetViewRH(pos, pos + Vec3(0, 1	, 0), Vec3(0, 0, 1)) * projection;
+			result[2] = GetViewRH(pos, pos + Vec3(0, 1, 0), Vec3(0, 0, 1)) * projection;
 			result[3] = GetViewRH(pos, pos + Vec3(0, -1, 0), Vec3(0, 0, -1)) * projection;
 			result[4] = GetViewRH(pos, pos + Vec3(0, 0, 1), Vec3(0, -1, 0)) * projection;
 			result[5] = GetViewRH(pos, pos + Vec3(0, 0, -1), Vec3(0, -1, 0)) * projection;

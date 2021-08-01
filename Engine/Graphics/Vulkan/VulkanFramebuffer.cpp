@@ -24,20 +24,21 @@ void VulkanFramebuffer::AddAttachment(Texture* attachment) {
 void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers) {
 	VulkanTexture* new_attachment = new VulkanTexture;
 	new_attachment->SetRenderTargetFlag(true);
-	new_attachment->Create(mWidth, mHeight, Format, layers, 1);
+	new_attachment->Create(_width, _height, Format, layers, 1);
 	new_attachment->CreateImageView();
 	
 	AddAttachment(new_attachment);
 }
 
-void VulkanFramebuffer::AddDepth(TextureFormat Format, uint32 Layers) {
-	if (Format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8 || Format == TextureFormat::FORMAT_DEPTH_32) {
+void VulkanFramebuffer::AddDepth(TextureFormat format, uint32 layers, bool cubemap) {	
+	if (format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8 || format == TextureFormat::FORMAT_DEPTH_32) {
 		VulkanTexture* new_attachment = new VulkanTexture;
+		new_attachment->SetCubemap(cubemap);
 		new_attachment->SetRenderTargetFlag(true);
-		new_attachment->Create(mWidth, mHeight, Format, Layers, 1);
+		new_attachment->Create(_width, _height, format, layers, 1);
 		new_attachment->CreateImageView();
 
-		mDepthAttachment = new_attachment;
+		_depthAttachment = new_attachment;
 		_views.push_back(((VulkanTexture*)new_attachment)->GetImageView());
 	}
 }
@@ -52,7 +53,7 @@ void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 }
 
 void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
-	if (mWidth != width || mHeight != height) {
+	if (_width != width || _height != height) {
 		Framebuffer::SetSize(width, height);
 	}
 }
@@ -75,8 +76,8 @@ bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 		framebufferInfo.renderPass = renderpass->GetRenderPass();
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(_views.size());
 		framebufferInfo.pAttachments = _views.data();
-		framebufferInfo.width = mWidth;
-		framebufferInfo.height = mHeight;
+		framebufferInfo.width = _width;
+		framebufferInfo.height = _height;
 		framebufferInfo.layers = _layers;
 		//Try to create framebuffer
 		if (vkCreateFramebuffer(device->getVkDevice(), &framebufferInfo, nullptr, &_framebuffer) != VK_SUCCESS) {

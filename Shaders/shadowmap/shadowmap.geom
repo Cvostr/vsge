@@ -3,21 +3,26 @@
 const int MAX_SPLITS = 4;
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 3) out;
+layout(triangle_strip, max_vertices = 30) out;
 
-layout (location = 0) in VS_OUTPUT
-{
-	float depth;
-	flat int instanceID;
-} gsinput[];
+layout (location = 0) out vec3 FragPos;
+
+layout (std140, set = 1, binding = 0) uniform ShadowData{
+    mat4 projections[10];
+    vec3 pos;
+    int type;
+    int cascades;
+};
 
 void main() { 
-
-    for (int i = 0; i < gl_in.length(); i++)
-	{
-		gl_Position = gl_in[i].gl_Position;
-		gl_Layer = gsinput[i].instanceID;
-		EmitVertex();
+	for( int cascade = 0; cascade < cascades; cascade++){
+		gl_Layer = cascade;
+		for (int i = 0; i < gl_in.length(); i++)
+		{
+			gl_Position = projections[cascade] * gl_in[i].gl_Position;
+			FragPos = gl_Position.xyz;
+			EmitVertex();
+		}
+		EndPrimitive();
 	}
-	EndPrimitive();
 } 

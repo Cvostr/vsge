@@ -1,4 +1,4 @@
-#version 450 core
+#version 450
 
 //Vertex layout
 layout (location = 0) in vec3 position;
@@ -16,6 +16,9 @@ layout (location = 11) in uint bones;
 
 layout (std140, set = 1, binding = 0) uniform ShadowData{
     mat4 projections[10];
+    vec3 pos;
+    int type;
+    int cascades;
 };
 
 layout (std140, binding = 1) uniform Transform{
@@ -25,12 +28,6 @@ layout (std140, binding = 1) uniform Transform{
 layout (std140, set = 2, binding = 0) readonly buffer Animation{
     mat4 bone_transform[];
 };
-
-layout (location = 0) out VS_OUTPUT
-{
-	float depth;
-	flat int instanceID;
-} vsoutput;
 
 mat4 getBoneTransform(){
     int _ids[12];
@@ -77,9 +74,7 @@ void main(){
 	if(bones > 0)
 		bone_t = getBoneTransform();
 
-    vec4 pos = projections[gl_InstanceIndex] * obj_model[0] * bone_t * vec4(position, 1.0);
+    vec4 pos = obj_model[0] * bone_t * vec4(position, 1.0);
 
 	gl_Position = pos;
-	vsoutput.depth = pos.z;
-	vsoutput.instanceID = gl_InstanceIndex;
 }

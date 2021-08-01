@@ -30,13 +30,13 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="Format">- format of new texture</param>
 		/// <param name="layers">- count of layers of new texture</param>
-		void AddAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, uint32 layers = 1);
+		void AddAttachment(TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1);
 		/// <summary>
 		/// Create and set new depth attachment
 		/// </summary>
 		/// <param name="Format">- format of new depth texture</param>
 		/// <param name="Layers">- count of layers of new depth texture</param>
-		void AddDepth(TextureFormat Format = FORMAT_DEPTH_24_STENCIL_8, uint32 Layers = 1);
+		void AddDepth(TextureFormat format = FORMAT_DEPTH_24_STENCIL_8, uint32 layers = 1, bool cubemap = false);
 		/// <summary>
 		/// Change size property of framebuffer
 		/// </summary>

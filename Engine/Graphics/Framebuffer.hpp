@@ -8,11 +8,11 @@
 namespace VSGE {
 	class Framebuffer : public IGpuObject {
 	protected:
-		uint32 mWidth;
-		uint32 mHeight;
+		uint32 _width;
+		uint32 _height;
 
 		std::vector<Texture*> _attachments;
-		Texture* mDepthAttachment;
+		Texture* _depthAttachment;
 
 	public:
 		/// <summary>
@@ -26,28 +26,28 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="Format">- format of new texture</param>
 		/// <param name="layers">- count of layers of new texture</param>
-		virtual void AddAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, uint32 layers = 1) = 0;
+		virtual void AddAttachment(TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1) = 0;
 		/// <summary>
 		/// Create and set new depth attachment
 		/// </summary>
 		/// <param name="Format">- format of new depth texture</param>
 		/// <param name="Layers">- count of layers of new depth texture</param>
-		virtual void AddDepth(TextureFormat Format = FORMAT_DEPTH_24_STENCIL_8, uint32 Layers = 1) = 0;
+		virtual void AddDepth(TextureFormat format = FORMAT_DEPTH_24_STENCIL_8, uint32 layers = 1, bool cubemap = false) = 0;
 		/// <summary>
 		/// Change size property of framebuffer
 		/// </summary>
 		/// <param name="width">- new width of fb</param>
 		/// <param name="height">- new height of fb</param>
 		virtual void SetSize(uint32 width, uint32 height){
-			mWidth = width;
-			mHeight = height;
+			_width = width;
+			_height = height;
 		}
 		Texture** GetColorAttachments() {
 			return _attachments.data();
 		}
 
 		Texture* GetDepthAttachment() {
-			return mDepthAttachment;
+			return _depthAttachment;
 		}
 		/// <summary>
 		/// Create framebuffer gpu object from specified attachments
@@ -59,15 +59,15 @@ namespace VSGE {
 		virtual void Destroy() = 0;
 
 		Framebuffer() :
-			mWidth(0),
-			mHeight(0),
-			mDepthAttachment(nullptr)
+			_width(0),
+			_height(0),
+			_depthAttachment(nullptr)
 		{}
 
 		Framebuffer(uint32 width, uint32 height) :
-			mWidth(width),
-			mHeight(height),
-			mDepthAttachment(nullptr)
+			_width(width),
+			_height(height),
+			_depthAttachment(nullptr)
 		{}
 	};
 }

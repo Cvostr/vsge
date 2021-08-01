@@ -66,7 +66,7 @@ Mat4 GetOrthoRH_ZeroOne(ORTHO_ARGS) {
 	Mat4 Result(1);
 
 	Result.Values[0][0] = 2.f / (right - left);
-	Result.Values[1][1] = 2.f / (top - bottom);
+	Result.Values[1][1] = -2.f / (top - bottom);
 	Result.Values[2][2] = -1.f / (far - near);
 	Result.Values[3][0] = -(right + left) / (right - left);
 	Result.Values[3][1] = -(top + bottom) / (top - bottom);

@@ -38,6 +38,10 @@ void TextureSampler::SetBorderColor(BorderColor borderColor) {
 	_borderColor = borderColor;
 }
 
+void TextureSampler::SetCompareOp(CompareOp compareOp) {
+	_compareOp = compareOp;
+}
+
 TextureSampler::TextureSampler() :
 	_minFiltering(SAMPLER_FILTERING_LINEAR),
 	_magFiltering(SAMPLER_FILTERING_LINEAR),
@@ -47,11 +51,12 @@ TextureSampler::TextureSampler() :
 	_wrapW(SAMPLER_WRAP_REPEAT),
 
 	_borderColor(BORDER_COLOR_OPAQUE_BLACK),
+	_compareOp(COMPARE_OP_NEVER),
 
 	_maxAnisotropy(1.f),
 
 	_minLod(0.f),
-	_maxLod(0.f),
+	_maxLod(1.f),
 	_mipLodBias(0.f)
 
 {}

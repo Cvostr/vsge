@@ -1543,3 +1543,24 @@ Entities:
         mesh: tree.002
       - Component: 2
         material: Default Material
+  - Entity: Point Light
+    uid: [2128428480, 2089079935, 210265202, 2967914581]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 2.02761889]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 1
+        light_type: 1
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 0.00499999989
+        pcf: 4
+        cascades: 3
