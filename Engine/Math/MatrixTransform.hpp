@@ -7,6 +7,7 @@
 Mat4 GetTranslationMatrix(const Vec3& pos);
 Mat4 GetScaleMatrix(const Vec3& scale);
 
+Mat4 GetRotationEuler(const Mat4& m, float angle, const Vec3& v);
 Mat4 GetRotationXMatrixEuler(float angle);
 Mat4 GetRotationYMatrixEuler(float angle);
 Mat4 GetRotationZMatrixEuler(float angle);

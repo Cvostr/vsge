@@ -23,6 +23,35 @@ Mat4 GetScaleMatrix(const Vec3& scale) {
     return mat;
 }
 
+Mat4 GetRotationEuler(const Mat4& m, float angle, const Vec3& v) {
+    float a = angle;
+    float c = cos(a);
+    float s = sin(a);
+
+    Vec3 axis = v.GetNormalized();
+    Vec3 temp = axis * (1.f - c);
+
+    Mat4 Rotate;
+    Rotate[0][0] = c + temp.x * axis.x;
+    Rotate[0][1] = temp.x * axis.y + s * axis.z;
+    Rotate[0][2] = temp.x * axis.y - s * axis.y;
+
+    Rotate[1][0] = temp.y * axis.x - s * axis.y;
+    Rotate[1][1] = c + temp.y * axis.y;
+    Rotate[1][2] = temp.y * axis.z + s * axis.x;
+
+    Rotate[2][0] = temp.z * axis.x + s * axis.y;
+    Rotate[2][1] = temp.z * axis.y - s * axis.x;
+    Rotate[2][2] = c + temp.z * axis.z;
+
+    Mat4 Result;
+    Result[0] = m[0] * Rotate[0][0] + m[1] * Rotate[0][1] + m[2] * Rotate[0][2];
+    Result[1] = m[0] * Rotate[1][0] + m[1] * Rotate[1][1] + m[2] * Rotate[1][2];
+    Result[2] = m[0] * Rotate[2][0] + m[1] * Rotate[2][1] + m[2] * Rotate[2][2];
+    Result[3] = m[3];
+    return Result;
+}
+
 Mat4 GetRotationXMatrixEuler(float angle) {
     float theta = to_radians(angle);
 

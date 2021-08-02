@@ -20,6 +20,7 @@
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
 #include <Math/Ray.hpp>
+#include <ImGuizmo.h>
 
 #define MONEMENT_COEFF 40.3f
 
@@ -135,15 +136,20 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				int relx = InputState.cursorx - win->GetPos().x;
 				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y;
 
-				/*bool picking_allowed = true;
+				bool picking_allowed = true;
 				if (_pickedEntity) {
-					Vec3 aabb_center = _pickedEntity->GetAABB().GetCenter();
-					Vec2 aabb_center_screen = mEditorCamera->WorldPointToScreenpoint(Vec3(0, 0, 0));
-					aabb_center_screen.x *= win->GetSize().x;
-					aabb_center_screen.y *= win->GetSize().y;
-					//aabb_center_screen.y -= WINDOW_MENU_OFFSET;
-					Logger::Log() << "Point on " << aabb_center_screen.x << " " << aabb_center_screen.y;
-				}*/
+					Vec3 mpos = _pickedEntity->GetWorldTransform().GetPosition();
+					ImGuizmo::vec_t model_pos = ImGuizmo::makeVect(mpos.x, mpos.y, mpos.z);
+					Mat4 _cam_transform = mEditorCamera->GetProjectionViewMatrix();
+					ImGuizmo::matrix_t cam_transform;
+					memcpy(&cam_transform, &_cam_transform, 64);
+					ImVec2 point_pos = ImGuizmo::worldToPos(model_pos, cam_transform);
+					point_pos.x -= win->GetPos().x;
+					point_pos.y -= win->GetPos().y;
+
+					if (abs(point_pos.x - relx) < 75 && abs(point_pos.y - rely) < 75)
+						return;
+				}
 
 				Vec2 crpos = Vec2((float)relx / win->GetSize().x,
 					(float)rely / win->GetSize().y

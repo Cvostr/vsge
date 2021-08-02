@@ -195,6 +195,7 @@ bool VulkanTexture::CreateImageView() {
 	textureImageViewInfo.subresourceRange.levelCount = _mipLevels;
 	textureImageViewInfo.subresourceRange.baseArrayLayer = 0;
 	textureImageViewInfo.subresourceRange.layerCount = _layers;
+	textureImageViewInfo.components = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();

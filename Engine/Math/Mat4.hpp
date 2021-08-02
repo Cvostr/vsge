@@ -58,6 +58,10 @@ public:
         Values[3][0] = v4.x; Values[3][1] = v4.y; Values[3][2] = v4.z; Values[3][3] = v4.w;
     }
 
+    const tVec4<T>& operator[](uint32 i) const {
+        return Rows[i];
+    }
+
     tVec4<T>& operator[](uint32 i) {
         return Rows[i];
     }

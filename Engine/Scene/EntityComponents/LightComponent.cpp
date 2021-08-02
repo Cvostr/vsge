@@ -2,6 +2,7 @@
 #include <Core/YamlHelper.hpp>
 #include "../Entity.hpp"
 #include <Math/MatrixCamera.hpp>
+#include <Math/MatrixTransform.hpp>
 
 using namespace VSGE;
 using namespace YAML;
@@ -187,9 +188,30 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 		}
 		else if (_lightType == LIGHT_TYPE_POINT) {
 			result = new Mat4[6];
-			Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.5f, 100.f);
-			//projection.Values[1][1] *= -1;
+			Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, _range);
+			projection[1][1] *= -1;
 			Vec3 pos = GetEntity()->GetAbsolutePosition();
+
+			/*Mat4 view = GetRotationEuler(Mat4(1), to_radians(90.0f), Vec3(0.0f, 1.0f, 0.0f));
+			view = GetRotationEuler(view, to_radians(180.0f), Vec3(1.0f, 0.0f, 0.0f));
+			result[0] = view * projection;
+
+			view = GetRotationEuler(Mat4(1), to_radians(-90.0f), Vec3(0.0f, 1.0f, 0.0f));
+			view = GetRotationEuler(view, to_radians(180.0f), Vec3(1.0f, 0.0f, 0.0f));
+			result[1] = view * projection;
+
+			view = GetRotationEuler(Mat4(1), to_radians(-90.0f), Vec3(1.0f, 0.0f, 0.0f));
+			result[2] = view * projection;
+
+			view = GetRotationEuler(Mat4(1), to_radians(90.0f), Vec3(1.0f, 0.0f, 0.0f));
+			result[3] = view * projection;
+
+			view = GetRotationEuler(Mat4(1), to_radians(180.0f), Vec3(1.0f, 0.0f, 0.0f));
+			result[4] = view * projection;
+
+			view = GetRotationEuler(Mat4(1), to_radians(180.0f), Vec3(0.0f, 0.0f, 1.0f));
+			result[5] = view * projection;*/
+
 			result[0] = GetViewRH(pos, pos + Vec3(1, 0, 0), Vec3(0, -1, 0)) * projection;
 			result[1] = GetViewRH(pos, pos + Vec3(-1, 0, 0), Vec3(0, -1, 0)) * projection;
 			result[2] = GetViewRH(pos, pos + Vec3(0, 1, 0), Vec3(0, 0, 1)) * projection;

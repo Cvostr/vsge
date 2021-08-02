@@ -6,10 +6,18 @@
 template<typename T>
 class tVec4 {
 public:
-	T x;
-	T y;
-	T z;
-	T w;
+
+	union
+	{
+		struct
+		{
+			T x;
+			T y;
+			T z;
+			T w;
+		};
+		T Values[4];
+	};
 
 	tVec4() : x(0), y(0), z(0), w(0) {}
 	tVec4(T v) : x(v), y(v), z(v), w(v) {}
@@ -24,6 +32,14 @@ public:
 
 	float Length() const { //Calculates module length of vector
 		return sqrtf(x * x + y * y + z * z + w * w);
+	}
+
+	const T& operator[](uint32 i) const {
+		return Values[i];
+	}
+
+	T& operator[](uint32 i) {
+		return Values[i];
 	}
 
 	tVec4 operator+(const tVec4& r) const {
