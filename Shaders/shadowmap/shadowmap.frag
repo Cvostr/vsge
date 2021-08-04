@@ -11,9 +11,6 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
 
 void main()
 {
-    if(type == 1){
-        float lightDistance = length(FragPos - pos);
-        gl_FragDepth = lightDistance / 100.f;
-    }else
-        gl_FragDepth = gl_FragCoord.z;
+    float lightDistance = length(FragPos - pos);
+    gl_FragDepth = lightDistance / 100.f;
 }

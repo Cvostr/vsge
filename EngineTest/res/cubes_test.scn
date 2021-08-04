@@ -1490,8 +1490,8 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [186694011, 1344920229, 3883134295, 1663786131]
-    pos: [-32.598732, -8.04872799, -52.1506729]
-    scale: [0.803600073, 0.803600073, 0.803600073]
+    pos: [-27.5841732, -8.04872799, -61.8705978]
+    scale: [0.241080031, 0.241080031, 0.241080031]
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
@@ -1517,14 +1517,14 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [2650036101, 648505759, 56455176, 2644870154]
-    pos: [0, 2.22944641, 30.8701286]
+    pos: [-14.6844635, -5.11265564, 35.4858131]
     scale: [54.0000076, 54.0000038, 54.0000038]
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
         mesh: tree.003
       - Component: 2
-        material: Default Material
+        material: emptymat
   - Entity: leaves
     uid: [3768621815, 845007772, 3663989013, 546752271]
     active: false
@@ -1545,14 +1545,14 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-2.76839113, 3.40313387, -5.6878252]
+    pos: [-4.32765913, -1.62972403, 2.53296185]
     scale: [1, 1, 1]
     rot: [0, 0, 0, 1]
     components:
       - Component: 1
         light_type: 1
         intensity: 1
-        range: 45
+        range: 22
         sp_angle: 12.5
         color: [1, 1, 1, 1]
         castShadows: true

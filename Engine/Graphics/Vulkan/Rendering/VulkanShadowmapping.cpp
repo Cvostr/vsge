@@ -83,8 +83,12 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowmap_shader = new VulkanShader;
 	_shadowmap_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
-	_shadowmap_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
 	_shadowmap_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
+
+	_shadowmap_point_shader = new VulkanShader;
+	_shadowmap_point_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
+	_shadowmap_point_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
+	_shadowmap_point_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
 
 	_shadowmap_layout = new VulkanPipelineLayout;
 	_shadowmap_layout->PushDescriptorSet(vertexDescrSets->at(0));
@@ -96,6 +100,15 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmapPipeline->SetDepthTest(true);
 	_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
+
+	_shadowmap_point_Pipeline = new VulkanPipeline;
+	_shadowmap_point_Pipeline->SetDepthTest(true);
+	_shadowmap_point_Pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+	_shadowmap_point_Pipeline->Create(
+		_shadowmap_point_shader,
+		_shadowmapRenderPass,
+		shadowmap_vertex_layout,
+		_shadowmap_layout);
 
 	//-------------------------SHADOW PROCESS -----------------------------
 	_shadowprocessRenderPass = new VulkanRenderPass;
@@ -172,6 +185,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		caster = _casters[_added_casters];
 	}
 
+	caster->_entity = entity;
+
 	uint32 layers = caster->_framebuffer->GetLayersCount();
 	if (layers != cascades_count) {
 		bool is_cubemap = (light->GetLightType() == LIGHT_TYPE_POINT);
@@ -240,14 +255,20 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 
 	cmdbuf->Begin();
 	_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
-	cmdbuf->BindPipeline(*_shadowmapPipeline);
-	cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
-	cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
+
+	if (caster->_entity->GetComponent<LightsourceComponent>()->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
+		cmdbuf->BindPipeline(*_shadowmapPipeline);
+		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
+		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
+	}else if (caster->_entity->GetComponent<LightsourceComponent>()->GetLightType() == LIGHT_TYPE_POINT) {
+		cmdbuf->BindPipeline(*_shadowmap_point_Pipeline);
+		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
+		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
+	}
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
 		Entity* entity = _entitiesToRender->at(e_i);
 		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
-
 
 		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();

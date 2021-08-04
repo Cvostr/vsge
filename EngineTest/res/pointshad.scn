@@ -1,0 +1,87 @@
+Scene: Untitled
+Entities:
+  - Entity: Cube (2)
+    uid: [2278826814, 575420708, 1424792874, 3214824675]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [-0.296381712, -9.07172585, -22.9429436]
+    scale: [66.77285, 1, 80]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: material
+      - Component: 9
+        shape: 0
+        center: [0, 0, 0]
+        size: [1, 1, 1]
+  - Entity: Audio
+    uid: [475199151, 3866549533, 808755399, 1020744480]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 6
+        clip: file1
+        volume: 1
+        pitch: 1
+        loop: false
+  - Entity: Directional Light
+    uid: [4022663197, 3646530176, 2222185782, 1077532849]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 12, 0]
+    scale: [1, 1, 1]
+    rot: [0.0205566883, -0.662172019, 0.623748004, -0.414781809]
+    components:
+      - Component: 1
+        light_type: 0
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: false
+  - Entity: Point Light
+    uid: [2128428480, 2089079935, 210265202, 2967914581]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, -0.00960326195, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 1
+        light_type: 1
+        intensity: 1
+        range: 100
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 0.00499999989
+        pcf: 4
+        cascades: 3
+  - Entity: Cube
+    uid: [3930662236, 2173687178, 2925966255, 1891879089]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [-1.54054952, -5.80980921, -10.4058018]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: Default Material

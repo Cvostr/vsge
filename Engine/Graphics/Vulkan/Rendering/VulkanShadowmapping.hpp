@@ -20,10 +20,12 @@ namespace VSGE {
 
 	class VulkanShadowCaster {
 	public:
+		Entity* _entity;
 		VulkanFramebuffer* _framebuffer;
 		VulkanCommandBuffer* _cmdbuf;
 
 		VulkanShadowCaster() {
+			_entity = nullptr;
 			_framebuffer = new VulkanFramebuffer;
 			_framebuffer->SetLayersCount(0);
 			_cmdbuf = new VulkanCommandBuffer;
@@ -48,8 +50,10 @@ namespace VSGE {
 		//-----------------Shadow Pipeline------------
 		VertexLayout shadowmap_vertex_layout;
 		VulkanShader* _shadowmap_shader;
+		VulkanShader* _shadowmap_point_shader;
 		VulkanPipelineLayout* _shadowmap_layout;
 		VulkanPipeline* _shadowmapPipeline;
+		VulkanPipeline* _shadowmap_point_Pipeline;
 		//-----------------Shadowprocess pipeline
 		VertexLayout _shadowprocess_vertex_layout;
 		VulkanShader* _shadowprocess_shader;
