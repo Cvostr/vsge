@@ -54,7 +54,7 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-0.296381712, -9.07172585, 9.94858646]
+    pos: [2.2745688, -11.9433212, 2.53718376]
     scale: [66.77285, 1, 80]
     rot: [0, 0, 0, 1]
     components:
@@ -171,7 +171,11 @@ Entities:
         range: 5.5
         sp_angle: 12.5
         color: [1, 1, 1, 1]
-        castShadows: false
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 0.00499999989
+        pcf: 4
+        cascades: 3
   - Entity: RootNode
     uid: [186694011, 1344920229, 3883134295, 1663786131]
     active: true
@@ -1490,7 +1494,7 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [186694011, 1344920229, 3883134295, 1663786131]
-    pos: [-27.5841732, -8.04872799, -61.8705978]
+    pos: [-32.1441803, -10.8495951, -61.8705978]
     scale: [0.241080031, 0.241080031, 0.241080031]
     rot: [0, 0, 0, 1]
     components:
@@ -1517,7 +1521,7 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [2650036101, 648505759, 56455176, 2644870154]
-    pos: [-14.6844635, -5.11265564, 35.4858131]
+    pos: [-14.6844635, -20.7938347, 35.4858131]
     scale: [54.0000076, 54.0000038, 54.0000038]
     rot: [0, 0, 0, 1]
     components:
@@ -1539,24 +1543,3 @@ Entities:
         mesh: tree.002
       - Component: 2
         material: Default Material
-  - Entity: Point Light
-    uid: [2128428480, 2089079935, 210265202, 2967914581]
-    active: true
-    static: false
-    view_mask: 18446744073709551615
-    parent: [0, 0, 0, 0]
-    pos: [-4.32765913, -1.62972403, 2.53296185]
-    scale: [1, 1, 1]
-    rot: [0, 0, 0, 1]
-    components:
-      - Component: 1
-        light_type: 1
-        intensity: 1
-        range: 22
-        sp_angle: 12.5
-        color: [1, 1, 1, 1]
-        castShadows: true
-        shadowStrength: 0.600000024
-        shadowBias: 0.00499999989
-        pcf: 4
-        cascades: 3

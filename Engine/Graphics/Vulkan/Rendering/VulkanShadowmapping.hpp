@@ -3,6 +3,7 @@
 #include "../VulkanFramebuffer.hpp"
 #include "../VulkanCommandBuffer.hpp"
 #include "../VulkanSynchronization.hpp"
+#include <Scene/EntityComponents/LightComponent.hpp>
 #include <vector>
 #include <Scene/Entity.hpp>
 #include <Graphics/VertexLayout.hpp>
@@ -20,12 +21,11 @@ namespace VSGE {
 
 	class VulkanShadowCaster {
 	public:
-		Entity* _entity;
+		LightType _caster_type;
 		VulkanFramebuffer* _framebuffer;
 		VulkanCommandBuffer* _cmdbuf;
 
 		VulkanShadowCaster() {
-			_entity = nullptr;
 			_framebuffer = new VulkanFramebuffer;
 			_framebuffer->SetLayersCount(0);
 			_cmdbuf = new VulkanCommandBuffer;
@@ -44,6 +44,7 @@ namespace VSGE {
 		VulkanSemaphore* _shadowmapSecondSemaphore;
 
 		VulkanRenderPass* _shadowmapRenderPass;
+		VulkanRenderPass* _shadowmap_point_RenderPass;
 		VulkanRenderPass* _shadowprocessRenderPass;
 
 		VulkanCommandPool* _shadowmapCmdPool;

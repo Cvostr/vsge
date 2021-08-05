@@ -1,5 +1,4 @@
 #include "VulkanShadowmapping.hpp"
-#include <Scene/EntityComponents/LightComponent.hpp>
 #include "../VulkanRAPI.hpp"
 #include "../VulkanPipeline.hpp"
 #include <Resources/ResourceTypes/MeshResource.hpp>
@@ -34,6 +33,11 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmapRenderPass->SetClearSize(2048, 2048);
 	_shadowmapRenderPass->PushDepthAttachment(FORMAT_DEPTH_32);
 	_shadowmapRenderPass->Create();
+
+	_shadowmap_point_RenderPass = new VulkanRenderPass;
+	_shadowmap_point_RenderPass->SetClearSize(2048, 2048);
+	_shadowmap_point_RenderPass->PushColorAttachment(FORMAT_R32F);
+	_shadowmap_point_RenderPass->Create();
 
 	_shadowmapCmdPool = new VulkanCommandPool;
 	_shadowmapCmdPool->Create(device->GetGraphicsQueueFamilyIndex());
@@ -102,11 +106,11 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
 
 	_shadowmap_point_Pipeline = new VulkanPipeline;
-	_shadowmap_point_Pipeline->SetDepthTest(true);
+	_shadowmap_point_Pipeline->SetDepthTest(false);
 	_shadowmap_point_Pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
 	_shadowmap_point_Pipeline->Create(
 		_shadowmap_point_shader,
-		_shadowmapRenderPass,
+		_shadowmap_point_RenderPass,
 		shadowmap_vertex_layout,
 		_shadowmap_layout);
 
@@ -172,6 +176,7 @@ VulkanShadowmapping::~VulkanShadowmapping() {
 void VulkanShadowmapping::AddEntity(Entity* entity) {
 	LightsourceComponent* light = entity->GetComponent<LightsourceComponent>();
 	uint32 cascades_count = light->GetShadowCascadesCount();
+	LightType caster_type = light->GetLightType();
 
 	VulkanShadowCaster* caster = nullptr;
 
@@ -185,17 +190,23 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		caster = _casters[_added_casters];
 	}
 
-	caster->_entity = entity;
-
 	uint32 layers = caster->_framebuffer->GetLayersCount();
-	if (layers != cascades_count) {
-		bool is_cubemap = (light->GetLightType() == LIGHT_TYPE_POINT);
+	if (layers != cascades_count || caster->_caster_type != caster_type) {
+		bool is_point = (caster_type == LIGHT_TYPE_POINT);
 		caster->_framebuffer->Destroy();
 		caster->_framebuffer->SetSize(MAP_SIZE, MAP_SIZE);
-		caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, cascades_count, is_cubemap);
 		caster->_framebuffer->SetLayersCount(cascades_count);
-		caster->_framebuffer->Create(_shadowmapRenderPass);
+		if (is_point) {
+			caster->_framebuffer->AddAttachment(FORMAT_R32F, 6, true);
+			caster->_framebuffer->Create(_shadowmap_point_RenderPass);
+		}
+		else {
+			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, cascades_count);
+			caster->_framebuffer->Create(_shadowmapRenderPass);
+		}
 	}
+
+	caster->_caster_type = entity->GetComponent<LightsourceComponent>()->GetLightType();
 
 	Mat4* cascades_projections = light->GetShadowcastMatrices(cam);
 	_shadowcasters_buffer->WriteData(_added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * cascades_count, cascades_projections);
@@ -254,13 +265,14 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 	_writtenParticleTransforms = 0;
 
 	cmdbuf->Begin();
-	_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
-
-	if (caster->_entity->GetComponent<LightsourceComponent>()->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
+	
+	if (caster->_caster_type == LIGHT_TYPE_DIRECTIONAL) {
+		_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmapPipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
-	}else if (caster->_entity->GetComponent<LightsourceComponent>()->GetLightType() == LIGHT_TYPE_POINT) {
+	}else if (caster->_caster_type == LIGHT_TYPE_POINT) {
+		_shadowmap_point_RenderPass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmap_point_Pipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
@@ -304,8 +316,8 @@ void VulkanShadowmapping::ExecuteShadowCaster(uint32 casterIndex, VulkanSemaphor
 	std::vector<VulkanTexture*> shadowmaps;
 	std::vector<VulkanTexture*> shadowmaps_point;
 	for (auto caster : _casters) {
-		if (caster->_framebuffer->GetDepthAttachment()->IsCubemap())
-			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
+		if (caster->_caster_type == LIGHT_TYPE_POINT)
+			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetColorAttachments()[0]);
 		else
 			shadowmaps.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 	}

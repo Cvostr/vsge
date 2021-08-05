@@ -21,8 +21,9 @@ void VulkanFramebuffer::AddAttachment(Texture* attachment) {
 	}
 }
 
-void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers) {
+void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers, bool cubemap) {
 	VulkanTexture* new_attachment = new VulkanTexture;
+	new_attachment->SetCubemap(cubemap);
 	new_attachment->SetRenderTargetFlag(true);
 	new_attachment->Create(_width, _height, Format, layers, 1);
 	new_attachment->CreateImageView();

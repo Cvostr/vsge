@@ -26,6 +26,11 @@ namespace VSGE {
         FORMAT_RGB16F,
         FORMAT_RGBA16F,
 
+        FORMAT_R32F,
+        FORMAT_RG32F,
+        FORMAT_RGB32F,
+        FORMAT_RGBA32F,
+
         FORMAT_BC1_UNORM = 0x31545844,
         FORMAT_BC2_UNORM = 0x33545844,
         FORMAT_BC3_UNORM = 0x35545844,

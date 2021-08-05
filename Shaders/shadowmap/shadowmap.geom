@@ -1,7 +1,5 @@
 #version 450 core
 
-const int MAX_SPLITS = 4;
-
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 30) out;
 
@@ -20,7 +18,7 @@ void main() {
 		for (int i = 0; i < gl_in.length(); i++)
 		{
 			gl_Position = projections[cascade] * gl_in[i].gl_Position;
-			FragPos = gl_Position.xyz;
+			FragPos = gl_in[i].gl_Position.xyz;
 			EmitVertex();
 		}
 		EndPrimitive();

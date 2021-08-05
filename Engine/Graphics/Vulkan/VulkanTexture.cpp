@@ -42,6 +42,18 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 	case TextureFormat::FORMAT_RGBA16F:
 		vk_format = VK_FORMAT_R16G16B16A16_SFLOAT;
 		break;
+	case TextureFormat::FORMAT_R32F:
+		vk_format = VK_FORMAT_R32_SFLOAT;
+		break;
+	case TextureFormat::FORMAT_RG32F:
+		vk_format = VK_FORMAT_R32G32_SFLOAT;
+		break;
+	case TextureFormat::FORMAT_RGB32F:
+		vk_format = VK_FORMAT_R32G32B32_SFLOAT;
+		break;
+	case TextureFormat::FORMAT_RGBA32F:
+		vk_format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		break;
 	case TextureFormat::FORMAT_DEPTH_24_STENCIL_8:
 		vk_format = VK_FORMAT_D24_UNORM_S8_UINT;
 		break;

@@ -26,7 +26,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="Format">- format of new texture</param>
 		/// <param name="layers">- count of layers of new texture</param>
-		virtual void AddAttachment(TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1) = 0;
+		virtual void AddAttachment(TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1, bool cubemap = false) = 0;
 		/// <summary>
 		/// Create and set new depth attachment
 		/// </summary>

@@ -81,8 +81,8 @@ void main(){
             vec3 dir = FragPos - casters[caster_i].pos;
             float shadowmap_depth = texture(shadowmaps_point[0], dir).r;
             float real_depth = length(dir);
-            if(shadowmap_depth < 1)
-                result += (real_depth - casters[caster_i].ShadowBias >= shadowmap_depth * 100) ? casters[caster_i].ShadowStrength : 0.0;
+            if(shadowmap_depth > 0.00001)
+                result += (real_depth - casters[caster_i].ShadowBias * 5 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
         }
     }
 
