@@ -32,7 +32,7 @@ void Resource::Use() {
 	_lastUseFrame = TimePerf::Get()->GetCurrentTime();
 }
 
-void Resource::Load() {
+void Resource::Load(bool just_read) {
 	if (_resourceState == RESOURCE_STATE_UNLOADED) {
 		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(this);
 	}

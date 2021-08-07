@@ -213,6 +213,7 @@ void Material::SetCubeTexture(const std::string& texture_name, ResourceReference
 	for (uint32 i = 0; i < 6; i++) {
 		cube_texture->_cube_sides[i] = texture[i];
 	}
+	cube_texture->_need_update = true;
 }
 
 uint32 align(uint32 in) {
@@ -283,7 +284,7 @@ void Material::Serialize(const std::string& fpath) {
 	stream.close();
 }
 void Material::Deserialize(byte* data, uint32 size) {
-	if (size == 0)
+	if (size == 0 || data == nullptr)
 		return;
 
 	ByteSolver deserializer(data, size);

@@ -11,32 +11,41 @@
 
 namespace VSGE {
 
+	struct LoadRequest {
+		Resource* _resource;
+		bool _justRead;
+
+		LoadRequest() 
+		{
+
+		}
+
+		LoadRequest(Resource* resource, bool justRead = false) :
+			_resource(resource),
+			_justRead(justRead)
+		{
+
+		}
+	};
+
 	class AsyncLoader : public Thread {
 	private:
 		Mutex* mMutex;
-		Resource** loadQueue;
+		LoadRequest* loadQueue;
 		uint32 queue_length;
 	public:
-		AsyncLoader() :
-			mMutex(new Mutex),
-			queue_length(0)
-		{
-			loadQueue = new Resource*[LOADER_QUEUE_SIZE];
-		}
+		AsyncLoader();
 
-		~AsyncLoader() {
-			delete mMutex;
-			delete[] loadQueue;
-		}
+		~AsyncLoader();
 
 		uint32 GetQueuedResourcesCount() { return queue_length; }
 
-		void AddToQueue(Resource* resource);
+		void AddToQueue(Resource* resource, bool justRead = false);
 
 		void WaitForLoading(Resource* resource);
 
 		void THRFunc();
 
-		void LoadResource(Resource* resource);
+		void LoadResource(Resource* resource, bool justRead);
 	};
 }

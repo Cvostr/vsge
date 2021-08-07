@@ -1,4 +1,6 @@
 #include "VulkanRenderer.hpp"
+#include <Resources/ResourceCache.hpp>
+#include <Core/Random.hpp>
 
 using namespace VSGE;
 
@@ -41,6 +43,16 @@ VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
 		//Store descriptor pointer in material
 		material->SetDescriptors(mat);
 
+		for (MaterialCubeTexture& tex : material->GetCubeTextures()) {
+			TextureResource* cube_texture_resource = new TextureResource;
+			cube_texture_resource->SetName(GetRandomString(10));
+			cube_texture_resource->GetTexture()->SetCubemap(true);
+
+			ResourceCache::Get()->PushResource(cube_texture_resource);
+
+			tex._cubeTexture.SetResource(cube_texture_resource->GetName());
+		}
+
 		return mat;
 	}
 
@@ -51,6 +63,10 @@ VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(Mat
 	VulkanDescriptorSet* set = new VulkanDescriptorSet;
 	set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
 	for (MaterialTexture& texture : mat_template->GetTextures())
+	{
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texture._binding, VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+	for (MaterialCubeTexture& texture : mat_template->GetCubeTextures())
 	{
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texture._binding, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
@@ -94,6 +110,66 @@ void VulkanRenderer::BindMaterial(Material* mat) {
 		}
 		if (!unloaded_texture)
 			mat->_texturesDirty = false;
+	}
+
+	for (MaterialCubeTexture& tex : mat->GetCubeTextures()) {
+		if (tex._need_update) {
+			TextureResource* resource = tex._cubeTexture.GetResource<TextureResource>();
+			VulkanTexture* cube_texture =
+				static_cast<VulkanTexture*>(resource->GetTexture());
+
+			if (cube_texture->IsCreated())
+				cube_texture->Destroy();
+			//cube_texture->Create(2048, 2048, format, 6, mipsCount);
+			if (resource) {
+				for (uint32 i = 0; i < 6; i++) {
+					ResourceReference* ref = &tex._cube_sides[i];
+					TextureResource* side_resource = ref->GetResource<TextureResource>();
+					
+
+					side_resource->Load(true);
+					byte* data = side_resource->GetLoadedData();
+
+					if (data) {
+						int maxHeight = *(reinterpret_cast<int*>(&(data[12]))); //Getting height of texture in px info
+						int maxWidth = *(reinterpret_cast<int*>(&(data[16]))); //Getting width of texture in px info
+						uint32 linearSize = *(reinterpret_cast<uint32*>(&(data[20])));
+						uint32 mipsCount = *(reinterpret_cast<uint32*>(&(data[28])));
+						uint32 fourCC = *(reinterpret_cast<uint32*>(&(data[84])));
+
+
+						uint32 bufsize = mipsCount > 1 ? linearSize * 2 : linearSize;//Getting buffer size
+						byte* bufferT = data + 128; //jumping over header
+						//Enum BC
+						TextureFormat format = (TextureFormat)fourCC;
+
+						//Getting block size
+						uint32 blockSize = (format == FORMAT_BC1_UNORM) ? 8 : 16;
+						//Create empty texture
+						
+
+						uint32 offset = 0;
+						int nwidth = maxWidth;
+						int nheight = maxHeight;
+
+						for (uint32 level = 0; level < mipsCount; ++level) //Iterating over mipmaps
+						{
+							uint32 size = ((nwidth + 3) / 4) * ((nheight + 3) / 4) * blockSize; //Calculating mip texture size
+
+							cube_texture->AddMipLevel(bufferT + offset, size, nwidth, nheight, level, i);
+
+							offset += size;
+							nwidth /= 2;
+							nheight /= 2;
+						}
+					}
+				}
+				cube_texture->CreateImageView();
+
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, cube_texture, this->mMaterialMapsSampler);
+				tex._need_update = false;
+			}
+		}
 	}
 
 	if (mat->_paramsDirty) {

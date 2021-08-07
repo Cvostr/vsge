@@ -78,6 +78,7 @@ namespace VSGE {
 
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;
+		MaterialTemplate* skybox_template;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 

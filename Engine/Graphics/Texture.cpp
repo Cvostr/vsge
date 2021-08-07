@@ -34,11 +34,11 @@ bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
 	int maxHeight = *(reinterpret_cast<int*>(&(data[12]))); //Getting height of texture in px info
 	int maxWidth = *(reinterpret_cast<int*>(&(data[16]))); //Getting width of texture in px info
 	uint32 linearSize = *(reinterpret_cast<uint32*>(&(data[20])));
-	uint32 mMipsCount = *(reinterpret_cast<uint32*>(&(data[28])));
+	uint32 mipsCount = *(reinterpret_cast<uint32*>(&(data[28])));
 	uint32 fourCC = *(reinterpret_cast<uint32*>(&(data[84])));
 
 
-	uint32 bufsize = mMipsCount > 1 ? linearSize * 2 : linearSize;//Getting buffer size
+	uint32 bufsize = mipsCount > 1 ? linearSize * 2 : linearSize;//Getting buffer size
 	byte* bufferT = data + 128; //jumping over header
     //Enum BC
     TextureFormat format = (TextureFormat)fourCC;
@@ -46,13 +46,13 @@ bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
 	//Getting block size
     uint32 blockSize = (format == FORMAT_BC1_UNORM) ? 8 : 16;
     //Create empty texture
-    texture->Create(maxWidth, maxHeight, format, 1, mMipsCount);
+    texture->Create(maxWidth, maxHeight, format, 1, mipsCount);
 
     uint32 offset = 0;
     int nwidth = maxWidth;
     int nheight = maxHeight;
 
-    for (uint32 level = 0; level < mMipsCount; ++level) //Iterating over mipmaps
+    for (uint32 level = 0; level < mipsCount; ++level) //Iterating over mipmaps
     {
         size = ((nwidth + 3) / 4) * ((nheight + 3) / 4) * blockSize; //Calculating mip texture size
 
@@ -69,6 +69,9 @@ bool LoadTextureDDS(byte* data, uint32 size, Texture* texture) {
 }
 
 bool Texture::CreateFromBuffer(byte* data, uint32 size) {
+    if (data == nullptr || size == 0)
+        return false;
+
     if (data[0] == 'D' && data[1] == 'D' && data[2] == 'S') {
         return LoadTextureDDS(data, size, this);
     }

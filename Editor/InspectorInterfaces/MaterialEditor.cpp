@@ -34,6 +34,19 @@ void VSGEditor::DrawMaterialEditor(VSGE::Material* material) {
 		material->SetTexture(texture._name, texture._resource);
 	}
 
+	std::string captions[6] = { "Right", "Left", "Top", "Bottom", "Back", "Front" };
+
+	for (MaterialCubeTexture& texture : material->GetCubeTextures()) {
+		std::vector<ResourceReference> sides;
+		for (uint32 i = 0; i < 6; i++) {
+			ResourceReference* reference = &texture._cube_sides[i];
+			DrawResourcePicker(captions[i].c_str(), *reference);
+			sides.push_back(*reference);
+		}
+		
+		material->SetCubeTexture(texture._name, sides.data());
+	}
+
 	for (MaterialParameter& param : material->GetParams()) {
 		if (param.name[0] != '@') {
 			DrawVariantInput(param.name, param.value);

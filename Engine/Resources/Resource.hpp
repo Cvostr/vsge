@@ -135,7 +135,7 @@ namespace VSGE {
 		/// </summary>
 		void Use();
 
-		virtual void Load();
+		virtual void Load(bool just_read = false);
 		virtual void Release() {}
 		virtual void Prepare() {}
 		virtual void PostLoad() {}

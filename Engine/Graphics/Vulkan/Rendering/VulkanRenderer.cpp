@@ -30,6 +30,11 @@ void VulkanRenderer::SetupRenderer() {
 	particle->AddShaderFromFile("particle.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(particle, "Particle");
 
+	VulkanShader* skybox = new VulkanShader;
+	skybox->AddShaderFromFile("skybox.vert", SHADER_STAGE_VERTEX);
+	skybox->AddShaderFromFile("skybox.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(skybox, "Skybox");
+
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 	//--------------------Framebuffers----------------
 	mGBufferPass = new VulkanRenderPass;
@@ -248,6 +253,18 @@ void VulkanRenderer::SetupRenderer() {
 	MaterialTemplateCache::Get()->AddTemplate(particle_template);
 	CreatePipelineFromMaterialTemplate(particle_template);
 
+
+	skybox_template = new MaterialTemplate;
+	skybox_template->SetName("default_skybox");
+	skybox_template->SetVertexLayout(_vertexLayout);
+	skybox_template->SetCullMode(CULL_MODE_NONE);
+	skybox_template->AddCubeTexture("Skybox", 1);
+	skybox_template->AddParameter("Tint color", Color(1, 1, 1, 1));
+	skybox_template->AddParameter("Exposure", 1.f);
+	skybox_template->SetShader("Skybox");
+
+	MaterialTemplateCache::Get()->AddTemplate(skybox_template);
+	CreatePipelineFromMaterialTemplate(skybox_template);
 }
 
 void VulkanRenderer::DestroyRenderer() {

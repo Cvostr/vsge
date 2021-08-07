@@ -45,6 +45,9 @@ namespace VSGE {
 		MaterialCubeTexture(){
 			_binding = 0;
 			_cube_sides.resize(6);
+			for (uint32 i = 0; i < 6; i++) {
+				_cube_sides[i].SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+			}
 			_need_update = true;
 		}
 	};
