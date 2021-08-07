@@ -82,4 +82,7 @@ void SceneViewWindow::OnWindowResize() {
     ImVec2 c = ImGui::GetCursorPos();
     EditorLayer* editor_layer = EditorLayer::Get();
     editor_layer->GetCamera()->SetAspectRatio(_size.x / _size.y);
+
+    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+    renderer->ResizeOutput(_size.x, _size.y);
 }

@@ -84,6 +84,7 @@ void VulkanTexture::Destroy() {
 		ma->destroyImage(&_image);
 		vkDestroyImageView(device->getVkDevice(), _imageView, nullptr);
 
+		_layout = VK_IMAGE_LAYOUT_UNDEFINED;
 		mCreated = false;
 	}
 }
@@ -214,6 +215,8 @@ bool VulkanTexture::CreateImageView() {
 
 	if (vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &_imageView) != VK_SUCCESS)
 		return false;
+
+	mCreated = true;
 
 	return true;
 }

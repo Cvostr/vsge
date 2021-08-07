@@ -128,5 +128,7 @@ namespace VSGE {
 		void SetupRenderer();
 		void DestroyRenderer();
 		void DrawScene(VSGE::Camera* cam);
+
+		void ResizeOutput(uint32 width, uint32 height);
 	};
 }

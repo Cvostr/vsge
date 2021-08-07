@@ -56,6 +56,26 @@ void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
 	if (_width != width || _height != height) {
 		Framebuffer::SetSize(width, height);
+
+		if (IsCreated()) {
+			uint32 layers = _layers;
+			Destroy();
+
+			for (auto attachment : _attachments) {
+				attachment->Resize(width, height);
+				attachment->CreateImageView();
+				_views.push_back(((VulkanTexture*)attachment)->GetImageView());
+			}
+
+			if (_depthAttachment) {
+				_depthAttachment->Resize(width, height);
+				_depthAttachment->CreateImageView();
+				_views.push_back(((VulkanTexture*)_depthAttachment)->GetImageView());
+			}
+
+			_layers = layers;
+			Create(_renderpass);
+		}
 	}
 }
 
@@ -70,6 +90,7 @@ uint32 VulkanFramebuffer::GetLayersCount() {
 bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan_rapi->GetDevice();
+	_renderpass = renderpass;
 
 	if (!mCreated) {
 		VkFramebufferCreateInfo framebufferInfo = {};

@@ -154,10 +154,10 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 }
 VulkanShadowmapping::~VulkanShadowmapping() {
-	delete _shadowmapFirstSemaphore;
-	delete _shadowmapSecondSemaphore;
+	//delete _shadowmapFirstSemaphore;
+	//delete _shadowmapSecondSemaphore;
 
-	delete _shadowmapRenderPass;
+	/*delete _shadowmapRenderPass;
 
 	delete _shadowmapCmdPool;
 
@@ -170,7 +170,7 @@ VulkanShadowmapping::~VulkanShadowmapping() {
 	delete _shadowprocess_shader;
 	
 	delete _shadowcasters_buffer;
-	delete _shadowprocess_buffer;
+	delete _shadowprocess_buffer;*/
 }
 
 void VulkanShadowmapping::AddEntity(Entity* entity) {

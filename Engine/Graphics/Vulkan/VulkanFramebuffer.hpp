@@ -9,6 +9,7 @@ namespace VSGE {
 	private:
 		VkFramebuffer _framebuffer;
 		uint32 _layers;
+		VulkanRenderPass* _renderpass;
 
 		std::vector<VkImageView> _views;
 	public:

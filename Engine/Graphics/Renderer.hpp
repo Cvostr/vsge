@@ -37,6 +37,8 @@ namespace VSGE {
 			return mOutput;
 		}
 
+		virtual void ResizeOutput(uint32 width, uint32 height) = 0;
+
 		const tEntityList& GetEntitiesToDraw() {
 			return _entitiesToRender;
 		}
