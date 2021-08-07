@@ -70,5 +70,8 @@ void ResourceReference::SetResource(Resource* resource) {
 
 void ResourceReference::SetResource(const std::string& resourceName) {
 	_resourceName = resourceName;
-	SetResource(ResourceCache::Get()->GetResource(_resourceName));
+	if (resourceName.empty())
+		_resourcePointer = nullptr;
+	else
+		SetResource(ResourceCache::Get()->GetResource(_resourceName));
 }

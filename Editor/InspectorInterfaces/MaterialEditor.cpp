@@ -30,7 +30,7 @@ void VSGEditor::DrawMaterialEditor(VSGE::Material* material) {
 		return;
 
 	for (MaterialTexture& texture : material->GetTextures()) {
-		DrawResourcePicker(texture._name.c_str(), texture._resource);
+		DrawResourcePicker(texture._name.c_str(), texture._resource, true);
 		material->SetTexture(texture._name, texture._resource);
 	}
 

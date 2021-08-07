@@ -24,6 +24,12 @@ void ResourcePickerWindow::OnDrawWindow() {
         if (script == nullptr)
             scripts_size = 0;
 
+        if (_allow_empty_resource) {
+            if (ImGui::Button("...", ImVec2(32, 32))) {
+                SetResourceToReference("");
+            }
+        }
+
         for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) {
             Resource* resource = ResourceCache::Get()->GetResources()[resource_i];
             if (resource->GetResourceType() == reference->GetResourceType()) {
@@ -69,6 +75,15 @@ void ResourcePickerWindow::OnDrawWindow() {
 void ResourcePickerWindow::SetResourceToReference(Resource* resource) {
     reference->SetResource(resource->GetName());
     Hide();
+}
+
+void ResourcePickerWindow::SetResourceToReference(const std::string& resource_name) {
+    reference->SetResource(resource_name);
+    Hide();
+}
+
+void ResourcePickerWindow::SetAllowEmptyResource(bool empty_resource) {
+    _allow_empty_resource = empty_resource;
 }
 
 void ResourcePickerWindow::SetResourceReference(VSGE::ResourceReference* reference) {

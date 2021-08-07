@@ -199,8 +199,8 @@ MaterialCubeTexture* Material::GetCubeTextureByName(const std::string& cube_text
 
 void Material::SetTexture(const std::string& texture_name, ResourceReference& texture) {
 	GetTextureByName(texture_name)->_resource = texture;
-	if(texture.GetResource() != nullptr)
-		SetParameter("@has_" + texture_name, true);
+	bool hasTexture = texture.GetResource() != nullptr;
+	SetParameter("@has_" + texture_name, hasTexture);
 	_texturesDirty = true;
 }
 void Material::SetParameter(const std::string& parameter_name, MultitypeValue value) {

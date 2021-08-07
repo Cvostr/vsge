@@ -7,7 +7,7 @@
 using namespace VSGE;
 using namespace VSGEditor;
 
-void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& reference)
+void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& reference, bool empty_res)
 {
 	ImGui::Text(label.c_str());
 
@@ -38,6 +38,7 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 
 	if (ImGui::Button(btn_text.c_str())) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
+		rpw->SetAllowEmptyResource(empty_res);
 		rpw->SetResourceReference(&reference);
 		rpw->Show();
 	}
