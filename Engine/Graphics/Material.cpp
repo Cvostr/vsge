@@ -64,6 +64,10 @@ tMaterialTexturesList& MaterialTemplate::GetTextures() {
 	return _materialTextures;
 }
 
+tMaterialCubeTexturesList& MaterialTemplate::GetCubeTextures() {
+	return _materialCubeTextures;
+}
+
 tMaterialParamsList& MaterialTemplate::GetParams() {
 	return _materialParams;
 }
@@ -112,6 +116,15 @@ void MaterialTemplate::AddTexture(const std::string& name, uint32 binding) {
 	AddParameter("@has_" + name, false);
 }
 
+void MaterialTemplate::AddCubeTexture(const std::string& name, uint32 binding) {
+	MaterialCubeTexture texture;
+	texture._binding = binding;
+	texture._name = name;
+	_materialCubeTextures.push_back(texture);
+
+	AddParameter("@has_" + name, false);
+}
+
 MaterialTemplate* MaterialTemplateCache::GetTemplate(const std::string& name) {
 	for (auto _template : _templates) {
 		if (_template->GetName() == name) {
@@ -140,10 +153,14 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 
 	//clear params and textures first
 	_materialTextures.clear();
+	_materialCubeTextures.clear();
 	_materialParams.clear();
 
 	for (auto texture : mat_template->GetTextures()) {
 		this->_materialTextures.push_back(texture);
+	}
+	for (auto texture : mat_template->GetCubeTextures()) {
+		this->_materialCubeTextures.push_back(texture);
 	}
 	for (auto param : mat_template->GetParams()) {
 		this->_materialParams.push_back(param);
@@ -171,6 +188,15 @@ MaterialParameter* Material::GetParameterByName(const std::string& param_name) {
 	return nullptr;
 }
 
+MaterialCubeTexture* Material::GetCubeTextureByName(const std::string& cube_texture_name) {
+	for (MaterialCubeTexture& texture : _materialCubeTextures) {
+		if (texture._name == cube_texture_name)
+			return &texture;
+	}
+
+	return nullptr;
+}
+
 void Material::SetTexture(const std::string& texture_name, ResourceReference& texture) {
 	GetTextureByName(texture_name)->_resource = texture;
 	if(texture.GetResource() != nullptr)
@@ -180,6 +206,13 @@ void Material::SetTexture(const std::string& texture_name, ResourceReference& te
 void Material::SetParameter(const std::string& parameter_name, MultitypeValue value) {
 	GetParameterByName(parameter_name)->value = value;
 	_paramsDirty = true;
+}
+
+void Material::SetCubeTexture(const std::string& texture_name, ResourceReference* texture) {
+	MaterialCubeTexture* cube_texture = GetCubeTextureByName(texture_name);
+	for (uint32 i = 0; i < 6; i++) {
+		cube_texture->_cube_sides[i] = texture[i];
+	}
 }
 
 uint32 align(uint32 in) {

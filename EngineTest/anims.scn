@@ -2652,3 +2652,20 @@ Entities:
         mesh: Mesh
       - Component: 2
         material: material
+  - Entity: Directional Light
+    uid: [2196912693, 2066545320, 2737837582, 1067858253]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0.129807219, 0.278728426, 0.06901972, 0.949050486]
+    components:
+      - Component: 1
+        light_type: 0
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: false

@@ -66,30 +66,35 @@ void VulkanRenderer::BindMaterial(Material* mat) {
 
 	VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
 
-	//if (mat->_texturesDirty) {
-	for (MaterialTexture& tex : mat->GetTextures()) {
-		TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
-		if (texture_res == nullptr) {
-			//if no texture bound, then bind default white texture
-			vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, mEmptyTexture, this->mMaterialMapsSampler);
-			continue;
+	bool unloaded_texture = false;
+	if (mat->_texturesDirty) {
+		for (MaterialTexture& tex : mat->GetTextures()) {
+			TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
+			if (texture_res == nullptr) {
+				//if no texture bound, then bind default white texture
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, mEmptyTexture, this->mMaterialMapsSampler);
+				continue;
+			}
+
+			if (texture_res->GetState() == RESOURCE_STATE_UNLOADED) {
+				//Load texture
+				texture_res->Load();
+			}
+
+			if (texture_res->GetState() == RESOURCE_STATE_READY) {
+				//Mark texture resource as used in this frame
+				texture_res->Use();
+				//Write texture to descriptor
+
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
+			}else
+				//Not all textures are loaded, 
+				//we have to return to this material in next frame
+				unloaded_texture = true;
 		}
-
-		if (texture_res->GetState() == RESOURCE_STATE_UNLOADED) {
-			//Load texture
-			texture_res->Load();
-		}
-
-		if (texture_res->GetState() == RESOURCE_STATE_READY) {
-			//Mark texture resource as used in this frame
-			texture_res->Use();
-			//Write texture to descriptor
-
-			vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
+		if (!unloaded_texture)
 			mat->_texturesDirty = false;
-		}
 	}
-	//}
 
 	if (mat->_paramsDirty) {
 		char* buffer = nullptr;

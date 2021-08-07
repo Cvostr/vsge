@@ -334,7 +334,8 @@ void VulkanRenderer::StoreWorldObjects() {
 		if (!resource)
 			continue;
 		Material* mat = resource->GetMaterial();
-		BindMaterial(mat);
+		if(resource->GetState() == RESOURCE_STATE_READY)
+			BindMaterial(mat);
 	}
 
 	for (uint32 particle_em_i = 0; particle_em_i < _particleEmitters.size(); particle_em_i++) {
@@ -393,6 +394,9 @@ void VulkanRenderer::StoreWorldObjects() {
 		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
 		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
 		
+		if (mat_resource->GetState() != RESOURCE_STATE_READY)
+			continue;
+
 		//bind material
 		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
 		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
