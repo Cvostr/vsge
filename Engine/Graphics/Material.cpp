@@ -64,10 +64,6 @@ tMaterialTexturesList& MaterialTemplate::GetTextures() {
 	return _materialTextures;
 }
 
-tMaterialCubeTexturesList& MaterialTemplate::GetCubeTextures() {
-	return _materialCubeTextures;
-}
-
 tMaterialParamsList& MaterialTemplate::GetParams() {
 	return _materialParams;
 }
@@ -116,15 +112,6 @@ void MaterialTemplate::AddTexture(const std::string& name, uint32 binding) {
 	AddParameter("@has_" + name, false);
 }
 
-void MaterialTemplate::AddCubeTexture(const std::string& name, uint32 binding) {
-	MaterialCubeTexture texture;
-	texture._binding = binding;
-	texture._name = name;
-	_materialCubeTextures.push_back(texture);
-
-	AddParameter("@has_" + name, false);
-}
-
 MaterialTemplate* MaterialTemplateCache::GetTemplate(const std::string& name) {
 	for (auto _template : _templates) {
 		if (_template->GetName() == name) {
@@ -153,14 +140,10 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 
 	//clear params and textures first
 	_materialTextures.clear();
-	_materialCubeTextures.clear();
 	_materialParams.clear();
 
 	for (auto texture : mat_template->GetTextures()) {
 		this->_materialTextures.push_back(texture);
-	}
-	for (auto texture : mat_template->GetCubeTextures()) {
-		this->_materialCubeTextures.push_back(texture);
 	}
 	for (auto param : mat_template->GetParams()) {
 		this->_materialParams.push_back(param);
@@ -188,15 +171,6 @@ MaterialParameter* Material::GetParameterByName(const std::string& param_name) {
 	return nullptr;
 }
 
-MaterialCubeTexture* Material::GetCubeTextureByName(const std::string& cube_texture_name) {
-	for (MaterialCubeTexture& texture : _materialCubeTextures) {
-		if (texture._name == cube_texture_name)
-			return &texture;
-	}
-
-	return nullptr;
-}
-
 void Material::SetTexture(const std::string& texture_name, ResourceReference& texture) {
 	GetTextureByName(texture_name)->_resource = texture;
 	bool hasTexture = texture.GetResource() != nullptr;
@@ -206,14 +180,6 @@ void Material::SetTexture(const std::string& texture_name, ResourceReference& te
 void Material::SetParameter(const std::string& parameter_name, MultitypeValue value) {
 	GetParameterByName(parameter_name)->value = value;
 	_paramsDirty = true;
-}
-
-void Material::SetCubeTexture(const std::string& texture_name, ResourceReference* texture) {
-	MaterialCubeTexture* cube_texture = GetCubeTextureByName(texture_name);
-	for (uint32 i = 0; i < 6; i++) {
-		cube_texture->_cube_sides[i] = texture[i];
-	}
-	cube_texture->_need_update = true;
 }
 
 uint32 align(uint32 in) {
@@ -266,18 +232,11 @@ void Material::Serialize(const std::string& fpath) {
 	serializer.Serialize(template_name);
 	//Write count of textures and params
 	serializer.Serialize((uint32)_materialTextures.size());
-	serializer.Serialize((uint32)_materialCubeTextures.size());
 	serializer.Serialize((uint32)_materialParams.size());
 	//Write textures
 	for (auto& _texture : _materialTextures) {
 		serializer.Serialize(_texture._name);
 		serializer.Serialize(_texture._resource.GetResourceName());
-	}
-	for (auto& _texture : _materialCubeTextures) {
-		serializer.Serialize(_texture._name);
-		for (uint32 i = 0; i < 6; i++) {
-			serializer.Serialize(_texture._cube_sides[i].GetResourceName());
-		}
 	}
 
 	for (auto& _param : _materialParams) {
@@ -308,7 +267,6 @@ void Material::Deserialize(byte* data, uint32 size) {
 	SetTemplate(material_template);
 
 	uint32 textures_count = deserializer.GetValue<uint32>();
-	uint32 cube_textures_count = deserializer.GetValue<uint32>();
 	uint32 params_count = deserializer.GetValue<uint32>();
 
 	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) {
@@ -318,20 +276,6 @@ void Material::Deserialize(byte* data, uint32 size) {
 		ResourceReference ref;
 		ref.SetResource(texture_name);
 		SetTexture(name, ref);
-	}
-
-	for (uint32 texture_i = 0; texture_i < cube_textures_count; texture_i++) {
-		std::string name = deserializer.ReadNextString();
-
-		std::vector<ResourceReference> cube_references;
-		for (uint32 i = 0; i < 6; i++) {
-			std::string texture_name = deserializer.ReadNextString();
-
-			ResourceReference ref;
-			ref.SetResource(texture_name);
-			cube_references.push_back(ref);
-		}
-		SetCubeTexture(name, cube_references.data());
 	}
 
 	for (uint32 param_i = 0; param_i < params_count; param_i++) {

@@ -34,33 +34,13 @@ namespace VSGE {
 		}
 	};
 
-	class MaterialCubeTexture {
-	public:
-		std::string _name;
-		std::vector<ResourceReference> _cube_sides;
-		ResourceReference _cubeTexture;
-		uint32 _binding;
-		bool _need_update;
-
-		MaterialCubeTexture(){
-			_binding = 0;
-			_cube_sides.resize(6);
-			for (uint32 i = 0; i < 6; i++) {
-				_cube_sides[i].SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-			}
-			_need_update = true;
-		}
-	};
-
 	typedef std::vector<MaterialTexture> tMaterialTexturesList;
 	typedef std::vector<MaterialParameter> tMaterialParamsList;
-	typedef std::vector<MaterialCubeTexture> tMaterialCubeTexturesList;
 
 	class MaterialTemplate {
 	private:
 		std::string _name;
 		tMaterialTexturesList _materialTextures;
-		tMaterialCubeTexturesList _materialCubeTextures;
 		tMaterialParamsList _materialParams;
 
 		Shader* _shader;
@@ -87,15 +67,11 @@ namespace VSGE {
 
 		tMaterialTexturesList& GetTextures();
 
-		tMaterialCubeTexturesList& GetCubeTextures();
-
 		tMaterialParamsList& GetParams();
 
 		void AddParameter(const std::string& name, MultitypeValue baseValue);
 		
 		void AddTexture(const std::string& name, uint32 binding);
-
-		void AddCubeTexture(const std::string& name, uint32 binding);
 
 		Shader* GetShader();
 
@@ -152,14 +128,12 @@ namespace VSGE {
 	class Material {
 	private:
 		tMaterialTexturesList _materialTextures;
-		tMaterialCubeTexturesList _materialCubeTextures;
 		tMaterialParamsList _materialParams;
 		MaterialTemplate* _template;
 
 		GraphicsApiDependent _descriptors;
 
 		MaterialTexture* GetTextureByName(const std::string& texture_name);
-		MaterialCubeTexture* GetCubeTextureByName(const std::string& cube_texture_name);
 		MaterialParameter* GetParameterByName(const std::string& param_name);
 		
 	public:
@@ -177,10 +151,6 @@ namespace VSGE {
 		/// <returns></returns>
 		tMaterialTexturesList& GetTextures() {
 			return _materialTextures;
-		}
-
-		tMaterialCubeTexturesList& GetCubeTextures() {
-			return _materialCubeTextures;
 		}
 		/// <summary>
 		/// Get vector of parameters

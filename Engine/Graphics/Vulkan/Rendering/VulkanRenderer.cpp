@@ -258,7 +258,14 @@ void VulkanRenderer::SetupRenderer() {
 	skybox_template->SetName("default_skybox");
 	skybox_template->SetVertexLayout(_vertexLayout);
 	skybox_template->SetCullMode(CULL_MODE_NONE);
-	skybox_template->AddCubeTexture("Skybox", 1);
+
+	skybox_template->AddTexture("Back", 1);
+	skybox_template->AddTexture("Front", 2);
+	skybox_template->AddTexture("Left", 3);
+	skybox_template->AddTexture("Right", 4);
+	skybox_template->AddTexture("Bottom", 5);
+	skybox_template->AddTexture("Top", 6);
+
 	skybox_template->AddParameter("Tint color", Color(1, 1, 1, 1));
 	skybox_template->AddParameter("Exposure", 1.f);
 	skybox_template->SetShader("Skybox");

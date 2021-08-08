@@ -1543,3 +1543,17 @@ Entities:
         mesh: tree.002
       - Component: 2
         material: Default Material
+  - Entity: Cube
+    uid: [1907414088, 3013558496, 913305757, 2427740383]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0.300677419, 20.8996372, 0.495136857]
+    scale: [3.78999996, 3.78999615, 3.78999615]
+    rot: [0.721429765, 0, 0, 0.692486942]
+    components:
+      - Component: 3
+        mesh: Cube
+      - Component: 2
+        material: skybox
