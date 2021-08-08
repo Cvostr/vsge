@@ -42,9 +42,6 @@ void main() {
     if(hasAlbedo)
         tColor *= texture(albedo, UVCoord);
 
-    if(hasOcclusion)
-        tColor.rgb *= texture(occlusion_map, UVCoord).r;
-
     if(hasNormal){
         normal = texture(normal_map, UVCoord).rgb;
         normal = normalize(normal * 2 - 1);
@@ -54,6 +51,7 @@ void main() {
     float roughness = roughness_factor;
     float metallic = metallic_factor;
     float emission = 0.0;
+    float ao = 1.0;
 
     if(hasRoughness){
         roughness *= texture(roughness_map, UVCoord).r;
@@ -67,7 +65,10 @@ void main() {
         CalcLuminance(texture(emission_map, UVCoord).rgb);
     }
 
+    if(hasOcclusion)
+        ao = texture(occlusion_map, UVCoord).r;
+
     tNormal = normal;
     tPos = FragPos;
-    tMaterial = vec4(roughness, metallic, emission, 0);
+    tMaterial = vec4(roughness, metallic, emission, ao);
 }   

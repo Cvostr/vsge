@@ -29,7 +29,9 @@ void VSGEditor::DrawLightsourceComponent(VSGE::LightsourceComponent* light) {
 	ImGui::ColorEdit3("Light color", &light->GetColor().r);
 
 	ImGui::InputFloat("Intensity", &light->GetIntensity());
-	ImGui::InputFloat("Range", &light->GetRange());
+	if (light->GetLightType() != LIGHT_TYPE_DIRECTIONAL)
+		ImGui::InputFloat("Range", &light->GetRange());
+
 	if (light->GetLightType() == LIGHT_TYPE_SPOT) {
 		ImGui::InputFloat("Spot Angle", &light->GetSpotAngle());
 	}

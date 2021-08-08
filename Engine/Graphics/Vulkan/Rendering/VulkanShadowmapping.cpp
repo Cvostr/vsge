@@ -249,6 +249,7 @@ VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
 
 void VulkanShadowmapping::ResetCasters() {
 	_added_casters = 0;
+	_shadowprocess_buffer->WriteData(44032, 4, &_added_casters);
 }
 
 void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {

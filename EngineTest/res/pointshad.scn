@@ -33,37 +33,20 @@ Entities:
         volume: 1
         pitch: 1
         loop: false
-  - Entity: Directional Light
-    uid: [4022663197, 3646530176, 2222185782, 1077532849]
-    active: true
-    static: false
-    view_mask: 18446744073709551615
-    parent: [0, 0, 0, 0]
-    pos: [0, 12, 0]
-    scale: [1, 1, 1]
-    rot: [0.0205566883, -0.662172019, 0.623748004, -0.414781809]
-    components:
-      - Component: 1
-        light_type: 0
-        intensity: 1
-        range: 5.5
-        sp_angle: 12.5
-        color: [1, 1, 1, 1]
-        castShadows: false
   - Entity: Point Light
     uid: [2128428480, 2089079935, 210265202, 2967914581]
     active: true
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-3.13767004, 5.02435589, -14.5953636]
+    pos: [-6.91408396, -4.47695923, -4.41366959]
     scale: [1, 1, 1]
     rot: [0, 0, 0, 1]
     components:
       - Component: 1
         light_type: 1
         intensity: 1
-        range: 45
+        range: 20
         sp_angle: 12.5
         color: [1, 1, 1, 1]
         castShadows: true
@@ -77,11 +60,46 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-2.70532155, -5.80980873, -5.58155727]
+    pos: [-0.788089633, -5.82882595, 1.96588504]
     scale: [7.63542461, 2.38115358, 0.21073246]
-    rot: [0, 0, 0, 1]
+    rot: [0, 0.00871096738, 0, 0.999959528]
     components:
       - Component: 3
         mesh: Cube
+      - Component: 2
+        material: Default Material
+  - Entity: Point Light
+    uid: [2157211143, 3231135475, 486728144, 693281949]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [6.02170277, -4.47695923, -3.14062357]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 1
+        light_type: 1
+        intensity: 1
+        range: 20
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 0.00499999989
+        pcf: 4
+        cascades: 3
+  - Entity: Sphere
+    uid: [3952327155, 1686772550, 2986966483, 2062227912]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0.740104318, -6.91162777, -7.23007345]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh: Sphere
       - Component: 2
         material: Default Material

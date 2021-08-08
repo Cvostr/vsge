@@ -41,13 +41,21 @@ void main() {
     vec4 material = texture(material, UVCoord);
     float shadow = texture(shadows, UVCoord).r;
 
-    vec3 lightning = CalculateLightning(diffuse.rgb * (1 - shadow), normal, pos);
+    vec3 albedo = diffuse.rgb;
+    float roughness = material.r;
+    float metallic = material.g;
+    float emission = material.b;
+    float ao = material.a;
 
-    tColor = vec4(lightning, 1);
+    vec3 color = albedo * (1 - shadow);
+    vec3 lightning = CalculateLightning(diffuse.rgb, normal, pos);
+    color += lightning;
+
+    tColor = vec4(color, 1);
 }
 
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos) {
-    vec3 result = color;
+    vec3 result = vec3(0);
     //Calculate direction from camera to processing fragment
     vec3 camToFragDirection = normalize(cam_position - pos);
     //iterate over all lights and calculate them

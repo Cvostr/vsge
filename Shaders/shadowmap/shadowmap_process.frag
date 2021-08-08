@@ -45,6 +45,15 @@ float GetShadowmapSample(uint shadowmap, uint cascade, vec2 uv){
     return texture(shadowmaps[shadowmap], vec3(uv, cascade)).r; 
 }
 
+uint GetPointShadowTextureIndex(uint caster_index){
+    uint pcaster_index = 0;
+    for(uint i = 0; i < caster_index; i ++){
+        if(casters[i].caster_type == 1)
+            pcaster_index++;
+    }
+    return pcaster_index;
+}
+
 void main(){
     vec4 _pos = texture(gpos, UVCoord);
     vec3 FragPos = _pos.xyz;
@@ -79,10 +88,11 @@ void main(){
         }
         if(casters[caster_i].caster_type == 1){
             vec3 dir = FragPos - casters[caster_i].pos;
-            float shadowmap_depth = texture(shadowmaps_point[0], dir).r;
+            uint texture_index = GetPointShadowTextureIndex(caster_i);
+            float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r;
             float real_depth = length(dir);
-            if(shadowmap_depth > 0.00001)
-                result += (real_depth - casters[caster_i].ShadowBias * 5 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
+            if(shadowmap_depth > 0.00001 && result < 0.01)
+                result += (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
         }
     }
 
