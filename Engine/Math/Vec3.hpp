@@ -18,6 +18,10 @@
 			return tVec3(x * coeff, y * coeff, z * coeff);
 		}
 
+		void Normalize() {
+			*this = GetNormalized();
+		}
+
 		tVec3 Invert() const {
 			return tVec3(1.f / x, 1.f / y, 1.f / z);
 		}

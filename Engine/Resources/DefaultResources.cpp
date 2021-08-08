@@ -72,6 +72,8 @@ void VSGE::AddDefaultMaterial() {
 }
 
 void VSGE::AddDefaultMeshes() {
+    ProcessTangentSpace(cube_vertices, 36);
+
     VertexSkinningData* verts = new VertexSkinningData[36];
 
 	MeshResource* cube_mesh = new MeshResource;
@@ -164,7 +166,7 @@ void VSGE::AddDefaultMeshes() {
             }
         }
     }
-
+    ProcessTangentSpace(sphere_v.data(), sphere_indices.data(), sphere_indices.size());
     verts = new VertexSkinningData[sphere_v.size()];
 
     MeshResource* sphere_mesh = new MeshResource;

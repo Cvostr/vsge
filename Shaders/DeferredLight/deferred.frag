@@ -57,9 +57,6 @@ vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos) {
             vec3 rlight = lightcoeff * lights[lg].color;
             //Specular calculation
             vec3 lightDirReflected = reflect(normalize(-lights[lg].direction), normal);
-            //float angle = max(dot(camToFragDirection, lightDirReflected), 0.0);
-            //if(!Shadowed)
-                //rlight += pow(angle, 32) * specularFactor * lights[lg].color;
 		    //add light to result color
             result += rlight;
         }
@@ -74,8 +71,6 @@ vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos) {
             vec3 rlight = lightcoeff * lights[lg].color;
             //Specular calculation
             vec3 lightDirReflected = reflect(-Dir, normal);
-            //float angle = max(dot(camToFragDirection, lightDirReflected), 0.0);
-            //rlight += pow(angle, 32) * specularFactor * lights[lg].color;
 		    //add light to result color
             result += rlight * factor;
         }

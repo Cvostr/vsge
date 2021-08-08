@@ -266,11 +266,18 @@ void Material::Serialize(const std::string& fpath) {
 	serializer.Serialize(template_name);
 	//Write count of textures and params
 	serializer.Serialize((uint32)_materialTextures.size());
+	serializer.Serialize((uint32)_materialCubeTextures.size());
 	serializer.Serialize((uint32)_materialParams.size());
 	//Write textures
 	for (auto& _texture : _materialTextures) {
 		serializer.Serialize(_texture._name);
 		serializer.Serialize(_texture._resource.GetResourceName());
+	}
+	for (auto& _texture : _materialCubeTextures) {
+		serializer.Serialize(_texture._name);
+		for (uint32 i = 0; i < 6; i++) {
+			serializer.Serialize(_texture._cube_sides[i].GetResourceName());
+		}
 	}
 
 	for (auto& _param : _materialParams) {
@@ -301,6 +308,7 @@ void Material::Deserialize(byte* data, uint32 size) {
 	SetTemplate(material_template);
 
 	uint32 textures_count = deserializer.GetValue<uint32>();
+	uint32 cube_textures_count = deserializer.GetValue<uint32>();
 	uint32 params_count = deserializer.GetValue<uint32>();
 
 	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) {
@@ -310,6 +318,20 @@ void Material::Deserialize(byte* data, uint32 size) {
 		ResourceReference ref;
 		ref.SetResource(texture_name);
 		SetTexture(name, ref);
+	}
+
+	for (uint32 texture_i = 0; texture_i < cube_textures_count; texture_i++) {
+		std::string name = deserializer.ReadNextString();
+
+		std::vector<ResourceReference> cube_references;
+		for (uint32 i = 0; i < 6; i++) {
+			std::string texture_name = deserializer.ReadNextString();
+
+			ResourceReference ref;
+			ref.SetResource(texture_name);
+			cube_references.push_back(ref);
+		}
+		SetCubeTexture(name, cube_references.data());
 	}
 
 	for (uint32 param_i = 0; param_i < params_count; param_i++) {

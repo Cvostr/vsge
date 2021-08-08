@@ -562,8 +562,8 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
-	mOutputWidth = width;
-	mOutputHeight = height;
+	//mOutputWidth = width;
+	//mOutputHeight = height;
 
 	//mGBuffer->SetSize(width, height);
 	//mOutputBuffer->SetSize(width, height);

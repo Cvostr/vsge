@@ -25,6 +25,10 @@ public:
 		return tVec2(x + r.x, y + r.y);
 	}
 
+	tVec2 operator-(const tVec2& r) const {
+		return tVec2(x - r.x, y - r.y);
+	}
+
 	tVec2 operator*(float d) const {
 		return tVec2(x * d, y * d);
 	}

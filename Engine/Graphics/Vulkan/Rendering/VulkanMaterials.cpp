@@ -120,7 +120,7 @@ void VulkanRenderer::BindMaterial(Material* mat) {
 
 			if (cube_texture->IsCreated())
 				cube_texture->Destroy();
-			//cube_texture->Create(2048, 2048, format, 6, mipsCount);
+			cube_texture->Create(2048, 2048, FORMAT_BC3_UNORM, 6, 1);
 			if (resource) {
 				for (uint32 i = 0; i < 6; i++) {
 					ResourceReference* ref = &tex._cube_sides[i];
@@ -136,7 +136,7 @@ void VulkanRenderer::BindMaterial(Material* mat) {
 						uint32 linearSize = *(reinterpret_cast<uint32*>(&(data[20])));
 						uint32 mipsCount = *(reinterpret_cast<uint32*>(&(data[28])));
 						uint32 fourCC = *(reinterpret_cast<uint32*>(&(data[84])));
-
+						mipsCount = 1;
 
 						uint32 bufsize = mipsCount > 1 ? linearSize * 2 : linearSize;//Getting buffer size
 						byte* bufferT = data + 128; //jumping over header
