@@ -6,6 +6,7 @@
 namespace VSGE {
 
     VkFormat GetFormatVK(TextureFormat format);
+    TextureFormat GetTextureFormat(VkFormat format);
 
 	class VulkanTexture : public Texture {
     private:

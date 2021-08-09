@@ -71,7 +71,7 @@ VkDescriptorSet VulkanDescriptorSet::GetDescriptorSet() {
     return mDescriptorSet; 
 }
 VkDescriptorSetLayout VulkanDescriptorSet::GetDescriptorSetLayout() { 
-    return Layout; 
+    return _layout; 
 }
 void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags, uint32 descriptorsCount) {
     VkDescriptorSetLayoutBinding samplerLayoutBinding{};
@@ -195,7 +195,7 @@ bool VulkanDescriptorSet::Create() {
     cr_info.pBindings = descriptors.data();
     cr_info.pNext = nullptr;
 
-    if (vkCreateDescriptorSetLayout(device->getVkDevice(), &cr_info, nullptr, &Layout) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(device->getVkDevice(), &cr_info, nullptr, &_layout) != VK_SUCCESS) {
         return false;
     }
 
@@ -203,7 +203,7 @@ bool VulkanDescriptorSet::Create() {
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = mDescriptorPool->GetDescriptorPool();
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &Layout;
+    allocInfo.pSetLayouts = &_layout;
 
     if (vkAllocateDescriptorSets(device->getVkDevice(), &allocInfo, &mDescriptorSet) != VK_SUCCESS) {
         return false;
@@ -219,7 +219,8 @@ void VulkanDescriptorSet::Destroy() {
         VulkanRAPI* vulkan = VulkanRAPI::Get();
         VulkanDevice* device = vulkan->GetDevice();
 
-        vkDestroyDescriptorSetLayout(device->getVkDevice(), Layout, nullptr);
+        vkDestroyDescriptorSetLayout(device->getVkDevice(), _layout, nullptr);
+        vkFreeDescriptorSets(device->getVkDevice(), this->mDescriptorPool->GetDescriptorPool(), 1, &this->mDescriptorSet);
         mCreated = false;
     }
 }

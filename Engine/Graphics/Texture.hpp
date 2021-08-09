@@ -36,7 +36,8 @@ namespace VSGE {
         FORMAT_BC3_UNORM = 0x35545844,
 
         FORMAT_DEPTH_24_STENCIL_8 = 120,
-        FORMAT_DEPTH_32
+        FORMAT_DEPTH_32,
+        FORMAT_DEPTH_32_STENCIL_8
     };
 
 	class Texture : public IGpuObject{

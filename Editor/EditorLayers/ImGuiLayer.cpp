@@ -130,7 +130,7 @@ void ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endS
     VkResult imageResult = AcquireNextImage(imageAvailable, _imageIndex);
 
     _imageIndex = 0;
-
+    recreated = false;
     //Check, if swapchain is no more suitable
     if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
         //Swapchain is no more suitable
@@ -146,11 +146,10 @@ void ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endS
         imgui_fb.PushOutputAttachment(0);
         imgui_fb.Create(&imgui_rpass);
 
-        VulkanRecordCmdBuf(draw_data);
+        recreated = true;
     }
-
-    VulkanGraphicsSubmit(cmdbuf, imageAvailable, *endSemaphore);
-
+    if(!recreated)
+        VulkanGraphicsSubmit(cmdbuf, imageAvailable, *endSemaphore);
 }
 
 
@@ -187,10 +186,13 @@ void ImGuiLayer::OnUpdate() {
 
     VulkanRender(draw_data, renderer->GetBeginSemaphore());
 
+    if(recreated){
+       return;
+    } 
     renderer->DrawScene(editor_layer->GetCamera());
 
     VulkanPresent(*renderer->GetEndSemaphore(), 0);
-
+    
 }
 
 void ImGuiLayer::OnDetach() {

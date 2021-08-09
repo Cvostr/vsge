@@ -27,12 +27,12 @@ void VSGE::BindMath() {
 	layer->RegisterObjectProperty(VEC3_TYPE_NAME, "float x", offsetof(Vec3, x));
 	layer->RegisterObjectProperty(VEC3_TYPE_NAME, "float y", offsetof(Vec3, y));
 	layer->RegisterObjectProperty(VEC3_TYPE_NAME, "float z", offsetof(Vec3, z));
-	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 Normalize()", asMETHOD(Vec3, GetNormalized), asCALL_THISCALL);
-	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 &opAddAssign(Vec3 &in)", asMETHOD(Vec3, operator+=), asCALL_THISCALL);
-	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 &opAssign(Vec3 &in)", asMETHOD(Vec3, operator=), asCALL_THISCALL);
+	//layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 Normalize()", asMETHOD(Vec3, GetNormalized), asCALL_THISCALL);
+	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "void opAddAssign(Vec3 &in)", asMETHOD(Vec3, operator+=), asCALL_THISCALL);
+	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "void opAssign(Vec3 &in)", asMETHOD(Vec3, operator=), asCALL_THISCALL);
 	//layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 opMul(float) const", asMETHODPR(Vec3, operator*, (Vec3), float), asCALL_THISCALL);
-	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 opAdd(const Vec3&in) const", asMETHOD(Vec3, operator+), asCALL_THISCALL);
-	layer->RegisterObjectMethod(VEC3_TYPE_NAME, "bool opEquals(const Vec3&in) const", asMETHOD(Vec3, operator ==), asCALL_THISCALL);
+	//layer->RegisterObjectMethod(VEC3_TYPE_NAME, "Vec3 opAdd(const Vec3&in) const", asMETHOD(Vec3, operator+), asCALL_THISCALL);
+	//layer->RegisterObjectMethod(VEC3_TYPE_NAME, "bool opEquals(const Vec3&in) const", asMETHOD(Vec3, operator ==), asCALL_THISCALL);
 
 
 	layer->RegisterObjectType(QUAT_TYPE_NAME, sizeof(Quat), asOBJ_VALUE | asOBJ_POD | asGetTypeTraits<Quat>());

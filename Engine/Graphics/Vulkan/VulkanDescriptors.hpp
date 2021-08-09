@@ -44,7 +44,7 @@ namespace VSGE {
 	class VulkanDescriptorSet : public IGpuObject {
 	private:
 		VkDescriptorSet mDescriptorSet;
-		VkDescriptorSetLayout Layout;
+		VkDescriptorSetLayout _layout;
 
 		std::vector<VkDescriptorSetLayoutBinding> descriptors;
 		std::map<uint32, VkDescriptorType> bindings_types;
@@ -55,14 +55,14 @@ namespace VSGE {
 		VulkanDescriptorSet(VulkanDescriptorPool* pool) :
 			mDescriptorPool(pool),
 			mDescriptorSet(VK_NULL_HANDLE),
-			Layout(VK_NULL_HANDLE)
+			_layout(VK_NULL_HANDLE)
 		{
 			pool->IncDescriptorSet();
 		}
 
 		VulkanDescriptorSet() : 
 			mDescriptorSet(VK_NULL_HANDLE),
-			Layout(VK_NULL_HANDLE),
+			_layout(VK_NULL_HANDLE),
 			mDescriptorPool(nullptr) {}
 
 		~VulkanDescriptorSet() {

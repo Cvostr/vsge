@@ -60,7 +60,9 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 	case TextureFormat::FORMAT_DEPTH_32:
 		vk_format = VK_FORMAT_D32_SFLOAT;
 		break;
-
+	case TextureFormat::FORMAT_DEPTH_32_STENCIL_8:
+		vk_format = VK_FORMAT_D32_SFLOAT_S8_UINT;
+		break;
 	case FORMAT_BC1_UNORM:
 		vk_format = VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
 		break;
@@ -73,6 +75,22 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 	}
 
 	return vk_format;
+}
+
+TextureFormat VSGE::GetTextureFormat(VkFormat format){
+	TextureFormat _format;
+    switch(format){
+        case VK_FORMAT_D24_UNORM_S8_UINT:
+		_format = FORMAT_DEPTH_24_STENCIL_8;
+		break;
+	case VK_FORMAT_D32_SFLOAT:
+		_format = FORMAT_DEPTH_32;
+		break;
+	case VK_FORMAT_D32_SFLOAT_S8_UINT:
+		_format = FORMAT_DEPTH_32_STENCIL_8;
+		break;
+    }
+	return _format;
 }
 
 void VulkanTexture::Destroy() {
@@ -112,6 +130,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VkFormat TexFormat = GetFormatVK(format);
 	//Calculate image layout
 	VkImageLayout imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	VkImageTiling imageTiling = VK_IMAGE_TILING_OPTIMAL;
 	if (_isRenderTarget)
 	{
 		_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -119,6 +138,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
 		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		//imageTiling = VK_IMAGE_TILING_LINEAR;
 	}
 	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
 	{
@@ -144,7 +164,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	imageInfo.mipLevels = mipLevels;
 	imageInfo.arrayLayers = layers;
 	imageInfo.format = TexFormat;
-	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	imageInfo.tiling = imageTiling;
 	imageInfo.initialLayout = imageLayout;
 	imageInfo.usage = _usage | VK_IMAGE_USAGE_SAMPLED_BIT;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;

@@ -31,6 +31,8 @@ namespace VSGE {
 
         uint32 GetUniformBufferMinAlignment();
         uint32 GetMaxBoundDescriptorSets();
+        VkFormat GetSuitableDepthFormat(VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL);
+
         const std::string GetDeviceName();
 
         VkQueue GetGraphicsQueue();

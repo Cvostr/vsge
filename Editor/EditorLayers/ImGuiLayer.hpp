@@ -21,6 +21,7 @@ namespace VSGEditor {
 		static ImGuiLayer* _this;
 
 		ImGuiIO io;
+		bool recreated;
 
 		tEditorWindowList mWindows;
 		tImGuiMenuList mMenus;
@@ -38,6 +39,7 @@ namespace VSGEditor {
 
 		ImGuiLayer() {
 			_this = this;
+			recreated = false;
 		}
 
 		void DrawDockWindow();

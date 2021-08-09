@@ -11,7 +11,7 @@ namespace VSGE {
 
 	class VulkanRenderPass : public IGpuObject {
 	private:
-		VkRenderPass mRenderPass;
+		VkRenderPass _renderPass;
 
 		std::vector<VkAttachmentDescription> mAttachmentDescriptions;
 		std::vector<VkAttachmentReference> mAttachmentReferences;
@@ -27,7 +27,7 @@ namespace VSGE {
 
 		VulkanRenderPass() : 
 			mHasDepthAttachment(false),
-			mRenderPass(VK_NULL_HANDLE),
+			_renderPass(VK_NULL_HANDLE),
 			mColorAttachmentsCount(0),
 			mClearValuesCount(0),
 			mClearValues(nullptr)
@@ -44,7 +44,7 @@ namespace VSGE {
 		/// Get vulkan descr to created render pass
 		/// </summary>
 		/// <returns></returns>
-		VkRenderPass GetRenderPass() { return mRenderPass; }
+		VkRenderPass GetRenderPass() { return _renderPass; }
 		/// <summary>
 		/// Get count of color attachments on this renderpass
 		/// </summary>
@@ -72,5 +72,6 @@ namespace VSGE {
 		void PushColorAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorOutputAttachment();
 		void PushDepthAttachment(TextureFormat Format = TextureFormat::FORMAT_DEPTH_24_STENCIL_8);
+		void PushDepthAttachment(VkFormat format = VK_FORMAT_D24_UNORM_S8_UINT);
 	};
 }

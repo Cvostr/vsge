@@ -43,7 +43,7 @@ void VulkanRenderer::SetupRenderer() {
 	mGBufferPass->PushColorAttachment(FORMAT_RGBA16F);
 	mGBufferPass->PushColorAttachment(FORMAT_RGBA16F);
 	mGBufferPass->PushColorAttachment(FORMAT_RGBA);
-	mGBufferPass->PushDepthAttachment();
+	mGBufferPass->PushDepthAttachment(device->GetSuitableDepthFormat());
 	mGBufferPass->Create();
 
 	mGBuffer = new VulkanFramebuffer;
@@ -52,7 +52,7 @@ void VulkanRenderer::SetupRenderer() {
 	mGBuffer->AddAttachment(FORMAT_RGBA16F); //Normal
 	mGBuffer->AddAttachment(FORMAT_RGBA16F); //Position
 	mGBuffer->AddAttachment(FORMAT_RGBA); //Material
-	mGBuffer->AddDepth();
+	mGBuffer->AddDepth(GetTextureFormat(device->GetSuitableDepthFormat()));
 	mGBuffer->Create(mGBufferPass);
 
 	mOutputPass = new VulkanRenderPass;
@@ -133,7 +133,9 @@ void VulkanRenderer::SetupRenderer() {
 	//----------------------Descriptors--------------------------
 	mObjectsPool = new VulkanDescriptorPool;
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;
-	mMaterialsDescriptorPool->SetDescriptorSetsCount(8000);
+	mMaterialsDescriptorPool->SetDescriptorSetsCount(10000);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2000);
+	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 16000);
 	mMaterialsDescriptorPool->Create();
 
 	//Create base vertex descriptors sets
@@ -569,12 +571,12 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
-	//mOutputWidth = width;
-	//mOutputHeight = height;
+	mOutputWidth = width;
+	mOutputHeight = height;
 
-	//mGBuffer->SetSize(width, height);
-	//mOutputBuffer->SetSize(width, height);
+	mGBuffer->SetSize(width, height);
+	mOutputBuffer->SetSize(width, height);
 
-	//mGBufferPass->SetClearSize(width, height);
-	//mOutputPass->SetClearSize(width, height);
+	mGBufferPass->SetClearSize(width, height);
+	mOutputPass->SetClearSize(width, height);
 }

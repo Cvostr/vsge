@@ -49,7 +49,7 @@ bool VulkanRenderPass::Create() {
     renderPassInfo.pDependencies = dependencies;
 
 
-    if (vkCreateRenderPass(device->getVkDevice(), &renderPassInfo, nullptr, &mRenderPass) != VK_SUCCESS) {
+    if (vkCreateRenderPass(device->getVkDevice(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS) {
         return false;
     }
 
@@ -70,7 +70,7 @@ void VulkanRenderPass::Destroy() {
         VulkanRAPI* vulkan = VulkanRAPI::Get();
         VulkanDevice* device = vulkan->GetDevice();
 
-        vkDestroyRenderPass(device->getVkDevice(), mRenderPass, nullptr);
+        vkDestroyRenderPass(device->getVkDevice(), _renderPass, nullptr);
 
         delete[] mClearValues;
 
@@ -131,8 +131,12 @@ void VulkanRenderPass::PushColorOutputAttachment() {
 void VulkanRenderPass::PushDepthAttachment(TextureFormat Format) {
     VkFormat vk_format = GetFormatVK(Format);
     
+    PushDepthAttachment(vk_format);
+}
+
+void VulkanRenderPass::PushDepthAttachment(VkFormat format){
     VkAttachmentDescription colorAttachment = {};
-    colorAttachment.format = vk_format;
+    colorAttachment.format = format;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

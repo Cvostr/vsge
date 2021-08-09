@@ -63,6 +63,9 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowcasters_descPool = new VulkanDescriptorPool;
 	_shadowcasters_descPool->SetDescriptorSetsCount(2);
+	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 50);
+	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 50);
+	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100);
 
 	_shadowcaster_descrSet = new VulkanDescriptorSet(_shadowcasters_descPool);
 	_shadowcaster_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_ALL_GRAPHICS);

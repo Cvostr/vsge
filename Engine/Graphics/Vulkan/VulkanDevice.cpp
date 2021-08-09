@@ -13,6 +13,27 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
+VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices){
+    if(devices.size() == 0)
+        return VK_NULL_HANDLE;
+    //Try to find discrete gpu with highest performance
+    VkPhysicalDevice best = VK_NULL_HANDLE;
+    for(auto device : devices) {
+        VkPhysicalDeviceProperties device_props;
+        vkGetPhysicalDeviceProperties(device, &device_props);
+
+        if(device_props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+            best = device;
+        }
+    }
+    if(best != VK_NULL_HANDLE)
+        return best;
+    else{
+        return devices[0];
+    }
+    return VK_NULL_HANDLE;
+}
+
 VulkanDevice* VSGE::CreatePrimaryDevice() {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanInstance* instance = vulkan_rapi->GetInstance();
@@ -24,21 +45,19 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
     //resize vectors
     phys_devices_list.resize(gpus_count);
     vkEnumeratePhysicalDevices(instance->GetInstance(), &gpus_count, phys_devices_list.data());
-    //Get properties of all gpu
-    for (unsigned int gpu_i = 0; gpu_i < gpus_count; gpu_i++) {
-        VkPhysicalDevice device = phys_devices_list[gpu_i];
-        VkPhysicalDeviceProperties DeviceProps;
-        vkGetPhysicalDeviceProperties(device, &DeviceProps);
-       
+    
+    VkPhysicalDevice device = GetBestDevice(phys_devices_list);
+    if(device != VK_NULL_HANDLE){
+        VkPhysicalDeviceProperties device_props;
+        vkGetPhysicalDeviceProperties(device, &device_props);
 
-        if (DeviceProps.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-            VulkanDevice* Device = new VulkanDevice;
-            Device->SetProperties(DeviceProps);
-            Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan GPU " << DeviceProps.deviceName << "\n";
-            Device->initDevice(device);
-            return Device;
-        }
+        VulkanDevice* Device = new VulkanDevice;
+        Device->SetProperties(device_props);
+        Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan GPU " << device_props.deviceName << "\n";
+        Device->initDevice(device);
+        return Device;
     }
+    
     return nullptr;
 }
 
@@ -146,6 +165,24 @@ uint32 VulkanDevice::GetUniformBufferMinAlignment() {
 
 uint32 VulkanDevice::GetMaxBoundDescriptorSets() {
     return DeviceProps.limits.maxBoundDescriptorSets;
+}
+
+VkFormat VulkanDevice::GetSuitableDepthFormat(VkImageTiling tiling){
+    std::vector<VkFormat> depthFormats = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
+
+    VkFormatFeatureFlags features = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+    for(VkFormat format : depthFormats){
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(mPhysicalDevice, format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+            return format;
+        } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+    return VK_FORMAT_D32_SFLOAT;
 }
 
 const std::string VulkanDevice::GetDeviceName() {
