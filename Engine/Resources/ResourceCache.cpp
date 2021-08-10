@@ -21,7 +21,7 @@ ResourceCache::ResourceCache() {
     _this = this;
     _loader = new AsyncLoader;
     _loader->Run();
-    _loader->SetThreadName("Resource Async Loader");
+    _loader->SetThreadName("res_load_async");
 }
 
 Resource* ResourceCache::GetResource(const std::string& name) {
@@ -133,7 +133,7 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     
     //if it is mesh group - load it to create meshes
     if (type == RESOURCE_TYPE_MESHGROUP) {
-        _loader->AddToQueue(res);
+        res->Load();
     }
     //if resource is script, then load it
     if (type == RESOURCE_TYPE_SCRIPT) {
@@ -141,7 +141,6 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
         _loader->WaitForLoading(res);
         res->PostLoad();
     }
-    
     //Push resource
     PushResource(res);
 }

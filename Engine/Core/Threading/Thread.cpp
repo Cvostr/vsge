@@ -27,6 +27,7 @@ static void* CallThreadFuncton(void* data)
 #endif
 
 bool Thread::Run() {
+	mShouldRun = true;
 	if (mThreadHandle != nullptr)
 		return false;
 #ifdef _WIN32
@@ -38,7 +39,7 @@ bool Thread::Run() {
 	pthread_attr_setdetachstate(&type, PTHREAD_CREATE_JOINABLE);
 	pthread_create((pthread_t*)mThreadHandle, &type, CallThreadFuncton, this);
 #endif
-	mShouldRun = true;
+	
 	return true;
 }
 void Thread::Stop() {
@@ -75,5 +76,9 @@ void Thread::SetThreadName(const std::string& name) {
 	mbstowcs(thr_name, name.c_str(), name.size());
 	SetThreadDescription((HANDLE)mThreadHandle, thr_name);
 	delete[] thr_name;
+#endif
+#ifdef __linux__
+	pthread_t* thread = (pthread_t*)mThreadHandle;
+	pthread_setname_np(*thread, name.c_str());
 #endif
 }

@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#define LOADER_QUEUE_SIZE 500
+#define LOADER_QUEUE_SIZE 1000
 
 namespace VSGE {
 

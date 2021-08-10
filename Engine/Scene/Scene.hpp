@@ -6,9 +6,35 @@
 
 namespace VSGE {
 
-	class SceneSettings {
+	
+
+	class SceneEnvironmentSettings {
+	private:
+		float _shadow_distance;
+		uint32 _shadow_cascades_count;
+	public:
 		Color _ambient_color;
-		Entity* _sun;
+		ResourceReference _skybox_material;
+
+		float GetMaxShadowDistance(){
+			return _shadow_distance;
+		}
+
+		void SetMaxShadowDistance(float distance){
+			_shadow_distance = distance;
+		}
+
+		uint32 GetShadowCascadesCount(){
+			return _shadow_cascades_count;
+		}
+
+		void SetShadowCascadesCount(uint32 cascades){
+			if(cascades > 0 && cascades < 10)
+				_shadow_cascades_count = cascades;
+		}
+
+
+		SceneEnvironmentSettings();
 	};
 
 	typedef std::pair<Guid, Guid> tGuidPair;
@@ -16,7 +42,7 @@ namespace VSGE {
 	class Scene {
 	private:
 		Entity* _rootEntity;
-
+		SceneEnvironmentSettings _environment_settings;
 	public:
 		/// <summary>
 		/// Clear all objects and setup new empty scene
@@ -50,10 +76,12 @@ namespace VSGE {
 		/// <param name="id">- guid to find</param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithGuid(const Guid& id);
-
+		
 		void AddFromPrefab(byte* data, uint32 size);
 
 		AudioListenerComponent* GetAudioListener(Entity* ent = nullptr);
+
+		SceneEnvironmentSettings& GetEnvironmentSettings();
 
 		Scene();
 	};

@@ -14,6 +14,7 @@ Mutex::Mutex() {
 	InitializeCriticalSection((CRITICAL_SECTION*)this->mMutexHandle);
 #else
 	mMutexHandle = new pthread_mutex_t;
+	pthread_mutex_init((pthread_mutex_t*)mMutexHandle, NULL);
 #endif
 }
 Mutex::~Mutex() {

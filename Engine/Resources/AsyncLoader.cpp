@@ -19,8 +19,7 @@ AsyncLoader::~AsyncLoader() {
 }
 
 void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
-    if (!justRead)
-        resource->SetState(RESOURCE_STATE_LOADING);
+    resource->SetState(RESOURCE_STATE_LOADING);
     //Declare blob loader stream
     std::ifstream stream;
     //Get absolute path to blob file
@@ -51,9 +50,8 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
     stream.close();
 
     resource->SetLoadedData(data);
-    if (!justRead)
-        //Set resource state to loaded
-        resource->SetState(RESOURCE_STATE_LOADED);
+    //Set resource state to loaded
+    resource->SetState(RESOURCE_STATE_LOADED);
 
     if (!justRead) {
         //Do some specific work (on MeshGroupResource as example)
@@ -63,14 +61,13 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
         ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
         Application::Get()->ScheduleEvent(rle);
         mMutex->Release();
-    }
+   }
 }
 
 void AsyncLoader::AddToQueue(Resource* resource, bool justRead) {
     mMutex->Lock();
     
-    if(!justRead)
-        resource->SetState(RESOURCE_STATE_QUEUED);
+    resource->SetState(RESOURCE_STATE_QUEUED);
     LoadRequest request(resource, justRead);
     loadQueue[LOADER_QUEUE_SIZE - 1 - (queue_length)] = request;
     queue_length++;

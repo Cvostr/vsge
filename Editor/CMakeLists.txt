@@ -2,15 +2,53 @@ cmake_minimum_required (VERSION 3.14)
 
 project ("Editor")
 
-set(SRC_DIR "")
-set(HEADER_DIR "")
-
 set(CMAKE_CXX_STANDARD 17)
 
 file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR}/Editor)
 
-file(GLOB_RECURSE SRC_FILES "*.cpp")
+#file(GLOB_RECURSE SRC_FILES "*.cpp")
 file(GLOB_RECURSE HEADER_FILES "*.hpp")
+
+set(SRC_FILES 
+                Base/ImguiHelper.cpp
+                Base/ImGuiWindow.cpp
+                Base/PlatformSpecific.cpp
+                EditorLayers/EditorLayer.cpp
+                EditorLayers/EditorSettingsLayer.cpp
+                EditorLayers/ImGuiLayer.cpp
+                InspectorInterfaces/MaterialEditor.cpp
+                InspectorInterfaces/ResourcePicker.cpp
+                InspectorInterfaces/ScriptPicker.cpp
+                InspectorInterfaces/VariantInput.cpp
+                InspectorInterfaces/ViewMaskEdit.cpp
+                InspectorInterfaces/EntityComponents/AnimatorComponent.cpp
+                InspectorInterfaces/EntityComponents/AudioSource.cpp
+                InspectorInterfaces/EntityComponents/Camera.cpp
+                InspectorInterfaces/EntityComponents/Collider.cpp
+                InspectorInterfaces/EntityComponents/Lightsource.cpp
+                InspectorInterfaces/EntityComponents/MaterialComponent.cpp
+                InspectorInterfaces/EntityComponents/MeshComponent.cpp
+                InspectorInterfaces/EntityComponents/ParticleEmitter.cpp
+                InspectorInterfaces/EntityComponents/RigidBody.cpp
+                InspectorInterfaces/EntityComponents/ScriptComponent.cpp
+                Menus/File_Menu.cpp
+                Menus/Windows_Menu.cpp
+                Misc/AssimpMeshLoader.cpp
+                Misc/ResourceImporter.cpp
+                Misc/SceneExt.cpp
+                ProjectBuild/ResourcePacker.cpp
+                Windows/BrowserWindow.cpp
+                Windows/ConsoleWindow.cpp
+                Windows/EditorSettingsWindow.cpp
+                Windows/InspectorWindow.cpp
+                Windows/ProjectSettingsWindow.cpp
+                Windows/EnvironmentSettingsWindow.cpp
+                Windows/ResourcePickWindow.cpp
+                Windows/SceneViewWindow.cpp
+                Windows/SceneWindow.cpp
+                Windows/StartWindow.cpp
+                Windows/ToolbarWindow.cpp
+                main.cpp)
 
 include_directories(../Engine REQUIRED)
 include_directories(../ImGui/src REQUIRED)

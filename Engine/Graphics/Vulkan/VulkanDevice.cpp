@@ -170,19 +170,29 @@ uint32 VulkanDevice::GetMaxBoundDescriptorSets() {
 VkFormat VulkanDevice::GetSuitableDepthFormat(VkImageTiling tiling){
     std::vector<VkFormat> depthFormats = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
 
-    VkFormatFeatureFlags features = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
-
     for(VkFormat format : depthFormats){
-        VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(mPhysicalDevice, format, &props);
-
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-            return format;
-        } else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+        if(IsCompatibleDepthFormatTiling(format, tiling)){
             return format;
         }
     }
     return VK_FORMAT_D32_SFLOAT;
+}
+
+bool VulkanDevice::IsCompatibleDepthFormatTiling(VkFormat format, VkImageTiling tiling){
+    VkFormatProperties props;
+    vkGetPhysicalDeviceFormatProperties(mPhysicalDevice, format, &props);
+    VkFormatFeatureFlags features = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+    VkFormatFeatureFlags tilingFormatFeatureFlags = 0;
+
+    if(tiling == VK_IMAGE_TILING_LINEAR)
+        tilingFormatFeatureFlags = props.linearTilingFeatures;
+    else if(tiling == VK_IMAGE_TILING_OPTIMAL)
+        tilingFormatFeatureFlags = props.optimalTilingFeatures;
+
+    bool result = ((tilingFormatFeatureFlags & features) == features);
+
+    return result;
 }
 
 const std::string VulkanDevice::GetDeviceName() {

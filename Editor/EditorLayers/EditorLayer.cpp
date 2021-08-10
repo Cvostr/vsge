@@ -13,6 +13,7 @@
 #include "../Windows/ToolbarWindow.hpp"
 #include "../Windows/ConsoleWindow.hpp"
 #include "../Windows/EditorSettingsWindow.hpp"
+#include "../Windows/EnvironmentSettingsWindow.hpp"
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
@@ -54,6 +55,10 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	EditorSettingsWindow* settings = new EditorSettingsWindow;
 	settings->Hide();
 	ImGuiLayer::Get()->AddWindow(settings);
+
+	EnvironmentSettingsWindow* env_settings = new EnvironmentSettingsWindow;
+	env_settings->Hide();
+	ImGuiLayer::Get()->AddWindow(env_settings);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
