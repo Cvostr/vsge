@@ -153,7 +153,8 @@ void VulkanDescriptorSet::WriteDescriptorImages(
     uint32 binding,
     VulkanTexture** textures, 
     VulkanSampler* sampler, 
-    uint32 textures_count)
+    uint32 textures_count,
+    uint32 first_texture)
 {
     if (textures_count == 0)
         return;
@@ -172,7 +173,7 @@ void VulkanDescriptorSet::WriteDescriptorImages(
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     descriptorWrite.dstSet = mDescriptorSet;
     descriptorWrite.dstBinding = binding;
-    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.dstArrayElement = first_texture;
     descriptorWrite.descriptorType = DescrType;
     descriptorWrite.descriptorCount = textures_count;
     descriptorWrite.pBufferInfo = nullptr;

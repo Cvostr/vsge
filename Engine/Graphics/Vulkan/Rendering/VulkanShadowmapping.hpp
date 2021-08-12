@@ -15,7 +15,7 @@
 #define MAP_SIZE 2048
 
 #define SHADOWMAP_BUFFER_ELEMENT_SIZE 768
-#define SHADOWPROCESS_BUFFER_ELEMENT_SIZE 688
+#define SHADOWPROCESS_BUFFER_ELEMENT_SIZE 672
 
 namespace VSGE {
 
@@ -85,6 +85,7 @@ namespace VSGE {
 		VulkanSampler* _gbuffer_sampler;
 		VulkanMesh* _screenPlane;
 		VulkanSampler* _shadowmap_sampler;
+		VulkanTexture* _empty_texture;
 
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
@@ -95,7 +96,8 @@ namespace VSGE {
 			VulkanBuffer* cam_buffer,
 			VulkanMesh* screenPlane,
 			VulkanTexture* pos, 
-			VulkanSampler* gbuffer_sampler);
+			VulkanSampler* gbuffer_sampler,
+			VulkanTexture* empty_texture);
 		~VulkanShadowmapping();
 	
 		void SetCamera(Camera* cam) {

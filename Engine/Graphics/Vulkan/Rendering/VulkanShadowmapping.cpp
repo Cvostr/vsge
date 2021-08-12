@@ -13,7 +13,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 	VulkanBuffer* cam_buffer,
 	VulkanMesh* screenPlane,
 	VulkanTexture* pos,
-	VulkanSampler* gbuffer_sampler)
+	VulkanSampler* gbuffer_sampler,
+	VulkanTexture* empty_texture)
 {
 	_added_casters = 0;
 	this->_vertexDescrSets = vertexDescrSets;
@@ -21,6 +22,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_gbuffer_pos = pos;
 	_gbuffer_sampler = gbuffer_sampler;
 	_screenPlane = screenPlane;
+	_empty_texture = empty_texture;
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
@@ -60,7 +62,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowcasters_buffer->Create(65536);
 
 	_shadowprocess_buffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
-	_shadowprocess_buffer->Create(65536);
+	_shadowprocess_buffer->Create(43012);
 
 	_cascadeinfo_buffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 	_cascadeinfo_buffer->Create(168);
@@ -90,10 +92,12 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowcaster_descrSet->WriteDescriptorBuffer(1, _cascadeinfo_buffer);
 
 	_shadowrenderer_descrSet->Create();
-	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer, 0, 65535);
+	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorImage(1, _gbuffer_pos, _gbuffer_sampler);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(5, _cascadeinfo_buffer);
+
+	
 
 
 	_shadowmap_shader = new VulkanShader;
@@ -238,19 +242,20 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	float strength = light->GetShadowStrength();
 	LightType type = light->GetLightType();
 	Vec3 pos = light->GetEntity()->GetAbsolutePosition();
+	float range = light->GetRange();
 
 	_shadowprocess_buffer->WriteData(offset, 4, &bias);
-	_shadowprocess_buffer->WriteData(offset + 4, 4, &size);
-	_shadowprocess_buffer->WriteData(offset + 8, 4, &pcf);
-	_shadowprocess_buffer->WriteData(offset + 12, 4, &strength);
-	_shadowprocess_buffer->WriteData(offset + 16, 4, &type);
-	_shadowprocess_buffer->WriteData(offset + 32, 12, &pos);
+	_shadowprocess_buffer->WriteData(offset + 4, 4, &pcf);
+	_shadowprocess_buffer->WriteData(offset + 8, 4, &strength);
+	_shadowprocess_buffer->WriteData(offset + 12, 4, &type);
+	_shadowprocess_buffer->WriteData(offset + 16, 12, &pos);
+	_shadowprocess_buffer->WriteData(offset + 28, 4, &range);
 
 	_shadowcasters_buffer->WriteData(offset_casters, 12, &pos);
 	_shadowcasters_buffer->WriteData(offset_casters + 12, 4, &type);
 
 	_added_casters++;
-	_shadowprocess_buffer->WriteData(44032, 4, &_added_casters);
+	_shadowprocess_buffer->WriteData(43008, 4, &_added_casters);
 }
 
 void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
@@ -327,28 +332,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 }
 
 void VulkanShadowmapping::ExecuteShadowCaster(uint32 casterIndex, VulkanSemaphore* begin, VulkanSemaphore* end) {
-	//Write shadowmaps to descriptor set
-	std::vector<VulkanTexture*> shadowmaps;
-	std::vector<VulkanTexture*> shadowmaps_point;
-	for (auto caster : _casters) {
-		if (caster->_caster_type == LIGHT_TYPE_POINT)
-			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetColorAttachments()[0]);
-		else
-			shadowmaps.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
-	}
-
-	_shadowrenderer_descrSet->WriteDescriptorImages(3, shadowmaps.data(), _shadowmap_sampler, shadowmaps.size());
-	_shadowrenderer_descrSet->WriteDescriptorImages(4, shadowmaps_point.data(), _shadowmap_sampler, shadowmaps_point.size());
-
-	SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
-	uint32 cascades_count = env_settings.GetShadowCascadesCount();
-	for(uint32 cascade = 0; cascade < cascades_count; cascade ++){
-		float cascade_depth = env_settings.GetCascadeDepths()[cascade];
-		_cascadeinfo_buffer->WriteData(16 * cascade, 4, &cascade_depth);
-	}
-	_cascadeinfo_buffer->WriteData(160, 4, &cascades_count);
-
-	RecordShadowProcessingCmdbuf();
 	
 	VulkanShadowCaster* caster = _casters[casterIndex];
 	VulkanCommandBuffer* cmdbuf = caster->_cmdbuf;
@@ -381,6 +364,34 @@ void VulkanShadowmapping::RecordShadowProcessingCmdbuf() {
 }
 
 void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore* end) {
+
+	//Write shadowmaps to descriptor set
+	std::vector<VulkanTexture*> shadowmaps;
+	std::vector<VulkanTexture*> shadowmaps_point;
+	for (auto caster : _casters) {
+		if (caster->_caster_type == LIGHT_TYPE_POINT)
+			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetColorAttachments()[0]);
+		else
+			shadowmaps.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
+	}
+
+	_shadowrenderer_descrSet->WriteDescriptorImages(3, shadowmaps.data(), _shadowmap_sampler, shadowmaps.size());
+	_shadowrenderer_descrSet->WriteDescriptorImages(4, shadowmaps_point.data(), _shadowmap_sampler, shadowmaps_point.size());
+
+	RecordShadowProcessingCmdbuf();
+
+
+	if(_scene){
+		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+		uint32 cascades_count = env_settings.GetShadowCascadesCount();
+		for(uint32 cascade = 0; cascade < cascades_count; cascade ++){
+			float cascade_depth = env_settings.GetCascadeDepths()[cascade];
+			_cascadeinfo_buffer->WriteData(16 * cascade, 4, &cascade_depth);
+		}
+		_cascadeinfo_buffer->WriteData(160, 4, &cascades_count);
+		int map_size = MAP_SIZE;
+		_cascadeinfo_buffer->WriteData(164, 4, &map_size);
+	}
 
 	VulkanGraphicsSubmit(*_shadowprocess_cmdbuf, *begin, *end);
 }

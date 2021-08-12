@@ -187,7 +187,8 @@ void VulkanRenderer::SetupRenderer() {
 		mCameraShaderBuffer,
 		mSpriteMesh,
 		(VulkanTexture*)mGBuffer->GetColorAttachments()[2],
-		mAttachmentSampler);
+		mAttachmentSampler,
+		mEmptyTexture);
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 
 	mDeferredPassSet->Create();

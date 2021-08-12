@@ -8,11 +8,11 @@ struct CasterInfo{  //688
     mat4 projections[10];
     //640
     float ShadowBias; //4
-    int ShadowmapSize; //4
     uint PcfPassNum; // 4
     float ShadowStrength; // 4
     int caster_type; //4
     vec3 pos;
+    float range;
 };
 
 layout (std140, binding = 0) uniform ShadowData{
@@ -35,6 +35,7 @@ layout(binding = 4) uniform samplerCube shadowmaps_point[32];
 layout(binding = 5) uniform dir_shadow_cascades{
     float distances[10];
     uint cascades_count;
+    uint shadowmap_size;
 };
 
 uint GetCascade(float dist){
@@ -80,7 +81,7 @@ void main(){
             float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
             for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
                 for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
-                    vec2 offset = vec2(x, y) / casters[caster_i].ShadowmapSize;
+                    vec2 offset = vec2(x, y) / shadowmap_size;
             
                     vec2 uvoffset = start_offset + offset;
                     float shadowmap_depth = GetShadowmapSample(caster_i, cascade, uvoffset);
@@ -94,7 +95,7 @@ void main(){
             uint texture_index = GetPointShadowTextureIndex(caster_i);
             float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r;
             float real_depth = length(dir);
-            if(shadowmap_depth > 0.00001 && result < 0.01)
+            if(shadowmap_depth < casters[caster_i].range && result < 0.01)
                 result += (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
         }
     }

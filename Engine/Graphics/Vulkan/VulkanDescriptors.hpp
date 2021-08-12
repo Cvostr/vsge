@@ -75,7 +75,11 @@ namespace VSGE {
 
 		VkDescriptorSetLayout GetDescriptorSetLayout();
 
-		void AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS, uint32 descriptorsCount = 1);
+		void AddDescriptor(
+			VkDescriptorType type, 
+			uint32 binding, 
+			VkShaderStageFlags stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS, 
+			uint32 descriptorsCount = 1);
 
 		/// <summary>
 		/// Bind buffer to descriptor at specified binding
@@ -99,7 +103,8 @@ namespace VSGE {
 			uint32 binding, 
 			VulkanTexture** textures,
 			VulkanSampler* sampler,
-			uint32 textures_count = 1);
+			uint32 textures_count = 1,
+			uint32 first_texture = 0);
 
 		bool Create();
 		void Destroy();
