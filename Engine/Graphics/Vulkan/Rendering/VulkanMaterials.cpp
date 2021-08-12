@@ -18,7 +18,7 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 
 	//Create pipeline
 	VulkanPipeline* pipeline = new VulkanPipeline;
-	pipeline->SetDepthTest(true);
+	pipeline->SetDepthTest(mat_template->GetDepthTest());
 	pipeline->SetCullMode(mat_template->GetCullMode());
 	pipeline->SetBlendingDescs(mat_template->GetBlendingAttachmentDescs());
 	pipeline->Create((VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
@@ -63,7 +63,7 @@ VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(Mat
 	return set;
 }
 
-void VulkanRenderer::BindMaterial(Material* mat) {
+void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 	CreateVulkanMaterial(mat);
 
 	VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
@@ -106,4 +106,8 @@ void VulkanRenderer::BindMaterial(Material* mat) {
 		delete[] buffer;
 		mat->_paramsDirty = false;
 	}
+}
+
+void VulkanRenderer::BindMaterial(Material* mat){
+
 }

@@ -86,6 +86,7 @@ namespace VSGE {
 
 		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
 
+		void UpdateMaterialDescrSet(Material* mat);
 		void BindMaterial(Material* mat);
 	
 		uint32 _writtenBones;

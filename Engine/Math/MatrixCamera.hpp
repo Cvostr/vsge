@@ -19,3 +19,5 @@ Mat4 GetOrthoRH_Default(ORTHO_ARGS);
 
 Mat4 GetViewRH(VIEW_ARGS);
 Mat4 GetViewLH(VIEW_ARGS);
+
+Mat4 RemoveTranslationFromViewMat(const Mat4& viewMat);

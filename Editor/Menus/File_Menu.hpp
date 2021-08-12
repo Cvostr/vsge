@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../Base/ImGuiMenu.hpp"
 
 namespace VSGEditor {

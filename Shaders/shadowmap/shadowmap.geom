@@ -9,11 +9,21 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
     mat4 projections[10];
     vec3 pos;
     int type;
-    int cascades;
 };
 
+layout (std140, set = 1, binding = 1) uniform CascadesDir{
+    float distances[10];
+    uint cascades_count;
+};
+
+
 void main() { 
-	for( int cascade = 0; cascade < cascades; cascade++){
+
+	uint _cascades = cascades_count;
+
+	if(type == 1) _cascades = 6;
+
+	for( int cascade = 0; cascade < _cascades; cascade++){
 		gl_Layer = cascade;
 		for (int i = 0; i < gl_in.length(); i++)
 		{

@@ -84,6 +84,12 @@
 			z *= v;
 		}
 
+		void operator/=(float v) {
+			x /= v;
+			y /= v;
+			z /= v;
+		}
+
 		tVec3 operator/(float d) const {
 			return tVec3(x / d, y / d, z / d);
 		}

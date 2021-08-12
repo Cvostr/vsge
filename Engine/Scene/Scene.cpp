@@ -97,13 +97,25 @@ AudioListenerComponent* Scene::GetAudioListener(Entity* ent) {
 	return listener;
 }
 
+float cascadeSplitLambda = 0.95f;
+
 SceneEnvironmentSettings& Scene::GetEnvironmentSettings(){
 	return _environment_settings;
 }
-
 
 SceneEnvironmentSettings::SceneEnvironmentSettings(){
 	_skybox_material.SetResourceType(RESOURCE_TYPE_MATERIAL);
 	_shadow_distance = 200;
 	_shadow_cascades_count = 4;
+	UpdateShadows();
+}
+
+void SceneEnvironmentSettings::UpdateShadows(){
+	_cascade_depths.resize(_shadow_cascades_count);
+
+	float step = _shadow_distance / _shadow_cascades_count;
+	for (uint32_t i = 0; i < _shadow_cascades_count; i++) {
+
+		_cascade_depths[i] = (i + 1) * step * ((float)(i + 1) / _shadow_cascades_count);
+	}
 }

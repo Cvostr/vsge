@@ -5,8 +5,8 @@
 using namespace VSGE;
 
 const std::vector<const char*> deviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    "VK_EXT_extended_dynamic_state"
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    , "VK_EXT_extended_dynamic_state"
 };
 
 const std::vector<const char*> validationLayers = {
@@ -29,7 +29,14 @@ VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices){
     if(best != VK_NULL_HANDLE)
         return best;
     else{
-        return devices[0];
+       for(auto device : devices) {
+        VkPhysicalDeviceProperties device_props;
+        vkGetPhysicalDeviceProperties(device, &device_props);
+        //check device name, it shouldnt be as "llvmpipe"
+        if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
+            return device;
+        }
+    }
     }
     return VK_NULL_HANDLE;
 }

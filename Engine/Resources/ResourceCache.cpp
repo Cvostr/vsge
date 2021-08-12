@@ -42,7 +42,7 @@ Resource* ResourceCache::GetResourceWithFilePath(const std::string& fpath) {
 }
 
 ResourceType GetTypeByFileExt(const std::string& ext) {
-    if (ext == ".png" || ext == ".dds")
+    if (ext == ".png" || ext == ".dds" || ext == ".jpg")
         return RESOURCE_TYPE_TEXTURE;
     if (ext == ".vs3m")
         return RESOURCE_TYPE_MESHGROUP;

@@ -14,8 +14,10 @@
 #include "../Windows/ConsoleWindow.hpp"
 #include "../Windows/EditorSettingsWindow.hpp"
 #include "../Windows/EnvironmentSettingsWindow.hpp"
+#include "../Windows/ProjectSettingsWindow.hpp"
 
 #include "../Menus/File_Menu.hpp"
+#include "../Menus/Edit_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
 
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
@@ -60,7 +62,12 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	env_settings->Hide();
 	ImGuiLayer::Get()->AddWindow(env_settings);
 
+	ProjectSettingsWindow* proj_settings = new ProjectSettingsWindow;
+	proj_settings->Hide();
+	ImGuiLayer::Get()->AddWindow(proj_settings);
+
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
+	ImGuiLayer::Get()->AddMenu(new Edit_Menu);
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);

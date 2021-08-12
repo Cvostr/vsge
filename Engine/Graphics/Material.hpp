@@ -48,6 +48,7 @@ namespace VSGE {
 		GraphicsPipeline* _pipeline;
 
 		CullMode _cullMode;
+		bool _depthTest;
 		std::map<uint32, BlendAttachmentDesc> _blendDescs;
 
 		void SetupDefaultVertexLayout();
@@ -82,6 +83,10 @@ namespace VSGE {
 		CullMode GetCullMode();
 
 		void SetCullMode(CullMode mode);
+
+		bool GetDepthTest();
+
+		void SetDepthTest(bool depth_test);
 
 		void SetVertexLayout(const VertexLayout& vertexLayout);
 

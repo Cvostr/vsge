@@ -1,6 +1,7 @@
 #include "LightComponent.hpp"
 #include <Core/YamlHelper.hpp>
 #include "../Entity.hpp"
+#include "../Scene.hpp"
 #include <Math/MatrixCamera.hpp>
 #include <Math/MatrixTransform.hpp>
 
@@ -42,7 +43,6 @@ LightsourceComponent::LightsourceComponent() :
 
 	_castShadows(false),
 	_shadowStrength(0.6f),
-	_shadowsCascadesCount(3),
 	_shadowsPCF(4),
 	_shadowsBias(0.005f)
 {}
@@ -82,20 +82,7 @@ float LightsourceComponent::GetShadowsBias() {
 void LightsourceComponent::SetShadowsBias(float bias) {
 	_shadowsBias = bias;
 }
-void LightsourceComponent::SetShadowCascadesCount(uint32 cascades) {
-	if (cascades > MAX_SHADOW_CASCADES)
-		cascades = MAX_SHADOW_CASCADES;
 
-	if (cascades < 1)
-		cascades = 1;
-
-	_shadowsCascadesCount = cascades;
-}
-uint32 LightsourceComponent::GetShadowCascadesCount() {
-	if (_lightType == LIGHT_TYPE_POINT)
-		return 6;
-	return _shadowsCascadesCount;
-}
 uint32 LightsourceComponent::GetShadowPCF() {
 	return _shadowsPCF;
 }
@@ -118,7 +105,6 @@ void LightsourceComponent::Serialize(YAML::Emitter& e) {
 		e << Key << "shadowStrength" << Value << _shadowStrength;
 		e << Key << "shadowBias" << Value << _shadowsBias;
 		e << Key << "pcf" << Value << _shadowsPCF;
-		e << Key << "cascades" << Value << _shadowsCascadesCount;
 	}
 }
 void LightsourceComponent::Deserialize(YAML::Node& entity) {
@@ -133,7 +119,6 @@ void LightsourceComponent::Deserialize(YAML::Node& entity) {
 		_shadowStrength = entity["shadowStrength"].as<float>();
 		_shadowsBias = entity["shadowBias"].as<float>();
 		_shadowsPCF = entity["pcf"].as<uint32>();
-		_shadowsCascadesCount = entity["cascades"].as<uint32>();
 	}
 }
 
@@ -149,7 +134,6 @@ void LightsourceComponent::Serialize(ByteSerialize& serializer) {
 		serializer.Serialize(_shadowStrength);
 		serializer.Serialize(_shadowsBias);
 		serializer.Serialize(_shadowsPCF);
-		serializer.Serialize(_shadowsCascadesCount);
 	}
 }
 void LightsourceComponent::Deserialize(ByteSolver& solver) {
@@ -164,24 +148,29 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 		_shadowStrength = solver.GetValue<float>();
 		_shadowsBias = solver.GetValue<float>();
 		_shadowsPCF = solver.GetValue<uint32>();
-		_shadowsCascadesCount = solver.GetValue<uint32>();
 	}
 }
 
+
+
 Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
+	float cascadeSplitLambda = 0.95f;
 	int sizes[] = { 20, 50, 80, 130, 160, 190, 230, 270 };
 	Vec3 direction = GetDirection();
-
+	Vec3 cam_pos = cam->GetPosition();
 	Mat4* result = nullptr;
 	if (_castShadows) {
 		if (_lightType == LIGHT_TYPE_DIRECTIONAL) {
-			result = new Mat4[_shadowsCascadesCount];
-			for (uint32 i = 0; i < _shadowsCascadesCount; i++) {
-				float w = sizes[i];
+			Scene* scene = GetEntity()->GetScene();
+			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
+
+			result = new Mat4[env_settings.GetShadowCascadesCount()];
+			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) {
+				float w = env_settings.GetCascadeDepths()[i];
 				Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
 				Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
 
-				Mat4 projectionMat = GetOrthoRH_ZeroOne(-w, w, -w, w, -40.f, 85.f);
+				Mat4 projectionMat = GetOrthoRH_ZeroOne(-w , w , -w , w, -40.f, 85.f);
 
 				result[i] = matview * projectionMat;
 			}

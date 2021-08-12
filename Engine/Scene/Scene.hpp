@@ -6,15 +6,16 @@
 
 namespace VSGE {
 
-	
-
 	class SceneEnvironmentSettings {
 	private:
 		float _shadow_distance;
 		uint32 _shadow_cascades_count;
+		std::vector<float> _cascade_depths;
 	public:
 		Color _ambient_color;
 		ResourceReference _skybox_material;
+
+		void UpdateShadows();
 
 		float GetMaxShadowDistance(){
 			return _shadow_distance;
@@ -26,6 +27,10 @@ namespace VSGE {
 
 		uint32 GetShadowCascadesCount(){
 			return _shadow_cascades_count;
+		}
+
+		float* GetCascadeDepths(){
+			return _cascade_depths.data();
 		}
 
 		void SetShadowCascadesCount(uint32 cascades){

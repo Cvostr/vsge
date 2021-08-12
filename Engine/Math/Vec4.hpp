@@ -54,6 +54,10 @@ public:
 		return tVec4(x * d, y * d, z * d, w * d);
 	}
 
+	tVec4 operator/(float d) const {
+		return tVec4(x / d, y / d, z / d, w / d);
+	}
+
 	bool operator ==(const tVec4& r) const {
 		return x == r.x && y == r.y && z == r.z && w == r.w;
 	}

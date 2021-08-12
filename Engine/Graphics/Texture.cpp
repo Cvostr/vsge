@@ -72,10 +72,13 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
     if (data == nullptr || size == 0)
         return false;
 
+    bool is_png = data[1] == 'P' && data[2] == 'N' && data[3] == 'G';
+    bool is_jpg = data[0] == 0xFF && data[1] == 0xD8;
+
     if (data[0] == 'D' && data[1] == 'D' && data[2] == 'S') {
         return LoadTextureDDS(data, size, this);
     }
-    else if (data[1] == 'P' && data[2] == 'N' && data[3] == 'G') {
+    else if (is_png || is_jpg) {
         int width = 0;
         int height = 0;
         byte* image_data = stbi_load_from_memory(data, size, &width, &height, NULL, 4);

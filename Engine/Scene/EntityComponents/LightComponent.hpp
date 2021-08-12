@@ -29,7 +29,6 @@ namespace VSGE {
 		float _shadowStrength;
 		float _shadowsBias;
 		uint32 _shadowsPCF;
-		uint32 _shadowsCascadesCount;
 	public:
 
 		LightsourceComponent();

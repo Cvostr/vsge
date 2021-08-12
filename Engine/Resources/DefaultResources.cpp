@@ -9,6 +9,8 @@ using namespace VSGE;
 #define SPHERE_SECTORS 36
 #define SPHERE_STACKS 18
 
+static MeshResource* cube_mesh = nullptr;
+
 static Vertex cube_vertices[] = {
     // back face
     Vertex(Vec3(-1.0f, -1.0f, -1.0f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
@@ -71,12 +73,16 @@ void VSGE::AddDefaultMaterial() {
 	ResourceCache::Get()->PushResource(default_mat);
 }
 
+void* VSGE::GetCubeMesh(){
+    return cube_mesh;
+}
+
 void VSGE::AddDefaultMeshes() {
     ProcessTangentSpace(cube_vertices, 36);
 
     VertexSkinningData* verts = new VertexSkinningData[36];
 
-	MeshResource* cube_mesh = new MeshResource;
+	cube_mesh = new MeshResource;
 	cube_mesh->SetName("Cube");
     cube_mesh->GetMesh()->SetVertexBuffer(cube_vertices, 36);
     cube_mesh->GetMesh()->AddVertexBuffer(verts);
@@ -140,8 +146,8 @@ void VSGE::AddDefaultMeshes() {
             sphere_v.push_back(v);
         }
     }
-    unsigned int k1, k2;
-    for (unsigned int i = 0; i < SPHERE_STACKS; ++i)
+    uint32 k1, k2;
+    for (uint32 i = 0; i < SPHERE_STACKS; ++i)
     {
         k1 = i * (SPHERE_SECTORS + 1);     // beginning of current stack
         k2 = k1 + SPHERE_SECTORS + 1;      // beginning of next stack

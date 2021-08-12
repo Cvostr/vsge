@@ -139,3 +139,17 @@ Mat4 GetViewLH(const Vec3& center, const Vec3& eye, const Vec3& up) {
 	Result.Values[3][2] = -f.Dot(eye);
 	return Result;
 }
+
+Mat4 RemoveTranslationFromViewMat(const Mat4& viewMat) {
+    Mat4 result = viewMat;
+
+    result[3][0] = 0;
+    result[3][1] = 0;
+    result[3][2] = 0;
+    result[3][3] = 1;
+    result[0][3] = 0;
+    result[1][3] = 0;
+    result[2][3] = 0;
+
+    return result;
+}

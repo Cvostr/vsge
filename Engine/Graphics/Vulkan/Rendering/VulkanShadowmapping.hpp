@@ -67,7 +67,9 @@ namespace VSGE {
 		uint32 _added_casters;
 
 		VulkanBuffer* _shadowcasters_buffer;
+		//buffer used in shadow rendering stage
 		VulkanBuffer* _shadowprocess_buffer;
+		VulkanBuffer* _cascadeinfo_buffer;
 
 		VulkanDescriptorPool* _shadowcasters_descPool;
 		VulkanDescriptorSet* _shadowcaster_descrSet;
@@ -77,6 +79,7 @@ namespace VSGE {
 		VulkanDescriptorSet* animsDescrSet;
 
 		Camera* cam;
+		Scene* _scene;
 		std::vector<Entity*>* _entitiesToRender;
 		VulkanTexture* _gbuffer_pos;
 		VulkanSampler* _gbuffer_sampler;
@@ -97,6 +100,9 @@ namespace VSGE {
 	
 		void SetCamera(Camera* cam) {
 			this->cam = cam;
+		}
+		void SetScene(Scene* scene){
+			_scene = scene;
 		}
 		void SetEntitiesToRender(std::vector<Entity*>* entities) {
 			_entitiesToRender = entities;

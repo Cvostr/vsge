@@ -36,18 +36,7 @@ namespace VSGE {
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_CAMERA, "Camera")
 
-		Camera() : 
-			_aspectRatio(1280.f / 720.f),
-			_nearPlane(1.f),
-			_farPlane(1000.f),
-			_fov(45.f),
-			_viewMask(MAX_INT64),
-			_defaultOrientation(CAM_ORIENTATION_Z_UP),
-			_front(1.f, 0.f, 0.f),
-			_up(0.f, 1.f, 0.f)
-		{
-
-		}
+		Camera() ;
 		/// <summary>
 		/// Recalculate projection, view matrices and update frustum
 		/// </summary>

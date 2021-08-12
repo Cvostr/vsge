@@ -15,7 +15,8 @@ MaterialTemplateCache template_cache;
 MaterialTemplate::MaterialTemplate() :
 	_shader(nullptr),
 	_pipeline(nullptr),
-	_cullMode(CULL_MODE_FRONT)
+	_cullMode(CULL_MODE_FRONT),
+	_depthTest(true)
 {
 	SetupDefaultVertexLayout();
 }
@@ -86,6 +87,14 @@ CullMode MaterialTemplate::GetCullMode() {
 
 void MaterialTemplate::SetCullMode(CullMode mode) {
 	_cullMode = mode;
+}
+
+bool MaterialTemplate::GetDepthTest(){
+	return _depthTest;
+}
+
+void MaterialTemplate::SetDepthTest(bool depth_test){
+	_depthTest = depth_test;
 }
 
 void MaterialTemplate::SetVertexLayout(const VertexLayout& vertexLayout) {

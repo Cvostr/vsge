@@ -19,7 +19,7 @@ namespace VSGEditor {
 			return !ext.compare(".vs3m");
 		}
 		bool isTexture() {
-			return !ext.compare(".DDS") || !ext.compare(".dds") || !ext.compare(".PNG") || !ext.compare(".png");
+			return !ext.compare(".DDS") || !ext.compare(".dds") || !ext.compare(".PNG") || !ext.compare(".png") || !ext.compare(".JPG") || !ext.compare(".jpg");
 		}
 		bool is3dWorld() {
 			return !ext.compare(".scn");

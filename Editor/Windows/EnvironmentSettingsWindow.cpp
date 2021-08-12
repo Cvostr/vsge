@@ -22,6 +22,8 @@ void EnvironmentSettingsWindow::OnDrawWindow(){
 		ImGui::InputInt("Shadow cascades", &cascades_count);
 		scene->GetEnvironmentSettings().SetShadowCascadesCount(cascades_count);
 
+		scene->GetEnvironmentSettings().UpdateShadows();
+
 		ImGui::End();
 	}
 }

@@ -7,8 +7,9 @@ layout (location = 0) out vec3 FragPos;
 layout (location = 1) out vec2 UVCoord; 
 
 layout (std140, binding = 0) uniform CamMatrices{
-    uniform mat4 cam_view_projection;
-    uniform vec3 cam_position;
+    mat4 cam_view_projection;
+    mat4 cam_view;
+    vec3 cam_position;
 };
 
 layout (std140, set = 2, binding = 0) readonly buffer Transforms {

@@ -59,8 +59,14 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 	inputAssembly.topology = (VkPrimitiveTopology)_primitiveTopology;
 	inputAssembly.primitiveRestartEnable = _primitiveRestartEnable;
 
+	VkPipelineRasterizationDepthClipStateCreateInfoEXT depthClipInfo = {};
+	depthClipInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_DEPTH_CLIP_STATE_CREATE_INFO_EXT;
+	depthClipInfo.pNext = nullptr;
+	depthClipInfo.depthClipEnable = _depthTest;
+
 	VkPipelineRasterizationStateCreateInfo rasterizer = {};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.pNext = &depthClipInfo;
 	rasterizer.depthClampEnable = VK_FALSE;
 	rasterizer.rasterizerDiscardEnable = VK_FALSE;
 	rasterizer.polygonMode = (VkPolygonMode)_polygonMode;

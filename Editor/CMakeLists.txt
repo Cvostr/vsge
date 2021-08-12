@@ -32,6 +32,7 @@ set(SRC_FILES
                 InspectorInterfaces/EntityComponents/RigidBody.cpp
                 InspectorInterfaces/EntityComponents/ScriptComponent.cpp
                 Menus/File_Menu.cpp
+                Menus/Edit_Menu.cpp
                 Menus/Windows_Menu.cpp
                 Misc/AssimpMeshLoader.cpp
                 Misc/ResourceImporter.cpp

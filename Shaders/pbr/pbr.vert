@@ -23,8 +23,9 @@ layout(location = 2) out vec2 UVCoord;
 layout(location = 3) out mat3 TBN;
 
 layout (std140, binding = 0) uniform CamMatrices{
-    uniform mat4 cam_view_projection;
-    uniform vec3 cam_position;
+    mat4 cam_view_projection;
+    mat4 cam_view;
+    vec3 cam_position;
 };
 
 layout (std140, binding = 1) uniform Transform{

@@ -13,6 +13,12 @@ float clamp(T x, T minVal, T maxVal) {
     return std::min(std::max(x, minVal), maxVal);
 }
 
+template<typename T>
+T max(T a1, T a2){
+    if(a1 < a2)
+        return a2;
+    return a1;
+}
 
 template <typename T, typename U>
 T lerp(T v1, T v2, U factor) {
