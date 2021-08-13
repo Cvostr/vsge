@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AsyncLoader.hpp"
+#include "ResourcesWatchdog.hpp"
 #include <vector>
 
 namespace VSGE {
@@ -9,6 +10,8 @@ namespace VSGE {
 		static ResourceCache* _this;
 		
 		AsyncLoader* _loader;
+		ResourcesWatchdog* _watchdog;
+
 		std::vector<Resource*> _resources;
 
 		void CreateResource(DataDescription& descr, ResourceType type);

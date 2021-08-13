@@ -226,7 +226,8 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 	Vec3 cam_pos_offset(0.f);
 	switch (kbd.GetKeyCode()) {
 	case KEY_CODE_BACKSPACE:
-		imgui->GetWindow<FileBrowserWindow>()->cd_up();
+		if(imgui->GetWindow<FileBrowserWindow>()->IsInFocus())
+			imgui->GetWindow<FileBrowserWindow>()->cd_up();
 		break;
 	case KEY_CODE_F5:
 		imgui->GetWindow<ToolbarWindow>()->PlayScene();

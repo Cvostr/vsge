@@ -41,8 +41,10 @@ void ResourcePickerWindow::OnDrawWindow() {
                     if (resource) {
                         if (resource->IsUnloaded())
                             resource->Load();
-                        else
+                        else{
                             texture = fbw->GetTextureResource(resource->GetDataDescription().file_path);
+                            resource->Use();
+                        }
                     }
 
                     if (texture) {

@@ -81,6 +81,7 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
     else if (is_png || is_jpg) {
         int width = 0;
         int height = 0;
+
         byte* image_data = stbi_load_from_memory(data, size, &width, &height, NULL, 4);
         if (image_data == NULL)
             return false;

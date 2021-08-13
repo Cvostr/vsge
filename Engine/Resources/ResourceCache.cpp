@@ -22,6 +22,10 @@ ResourceCache::ResourceCache() {
     _loader = new AsyncLoader;
     _loader->Run();
     _loader->SetThreadName("res_load_async");
+
+    _watchdog = new ResourcesWatchdog;
+    _watchdog->SetResourcesToWatch(_resources);
+    _watchdog->Run();
 }
 
 Resource* ResourceCache::GetResource(const std::string& name) {

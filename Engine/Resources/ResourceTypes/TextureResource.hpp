@@ -10,23 +10,15 @@ namespace VSGE {
 		bool _isRenderTarget;
 	public:
 
-		TextureResource() {
-			_texture = CreateTexture();
-		}
+		TextureResource();
 
-		~TextureResource() {
-			delete _texture;
-		}
+		~TextureResource();
 
-		Texture* GetTexture() { return _texture; }
+		Texture* GetTexture();
 
-		void Release() {
-			_texture->Destroy();
-		}
+		void Release();
 
-		void PostLoad() {
-			_texture->CreateFromBuffer(_loadedData, _description.size);
-		}
+		void PostLoad();
 
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_TEXTURE)
 	};

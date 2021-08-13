@@ -15,7 +15,6 @@ void ResourceLayer::OnResourceEvent(const VSGE::ResourceLoadEvent& event) {
 		return;
 
 	event.GetResource()->PostLoad();
-	event.GetResource()->FreeLoadedData();
 	event.GetResource()->SetState(RESOURCE_STATE_READY);
 }
 

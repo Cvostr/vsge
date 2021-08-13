@@ -2,7 +2,6 @@
 
 #include "../Resource.hpp"
 #include <Graphics/Animation.hpp>
-#include "../AnimationParser.hpp"
 
 namespace VSGE {
 	class AnimationResource : public Resource {
@@ -10,25 +9,15 @@ namespace VSGE {
 		Animation* _animation;
 	public:
 
-		AnimationResource() {
-			_animation = new Animation;
-		}
+		AnimationResource();
 
-		~AnimationResource() {
-			delete _animation;
-		}
+		~AnimationResource();
 
-		Animation* GetAnimation() { return _animation; }
+		Animation* GetAnimation();
 
-		void Release() {
-			_animation->Release();
-		}
+		void Release();
 
-		void PostLoad() {
-			ImportedAnimationFile iaf;
-			iaf.loadFromBuffer(_loadedData, _description.size);
-			iaf._Animation->CopyTo(_animation);
-		}
+		void PostLoad();
 
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_ANIMATION)
 

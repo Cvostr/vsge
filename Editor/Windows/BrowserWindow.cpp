@@ -214,6 +214,10 @@ void FileBrowserWindow::OnDrawWindow() {
             }
         }
         if (e->isTexture()) {
+            TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(e->abs_path);
+            if(texture){
+                texture->Use();
+            }
             ImguiVulkanTexture* tex = GetTextureResource(e->abs_path);
             if (tex)
                 icon = tex;
@@ -316,6 +320,14 @@ ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fna
     }
 
     if (ptr != nullptr) {
+        if(ptr->second != nullptr){
+            TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
+            if(texture->IsUnloaded()){
+                ImGui_ImplVulkan_DestroyTexture(ptr->second);
+                ptr->second = nullptr;
+            }
+        }
+
         if (ptr->second == nullptr) {
             TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
             if (texture->IsUnloaded()) {

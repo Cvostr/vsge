@@ -47,7 +47,7 @@ namespace VSGE {
 	protected:
 		ResourceState _resourceState;
 		uint32 _memoryUse;
-		uint64 _lastUseFrame;
+		uint64 _lastUseTime;
 		std::string _name;
 
 		byte* _loadedData;
@@ -127,8 +127,8 @@ namespace VSGE {
 		/// Get last frame number, where this resource was used
 		/// </summary>
 		/// <returns></returns>
-		uint64 GetLastUseFrame() {
-			return _lastUseFrame;
+		uint64 GetLastUseTime() {
+			return _lastUseTime;
 		}
 		/// <summary>
 		/// Mark texture as used in this frame
@@ -146,7 +146,7 @@ namespace VSGE {
 			_parent(nullptr),
 			_resourceState(RESOURCE_STATE_UNLOADED),
 			_memoryUse(0),
-			_lastUseFrame(0),
+			_lastUseTime(0),
 			_loadedData(nullptr)
 		{}
 	};

@@ -29,7 +29,7 @@ void Resource::SetLoadedData(byte* data) {
 }
 
 void Resource::Use() {
-	_lastUseFrame = TimePerf::Get()->GetCurrentTime();
+	_lastUseTime = TimePerf::Get()->GetCurrentTime();
 }
 
 void Resource::Load(bool just_read) {

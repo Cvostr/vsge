@@ -79,12 +79,15 @@ set(SRC_FILES
 				Physics/PhysicsLayer.cpp
 				Resources/AnimationParser.cpp
 				Resources/AsyncLoader.cpp
+				Resources/ResourcesWatchdog.cpp
 				Resources/DefaultResources.cpp
 				Resources/ModelParser.cpp
 				Resources/Resource.cpp
 				Resources/ResourceCache.cpp
 				Resources/ResourceLayer.cpp
 				Resources/ResourceTypes/MeshResource.cpp
+				Resources/ResourceTypes/TextureResource.cpp
+				Resources/ResourceTypes/AnimationResource.cpp
 				Scene/Camera.cpp
 				Scene/Entity.cpp
 				Scene/IEntityComponent.cpp
