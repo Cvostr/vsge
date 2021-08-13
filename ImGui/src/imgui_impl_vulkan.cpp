@@ -1232,5 +1232,5 @@ ImTextureID ImGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView image_vie
 
 void ImGui_ImplVulkan_DestroyTexture(ImTextureID texture){
     ImGui_ImplVulkan_InitInfo* v = &g_VulkanInitInfo;
-    vkFreeDescriptorSets(v->Device, v->DescriptorPool, 1, (VkDescriptorSet*)&texture);
+    //vkFreeDescriptorSets(v->Device, v->DescriptorPool, 1, (VkDescriptorSet*)&texture);
 }

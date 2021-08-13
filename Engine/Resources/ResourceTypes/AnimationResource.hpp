@@ -15,7 +15,7 @@ namespace VSGE {
 
 		Animation* GetAnimation();
 
-		void Release();
+		void OnRelease();
 
 		void PostLoad();
 

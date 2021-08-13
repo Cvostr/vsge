@@ -16,7 +16,7 @@ namespace VSGE {
 
 		Material* GetMaterial() { return _material; }
 
-		void Release() {
+		void OnRelease() {
 
 		}
 

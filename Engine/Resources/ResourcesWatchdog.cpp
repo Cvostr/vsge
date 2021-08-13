@@ -27,15 +27,15 @@ void ResourcesWatchdog::THRFunc(){
             Resource* resource = _resources->at(resource_i);
             if(resource->IsReady() && resource->GetLoadedData()){
                 resource->FreeLoadedData();
-                Logger::Log() << "Loaded data freed " << resource->GetName();
+            }
+            if(resource->IsReady() && resource->GetLastUseTime() == 0){
+                resource->Use();
             }
 
             if(resource->IsReady() && resource->GetName().rfind("Default") != 0){
                 uint64 time_delta = TimePerf::Get()->GetCurrentTime() - resource->GetLastUseTime();
                 if(time_delta > MAX_RESOURCE_LIFETIME && resource->GetResourceType() == RESOURCE_TYPE_TEXTURE){
                     resource->Release();
-                    resource->SetState(RESOURCE_STATE_UNLOADED);
-                    Logger::Log() << "Released resource " << resource->GetName();
                 }
             }
             _mutex->Release();

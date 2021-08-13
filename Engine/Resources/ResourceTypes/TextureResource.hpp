@@ -16,9 +16,11 @@ namespace VSGE {
 
 		Texture* GetTexture();
 
-		void Release();
+		void OnRelease();
 
 		void PostLoad();
+
+		void Prepare();
 
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_TEXTURE)
 	};

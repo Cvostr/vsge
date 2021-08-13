@@ -20,7 +20,7 @@ namespace VSGE {
 			_resource_compiled = compiled;
 		}
 
-		void Release() {
+		void OnRelease() {
 		}
 
 		void PostLoad() {

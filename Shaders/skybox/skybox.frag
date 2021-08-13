@@ -74,23 +74,23 @@ vec3 sample_sky(int index, vec2 uv){
     {
         case 0:
         {
-            return texture(right, mx).xyz;
+            return texture(left, uv).xyz;
         }
         case 1:
         {
-            return texture(left, uv).xyz;
+            return texture(right, uv).xyz;
         }
         case 3:
         {
-            return texture(front, mx).xyz;
+            return texture(bottom, uv).xyz;
         }
         case 2:
         {
-            return texture(back, uv).xyz;
+            return texture(top, uv).xyz;
         }
         case 5:
         {
-            return texture(bottom, my).xyz;
+            return texture(bottom, uv).xyz;
         }
         case 4:
         {

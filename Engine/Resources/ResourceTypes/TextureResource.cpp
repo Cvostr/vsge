@@ -4,6 +4,7 @@ using namespace VSGE;
 
 TextureResource::TextureResource() {
 	_texture = CreateTexture();
+	_isRenderTarget = false;
 }
 
 TextureResource::~TextureResource() {
@@ -12,10 +13,15 @@ TextureResource::~TextureResource() {
 
 Texture* TextureResource::GetTexture() { return _texture; }
 
-void TextureResource::Release() {
+void TextureResource::OnRelease() {
     _texture->Destroy();
 }
 
 void TextureResource::PostLoad() {
 	_texture->CreateFromBuffer(_loadedData, _description.size);
+}
+
+void TextureResource::Prepare(){
+	//PostLoad();
+	//SetState(RESOURCE_STATE_READY);
 }

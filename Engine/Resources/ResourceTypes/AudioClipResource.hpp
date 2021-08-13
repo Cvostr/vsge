@@ -18,7 +18,7 @@ namespace VSGE {
 
 		AudioBuffer* GetAudioBuffer() { return _buffer; }
 
-		void Release() {
+		void OnRelease() {
 			_buffer->Destroy();
 		}
 

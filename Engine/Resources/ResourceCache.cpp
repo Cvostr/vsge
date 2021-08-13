@@ -26,6 +26,7 @@ ResourceCache::ResourceCache() {
     _watchdog = new ResourcesWatchdog;
     _watchdog->SetResourcesToWatch(_resources);
     _watchdog->Run();
+    _watchdog->SetThreadName("res_watchdog");
 }
 
 Resource* ResourceCache::GetResource(const std::string& name) {

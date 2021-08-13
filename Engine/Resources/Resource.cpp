@@ -33,13 +33,22 @@ void Resource::Use() {
 }
 
 void Resource::Load(bool just_read) {
-	if (_resourceState == RESOURCE_STATE_UNLOADED) {
+	if (IsUnloaded()) {
 		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(this);
 	}
 }
 
 void Resource::FreeLoadedData() {
 	SAFE_RELEASE_ARR(_loadedData)
+}
+
+void Resource::Release(){
+	if(_loadedData)
+		FreeLoadedData();
+
+	OnRelease();
+	SetState(RESOURCE_STATE_UNLOADED);
+	_lastUseTime = 0;
 }
 
 Resource* ResourceReference::GetResource() {

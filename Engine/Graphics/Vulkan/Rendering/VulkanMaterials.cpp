@@ -73,14 +73,12 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 		if (texture_res == nullptr) {
 			continue;
 		}
-
 		if (texture_res->IsReady()) {
 			//Mark texture resource as used in this frame
 			texture_res->Use();
-		}
-		if (!texture_res->IsReady()) {
+		}else
 			mat->_texturesDirty = true;
-		}
+		
 	}
 	bool unloaded_texture = false;
 	if (mat->_texturesDirty) {
@@ -92,12 +90,12 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 				continue;
 			}
 
-			if (texture_res->GetState() == RESOURCE_STATE_UNLOADED) {
+			if (texture_res->IsUnloaded()) {
 				//Load texture
 				texture_res->Load();
 			}
 
-			if (texture_res->GetState() == RESOURCE_STATE_READY) {
+			if (texture_res->IsReady()) {
 				//Mark texture resource as used in this frame
 				texture_res->Use();
 				//Write texture to descriptor

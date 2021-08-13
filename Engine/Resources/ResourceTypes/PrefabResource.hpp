@@ -16,7 +16,7 @@ namespace VSGE {
 
 		}
 
-		void Release() {
+		void OnRelease() {
 			
 		}
 

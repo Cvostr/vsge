@@ -13,7 +13,7 @@ AnimationResource::~AnimationResource() {
 
 Animation* AnimationResource::GetAnimation() { return _animation; }
 
-void AnimationResource::Release() {
+void AnimationResource::OnRelease() {
 	_animation->Release();
 }
 
