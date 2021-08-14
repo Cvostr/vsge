@@ -10,33 +10,33 @@ using namespace VSGE;
 
 Mutex::Mutex() {
 #ifdef _WIN32
-	mMutexHandle = new CRITICAL_SECTION;
-	InitializeCriticalSection((CRITICAL_SECTION*)this->mMutexHandle);
+	_mutexHandle = new CRITICAL_SECTION;
+	InitializeCriticalSection((CRITICAL_SECTION*)this->_mutexHandle);
 #else
-	mMutexHandle = new pthread_mutex_t;
-	pthread_mutex_init((pthread_mutex_t*)mMutexHandle, NULL);
+	_mutexHandle = new pthread_mutex_t;
+	pthread_mutex_init((pthread_mutex_t*)_mutexHandle, NULL);
 #endif
 }
 Mutex::~Mutex() {
 #ifdef _WIN32
-	DeleteCriticalSection((CRITICAL_SECTION*)this->mMutexHandle);
+	DeleteCriticalSection((CRITICAL_SECTION*)this->_mutexHandle);
 #else
-	pthread_mutex_destroy((pthread_mutex_t*)mMutexHandle);
+	pthread_mutex_destroy((pthread_mutex_t*)_mutexHandle);
 #endif
-	delete mMutexHandle;
+	delete _mutexHandle;
 }
 
 void Mutex::Lock() {
 #ifdef _WIN32
-	EnterCriticalSection((CRITICAL_SECTION*)mMutexHandle);
+	EnterCriticalSection((CRITICAL_SECTION*)_mutexHandle);
 #else
-	pthread_mutex_lock((pthread_mutex_t*)mMutexHandle);
+	pthread_mutex_lock((pthread_mutex_t*)_mutexHandle);
 #endif
 }
 void Mutex::Release() {
 #ifdef _WIN32
-	LeaveCriticalSection((CRITICAL_SECTION*)mMutexHandle);
+	LeaveCriticalSection((CRITICAL_SECTION*)_mutexHandle);
 #else
-	pthread_mutex_unlock((pthread_mutex_t*)mMutexHandle);
+	pthread_mutex_unlock((pthread_mutex_t*)_mutexHandle);
 #endif
 }

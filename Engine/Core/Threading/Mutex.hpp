@@ -11,6 +11,6 @@ namespace VSGE {
 		void Release();
 
 	private:
-		void* mMutexHandle;
+		void* _mutexHandle;
 	};
 }

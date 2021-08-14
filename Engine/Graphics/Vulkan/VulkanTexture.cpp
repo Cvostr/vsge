@@ -99,10 +99,13 @@ void VulkanTexture::Destroy() {
 		VulkanDevice* device = vulkan->GetDevice();
 		VulkanMA* ma = vulkan->GetAllocator();
 
-		ma->destroyImage(&_image);
 		vkDestroyImageView(device->getVkDevice(), _imageView, nullptr);
+		ma->destroyImage(&_image);
 
 		_layout = VK_IMAGE_LAYOUT_UNDEFINED;
+		_usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+		_imageView = VK_NULL_HANDLE;
+
 		mCreated = false;
 	}
 }
