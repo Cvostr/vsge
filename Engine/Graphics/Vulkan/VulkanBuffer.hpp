@@ -6,10 +6,10 @@
 namespace VSGE {
 	class VulkanBuffer : public GpuBuffer {
 	private:
-		VmaVkBuffer mBuffer;
+		VmaVkBuffer _buffer;
 	public:
 
-		VkBuffer GetBuffer() { return mBuffer.Buffer; }
+		VkBuffer GetBuffer() { return _buffer.Buffer; }
 
 		VulkanBuffer(GpuBufferType type) : GpuBuffer(type) 
 		{

@@ -40,9 +40,9 @@ void ResourcesWatchdog::THRFunc(){
                 resource->Use();
             }
 
-            if(resource->IsReady() && resource->GetName().rfind("Default") != 0){
+            if(resource->IsReady() && !resource->IsDefault()){
                 uint64 time_delta = TimePerf::Get()->GetCurrentTime() - resource->GetLastUseTime();
-                if(time_delta > MAX_RESOURCE_LIFETIME && resource->GetResourceType() == RESOURCE_TYPE_TEXTURE){
+                if(time_delta > MAX_RESOURCE_LIFETIME && (resource->GetResourceType() == RESOURCE_TYPE_MESH || resource->GetResourceType() == RESOURCE_TYPE_TEXTURE)){
                     resource->Release();
                 }
             }

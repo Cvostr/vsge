@@ -40,5 +40,7 @@ namespace VSGE {
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_MESH)
 
 		void Load();
+
+		void OnRelease();
 	};
 }

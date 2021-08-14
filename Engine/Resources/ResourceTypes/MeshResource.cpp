@@ -47,6 +47,11 @@ void MeshResource::Load() {
 	}
 }
 
+void MeshResource::OnRelease() {
+	if (IsReady())
+		mesh->Destroy();
+}
+
 Mesh* MeshResource::GetMesh() {
 	return mesh;
 }

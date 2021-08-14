@@ -137,6 +137,9 @@ namespace VSGE {
 
 		void Release();
 
+		void SetDefault();
+		bool IsDefault();
+
 		virtual void Load(bool just_read = false);
 		virtual void OnRelease() {}
 		virtual void Prepare() {}

@@ -69,6 +69,7 @@ unsigned int plane_indices[] = { 0,1,2, 0,2,3 };
 void VSGE::AddDefaultMaterial() {
 	MaterialResource* default_mat = new MaterialResource;
 	default_mat->SetName("Default Material");
+    default_mat->SetDefault();
     default_mat->SetState(RESOURCE_STATE_READY);
 	ResourceCache::Get()->PushResource(default_mat);
 }
@@ -83,6 +84,7 @@ void VSGE::AddDefaultMeshes() {
     VertexSkinningData* verts = new VertexSkinningData[36];
 
 	cube_mesh = new MeshResource;
+    cube_mesh->SetDefault();
 	cube_mesh->SetName("Cube");
     cube_mesh->GetMesh()->SetVertexBuffer(cube_vertices, 36);
     cube_mesh->GetMesh()->AddVertexBuffer(verts);
@@ -92,6 +94,7 @@ void VSGE::AddDefaultMeshes() {
 
 
     MeshResource* plane_mesh = new MeshResource;
+    plane_mesh->SetDefault();
     plane_mesh->SetName("Plane");
     plane_mesh->GetMesh()->SetVertexBuffer(plane_vertices, 4);
     plane_mesh->GetMesh()->SetIndexBuffer(plane_indices, 6);
@@ -177,6 +180,7 @@ void VSGE::AddDefaultMeshes() {
 
     MeshResource* sphere_mesh = new MeshResource;
     sphere_mesh->SetName("Sphere");
+    sphere_mesh->SetDefault();
     sphere_mesh->GetMesh()->SetVertexBuffer(sphere_v.data(), sphere_v.size());
     sphere_mesh->GetMesh()->SetIndexBuffer(sphere_indices.data(), sphere_indices.size());
     sphere_mesh->GetMesh()->AddVertexBuffer(verts);

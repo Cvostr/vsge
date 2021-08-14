@@ -24,9 +24,15 @@ void VulkanMesh::Destroy() {
 	if (mCreated) {
 		for (auto vertbuffer : vertexBuffers) {
 			vertbuffer->Destroy();
+			SAFE_RELEASE(vertbuffer);
 		}
-		if(indexBuffer)
+		vertexBuffers.clear();
+		_vertexBuffers.clear();
+
+		if (indexBuffer) {
 			indexBuffer->Destroy();
+			SAFE_RELEASE(indexBuffer)
+		}
 
 		mCreated = false;
 	}

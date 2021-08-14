@@ -51,6 +51,14 @@ void Resource::Release(){
 	_lastUseTime = 0;
 }
 
+bool Resource::IsDefault() {
+	return _description.file_path == "@d";
+}
+
+void Resource::SetDefault() {
+	_description.file_path = "@d";
+}
+
 Resource* ResourceReference::GetResource() {
 	return _resourcePointer;
 }
