@@ -124,9 +124,11 @@ void VulkanRenderer::SetupRenderer() {
 	memset(empty_texture_data, 255, 16);
 	mEmptyTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
 	mEmptyTexture->CreateImageView();
+	delete[] empty_texture_data;
 
 	//---------------------Samplers------------------
 	mMaterialMapsSampler = new VulkanSampler;
+	mMaterialMapsSampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
 	mMaterialMapsSampler->Create();
 
 	mAttachmentSampler = new VulkanSampler;

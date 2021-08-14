@@ -24,7 +24,6 @@ ResourceCache::ResourceCache() {
     _loader->SetThreadName("res_load_async");
 
     _watchdog = new ResourcesWatchdog;
-    _watchdog->SetResourcesToWatch(_resources);
     _watchdog->Run();
     _watchdog->SetThreadName("res_watchdog");
 }
@@ -90,6 +89,7 @@ void ResourceCache::AddResourceDir(const std::string& path) {
 
 void ResourceCache::RemoveResource(Resource* resource) {
     std::remove(_resources.begin(), _resources.end(), resource);
+    _watchdog->RemoveResource(resource);
 }
 
 void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
@@ -179,4 +179,5 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
 
 void ResourceCache::PushResource(Resource* res) {
     _resources.push_back(res);
+    _watchdog->AddResource(res);
 }

@@ -50,7 +50,10 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="res"></param>
 		void PushResource(Resource* res);
-
+		/// <summary>
+		/// Remove resource from cache list
+		/// </summary>
+		/// <param name="resource">- resource to remove</param>
 		void RemoveResource(Resource* resource);
 		/// <summary>
 		/// Get resource with specified name

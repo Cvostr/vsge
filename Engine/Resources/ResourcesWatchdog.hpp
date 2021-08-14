@@ -9,13 +9,15 @@ namespace VSGE{
     class ResourcesWatchdog : public Thread{
     private:
         Mutex* _mutex;
-        std::vector<Resource*>* _resources;
+        std::vector<Resource*> _resources;
     public:
         ResourcesWatchdog();
 
 		~ResourcesWatchdog();
 
-        void SetResourcesToWatch(std::vector<Resource*>& resources);
+        void AddResource(Resource* resource);
+
+        void RemoveResource(Resource* resource);
 
         void THRFunc();
     };

@@ -65,36 +65,106 @@ int convert_xyz_to_cube_index(float x, float y, float z)
   return index;
 }
 
+vec2 convert_xyz_to_cube_uv(vec3 dir)
+{
+  float absX = abs(dir.x);
+  float absY = abs(dir.y);
+  float absZ = abs(dir.z);
+  
+	float x = dir.x;
+	float y = dir.y;
+	float z = dir.z;
+
+  bool isXPositive = dir.x > 0 ? true : false;
+  bool isYPositive = dir.y > 0 ? true : false;
+  bool isZPositive = dir.z > 0 ? true : false;
+  
+  float maxAxis, uc, vc;
+  
+  // POSITIVE X
+  if (isXPositive && absX >= absY && absX >= absZ) {
+    // u (0 to 1) goes from +z to -z
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absX;
+    uc = -z;
+    vc = y;
+  }
+  // NEGATIVE X
+  if (!isXPositive && absX >= absY && absX >= absZ) {
+    // u (0 to 1) goes from -z to +z
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absX;
+    uc = z;
+    vc = y;
+  }
+  // POSITIVE Y
+  if (isYPositive && absY >= absX && absY >= absZ) {
+    // u (0 to 1) goes from -x to +x
+    // v (0 to 1) goes from +z to -z
+    maxAxis = absY;
+    uc = x;
+    vc = -z;
+  }
+  // NEGATIVE Y
+  if (!isYPositive && absY >= absX && absY >= absZ) {
+    // u (0 to 1) goes from -x to +x
+    // v (0 to 1) goes from -z to +z
+    maxAxis = absY;
+    uc = x;
+    vc = z;
+  }
+  // POSITIVE Z
+  if (isZPositive && absZ >= absX && absZ >= absY) {
+    // u (0 to 1) goes from -x to +x
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absZ;
+    uc = x;
+    vc = y;
+  }
+  // NEGATIVE Z
+  if (!isZPositive && absZ >= absX && absZ >= absY) {
+    // u (0 to 1) goes from +x to -x
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absZ;
+    uc = -x;
+    vc = y;
+  }
+
+  // Convert range from -1 to 1 to 0 to 1
+  float u = 0.5f * (uc / maxAxis + 1.0f);
+  float v = 0.5f * (vc / maxAxis + 1.0f);
+
+	return vec2(u, v);
+}
+
 vec3 sample_sky(int index, vec2 uv){
-	vec2 mx = uv;
-	mx.x *= -1;
 	vec2 my = uv;
 	my.y *= -1;
     switch (index)
     {
         case 0:
         {
-            return texture(left, uv).xyz;
+            return texture(right, my).xyz;
         }
         case 1:
         {
-            return texture(right, uv).xyz;
+            return texture(left, my).xyz;
         }
         case 3:
         {
-            return texture(bottom, uv).xyz;
+            return texture(bottom, my).xyz;
         }
         case 2:
         {
-            return texture(top, uv).xyz;
+            return texture(top, my).xyz;
         }
         case 5:
         {
-            return texture(bottom, uv).xyz;
+            return texture(back, my).xyz;
         }
         case 4:
         {
-            return texture(top, uv).xyz;
+            return texture(front, my).xyz;
         }
     }
 }
@@ -102,7 +172,8 @@ vec3 sample_sky(int index, vec2 uv){
 void main()
 {   
 	int index = convert_xyz_to_cube_index(_pos.x, _pos.y, _pos.z);
-	vec3 color = sample_sky(index, _uv);
+  vec2 uv = convert_xyz_to_cube_uv(vec3(_pos.x, _pos.y, _pos.z));
+	vec3 color = sample_sky(index, uv);
 	color *= tint_color;
 	color *= Exposure;
 

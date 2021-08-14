@@ -16,15 +16,23 @@ ResourcesWatchdog::~ResourcesWatchdog(){
     delete _mutex;
 }
 
-void ResourcesWatchdog::SetResourcesToWatch(std::vector<Resource*>& resources){
-    _resources = &resources;
+void ResourcesWatchdog::AddResource(Resource* resource) {
+    _mutex->Lock();
+    _resources.push_back(resource);
+    _mutex->Release();
+}
+
+void ResourcesWatchdog::RemoveResource(Resource* resource) {
+    _mutex->Lock();
+    std::remove(_resources.begin(), _resources.end(), resource);
+    _mutex->Release();
 }
 
 void ResourcesWatchdog::THRFunc(){
     while (mShouldRun) {
-        for(uint32 resource_i = 0; resource_i < _resources->size(); resource_i ++){
+        for(uint32 resource_i = 0; resource_i < _resources.size(); resource_i ++){
             _mutex->Lock();
-            Resource* resource = _resources->at(resource_i);
+            Resource* resource = _resources.at(resource_i);
             if(resource->IsReady() && resource->GetLoadedData()){
                 resource->FreeLoadedData();
             }
