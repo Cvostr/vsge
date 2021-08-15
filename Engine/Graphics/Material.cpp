@@ -228,6 +228,12 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 	return writtenBytes;
 }
 
+void Material::Destroy() {
+	_materialTextures.clear();
+	_materialParams.clear();
+	SAFE_RELEASE(_descriptors);
+}
+
 void Material::Serialize(const std::string& fpath) {
 	ByteSerialize serializer;
 	//write header without terminator

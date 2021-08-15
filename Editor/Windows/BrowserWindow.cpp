@@ -97,7 +97,7 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         if (resource->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
             MaterialResource* mat = (MaterialResource*)resource;
             InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
-            insp->SetShowingMaterial(mat->GetMaterial());
+            insp->SetShowingMaterial(mat);
         }
     }
 }
@@ -323,7 +323,7 @@ ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fna
         if(ptr->second != nullptr){
             TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
             if(texture->IsUnloaded()){
-                ImGui_ImplVulkan_DestroyTexture(ptr->second);
+                //ImGui_ImplVulkan_DestroyTexture(ptr->second);
                 ptr->second = nullptr;
             }
         }

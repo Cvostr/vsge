@@ -11,5 +11,5 @@ void VSGEditor::DrawMaterialComponent(VSGE::MaterialComponent* mat) {
 	ImGui::Separator();
 	if(mat->GetMaterialResource() != nullptr)
 		if(mat->GetMaterialResource()->GetName() != "Default Material")
-			DrawMaterialEditor(mat->GetMaterialResource()->GetMaterial());
+			DrawMaterialEditor(mat->GetMaterialResource());
 }

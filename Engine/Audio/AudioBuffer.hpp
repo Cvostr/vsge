@@ -16,6 +16,7 @@ namespace VSGE {
 		uint32 _duration;
 	public:
 		AudioBuffer();
+		~AudioBuffer();
 
 		void Create();
 

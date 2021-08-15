@@ -9,9 +9,15 @@ AudioBuffer::AudioBuffer() :
 	_audio_buffer(0),
     _channels(1),
     _bitsPerSample(16),
-    _frequency(0)
+    _frequency(0),
+    _duration(0),
+    _bitRate(0)
 {
 
+}
+
+AudioBuffer::~AudioBuffer() {
+    Destroy();
 }
 
 void AudioBuffer::Create() {
@@ -24,6 +30,7 @@ void AudioBuffer::Create() {
 void AudioBuffer::Destroy() {
 	if (_created) {
 		alDeleteBuffers(1, &_audio_buffer);
+        _audio_buffer = 0;
 		_created = false;
 	}
 }

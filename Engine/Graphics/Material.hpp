@@ -176,8 +176,6 @@ namespace VSGE {
 		/// <param name="texture_name">- name of texture slot</param>
 		/// <param name="texture">- reference to texture resource</param>
 		void SetTexture(const std::string& texture_name, ResourceReference& texture);
-
-		void SetCubeTexture(const std::string& texture_name, ResourceReference* texture);
 		/// <summary>
 		/// Set param to slot with specified name
 		/// </summary>
@@ -211,6 +209,8 @@ namespace VSGE {
 		MaterialTemplate* GetTemplate() {
 			return _template;
 		}
+
+		void Destroy();
 
 		void Serialize(const std::string& fpath);
 		void Deserialize(byte* data, uint32 size);

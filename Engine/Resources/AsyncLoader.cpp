@@ -93,5 +93,6 @@ void AsyncLoader::THRFunc() {
             //Load resource by request
             LoadResource(request->_resource, request->_justRead);
         }
+        SleepThread(5);
     }
 }

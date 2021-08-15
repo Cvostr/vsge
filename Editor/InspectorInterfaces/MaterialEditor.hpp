@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Graphics/Material.hpp>
+#include <Resources/ResourceTypes/MaterialResource.hpp>
 
 namespace VSGEditor {
-	void DrawMaterialEditor(VSGE::Material* material);
+	void DrawMaterialEditor(VSGE::MaterialResource* material_resource);
 }

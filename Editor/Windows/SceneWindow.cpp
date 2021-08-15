@@ -87,6 +87,7 @@ void SceneWindow::OnDrawWindow() {
 
             if (ImGui::MenuItem("Clear")) {
                 InspectorWindow::Get()->SetShowingEntity(nullptr);
+                EditorLayer::Get()->SetPickedEntity(nullptr);
                 scene->NewScene();
             }
 
@@ -118,7 +119,9 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Delete Entity")) {
-                
+                Entity* picked = EditorLayer::Get()->GetPickedEntity();
+                if(picked == entity)
+                    EditorLayer::Get()->SetPickedEntity(nullptr);
                 InspectorWindow::Get()->SetShowingEntity(nullptr);
                 _entityRemoved = true;
             }

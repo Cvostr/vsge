@@ -8,23 +8,15 @@ namespace VSGE {
 	private:
 		AudioBuffer* _buffer;
 	public:
-		AudioClipResource() {
-			_buffer = new AudioBuffer;
-		}
+		AudioClipResource();
 
-		~AudioClipResource() {
-			delete _buffer;
-		}
+		~AudioClipResource();
 
-		AudioBuffer* GetAudioBuffer() { return _buffer; }
+		AudioBuffer* GetAudioBuffer();
 
-		void OnRelease() {
-			_buffer->Destroy();
-		}
+		void OnRelease();
 
-		void PostLoad() {
-			_buffer->loadBufferWAV(_loadedData);
-		}
+		void PostLoad();
 
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_AUDIOCLIP)
 	};

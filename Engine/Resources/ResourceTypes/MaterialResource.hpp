@@ -9,20 +9,15 @@ namespace VSGE {
 		Material* _material;
 	public:
 
-		MaterialResource() {
-			_material = new Material;
-			_material->SetTemplate("default_pbr");
-		}
+		MaterialResource();
 
-		Material* GetMaterial() { return _material; }
+		~MaterialResource();
 
-		void OnRelease() {
+		Material* GetMaterial();
 
-		}
+		void OnRelease();
 
-		void PostLoad() {
-			_material->Deserialize(_loadedData, _description.size);
-		}
+		void PostLoad();
 
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_MATERIAL)
 

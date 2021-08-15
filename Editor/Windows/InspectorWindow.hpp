@@ -2,7 +2,7 @@
 
 #include "../Base/ImGuiWindow.hpp"
 #include <Scene/Entity.hpp>
-#include <Graphics/Material.hpp>
+#include <Resources/ResourceTypes/MaterialResource.hpp>
 #include <Scene/EntityComponents/EntityScriptComponent.hpp>
 
 namespace VSGEditor {
@@ -11,14 +11,14 @@ namespace VSGEditor {
 		static InspectorWindow* _this;
 		
 		VSGE::Entity* mShowingEntity;
-		VSGE::Material* mShowingMaterial;
+		VSGE::MaterialResource* mShowingMaterial;
 	public:
 		void SetShowingEntity(VSGE::Entity* entity) {
 			mShowingEntity = entity;
 			mShowingMaterial = nullptr;
 		}
 
-		void SetShowingMaterial(VSGE::Material* mat) {
+		void SetShowingMaterial(VSGE::MaterialResource* mat) {
 			mShowingEntity = nullptr;
 			mShowingMaterial = mat;
 		}

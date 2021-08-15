@@ -85,6 +85,8 @@ set(SRC_FILES
 				Resources/Resource.cpp
 				Resources/ResourceCache.cpp
 				Resources/ResourceLayer.cpp
+				Resources/ResourceTypes/AudioClipResource.cpp
+				Resources/ResourceTypes/MaterialResource.cpp
 				Resources/ResourceTypes/MeshResource.cpp
 				Resources/ResourceTypes/TextureResource.cpp
 				Resources/ResourceTypes/AnimationResource.cpp

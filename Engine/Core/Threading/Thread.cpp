@@ -4,7 +4,8 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <pthread.h> //Include POSIX thread implementation
+#include <pthread.h>
+#include "unistd.h"
 #endif
 
 using namespace VSGE;
@@ -57,6 +58,15 @@ void Thread::Stop() {
 bool Thread::IsRunning() {
 	return mThreadHandle != nullptr;
 }
+
+void Thread::SleepThread(uint32 ms) {
+#ifdef _WIN32
+	Sleep(ms);
+#else
+	usleep(ms * 1000);
+#endif
+}
+
 void Thread::SetThreadPriority_(int priority) {
 	if (!IsRunning())
 		return;
