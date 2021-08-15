@@ -1,8 +1,8 @@
 #include "ResourcePicker.hpp"
-#include "../Windows/BrowserWindow.hpp"
 #include <Resources/ResourceCache.hpp>
 #include "../Windows/ResourcePickWindow.hpp"
 #include "../EditorLayers/ImGuiLayer.hpp"
+#include "../Misc/Thumbnails.hpp"
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -15,18 +15,14 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 
 	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE) {
 		ImGui::SameLine();
-		FileBrowserWindow* fbw = ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
-		ImguiVulkanTexture* texture = fbw->GetCheckerboardTexture();
+		ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
 		Resource* resource = reference.GetResource();
 		
 		if (resource) {
-			if (resource->IsUnloaded())
-				resource->Load();
-			else if(resource->IsReady()){
-				texture = fbw->GetTextureResource(resource->GetDataDescription().file_path);
-				resource->Use();
-			}
+			ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(resource->GetDataDescription().file_path);
+			if (tex)
+				texture = tex;
 		}
 
 		if(texture)

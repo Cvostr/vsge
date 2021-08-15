@@ -1,9 +1,9 @@
 #include "ResourcePickWindow.hpp"
 #include <Resources/ResourceCache.hpp>
 #include <Scripting/Angel/AngelScriptLayer.hpp>
-#include "BrowserWindow.hpp"
 #include <ImageBtnText.h>
 #include "../EditorLayers/ImGuiLayer.hpp"
+#include "../Misc/Thumbnails.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -35,16 +35,12 @@ void ResourcePickerWindow::OnDrawWindow() {
             if (resource->GetResourceType() == reference->GetResourceType()) {
 
                 if (reference->GetResourceType() == RESOURCE_TYPE_TEXTURE) {
-                    FileBrowserWindow* fbw = ImGuiLayer::Get()->GetWindow<FileBrowserWindow>();
-                    ImguiVulkanTexture* texture = fbw->GetCheckerboardTexture();
+                    ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
                     if (resource) {
-                        if (resource->IsUnloaded())
-                            resource->Load();
-                        else if(resource->IsReady()){
-                            texture = fbw->GetTextureResource(resource->GetDataDescription().file_path);
-                            resource->Use();
-                        }
+                        ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(resource->GetDataDescription().file_path);
+                        if (tex)
+                            texture = tex;
                     }
 
                     if (texture) {

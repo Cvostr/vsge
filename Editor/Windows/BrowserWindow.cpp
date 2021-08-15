@@ -11,6 +11,7 @@
 #include <Resources/ResourceCache.hpp>
 #include "InspectorWindow.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
+#include "../Misc/Thumbnails.hpp"
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -74,7 +75,6 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
     FileIcons.mUnknownFile.CreateFromFile("res/icons/unknown.png", sampler);
     FileIcons.m3DModelIcon.CreateFromFile("res/icons/3dmodel.png", sampler);
     FileIcons.mSceneIcon.CreateFromFile("res/icons/3d_scene.png", sampler);
-    FileIcons.mEmptyTextureIcon.CreateFromFile("res/icons/Checkerboard.png", sampler);
 }
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
@@ -214,11 +214,7 @@ void FileBrowserWindow::OnDrawWindow() {
             }
         }
         if (e->isTexture()) {
-            TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(e->abs_path);
-            if(texture){
-                texture->Use();
-            }
-            ImguiVulkanTexture* tex = GetTextureResource(e->abs_path);
+            ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(e->abs_path);
             if (tex)
                 icon = tex;
         }
@@ -302,45 +298,4 @@ void FileBrowserWindow::OnDrawWindow() {
 
     //End Window
     ImGui::End();
-}
-
-ImguiVulkanTexture* FileBrowserWindow::GetTextureResource(const std::string& fname) {
-    STRIMGVKT* ptr = nullptr;
-    for (auto& texture_res : mTextureResources) {
-        if (texture_res->first == fname) {
-            ptr = texture_res;
-        }
-    }
-
-    if (ptr == nullptr) {
-        ptr = new STRIMGVKT;
-        ptr->first = fname;
-        ptr->second = nullptr;
-        mTextureResources.push_back(ptr);
-    }
-
-    if (ptr != nullptr) {
-        if(ptr->second != nullptr){
-            TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
-            if(texture->IsUnloaded()){
-                //ImGui_ImplVulkan_DestroyTexture(ptr->second);
-                ptr->second = nullptr;
-            }
-        }
-
-        if (ptr->second == nullptr) {
-            TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
-            if (texture->IsUnloaded()) {
-                texture->Load();
-            }
-            if (texture->GetState() == RESOURCE_STATE_READY) {
-                ptr->second = new ImguiVulkanTexture;
-                ptr->second->texture = (VulkanTexture*)texture->GetTexture();
-                ptr->second->CreateImgui(sampler);
-            }
-        }
-    }
-
-
-    return ptr->second;
 }

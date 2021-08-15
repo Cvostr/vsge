@@ -1,6 +1,7 @@
 #include "ResourcesWatchdog.hpp"
 #include <Core/Time.hpp>
 #include <Core/Logger.hpp>
+#include <algorithm>
 
 using namespace VSGE;
 

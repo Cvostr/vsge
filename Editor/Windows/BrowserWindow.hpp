@@ -33,7 +33,6 @@ namespace VSGEditor {
 	};
 
 	typedef std::vector<FileEntry> tFileEntryList;
-	typedef std::pair<std::string, ImguiVulkanTexture*> STRIMGVKT;
 
 	class FileBrowserWindow : public EditorWindow {
 	private:
@@ -51,23 +50,16 @@ namespace VSGEditor {
 			ImguiVulkanTexture mBackBtnIcon;
 			ImguiVulkanTexture mDirIcon;
 			ImguiVulkanTexture mUnknownFile;
-			ImguiVulkanTexture mEmptyTextureIcon;
 			ImguiVulkanTexture m3DModelIcon;
 			ImguiVulkanTexture mSceneIcon;
 		}FileIcons;
 		
-		std::vector<STRIMGVKT*> mTextureResources;
 
 		void DeleteFileDialog(FileEntry* Entry);
 		void RenameFileDialog(FileEntry* Entry);
 	public:
 
 		FileBrowserWindow(std::string RootDir);
-
-		ImguiVulkanTexture* GetTextureResource(const std::string& fname);
-		ImguiVulkanTexture* GetCheckerboardTexture() { return &FileIcons.mEmptyTextureIcon; }
-
-		
 
 		void OnDrawWindow();
 

@@ -37,6 +37,7 @@ set(SRC_FILES
                 Misc/AssimpMeshLoader.cpp
                 Misc/ResourceImporter.cpp
                 Misc/SceneExt.cpp
+                Misc/Thumbnails.cpp
                 ProjectBuild/ResourcePacker.cpp
                 Windows/BrowserWindow.cpp
                 Windows/ConsoleWindow.cpp
