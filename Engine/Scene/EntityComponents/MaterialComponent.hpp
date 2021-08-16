@@ -2,6 +2,7 @@
 
 #include "../IEntityComponent.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
+#include <Resources/ResourceReference.hpp>
 
 namespace VSGE {
 	class MaterialComponent : public IEntityComponent {

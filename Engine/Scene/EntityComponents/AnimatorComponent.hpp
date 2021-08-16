@@ -2,6 +2,7 @@
 
 #include "../IEntityComponent.hpp"
 #include <Resources/ResourceTypes/AnimationResource.hpp>
+#include <Resources/ResourceReference.hpp>
 #include <vector>
 #include <Math/Mat4.hpp>
 #include <Scene/Entity.hpp>

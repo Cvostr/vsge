@@ -58,37 +58,3 @@ bool Resource::IsDefault() {
 void Resource::SetDefault() {
 	_description.file_path = "@d";
 }
-
-Resource* ResourceReference::GetResource() {
-	return _resourcePointer;
-}
-
-const std::string& ResourceReference::GetResourceName() const {
-	return _resourceName;
-}
-
-bool ResourceReference::IsResourceSpecified() {
-	return !_resourceName.empty();
-}
-
-void ResourceReference::SetResource(Resource* resource) {
-	if (resource == nullptr)
-		return;
-
-	_resourceName = resource->GetName();
-	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName);
-	SetResourceType(resource->GetResourceType());
-
-	//if resource created from other resource
-	if (resource->GetParent()) {
-		_parentName = resource->GetParent()->GetName();
-	}
-}
-
-void ResourceReference::SetResource(const std::string& resourceName) {
-	_resourceName = resourceName;
-	if (resourceName.empty())
-		_resourcePointer = nullptr;
-	else
-		SetResource(ResourceCache::Get()->GetResource(_resourceName));
-}

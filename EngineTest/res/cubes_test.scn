@@ -1,4 +1,5 @@
 Scene: Untitled
+env_amb_color: [0.850806475, 0.0857667997, 0.0857667997, 1]
 Entities:
   - Entity: Cube
     uid: [1583312746, 3316505567, 1319969406, 3158553842]
@@ -175,7 +176,6 @@ Entities:
         shadowStrength: 0.600000024
         shadowBias: 0.00499999989
         pcf: 4
-        cascades: 4
   - Entity: RootNode
     uid: [186694011, 1344920229, 3883134295, 1663786131]
     active: true

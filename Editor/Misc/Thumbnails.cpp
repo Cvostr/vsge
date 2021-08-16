@@ -6,6 +6,12 @@ using namespace VSGE;
 
 TextureThumbnails* TextureThumbnails::_this = new TextureThumbnails;
 
+TextureThumbnails::TextureThumbnails() {
+    _this = this;
+    sampler = nullptr;
+    _emptyTextureIcon = nullptr;
+}
+
 ImguiVulkanTexture* TextureThumbnails::GetTextureResource(const std::string& fname) {
     if (!sampler) {
         sampler = new VulkanSampler;

@@ -9,6 +9,7 @@
 #include "GraphicsPipeline.hpp"
 #include "GpuBuffer.hpp"
 #include <map>
+#include <Resources/ResourceReference.hpp>
 
 namespace VSGE {
 

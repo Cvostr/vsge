@@ -2,6 +2,7 @@
 
 #include "../IEntityComponent.hpp"
 #include <Resources/ResourceTypes/AnimationResource.hpp>
+#include <Resources/ResourceReference.hpp>
 #include <vector>
 
 namespace VSGE {

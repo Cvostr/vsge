@@ -3,6 +3,7 @@
 #include "../Base/ImGuiWindow.hpp"
 #include <Resources/Resource.hpp>
 #include <Scene/EntityComponents/EntityScriptComponent.hpp>
+#include <Resources/ResourceReference.hpp>
 
 namespace VSGEditor {
 	class ResourcePickerWindow : public EditorWindow {

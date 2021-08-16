@@ -62,7 +62,7 @@ void File_Menu::OnSave() {
 	ResourceCache* res_cache = ResourceCache::Get();
 	for (uint32 resource_i = 0; resource_i < res_cache->GetResourcesCount(); resource_i++) {
 		Resource* res = res_cache->GetResources()[resource_i];
-		if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+		if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL && !res->IsDefault()) {
 			MaterialResource* mat_res = (MaterialResource*)res;
 
 			std::string dest_path = mat_res->GetDataDescription().file_path;

@@ -83,6 +83,7 @@ set(SRC_FILES
 				Resources/DefaultResources.cpp
 				Resources/ModelParser.cpp
 				Resources/Resource.cpp
+				Resources/ResourceReference.cpp
 				Resources/ResourceCache.cpp
 				Resources/ResourceLayer.cpp
 				Resources/ResourceTypes/AudioClipResource.cpp
@@ -94,6 +95,7 @@ set(SRC_FILES
 				Scene/Entity.cpp
 				Scene/IEntityComponent.cpp
 				Scene/Scene.cpp
+				Scene/SceneEnvironment.cpp
 				Scene/SceneLayer.cpp
 				Scene/SceneSerialization.cpp
 				Scene/SceneSerializationBinary.cpp

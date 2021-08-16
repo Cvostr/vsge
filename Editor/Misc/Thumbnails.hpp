@@ -15,11 +15,7 @@ private:
 	ImguiVulkanTexture* _emptyTextureIcon;
 public:
 
-	TextureThumbnails() {
-		_this = this;
-		sampler = nullptr;
-		_emptyTextureIcon = nullptr;
-	}
+	TextureThumbnails();
 
 	static TextureThumbnails* Get() {
 		return _this;

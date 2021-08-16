@@ -87,7 +87,7 @@ void main() {
     InNormal = normalize(vec3(object_transform * bone_t * vec4(normal, 0)));
     vec3 TangentVec = normalize(vec3(object_transform * vec4(tangent, 0)));
 	vec3 BiTangentVec = normalize(vec3(object_transform * vec4(bitangent, 0)));
-	TBN = transpose(mat3(TangentVec, BiTangentVec, InNormal));
+	TBN = mat3(TangentVec, BiTangentVec, InNormal);
 
     vec4 ModelPos = object_transform * bone_t * vec4(position, 1.0);
     FragPos = ModelPos.xyz;

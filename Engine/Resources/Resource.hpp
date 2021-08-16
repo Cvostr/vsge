@@ -156,44 +156,4 @@ namespace VSGE {
 		{}
 	};
 
-	
-	class ResourceReference {
-		ResourceType _resourceType;
-		Resource* _resourcePointer;
-		std::string _resourceName;
-		std::string _parentName;
-	public:
-		
-		ResourceType GetResourceType() {
-			return _resourceType;
-		}
-
-		void SetResourceType(ResourceType type) {
-			_resourceType = type;
-		}
-
-		template<class T>
-		T* GetResource() {
-			return static_cast<T*>(_resourcePointer);
-		}
-
-		Resource* GetResource();
-
-		const std::string& GetResourceName() const;
-
-		void SetResource(const std::string& resourceName);
-
-		void SetResource(Resource* resource);
-
-		bool IsResourceSpecified();
-
-		void operator=(ResourceReference& ref) {
-			SetResource(ref._resourceName);
-		}
-
-		ResourceReference() {
-			_resourcePointer = nullptr;
-			_resourceType = RESOURCE_TYPE_NONE;
-		}
-	};
 }

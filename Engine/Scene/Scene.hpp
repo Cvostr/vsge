@@ -1,46 +1,10 @@
 #pragma once
 
-#include <Math/Color.hpp>
 #include "Entity.hpp"
 #include "EntityComponents/AudioListenerComponent.hpp"
+#include "SceneEnvironment.hpp"
 
 namespace VSGE {
-
-	class SceneEnvironmentSettings {
-	private:
-		float _shadow_distance;
-		uint32 _shadow_cascades_count;
-		std::vector<float> _cascade_depths;
-	public:
-		Color _ambient_color;
-		ResourceReference _skybox_material;
-
-		void UpdateShadows();
-
-		float GetMaxShadowDistance(){
-			return _shadow_distance;
-		}
-
-		void SetMaxShadowDistance(float distance){
-			_shadow_distance = distance;
-		}
-
-		uint32 GetShadowCascadesCount(){
-			return _shadow_cascades_count;
-		}
-
-		float* GetCascadeDepths(){
-			return _cascade_depths.data();
-		}
-
-		void SetShadowCascadesCount(uint32 cascades){
-			if(cascades > 0 && cascades < 10)
-				_shadow_cascades_count = cascades;
-		}
-
-
-		SceneEnvironmentSettings();
-	};
 
 	typedef std::pair<Guid, Guid> tGuidPair;
 
@@ -85,7 +49,7 @@ namespace VSGE {
 		void AddFromPrefab(byte* data, uint32 size);
 
 		AudioListenerComponent* GetAudioListener(Entity* ent = nullptr);
-
+		
 		SceneEnvironmentSettings& GetEnvironmentSettings();
 
 		Scene();

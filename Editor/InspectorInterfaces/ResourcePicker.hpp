@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Resources/Resource.hpp>
+#include <Resources/ResourceReference.hpp>
 #include <imgui.h>
 
 namespace VSGEditor {

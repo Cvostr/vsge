@@ -17,6 +17,7 @@ ResourceReference& MeshComponent::GetResourceReference() {
 }
 
 void MeshComponent::Serialize(YAML::Emitter& e) {
+	//e << Key << "mesh_group" << Value << this->_meshResource.GetResource()->GetParent()->GetName();
 	e << Key << "mesh" << Value << this->_meshResource.GetResourceName();
 }
 void MeshComponent::Deserialize(YAML::Node& entity) {

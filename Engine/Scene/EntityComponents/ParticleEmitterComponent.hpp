@@ -2,6 +2,7 @@
 
 #include "../IEntityComponent.hpp"
 #include <Resources/ResourceTypes/MeshResource.hpp>
+#include <Resources/ResourceReference.hpp>
 #include <Math/Color.hpp>
 #include <string>
 #include "../Camera.hpp"
