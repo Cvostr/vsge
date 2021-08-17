@@ -5,16 +5,19 @@
 
 using namespace VSGE;
 
-#define MAX_RESOURCE_LIFETIME 5000
-
 ResourcesWatchdog::ResourcesWatchdog() :
-    _mutex(new Mutex)
+    _mutex(new Mutex),
+    _resource_lifetime(6000)
 {
 
 }
 
 ResourcesWatchdog::~ResourcesWatchdog(){
     delete _mutex;
+}
+
+void ResourcesWatchdog::SetResourceLifetime(uint32 lifetime){
+    _resource_lifetime = lifetime;
 }
 
 void ResourcesWatchdog::AddResource(Resource* resource) {
@@ -43,7 +46,7 @@ void ResourcesWatchdog::THRFunc(){
 
             if(resource->IsReady() && !resource->IsDefault()){
                 uint64 time_delta = TimePerf::Get()->GetCurrentTime() - resource->GetLastUseTime();
-                if(time_delta > MAX_RESOURCE_LIFETIME && (
+                if(time_delta > _resource_lifetime && (
                     resource->GetResourceType() == RESOURCE_TYPE_MESH
                     || resource->GetResourceType() == RESOURCE_TYPE_TEXTURE
                     || resource->GetResourceType() == RESOURCE_TYPE_AUDIOCLIP
@@ -55,6 +58,6 @@ void ResourcesWatchdog::THRFunc(){
             }
             _mutex->Release();
         }
-        SleepThread(10);
+        SleepThread(100);
     }
 }

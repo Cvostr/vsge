@@ -1,3 +1,5 @@
+#version 450
+
 layout (location = 0) out vec4 tColor;
 
 layout(location = 2) in vec2 UVCoord;
@@ -43,7 +45,7 @@ void main() {
     vec4 material = texture(material, UVCoord);
     float shadow = texture(shadows, UVCoord).r;
 
-    vec3 albedo = diffuse.rgb;
+    vec3 albedo = pow(diffuse.rgb, vec3(2.2));
     float roughness = material.r;
     float metallic = material.g;
     float emission = material.b;
@@ -53,9 +55,10 @@ void main() {
     F0 = mix(F0, albedo, metallic);
 
     vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
-    vec3 color = albedo * (1 - shadow) + lightning;
-    //color = color / (color + vec3(1.0));
-    //color = pow(color, vec3(1.0/2.2)); 
+    vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
+    
+    color = color / (color + vec3(1.0));
+    color = pow(color, vec3(1.0/2.2)); 
 
     tColor = vec4(color, 1);
 }
@@ -100,6 +103,31 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
+vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_color, vec3 albedo, vec3 normal, float roughness, float metallic, vec3 F0){
+    vec3 H = normalize(cam_to_frag + L);
+    vec3 radiance = light_color * attenuation;
+
+    // Cook-Torrance BRDF
+    float NDF = DistributionGGX(normal, H, roughness);   
+    float G   = GeometrySmith(normal, cam_to_frag, L, roughness);      
+    vec3 F    = fresnelSchlick(clamp(dot(H, cam_to_frag), 0.0, 1.0), F0);
+           
+    vec3 numerator    = NDF * G * F; 
+    float denominator = 4 * max(dot(normal, cam_to_frag), 0.0) * max(dot(normal, L), 0.0);
+    vec3 specular = numerator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
+
+    // kS is equal to Fresnel
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= 1.0 - metallic;	  
+
+    // scale light by NdotL
+    float NdotL = max(dot(normal, L), 0.0);        
+
+    // add to outgoing radiance Lo
+    return (kD * albedo / PI + specular) * radiance * NdotL;
+}
+
 vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0) {
     vec3 result = vec3(0);
     //Calculate direction from camera to processing fragment
@@ -108,38 +136,32 @@ vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, flo
     for(int light_i = 0; light_i < lights_count; light_i ++) {
 
         if(lights[light_i].type == LIGHTSOURCE_DIR){
-            vec3 direction = lights[light_i].direction;
-            float cosine = max(dot(normal, direction), 0);
-
-            result += cosine * lights[light_i].color;
+			vec3 L = lights[light_i].direction;
+            result += CalculateLight(L, 
+                                    lights[light_i].intensity, 
+                                    camToFragDirection,
+                                    lights[light_i].color,
+                                    albedo,
+                                    normal,
+                                    roughness,
+                                    metallic,
+                                    F0);
         }
         if(lights[light_i].type == LIGHTSOURCE_POINT){
             vec3 L = normalize(lights[light_i].position - pos);
-            vec3 H = normalize(camToFragDirection + L);
 
             float distance = length(lights[light_i].position - pos);
             float attenuation = 1.0 / ( 1.0 + 1.0 / lights[light_i].range * distance + 1.0 / lights[light_i].range * distance * distance) * lights[light_i].intensity;
-            vec3 radiance = lights[light_i].color * attenuation;
-
-            // Cook-Torrance BRDF
-            float NDF = DistributionGGX(normal, H, roughness);   
-            float G   = GeometrySmith(normal, camToFragDirection, L, roughness);      
-            vec3 F    = fresnelSchlick(clamp(dot(H, camToFragDirection), 0.0, 1.0), F0);
-           
-            vec3 numerator    = NDF * G * F; 
-            float denominator = 4 * max(dot(normal, camToFragDirection), 0.0) * max(dot(normal, L), 0.0);
-            vec3 specular = numerator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
-
-            // kS is equal to Fresnel
-            vec3 kS = F;
-            vec3 kD = vec3(1.0) - kS;
-            kD *= 1.0 - metallic;	  
-
-            // scale light by NdotL
-            float NdotL = max(dot(normal, L), 0.0);        
-
-            // add to outgoing radiance Lo
-            result += (kD * albedo / PI + specular) * radiance * NdotL;
+            
+            result += CalculateLight(L, 
+                                    attenuation, 
+                                    camToFragDirection,
+                                    lights[light_i].color,
+                                    albedo,
+                                    normal,
+                                    roughness,
+                                    metallic,
+                                    F0);
         }
     }
     return result;

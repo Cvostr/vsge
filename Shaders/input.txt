@@ -8,7 +8,7 @@ shader particle/particle.vert
 shader particle/particle.frag
 
 shader DeferredLight/deferred.vert
-shader DeferredLight/deferred.frag
+shader DeferredLight/deferred_pbr.frag
 
 shader skybox/skybox.vert
 shader skybox/skybox.frag

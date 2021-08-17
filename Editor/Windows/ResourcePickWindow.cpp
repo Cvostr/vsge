@@ -1,6 +1,5 @@
 #include "ResourcePickWindow.hpp"
 #include <Resources/ResourceCache.hpp>
-#include <Scripting/Angel/AngelScriptLayer.hpp>
 #include <ImageBtnText.h>
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include "../Misc/Thumbnails.hpp"
@@ -16,13 +15,9 @@ ResourcePickerWindow::ResourcePickerWindow() {
 void ResourcePickerWindow::OnDrawWindow() {
     if (Draw("Select")) {
         uint32 resources_size = ResourceCache::Get()->GetResourcesCount();
-        uint32 scripts_size = AngelScriptLayer::Get()->GetModule()->GetMainClassDescs().size();
 
         if (reference == nullptr)
             resources_size = 0;
-
-        if (script == nullptr)
-            scripts_size = 0;
 
         if (_allow_empty_resource) {
             if (ImGui::Button("...", ImVec2(32, 32))) {
@@ -56,16 +51,7 @@ void ResourcePickerWindow::OnDrawWindow() {
                 }
             }
         }
-
-        for (uint32 script_i = 0; script_i < scripts_size; script_i++) {
-            MainClassDesc* class_desc = AngelScriptLayer::Get()->GetModule()->GetMainClassDescs()[script_i];
-
-            if (ImGui::Button(class_desc->_name.c_str())) {
-                script->SetScriptName(class_desc->_name);
-                Hide();
-            }
-        }
-
+        
         ImGui::End();
     }
 }

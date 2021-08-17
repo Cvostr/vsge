@@ -18,7 +18,6 @@ set(SRC_FILES
                 EditorLayers/ImGuiLayer.cpp
                 InspectorInterfaces/MaterialEditor.cpp
                 InspectorInterfaces/ResourcePicker.cpp
-                InspectorInterfaces/ScriptPicker.cpp
                 InspectorInterfaces/VariantInput.cpp
                 InspectorInterfaces/ViewMaskEdit.cpp
                 InspectorInterfaces/EntityComponents/AnimatorComponent.cpp
@@ -30,7 +29,6 @@ set(SRC_FILES
                 InspectorInterfaces/EntityComponents/MeshComponent.cpp
                 InspectorInterfaces/EntityComponents/ParticleEmitter.cpp
                 InspectorInterfaces/EntityComponents/RigidBody.cpp
-                InspectorInterfaces/EntityComponents/ScriptComponent.cpp
                 Menus/File_Menu.cpp
                 Menus/Edit_Menu.cpp
                 Menus/Windows_Menu.cpp
@@ -86,8 +84,6 @@ target_link_libraries(Editor Setupapi.lib)
 target_link_libraries(Editor Version.lib)
 target_link_libraries(Editor Imm32.lib)
 
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/angelscript/angelscript64d.lib)
-
 ENDIF()
 
 target_link_libraries(Editor Engine)
@@ -96,7 +92,6 @@ target_link_libraries(Editor ImGui)
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/angelscript/libangelscript.a)
 target_link_libraries(Engine ${STATIC_LIBS_DIR}/openal/libopenal.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)

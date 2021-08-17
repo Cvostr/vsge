@@ -9,12 +9,12 @@ Entities:
     parent: [0, 0, 0, 0]
     pos: [-12.8261414, -0.925910771, -0.537593961]
     scale: [2, 2, 2]
-    rot: [-0.0305518024, -0.689845443, 0.0291624311, -0.722715795]
+    rot: [-0.0273417737, -0.610659778, 0.0321914293, -0.790758371]
     components:
       - Component: 3
         mesh: Sphere
       - Component: 2
-        material: emptymat
+        material: pbr
   - Entity: Cube (1)
     uid: [1400282445, 2539254531, 1237464579, 1897811857]
     active: true
@@ -23,31 +23,31 @@ Entities:
     parent: [1583312746, 3316505567, 1319969406, 3158553842]
     pos: [9.06094265, -5.29531145, 6.07989597]
     scale: [0.5, 0.5, 0.5]
-    rot: [0.0111162113, 0.963868141, -0.0407465175, 0.263010174]
+    rot: [0.041887328, 0.613535762, -0.00541268429, -0.788535476]
     components:
       - Component: 3
         mesh: Cube
       - Component: 2
-        material: emptymat
+        material: pbr
       - Component: 8
         mass: 1
         friction: 0.5
   - Entity: Spot Light
     uid: [93048231, 4031508709, 3817562668, 694735480]
-    active: false
+    active: true
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [13.5469646, 0, 8.17770863]
+    pos: [-4.42794657, -7.69243622, 3.80634642]
     scale: [1, 1, 1]
     rot: [-0.506645441, 0.348066896, -0.00919812359, -0.788686931]
     components:
       - Component: 1
-        light_type: 2
-        intensity: 2
-        range: 15
+        light_type: 1
+        intensity: 200
+        range: 45
         sp_angle: 12.5
-        color: [1, 1, 1, 1]
+        color: [0, 0.250010014, 1, 1]
         castShadows: false
   - Entity: Cube (2)
     uid: [2278826814, 575420708, 1424792874, 3214824675]
@@ -57,7 +57,7 @@ Entities:
     parent: [0, 0, 0, 0]
     pos: [-0.118054628, -11.9433231, -3.47666287]
     scale: [66.77285, 1, 80]
-    rot: [0, 0.220096856, 0, 0.97547704]
+    rot: [0, 0.99513036, 0, 0.0985414833]
     components:
       - Component: 3
         mesh: Cube
@@ -168,7 +168,7 @@ Entities:
     components:
       - Component: 1
         light_type: 0
-        intensity: 0.5
+        intensity: 30
         range: 5.5
         sp_angle: 12.5
         color: [1, 1, 1, 1]

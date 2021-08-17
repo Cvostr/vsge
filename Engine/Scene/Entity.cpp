@@ -5,6 +5,7 @@
 #include "EntityComponents/AnimatorComponent.hpp"
 #include <Math/MatrixTransform.hpp>
 #include "SceneSerialization.hpp"
+#include "string.h"
 
 using namespace VSGE;
 
@@ -391,16 +392,4 @@ void Entity::ToPrefab(byte** out, uint32& size) {
 	size = serializer.GetSerializedSize();
 	*out = new byte[size];
 	memcpy(*out, serializer.GetBytes(), size);
-}
-
-asIScriptObject* Entity::GetScriptObjectWithName(const std::string& name) {
-	for (uint32 script_i = 0; script_i < GetScriptsCount(); script_i++) {
-		EntityScriptComponent* script = _scripts[script_i];
-		if (script->GetScriptName().compare(name) == 0) {
-			asIScriptObject* object = script->GetInstance()->GetMainClassObject();
-			object->AddRef();
-			return object;
-		}
-	}
-	return nullptr;
 }

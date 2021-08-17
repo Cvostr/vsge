@@ -4,7 +4,6 @@
 #include <Core/Time.hpp>
 
 #include "ImGuiLayer.hpp"
-#include <Scripting/Angel/AngelScriptLayer.hpp>
 
 #include "../Windows/SceneWindow.hpp"
 #include "../Windows/InspectorWindow.hpp"
@@ -71,8 +70,6 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
-
-	AngelScriptLayer::Get()->GetModule()->Compile();
 }
 
 void EditorLayer::OnEvent(const VSGE::IEvent& event) {

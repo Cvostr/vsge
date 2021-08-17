@@ -24,7 +24,7 @@ void VulkanRenderer::SetupRenderer() {
 
 	VulkanShader* deferred_light = new VulkanShader;
 	deferred_light->AddShaderFromFile("deferred.vert", SHADER_STAGE_VERTEX);
-	deferred_light->AddShaderFromFile("deferred.frag", SHADER_STAGE_FRAGMENT);
+	deferred_light->AddShaderFromFile("deferred_pbr.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(deferred_light, "Deferred");
 
 	VulkanShader* particle = new VulkanShader;

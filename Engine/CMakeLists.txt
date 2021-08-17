@@ -109,13 +109,6 @@ set(SRC_FILES
 				Scene/EntityComponents/MeshComponent.cpp
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
-				Scripting/Angel/AngelScriptInstance.cpp
-				Scripting/Angel/AngelScriptLayer.cpp
-				Scripting/Angel/AngelScriptModule.cpp
-				Scripting/Angel/Api/AngelInput.cpp
-				Scripting/Angel/Api/AngelIO.cpp
-				Scripting/Angel/Api/AngelMath.cpp
-				Scripting/Angel/Api/AngelScene.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				)

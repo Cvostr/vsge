@@ -255,7 +255,6 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	_shadowcasters_buffer->WriteData(offset_casters + 12, 4, &type);
 
 	_added_casters++;
-	_shadowprocess_buffer->WriteData(43008, 4, &_added_casters);
 }
 
 void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
@@ -268,7 +267,6 @@ VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
 
 void VulkanShadowmapping::ResetCasters() {
 	_added_casters = 0;
-	_shadowprocess_buffer->WriteData(44032, 4, &_added_casters);
 }
 
 void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
@@ -377,7 +375,7 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 
 	_shadowrenderer_descrSet->WriteDescriptorImages(3, shadowmaps.data(), _shadowmap_sampler, shadowmaps.size());
 	_shadowrenderer_descrSet->WriteDescriptorImages(4, shadowmaps_point.data(), _shadowmap_sampler, shadowmaps_point.size());
-
+	_shadowprocess_buffer->WriteData(43008, 4, &_added_casters);
 	RecordShadowProcessingCmdbuf();
 
 

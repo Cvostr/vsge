@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Resource.hpp"
-#include <Scripting/Angel/AngelScriptLayer.hpp>
 
 namespace VSGE {
 	class ScriptResource : public Resource {
@@ -24,9 +23,7 @@ namespace VSGE {
 		}
 
 		void PostLoad() {
-			AngelScriptLayer* layer = AngelScriptLayer::Get();
-			AngelScriptModule* module = layer->GetModule();
-			module->AddScript(_loadedData, _description.size, this->GetName());
+		
 		}
 
 		RESOURCE_CLASS_TYPE(RESOURCE_TYPE_SCRIPT)

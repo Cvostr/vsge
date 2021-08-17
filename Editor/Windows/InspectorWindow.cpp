@@ -139,7 +139,6 @@ void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script) {
 		return;
 	}
 
-	DrawScriptComponent(script);
 }
 
 void InspectorWindow::OnDrawWindow() {

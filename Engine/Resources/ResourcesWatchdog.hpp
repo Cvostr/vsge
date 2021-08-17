@@ -10,12 +10,15 @@ namespace VSGE{
     private:
         Mutex* _mutex;
         std::vector<Resource*> _resources;
+        uint32 _resource_lifetime;
     public:
         ResourcesWatchdog();
 
 		~ResourcesWatchdog();
 
         void AddResource(Resource* resource);
+
+        void SetResourceLifetime(uint32 lifetime);
 
         void RemoveResource(Resource* resource);
 

@@ -314,8 +314,6 @@ namespace VSGE {
 			return _scripts.data();
 		}
 
-		asIScriptObject* GetScriptObjectWithName(const std::string& name);
-
 		void AddScript(EntityScriptComponent* script) {
 			script->SetEntity(this);
 			_scripts.push_back(script);

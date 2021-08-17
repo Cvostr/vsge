@@ -3,7 +3,6 @@
 #include "EditorLayers/ImGuiLayer.hpp"
 #include <Physics/PhysicsLayer.hpp>
 #include <Scene/SceneLayer.hpp>
-#include <Scripting/Angel/AngelScriptLayer.hpp>
 #include <Resources/ResourceLayer.hpp>
 #include <Audio/AudioLayer.hpp>
 #include "EditorLayers/EditorSettingsLayer.hpp"
@@ -39,10 +38,7 @@ Application* VSGEMain() {
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
 	
-	
-	auto mono = new AngelScriptLayer;
-	mono->CreateEngine();
-	app->AddLayer(mono);
+
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
 
