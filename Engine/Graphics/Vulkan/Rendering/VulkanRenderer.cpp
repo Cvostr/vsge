@@ -349,9 +349,6 @@ void VulkanRenderer::StoreWorldObjects() {
 			}
 		}
 
-		if (_writtenBones % 4 > 0) {
-			_writtenBones += 4 - (_writtenBones % 4);
-		}
 	}
 
 	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * _entitiesToRender.size(), transforms);
@@ -402,9 +399,6 @@ void VulkanRenderer::StoreWorldObjects() {
 
 		_writtenParticleTransforms += particles_count;
 
-		if (_writtenParticleTransforms % 4 > 0) {
-			_writtenParticleTransforms += 4 - (_writtenParticleTransforms % 4);
-		}
 	}
 
 	//--------------SHADOWMAPPING------------
@@ -499,9 +493,6 @@ void VulkanRenderer::StoreWorldObjects() {
 				mGBufferCmdbuf->Draw(mesh->GetVerticesCount());
 		}
 
-		if (_writtenBones % 4 > 0) {
-			_writtenBones += 4 - (_writtenBones % 4);
-		}
 	}
 
 	for (uint32 particle_em_i = 0; particle_em_i < _particleEmitters.size(); particle_em_i++) {
@@ -546,9 +537,6 @@ void VulkanRenderer::StoreWorldObjects() {
 
 			uint32 particles_count = particle_emitter->GetAliveParticlesCount();
 			_writtenParticleTransforms += particles_count;
-			if (_writtenParticleTransforms % 4 > 0) {
-				_writtenParticleTransforms += 4 - (_writtenParticleTransforms % 4);
-			}
 		}
 	}
 

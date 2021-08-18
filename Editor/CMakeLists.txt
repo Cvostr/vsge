@@ -12,7 +12,6 @@ file(GLOB_RECURSE HEADER_FILES "*.hpp")
 set(SRC_FILES 
                 Base/ImguiHelper.cpp
                 Base/ImGuiWindow.cpp
-                Base/PlatformSpecific.cpp
                 EditorLayers/EditorLayer.cpp
                 EditorLayers/EditorSettingsLayer.cpp
                 EditorLayers/ImGuiLayer.cpp
