@@ -55,7 +55,6 @@ namespace VSGEditor {
 		}FileIcons;
 		
 
-		void DeleteFileDialog(FileEntry* Entry);
 		void RenameFileDialog(FileEntry* Entry);
 	public:
 

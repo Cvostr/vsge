@@ -36,6 +36,7 @@ set(SRC_FILES
                 Misc/ResourceImporter.cpp
                 Misc/SceneExt.cpp
                 Misc/Thumbnails.cpp
+                Misc/DialogWindows.cpp
                 ProjectBuild/ResourcePacker.cpp
                 Windows/BrowserWindow.cpp
                 Windows/ConsoleWindow.cpp
@@ -50,10 +51,21 @@ set(SRC_FILES
                 Windows/ToolbarWindow.cpp
                 main.cpp)
 
+include_directories("./" REQUIRED)
 include_directories(../Engine REQUIRED)
 include_directories(../ImGui/src REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("../vendor/headers/" REQUIRED)
+
+IF(UNIX)
+FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(GTK REQUIRED gtk+-3.0)
+
+find_package(GTK REQUIRED)
+include_directories(${GTK_INCLUDE_DIRS} REQUIRED)
+link_directories(${GTK_LIBRARY_DIRS})
+ADD_DEFINITIONS(${GTK_CFLAGS_OTHER})
+ENDIF()
 
 add_executable (Editor ${SRC_FILES} ${HEADER_FILES})
 IF (WIN32)
@@ -109,9 +121,6 @@ target_link_libraries(Engine ${STATIC_LIBS_DIR}/bullet/libLinearMath.a)
 target_link_libraries(Engine sndio)
 target_link_libraries(Editor ${CMAKE_DL_LIBS})
 target_link_libraries(Editor pthread)
-
+target_link_libraries(Editor ${GTK_LIBRARIES})
 
 ENDIF()
-
-
-

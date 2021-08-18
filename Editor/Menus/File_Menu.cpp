@@ -10,6 +10,8 @@
 
 #include <Scene/SceneSerialization.hpp>
 
+#include <Misc/DialogWindows.hpp>
+
 using namespace VSGEditor;
 using namespace VSGE;
 
@@ -24,7 +26,12 @@ void SaveScene(std::string file) {
 }
 
 void SaveAs() {
-	std::string save = GetSaveFilePath("Scene file\0*.scn;");
+	FileDialogDesc desc;
+	desc.dialog_title = "test";
+	desc.extensions = {{"Scene", "*.scn"}};
+	std::string save;
+	SaveFileDialog(&desc, save);
+	//save = GetSaveFilePath("Scene file\0*.scn;");
 
 	SaveScene(save);
 }
@@ -39,8 +46,15 @@ void File_Menu::OnDrawMenu() {
 			SaveAs();
 		}
 		if (ImGui::MenuItem("Import", NULL)) {
-			std::string result = GetOpenFilePath("All supported formats\0*.dds; *.png; *fbx\0\0");
-			ImportFile(result);
+			//std::string result = GetOpenFilePath("All supported formats\0*.dds; *.png; *fbx\0\0");
+
+			FileDialogDesc desc;
+			desc.dialog_title = "test";
+			desc.extensions = {{"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}};
+			std::string path;
+			OpenFileDialog(&desc, path);
+
+			ImportFile(path);
 		}
 		if (ImGui::MenuItem("Build", NULL)) {
 			

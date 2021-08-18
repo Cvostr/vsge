@@ -4,14 +4,15 @@
 #include <Core/FileLoader.hpp>
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
-#include "../EditorLayers/EditorLayer.hpp"
-#include "../EditorLayers/ImGuiLayer.hpp"
-#include "../Misc/SceneExt.hpp"
+#include <EditorLayers/EditorLayer.hpp>
+#include <EditorLayers/ImGuiLayer.hpp>
+#include <Misc/SceneExt.hpp>
 #include <Scene/SceneSerialization.hpp>
 #include <Resources/ResourceCache.hpp>
 #include "InspectorWindow.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
-#include "../Misc/Thumbnails.hpp"
+#include <Misc/Thumbnails.hpp>
+#include <Misc/DialogWindows.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -102,25 +103,6 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     }
 }
 
-void FileBrowserWindow::DeleteFileDialog(FileEntry* Entry) {
-    if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::Text("Delete file %s ?", Entry->name.c_str());
-        ImGui::Separator();
-
-        if (ImGui::Button("OK", ImVec2(120, 0))) { 
-            fs::remove(Entry->abs_path); 
-            ImGui::CloseCurrentPopup();
-            UpdateDirectoryContent();
-        }
-        
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
-        ImGui::SetItemDefaultFocus();
-        ImGui::EndPopup();
-    }
-}
-
 void FileBrowserWindow::RenameFileDialog(FileEntry* Entry) {
     if (ImGui::BeginPopupModal("Rename?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
@@ -167,7 +149,6 @@ void FileBrowserWindow::OnDrawWindow() {
         ImGui::EndPopup();
     }
 
-    bool deleteFile = false;
     bool renameFile = false;
 
     if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(20, 20)))
@@ -255,8 +236,15 @@ void FileBrowserWindow::OnDrawWindow() {
                 entryToDelete = e;
             }
             if (ImGui::MenuItem("Delete")) {
-                deleteFile = true;
-                entryToDelete = e;
+                MessageDialogDesc desc;
+                desc.message = "Are you sure?";
+                desc.buttons = MESSAGE_DIALOG_BTN_YES_NO;
+                int action;
+                MessageDialog(&desc, action);
+                if(action == 1){
+                    fs::remove(e->abs_path); 
+                    UpdateDirectoryContent();
+                }
             }
                
             ImGui::EndPopup();         
@@ -282,17 +270,12 @@ void FileBrowserWindow::OnDrawWindow() {
             drawn_pix = 0;
     }
 
-    if (deleteFile) {
-        ImGui::OpenPopup("Delete?");
-        deleteFile = false;
-    }
     if (renameFile) {
         ImGui::OpenPopup("Rename?");
         new_file_name = entryToDelete->name;
         renameFile = false;
     }
 
-    DeleteFileDialog(entryToDelete);
     RenameFileDialog(entryToDelete);
 
 
