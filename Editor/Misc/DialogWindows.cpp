@@ -4,6 +4,12 @@
 #include <gtk/gtk.h>
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#undef CreateWindow
+#include <Engine/Window.hpp>
+#endif
+
 void GTK_Init(){
     #ifdef __linux__
         if ( !gtk_init_check( NULL, NULL ) )
@@ -20,17 +26,27 @@ void GTK_Wait(){
     #endif
 }
 
-void GTK_BindFileExtensionsToDialog(FileDialogDesc* desc, GtkWidget *dialog){
 #ifdef __linux__
+void GTK_BindFileExtensionsToDialog(FileDialogDesc* desc, GtkWidget *dialog){
+
     for(auto& extension : desc->extensions){
         GtkFileFilter *filter = gtk_file_filter_new ();
         gtk_file_filter_set_name (filter, extension.description.c_str());
         gtk_file_filter_add_pattern (filter, extension.extension.c_str());
         gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
     }
-#endif
 }
+#endif
 
+void WIN32_CreateFileExtensions(FileDialogDesc* desc, std::string& out) {
+    out = "";
+    for (auto& extension : desc->extensions) {
+        out += extension.description;
+        out.push_back('\0');
+        out += extension.extension;
+        out.push_back('\0');
+    }
+}
 
 void OpenFileDialog(FileDialogDesc* desc, std::string& result){
 
@@ -64,6 +80,27 @@ void OpenFileDialog(FileDialogDesc* desc, std::string& result){
 
     GTK_Wait();
 #endif
+
+#ifdef _WIN32
+    VSGE::Window* win = VSGE::Window::Get();
+    OPENFILENAMEA ofn;
+    CHAR szFile[260] = { 0 };
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = (HWND)win->GetHWND();
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+
+    std::string filter;
+    WIN32_CreateFileExtensions(desc, filter);
+
+    ofn.lpstrFilter = filter.c_str();
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    if (GetOpenFileNameA(&ofn) == TRUE)
+        result = ofn.lpstrFile;
+#endif
 }
 
 void SaveFileDialog(FileDialogDesc* desc, std::string& result){
@@ -96,6 +133,29 @@ void SaveFileDialog(FileDialogDesc* desc, std::string& result){
     gtk_widget_destroy (dialog);
 
     GTK_Wait();
+#endif
+
+#ifdef _WIN32
+    VSGE::Window* win = VSGE::Window::Get();
+    OPENFILENAMEA ofn;
+    CHAR szFile[260] = { 0 };
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = (HWND)win->GetHWND();
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+
+    std::string filter;
+    WIN32_CreateFileExtensions(desc, filter);
+
+    ofn.lpstrFilter = filter.c_str();
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    ofn.lpstrDefExt = strchr(filter.c_str(), '\0') + 1;
+
+    if (GetSaveFileNameA(&ofn) == TRUE)
+        result = ofn.lpstrFile;
 #endif
 }
 
@@ -139,5 +199,37 @@ void MessageDialog(MessageDialogDesc* desc, int& action){
    
     gtk_widget_destroy (dialog);
     GTK_Wait();
+#endif
+
+#ifdef _WIN32
+    VSGE::Window* win = VSGE::Window::Get();
+    uint32 btype = MB_OK;
+
+    switch (desc->buttons) {
+    case MESSAGE_DIALOG_BTN_OK:
+        btype = MB_OK;
+        break;
+    case MESSAGE_DIALOG_BTN_OK_CANCEL:
+        btype = MB_OKCANCEL;
+        break;
+    case MESSAGE_DIALOG_BTN_YES_NO:
+        btype = MB_YESNO;
+        break;
+    }
+
+    LPWSTR title = new WCHAR[desc->dialog_title.size() + 1];
+    title[desc->dialog_title.size()] = '\0';
+    mbstowcs((wchar_t*)title, desc->dialog_title.c_str(), desc->dialog_title.size());
+
+    LPWSTR message = new WCHAR[desc->message.size() + 1];
+    message[desc->message.size()] = '\0';
+    mbstowcs((wchar_t*)message, desc->message.c_str(), desc->message.size());
+
+    int result = MessageBoxW((HWND)win->GetHWND(), message, title, btype);
+
+    if (result == IDOK || result == IDYES)
+        action = ACCEPT_BUTTON;
+    if (result == IDNO || result == IDCANCEL)
+        action = CANCEL_BUTTON;
 #endif
 }

@@ -237,6 +237,7 @@ void FileBrowserWindow::OnDrawWindow() {
             }
             if (ImGui::MenuItem("Delete")) {
                 MessageDialogDesc desc;
+                desc.dialog_title = "File deletion";
                 desc.message = "Are you sure?";
                 desc.buttons = MESSAGE_DIALOG_BTN_YES_NO;
                 int action;
