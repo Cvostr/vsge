@@ -193,6 +193,9 @@ void VulkanRenderer::SetupRenderer() {
 		mEmptyTexture);
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 
+	_brdf_lut = new Vulkan_BRDF_LUT;
+	_brdf_lut->Create();
+
 	mDeferredPassSet->Create();
 	mDeferredPassSet->WriteDescriptorBuffer(1, mCameraShaderBuffer);
 	mDeferredPassSet->WriteDescriptorBuffer(2, _lightsBuffer);

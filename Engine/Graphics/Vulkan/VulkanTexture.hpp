@@ -74,6 +74,8 @@ namespace VSGE {
 
         void ChangeLayout(VkImageLayout newLayout);
 
+        VkImageLayout GetImageLayout();
+
         VkImageAspectFlagBits GetAspect();
 	};
 }

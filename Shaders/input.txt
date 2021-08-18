@@ -3,6 +3,7 @@ mapFile engine_out/shaders.map
 
 shader pbr/pbr.vert
 shader pbr/pbr.frag
+shader pbr/brdf_lut.comp
 
 shader particle/particle.vert
 shader particle/particle.frag

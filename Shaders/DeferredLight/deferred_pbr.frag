@@ -14,6 +14,7 @@ layout(binding = 7) uniform sampler2D shadows;
 #define LIGHTSOURCE_POINT 1
 #define LIGHTSOURCE_SPOT 2
 #define PI 3.14159265
+#define RADIANS PI / 180
 
 struct Light{
     int type;           //0
@@ -155,6 +156,28 @@ vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, flo
             
             result += CalculateLight(L, 
                                     attenuation, 
+                                    camToFragDirection,
+                                    lights[light_i].color,
+                                    albedo,
+                                    normal,
+                                    roughness,
+                                    metallic,
+                                    F0);
+        }
+
+        if(lights[light_i].type == LIGHTSOURCE_SPOT){
+            vec3 L = normalize(lights[light_i].position - pos);
+            vec3 direction = lights[light_i].direction;
+
+            float inner = cos(lights[light_i].spot_angle * RADIANS);
+            float outer = cos((lights[light_i].spot_angle + 12) * RADIANS);
+            
+            float theta     = dot(L, normalize(-direction));
+            float epsilon   = inner - outer;
+            float intensity = clamp((theta - outer) / epsilon, 0.0, 1.0);  
+
+            result += CalculateLight(L, 
+                                    intensity * lights[light_i].intensity, 
                                     camToFragDirection,
                                     lights[light_i].color,
                                     albedo,

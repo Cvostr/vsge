@@ -10,13 +10,35 @@ Texture::Texture() :
     _maxHeight(0),
     _mipLevels(0),
     _layers(1),
-    _isRenderTarget(false),
-    _isCubemap(false),
+    _flags(false),
     _format(FORMAT_RGBA)
 {}
 
 Texture::~Texture() {
     Destroy();
+}
+
+void Texture::SetRenderTargetFlag(bool renderTarget) {
+    _flags |= renderTarget * TEXTURE_FLAG_IS_RENDER_TARGET;
+}
+bool Texture::IsRenderTarget() {
+    return _flags & TEXTURE_FLAG_IS_RENDER_TARGET;
+}
+
+void Texture::SetCubemap(bool cubemap) {
+    _flags |= cubemap * TEXTURE_FLAG_IS_CUBEMAP;
+}
+
+bool Texture::IsCubemap() { 
+    return _flags & TEXTURE_FLAG_IS_CUBEMAP;
+}
+
+void Texture::SetStorage(bool storage){
+    _flags |= storage * TEXTURE_FLAG_IS_STORAGE;
+}
+
+bool Texture::IsStorage(){
+    return _flags & TEXTURE_FLAG_IS_STORAGE;
 }
 
 bool Texture::CreateFromFile(std::string filePath) {

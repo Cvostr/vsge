@@ -40,14 +40,17 @@ namespace VSGE {
         FORMAT_DEPTH_32_STENCIL_8
     };
 
+    #define TEXTURE_FLAG_IS_RENDER_TARGET 0b1
+    #define TEXTURE_FLAG_IS_CUBEMAP 0b10
+    #define TEXTURE_FLAG_IS_STORAGE 0b100
+
 	class Texture : public IGpuObject{
     protected:
         uint32 _maxWidth; //Width of best mip map
         uint32 _maxHeight; //Height of best mip map
         uint32 _mipLevels; //Count of mip levels
         uint32 _layers; //Count of layers in texture array
-        bool _isRenderTarget;
-        bool _isCubemap;
+        char _flags;
 
         TextureFormat _format;
     public:
@@ -61,14 +64,15 @@ namespace VSGE {
         uint32 GetLayersCount() { return _layers; }
         uint32 GetWidth() { return _maxWidth; }
         uint32 GetHeight() { return _maxHeight; }
-        void SetRenderTargetFlag(bool renderTarget) {
-            _isRenderTarget = renderTarget;
-        }
-        bool IsRenderTarget() { return _isRenderTarget; }
 
-        void SetCubemap(bool cubemap) { _isCubemap = cubemap; }
+        void SetRenderTargetFlag(bool renderTarget);
+        bool IsRenderTarget();
 
-        bool IsCubemap() { return _isCubemap; }
+        void SetCubemap(bool cubemap);
+        bool IsCubemap();
+
+        void SetStorage(bool storage);
+        bool IsStorage();
 
         /// <summary>
         /// Destroy texture and release memory

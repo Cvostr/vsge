@@ -134,25 +134,27 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	//Calculate image layout
 	VkImageLayout imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	VkImageTiling imageTiling = VK_IMAGE_TILING_OPTIMAL;
-	if (_isRenderTarget)
+	if (IsRenderTarget())
 	{
 		_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	}
-	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
-	{
-		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-		//imageTiling = VK_IMAGE_TILING_LINEAR;
-	}
-	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32)
+	if (IsRenderTarget() && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
 		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-	if (!_isRenderTarget) {
+	if (IsRenderTarget() && format == TextureFormat::FORMAT_DEPTH_32)
+	{
+		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	}
+	if (!IsRenderTarget()) {
 		_usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	}
+	if(IsStorage()){
+		_usage = VK_IMAGE_USAGE_STORAGE_BIT;
 	}
 	
 	VkImageCreateFlags imageFlags = 0;
-	if (_isCubemap) {
+	if (IsCubemap()) {
 		imageFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 		layers = 6;
 	}
@@ -179,16 +181,20 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 
 	ma->createImage(&imageInfo, &this->_image);
 
-	if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
+	if (IsRenderTarget() && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{
 		ChangeLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 	}
-	else if (_isRenderTarget && format == TextureFormat::FORMAT_DEPTH_32) {
+	else if (IsRenderTarget() && format == TextureFormat::FORMAT_DEPTH_32) {
 		ChangeLayout(VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 	}
-	else if (_isRenderTarget)
+	else if (IsRenderTarget())
 	{
 		ChangeLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	}
+	else if(IsStorage())
+	{
+		ChangeLayout(VK_IMAGE_LAYOUT_GENERAL);
 	}
 }
 
@@ -219,7 +225,7 @@ bool VulkanTexture::CreateImageView() {
 	VkImageViewType ImageViewType = VK_IMAGE_VIEW_TYPE_2D;
 	if (_layers > 1)
 		ImageViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-	if (_isCubemap)
+	if (IsCubemap())
 		ImageViewType = VK_IMAGE_VIEW_TYPE_CUBE;
 	
 	VkImageViewCreateInfo textureImageViewInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
@@ -335,4 +341,8 @@ void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 void VulkanTexture::Resize(uint32 width, uint32 height) {
 	Destroy();
 	Create(width, height, _format, _layers, _mipLevels);
+}
+
+VkImageLayout VulkanTexture::GetImageLayout(){
+	return _layout;
 }

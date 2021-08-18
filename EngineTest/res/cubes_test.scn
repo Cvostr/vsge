@@ -158,7 +158,7 @@ Entities:
         mesh: Plane
   - Entity: Directional Light
     uid: [4022663197, 3646530176, 2222185782, 1077532849]
-    active: true
+    active: false
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
@@ -1543,3 +1543,20 @@ Entities:
         mesh: tree.002
       - Component: 2
         material: Default Material
+  - Entity: Spot Light
+    uid: [2748201543, 1459252894, 279006111, 815008432]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [14.1747723, -8.8414011, -28.7820263]
+    scale: [1, 1, 1]
+    rot: [0.415318102, -0.0579986498, 0.212117136, -0.882690132]
+    components:
+      - Component: 1
+        light_type: 2
+        intensity: 200
+        range: 12
+        sp_angle: 12.5
+        color: [1, 0, 0, 1]
+        castShadows: false

@@ -63,9 +63,11 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanSwapchain.cpp
 				Graphics/Vulkan/VulkanSynchronization.cpp
 				Graphics/Vulkan/VulkanTexture.cpp
+				Graphics/Vulkan/VulkanComputePipeline.cpp
 				Graphics/Vulkan/Rendering/VulkanMaterials.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanShadowmapping.cpp
+				Graphics/Vulkan/Rendering/PBR/Vulkan_BRDF_LUT.cpp
 				Math/AABB.cpp
 				Math/Frustum.cpp
 				Math/Mat4.cpp

@@ -32,6 +32,11 @@ VkFormat GetVertexLayoutFormatVK(VertexLayoutFormat format) {
 	return VK_FORMAT_R32G32B32_SFLOAT;
 }
 
+VulkanPipeline::VulkanPipeline() : 
+	_pipeline(VK_NULL_HANDLE),
+	_pipelineLayout(nullptr)
+{}
+
 bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout) {
 	_pipelineLayout = layout;
 	VulkanRAPI* vulkan = VulkanRAPI::Get();

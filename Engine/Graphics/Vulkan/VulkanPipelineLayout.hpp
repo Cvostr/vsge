@@ -7,25 +7,22 @@
 namespace VSGE {
 	class VulkanPipelineLayout : public IGpuObject {
 	private:
-		VkPipelineLayout mPLayout;
-
-		unsigned int mPushConstantBuffersSize;
-		std::vector<VkPushConstantRange> mPushConstants;
-
-		std::vector<VulkanDescriptorSet*> mSets;
+		VkPipelineLayout _pipelineLayout;
+		std::vector<VkPushConstantRange> _pushConstants;
+		std::vector<VulkanDescriptorSet*> _descriptor_sets;
 	public:
 
 		VulkanPipelineLayout() :
-			mPLayout(VK_NULL_HANDLE),
-			mPushConstantBuffersSize(0)
+			_pipelineLayout(VK_NULL_HANDLE)
 		{}
 
 		~VulkanPipelineLayout() {
 			Destroy();
 		}
 
-		VkPipelineLayout GetPipelineLayout() { return mPLayout; }
-		void PushDescriptorSet(VulkanDescriptorSet* set) { mSets.push_back(set); }
+		VkPipelineLayout GetPipelineLayout();
+		void PushDescriptorSet(VulkanDescriptorSet* set);
+		void AddPushConstantRange(uint32 offset, uint32 size, VkShaderStageFlags stage = VK_SHADER_STAGE_ALL_GRAPHICS);
 
 		bool Create();
 		void Destroy();

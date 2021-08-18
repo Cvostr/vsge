@@ -15,10 +15,7 @@ namespace VSGE {
 		VulkanPipelineLayout* _pipelineLayout;
 	public:
 
-		VulkanPipeline() : 
-			_pipeline(VK_NULL_HANDLE),
-			_pipelineLayout(nullptr)
-		{}
+		VulkanPipeline();
 
 		VkPipeline GetPipeline() { return _pipeline; }
 
@@ -31,7 +28,7 @@ namespace VSGE {
 		void Destroy();
 
 		~VulkanPipeline() {
-			Destroy();
+				Destroy();
 		}
 	};
 }

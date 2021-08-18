@@ -102,3 +102,20 @@ Entities:
         mesh: Sphere
       - Component: 2
         material: Default Material
+  - Entity: Spot Light
+    uid: [1388533569, 1698678732, 3701762999, 1738250285]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [-19.3477535, 0, -57.9092598]
+    scale: [1, 1, 1]
+    rot: [0.0849880204, -0.936087608, 0.340128809, 0.0280946717]
+    components:
+      - Component: 1
+        light_type: 2
+        intensity: 100
+        range: 30
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: false
