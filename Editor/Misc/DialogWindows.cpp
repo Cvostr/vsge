@@ -159,8 +159,8 @@ void SaveFileDialog(FileDialogDesc* desc, std::string& result){
 #endif
 }
 
-void MessageDialog(MessageDialogDesc* desc, int& action){
-    action = 0;
+void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action){
+    action = DIALOG_USER_ACTION_CANCEL;
 
     #ifdef __linux__
 
@@ -180,23 +180,56 @@ void MessageDialog(MessageDialogDesc* desc, int& action){
             break;
     }
 
+    GtkMessageType mtype = GTK_MESSAGE_INFO;
+
+    switch(desc->dialog_type){
+        case MESSAGE_DIALOG_TYPE_INFO:
+            mtype = GTK_MESSAGE_INFO;
+            break;
+        case MESSAGE_DIALOG_TYPE_WARNING:
+            mtype = GTK_MESSAGE_WARNING;
+            break;
+        case MESSAGE_DIALOG_TYPE_QUESTION:
+            mtype = GTK_MESSAGE_QUESTION;
+            break;
+        case MESSAGE_DIALOG_TYPE_ERROR:
+            mtype = GTK_MESSAGE_ERROR;
+            break;
+    }
+
     GtkWidget* dialog = gtk_message_dialog_new (nullptr,
-                                  GTK_DIALOG_DESTROY_WITH_PARENT,
-                                  GTK_MESSAGE_ERROR,
+                                  GTK_DIALOG_MODAL,
+                                  mtype,
                                   btype,
-                                  desc->message.c_str()
+                                  desc->dialog_title.c_str()
                                   );
+    GtkWidget* text_edit = nullptr;
+
+    if(desc->has_text_field){
+        GtkContainer* vbox = GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+        text_edit = gtk_entry_new();
+        gtk_entry_set_text((GtkEntry*)text_edit, desc->text_to_edit.c_str());
+        gtk_container_add (vbox, text_edit);
+    }
+
+    gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), desc->message.c_str());
+
+    gtk_widget_show_all((dialog));
 
     gint result = gtk_dialog_run (GTK_DIALOG (dialog));
 
-    if (result == -8)
+    if (result == GTK_RESPONSE_YES || result == GTK_RESPONSE_OK)
     {
-        action = ACCEPT_BUTTON;
-    }else
+        action = DIALOG_USER_ACTION_ACCEPT;
+    }else if(result == GTK_RESPONSE_NO || result == GTK_RESPONSE_CANCEL)
     {
-        action = CANCEL_BUTTON;
+        action = DIALOG_USER_ACTION_CANCEL;
     }
    
+    if(desc->has_text_field){
+        desc->text_to_edit = std::string( gtk_entry_get_text((GtkEntry*)text_edit));
+    }
+
     gtk_widget_destroy (dialog);
     GTK_Wait();
 #endif

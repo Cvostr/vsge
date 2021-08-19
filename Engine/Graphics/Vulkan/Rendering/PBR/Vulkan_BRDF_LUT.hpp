@@ -27,5 +27,7 @@ namespace VSGE{
         void Destroy();
 
         void CreateBrdfLut();
+
+        VulkanTexture* GetTextureLut();
     };
 }

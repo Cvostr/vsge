@@ -21,8 +21,10 @@ struct FileDialogDesc{
     std::string cancel_btn_text;
 };
 
-#define ACCEPT_BUTTON 0x1
-#define CANCEL_BUTTON 0x2
+enum DialogUserAction{
+    DIALOG_USER_ACTION_ACCEPT,
+    DIALOG_USER_ACTION_CANCEL
+};
 
 enum MessageDialogBtns{
     MESSAGE_DIALOG_BTN_OK,
@@ -30,13 +32,25 @@ enum MessageDialogBtns{
     MESSAGE_DIALOG_BTN_YES_NO
 };
 
+
+enum MessageDialogType{
+    MESSAGE_DIALOG_TYPE_INFO,
+    MESSAGE_DIALOG_TYPE_WARNING,
+    MESSAGE_DIALOG_TYPE_QUESTION,
+    MESSAGE_DIALOG_TYPE_ERROR
+};
+
 struct MessageDialogDesc {
     std::string dialog_title;
     std::string message;
 
     int buttons;
+    MessageDialogType dialog_type;
+
+    bool has_text_field;
+    std::string text_to_edit;
 };
 
 void OpenFileDialog(FileDialogDesc* desc, std::string& result);
 void SaveFileDialog(FileDialogDesc* desc, std::string& result);
-void MessageDialog(MessageDialogDesc* desc, int& action);
+void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action);

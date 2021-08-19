@@ -4,6 +4,7 @@
 #include "../GpuObject.hpp"
 #include <Core/VarTypes/Base.hpp>
 #include "VulkanPipelineLayout.hpp"
+#include "VulkanComputePipeline.hpp"
 #include "VulkanDescriptors.hpp"
 #include "VulkanBuffer.hpp"
 #include "VulkanMesh.hpp"
@@ -51,6 +52,8 @@ namespace VSGE {
 
 		void BindPipeline(VulkanPipeline& pipeline);
 
+		void BindComputePipeline(VulkanComputePipeline& pipeline);
+
 		void BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount = 0, const uint32* offsets = nullptr);
 
 		void BindVertexBuffer(VulkanBuffer& buffer);
@@ -64,6 +67,10 @@ namespace VSGE {
 		void Draw(uint32 vertices, uint32 instances = 1, uint32 firstVertex = 0, uint32 firstInstance = 0);
 
 		void DrawIndexed(uint32 indices, uint32 instances = 1, uint32 firstIndex = 0, uint32 firstInstance = 0);
+
+		void Dispatch(uint32 groupCountX, uint32 groupCountY, uint32 groupCountZ);
+
+		void ImagePipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, const std::vector<VkImageMemoryBarrier>& barriers);
 
 		void SetViewports(uint32 firstViewport, uint32 count, VkViewport* viewports);
 

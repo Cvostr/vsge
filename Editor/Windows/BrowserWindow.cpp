@@ -1,5 +1,6 @@
 #include "BrowserWindow.hpp"
 #include <filesystem>
+#include <fstream>
 #include <imgui_internal.h>
 #include <Core/FileLoader.hpp>
 #include <SDL2/SDL.h>
@@ -103,27 +104,6 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     }
 }
 
-void FileBrowserWindow::RenameFileDialog(FileEntry* Entry) {
-    if (ImGui::BeginPopupModal("Rename?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::InputText("New Name", &new_file_name);
-        ImGui::Separator();
-
-        if (ImGui::Button("OK", ImVec2(120, 0))) { 
-            fs::rename(Entry->abs_path, Entry->directory + "/" + new_file_name);
-            ImGui::CloseCurrentPopup();
-            UpdateDirectoryContent();
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-            ImGui::CloseCurrentPopup(); 
-        }
-        ImGui::SetItemDefaultFocus();
-        ImGui::EndPopup();
-    }
-}
-
 void FileBrowserWindow::OnDrawWindow() {
     Draw("File Browser");
 
@@ -136,14 +116,14 @@ void FileBrowserWindow::OnDrawWindow() {
         }
         if (ImGui::BeginMenu("Create")) {
             if (ImGui::MenuItem("Scene")) {
-
+                CreateResource(RESOURCE_TYPE_SCENE);
             }
             if (ImGui::MenuItem("Material")) {
-
+                CreateResource(RESOURCE_TYPE_MATERIAL);
             }
-            if (ImGui::MenuItem("Render target")) {
-
-            }
+            //if (ImGui::MenuItem("Render target")) {
+            //    CreateResource(RESOURCE_TYPE_SCENE);
+            //}
             ImGui::EndMenu();
         }
         ImGui::EndPopup();
@@ -232,17 +212,30 @@ void FileBrowserWindow::OnDrawWindow() {
                 OpenFile(*e);
             }
             if (ImGui::MenuItem("Rename")) {
-                renameFile = true;
-                entryToDelete = e;
+                MessageDialogDesc desc;
+                desc.dialog_title = "File renaming";
+                desc.message = "Enter new name for this file?";
+                desc.has_text_field = true;
+                desc.text_to_edit = e->name;
+                desc.buttons = MESSAGE_DIALOG_BTN_YES_NO;
+                desc.dialog_type = MESSAGE_DIALOG_TYPE_QUESTION;
+                DialogUserAction action;
+                MessageDialog(&desc, action);
+
+                if(action == DIALOG_USER_ACTION_ACCEPT){
+                    fs::rename(e->abs_path, e->directory + "/" + desc.text_to_edit);
+                    UpdateDirectoryContent();
+                }
             }
             if (ImGui::MenuItem("Delete")) {
                 MessageDialogDesc desc;
                 desc.dialog_title = "File deletion";
                 desc.message = "Are you sure?";
                 desc.buttons = MESSAGE_DIALOG_BTN_YES_NO;
-                int action;
+                desc.dialog_type = MESSAGE_DIALOG_TYPE_QUESTION;
+                DialogUserAction action;
                 MessageDialog(&desc, action);
-                if(action == 1){
+                if(action == DIALOG_USER_ACTION_ACCEPT){
                     fs::remove(e->abs_path); 
                     UpdateDirectoryContent();
                 }
@@ -271,15 +264,41 @@ void FileBrowserWindow::OnDrawWindow() {
             drawn_pix = 0;
     }
 
-    if (renameFile) {
-        ImGui::OpenPopup("Rename?");
-        new_file_name = entryToDelete->name;
-        renameFile = false;
-    }
-
-    RenameFileDialog(entryToDelete);
-
-
     //End Window
     ImGui::End();
+}
+
+void FileBrowserWindow::CreateResource(VSGE::ResourceType type){
+    std::string file_name;
+
+    std::string file_extension;
+    std::string resource_type_string;
+
+    switch(type){
+        case RESOURCE_TYPE_SCENE:
+            file_extension = "scn";
+            resource_type_string = "Scene";
+            break;
+        case RESOURCE_TYPE_MATERIAL:
+            file_extension = "vsmt";
+            resource_type_string = "Material";
+            break;
+    }
+
+    MessageDialogDesc desc;
+    desc.dialog_title = "New " + resource_type_string;
+    desc.message = "Enter name for new resource file";
+    desc.has_text_field = true;
+    desc.text_to_edit = file_name;
+    desc.buttons = MESSAGE_DIALOG_BTN_YES_NO;
+    desc.dialog_type = MESSAGE_DIALOG_TYPE_QUESTION;
+    DialogUserAction action;
+    MessageDialog(&desc, action);
+
+    if(action == DIALOG_USER_ACTION_ACCEPT){
+        desc.text_to_edit += "." + file_extension;
+        std::ofstream stream(_currentDir + "/" + desc.text_to_edit, std::ios::binary);
+        stream.close();
+        UpdateDirectoryContent();
+    }
 }

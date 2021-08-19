@@ -44,12 +44,32 @@ void Vulkan_BRDF_LUT::Create(){
 
     _brdf_cmdbuffer = new VulkanCommandBuffer();
 	_brdf_cmdbuffer->Create(_brdf_cmdpool);
+
+    VkCommandBuffer cmdbuf = _brdf_cmdbuffer->GetCommandBuffer();
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(_brdf_cmdbuffer->GetCommandBuffer(), &beginInfo);
+    //Copy buffer command
+    _brdf_cmdbuffer->BindComputePipeline(*_brdf_pipeline);
+    _brdf_cmdbuffer->BindDescriptorSets(*_brdf_pipeline_layout, 0, 1, _brdf_descr_set);
+    _brdf_cmdbuffer->Dispatch(1024 / 32, 1024 / 32, 6);
+    vkEndCommandBuffer(_brdf_cmdbuffer->GetCommandBuffer());
+    
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    
+    submitInfo.pCommandBuffers = &cmdbuf;
+
+    vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 }
 
 void Vulkan_BRDF_LUT::Destroy(){
 
 }
 
-void Vulkan_BRDF_LUT::CreateBrdfLut(){
-    
+VulkanTexture* Vulkan_BRDF_LUT::GetTextureLut(){
+    return _brdf_lut_texture;
 }

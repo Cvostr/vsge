@@ -116,6 +116,10 @@ void VulkanCommandBuffer::BindPipeline(VulkanPipeline& pipeline) {
     vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.GetPipeline());
 }
 
+void VulkanCommandBuffer::BindComputePipeline(VulkanComputePipeline& pipeline){
+    vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline.GetPipeline());
+}
+
 void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount, const uint32* offsets) {
     for (uint32 set_i = 0; set_i < setsCount; set_i++) {
         temp_sets[set_i] = sets[set_i].GetDescriptorSet();
@@ -155,6 +159,10 @@ void VulkanCommandBuffer::DrawIndexed(uint32 indices, uint32 instances, uint32 f
     vkCmdDrawIndexed(mCommandBuffer, indices, instances, firstIndex, 0, firstInstance);
 }
 
+void VulkanCommandBuffer::Dispatch(uint32 groupCountX, uint32 groupCountY, uint32 groupCountZ){
+    vkCmdDispatch(mCommandBuffer, groupCountX, groupCountY, groupCountZ);
+}
+
 void VulkanCommandBuffer::SetViewports(uint32 firstViewport, uint32 count, VkViewport* viewports) {
     vkCmdSetViewport(mCommandBuffer, firstViewport, count, viewports);
 }
@@ -164,6 +172,10 @@ void VulkanCommandBuffer::SetViewport(float x, float y, float width, float heigh
     SetViewports(0, 1, &viewport);
     VkRect2D scissor = { 0, 0, (uint32)width, (uint32)height };
     vkCmdSetScissor(mCommandBuffer, 0, 1, &scissor);
+}
+
+void VulkanCommandBuffer::ImagePipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, const std::vector<VkImageMemoryBarrier>& barriers){
+    vkCmdPipelineBarrier(mCommandBuffer, srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, barriers.size(), barriers.data());
 }
 
 void VulkanCommandBuffer::EndRenderPass() {

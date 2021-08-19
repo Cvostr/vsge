@@ -42,9 +42,6 @@ namespace VSGEditor {
 
 		int _itemsSize;
 
-		std::string new_file_name;
-		FileEntry* entryToDelete;
-
 		VSGE::VulkanSampler sampler;
 		struct {
 			ImguiVulkanTexture mBackBtnIcon;
@@ -54,8 +51,7 @@ namespace VSGEditor {
 			ImguiVulkanTexture mSceneIcon;
 		}FileIcons;
 		
-
-		void RenameFileDialog(FileEntry* Entry);
+		void CreateResource(VSGE::ResourceType type);
 	public:
 
 		FileBrowserWindow(std::string RootDir);
