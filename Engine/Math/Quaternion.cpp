@@ -109,6 +109,14 @@ void Quat::operator=(const Quat& q) {
     w = q.w;
 }
 
+Vec3 Quat::operator*(const Vec3& v) {
+    Vec3 qvec(x, y, z);
+    Vec3 cross1(qvec.Cross(v));
+    Vec3 cross2(qvec.Cross(cross1));
+
+    return v + (cross1 * w + cross2) * 2.f;
+}
+
 Vec3 Quat::GetEulerAngles() const {
     float RAD_TO_DEG = 180.f / 3.14159265f;
 

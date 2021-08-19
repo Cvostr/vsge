@@ -250,6 +250,23 @@ void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action){
         break;
     }
 
+    uint32 mtype = MB_ICONSTOP;
+
+    switch (desc->dialog_type) {
+    case MESSAGE_DIALOG_TYPE_INFO:
+        mtype = MB_ICONINFORMATION;
+        break;
+    case MESSAGE_DIALOG_TYPE_WARNING:
+        mtype = MB_ICONWARNING;
+        break;
+    case MESSAGE_DIALOG_TYPE_QUESTION:
+        mtype = MB_ICONQUESTION;
+        break;
+    case MESSAGE_DIALOG_TYPE_ERROR:
+        mtype = MB_ICONERROR;
+        break;
+    }
+
     LPWSTR title = new WCHAR[desc->dialog_title.size() + 1];
     title[desc->dialog_title.size()] = '\0';
     mbstowcs((wchar_t*)title, desc->dialog_title.c_str(), desc->dialog_title.size());
@@ -258,11 +275,11 @@ void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action){
     message[desc->message.size()] = '\0';
     mbstowcs((wchar_t*)message, desc->message.c_str(), desc->message.size());
 
-    int result = MessageBoxW((HWND)win->GetHWND(), message, title, btype);
+    int result = MessageBoxW((HWND)win->GetHWND(), message, title, btype | mtype);
 
     if (result == IDOK || result == IDYES)
-        action = ACCEPT_BUTTON;
+        action = DIALOG_USER_ACTION_ACCEPT;
     if (result == IDNO || result == IDCANCEL)
-        action = CANCEL_BUTTON;
+        action = DIALOG_USER_ACTION_CANCEL;
 #endif
 }

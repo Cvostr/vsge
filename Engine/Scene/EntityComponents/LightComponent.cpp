@@ -195,5 +195,5 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 
 Vec3 LightsourceComponent::GetDirection() {
 	Quat rotation = _entity->GetAbsoluteRotation();
-	return Vec3(rotation.x, rotation.y, rotation.z).GetNormalized();
+	return (rotation * Vec3(0, 0, 1)).GetNormalized();
 }

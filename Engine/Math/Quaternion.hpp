@@ -48,4 +48,6 @@ public:
 	void operator*=(const Quat& q);
 
 	void operator=(const Quat& q);
+
+	Vec3 operator*(const Vec3& v);
 };

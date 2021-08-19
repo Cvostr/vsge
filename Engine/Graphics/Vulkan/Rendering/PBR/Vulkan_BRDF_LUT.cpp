@@ -63,7 +63,7 @@ void Vulkan_BRDF_LUT::Create(){
     
     submitInfo.pCommandBuffers = &cmdbuf;
 
-    vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    //vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 }
 
 void Vulkan_BRDF_LUT::Destroy(){
