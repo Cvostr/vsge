@@ -164,6 +164,9 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 			Scene* scene = GetEntity()->GetScene();
 			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 
+			Mat4 invCam = (cam->GetViewMatrix() *
+				cam->ComputeOrthoProjectionMatrix(1.0f, env_settings.GetMaxShadowDistance())).invert();
+
 			result = new Mat4[env_settings.GetShadowCascadesCount()];
 			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) {
 				float last_split_dist = (i > 0) ? env_settings.GetCascadeDists()[i - 1] : 0;
@@ -180,7 +183,6 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 					Vec3(-1.0f, -1.0f,  1.0f)
 				};
 
-				Mat4 invCam = (cam->GetProjectionViewMatrix()).invert();
 				for (uint32_t i = 0; i < 8; i++) {
 					Vec4 invCorner = invCam * Vec4(frustumCorners[i], 1.0f);
 					frustumCorners[i] = (invCorner / invCorner.w).Vec3();

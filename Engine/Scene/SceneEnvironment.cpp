@@ -14,7 +14,7 @@ void SceneEnvironmentSettings::UpdateShadows(){
 	_cascade_depths.resize(_shadow_cascades_count);
 	_cascade_dists.resize(_shadow_cascades_count);
 	
-	float nearClip = 0.1f;
+	float nearClip = 1.0f;
 	float farClip = this->_shadow_distance;
 	float clipRange = farClip - nearClip;
 
@@ -32,7 +32,7 @@ void SceneEnvironmentSettings::UpdateShadows(){
 		float uniform = minZ + range * p;
 		float d = cascadeSplitLambda * (log - uniform) + uniform;
 		_cascade_dists[i] = (d - nearClip) / clipRange;
-		_cascade_depths[i] = (nearClip + _cascade_dists[i] * clipRange) * -1.0f;
+		_cascade_depths[i] = (nearClip + _cascade_dists[i] * clipRange);
 	}
 
 }

@@ -99,6 +99,16 @@ void Camera::UpdateMatrices() {
 	_frustum.Update(_projectionViewMatrix);
 }
 
+Mat4 Camera::ComputeOrthoProjectionMatrix(float near, float far) {
+	Mat4 result;
+	GraphicsApi api = Application::Get()->GetGraphicsApi();
+	if (api == GRAPHICS_API_VULKAN) {
+		result = GetPerspectiveRH_ZeroOne(_fov, _aspectRatio, near, far);
+	}
+
+	return result;
+}
+
 bool Camera::IsVisibleInFrustum(const AABB& aabb) {
 	FrustumIntersection intersection = _frustum.CheckAABB(aabb);
 	return intersection == FRUSTUM_INSIDE || intersection == FRUSTUM_INTERSECTS;

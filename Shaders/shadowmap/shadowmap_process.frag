@@ -39,19 +39,12 @@ layout(binding = 5) uniform dir_shadow_cascades{
 };
 
 uint GetCascadeByDistance(float dist){
-	/*for(uint i = 0; i < cascades_count; ++i) {
+	for(uint i = 0; i < cascades_count; ++i) {
 		if(dist < distances[i]) {	
 			return i;
 		}
 	}
-    return 0;*/
-    uint cascadeIndex = 0;
-	for(uint i = 0; i < cascades_count - 1; ++i) {
-		if(dist < distances[i]) {	
-			cascadeIndex = i + 1;
-		}
-	}
-	return cascadeIndex;
+    return 0;
 }
 
 uint GetCascade(vec3 position){

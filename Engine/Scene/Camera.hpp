@@ -162,6 +162,8 @@ namespace VSGE {
 		/// <returns>Position on screen</returns>
 		Vec2 WorldPointToScreenpoint(const Vec3& world_point);
 
+		Mat4 ComputeOrthoProjectionMatrix(float near, float far);
+
 		void OnPreRender();
 
 		void Serialize(YAML::Emitter& e);
