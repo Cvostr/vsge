@@ -117,6 +117,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowmapPipeline = new VulkanPipeline;
 	_shadowmapPipeline->SetDepthTest(true);
+	_shadowmapPipeline->SetDepthClamp(true);
+	_shadowmapPipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
 	_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
 

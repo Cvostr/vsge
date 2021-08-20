@@ -10,6 +10,7 @@ namespace VSGE{
 	private:
 		float _shadow_distance;
 		uint32 _shadow_cascades_count;
+		std::vector<float> _cascade_dists;
 		std::vector<float> _cascade_depths;
 		Color _ambient_color;
 	public:
@@ -27,6 +28,8 @@ namespace VSGE{
 		void SetMaxShadowDistance(float distance);
 
 		uint32 GetShadowCascadesCount();
+
+		float* GetCascadeDists();
 
 		float* GetCascadeDepths();
 

@@ -166,13 +166,53 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 
 			result = new Mat4[env_settings.GetShadowCascadesCount()];
 			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) {
-				float w = env_settings.GetCascadeDepths()[i];
-				Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
-				Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
+				float last_split_dist = (i > 0) ? env_settings.GetCascadeDists()[i - 1] : 0;
+				float split_dist = env_settings.GetCascadeDists()[i];
 
-				Mat4 projectionMat = GetOrthoRH_ZeroOne(-w , w , -w , w, -85.f, 85.f);
+				Vec3 frustumCorners[8] = {
+					Vec3(-1.0f,  1.0f, -1.0f),
+					Vec3( 1.0f,  1.0f, -1.0f),
+					Vec3( 1.0f, -1.0f, -1.0f),
+					Vec3(-1.0f, -1.0f, -1.0f),
+					Vec3(-1.0f,  1.0f,  1.0f),
+					Vec3( 1.0f,  1.0f,  1.0f),
+					Vec3( 1.0f, -1.0f,  1.0f),
+					Vec3(-1.0f, -1.0f,  1.0f)
+				};
 
-				result[i] = matview * projectionMat;
+				Mat4 invCam = (cam->GetProjectionViewMatrix()).invert();
+				for (uint32_t i = 0; i < 8; i++) {
+					Vec4 invCorner = invCam * Vec4(frustumCorners[i], 1.0f);
+					frustumCorners[i] = (invCorner / invCorner.w).Vec3();
+				}
+
+				for (uint32_t i = 0; i < 4; i++) {
+					Vec3 dist = frustumCorners[i + 4] - frustumCorners[i];
+					frustumCorners[i + 4] = frustumCorners[i] + (dist * split_dist);
+					frustumCorners[i] = frustumCorners[i] + (dist * last_split_dist);
+				}
+
+				Vec3 frustumCenter = Vec3(0.0f);
+				for (uint32_t i = 0; i < 8; i++) {
+					frustumCenter += frustumCorners[i];
+				}
+				frustumCenter /= 8.0f;
+
+				float radius = 0.0f;
+				for (uint32_t i = 0; i < 8; i++) {
+					float distance = (frustumCorners[i] - frustumCenter).Length();
+					radius = max(radius, distance);
+				}
+				radius = std::ceil(radius * 16.0f) / 16.0f;
+
+				Vec3 maxExtents = Vec3(radius);
+				Vec3 minExtents = maxExtents * -1;
+
+				Vec3 lightDir = (GetDirection() * -1).GetNormalized();
+				Vec3 pos = frustumCenter - lightDir * -minExtents.z;
+				Mat4 view = GetViewRH(pos, frustumCenter, Vec3(0.0f, 1.0f, 0.0f));
+				Mat4 projection = GetOrthoRH_ZeroOne(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0, maxExtents.z - minExtents.z);
+				result[i] = view * projection;
 			}
 		}
 		else if (_lightType == LIGHT_TYPE_POINT) {

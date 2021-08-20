@@ -94,6 +94,7 @@ namespace VSGE {
 		bool _primitiveRestartEnable;
 		bool _depthTest;
 		bool _stencilTest;
+		bool _depthClamp;
 	public:
 
 		void SetPrimitiveTopology(PrimitiveTopology topology) {
@@ -118,6 +119,10 @@ namespace VSGE {
 
 		CullMode GetCullMode() {
 			return _cullMode;
+		}
+
+		void SetDepthClamp(bool depthClamp){
+			_depthClamp = depthClamp;
 		}
 
 		void SetPolygonMode(PolygonMode mode) {
@@ -153,6 +158,7 @@ namespace VSGE {
 			_depthOp(COMPARE_OP_LESS),
 			_primitiveRestartEnable(false),
 			_depthTest(false),
+			_depthClamp(false),
 			_stencilTest(false)
 		{}
 	};
