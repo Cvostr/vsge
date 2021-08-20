@@ -86,26 +86,33 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     VkDeviceQueueCreateInfo QueueGraphicsCreateInfo = {};
     VkDeviceQueueCreateInfo QueuePresentCreateInfo = {};
+    VkDeviceQueueCreateInfo QueueComputeCreateInfo = {};
+
     std::vector<VkDeviceQueueCreateInfo> QueuesToCreate;
 
-    GraphicsQueueFamilyIndex = -1;
-    PresentQueueFamilyIndex = -1;
+    _graphicsQueueFamilyIndex = -1;
+    _presentQueueFamilyIndex = -1;
+    _computeQueueFamilyIndex = -1;
 
     for (int32_t q_i = 0; q_i < (int32_t)vkQueueFamilyPropsCount; q_i++) {
         VkQueueFamilyProperties prop = vkQueueFamilyProps[q_i];
-        if ((prop.queueFlags & VK_QUEUE_GRAPHICS_BIT) && GraphicsQueueFamilyIndex < 0)
-            GraphicsQueueFamilyIndex = q_i;
+        if ((prop.queueFlags & VK_QUEUE_GRAPHICS_BIT) && _graphicsQueueFamilyIndex < 0)
+            _graphicsQueueFamilyIndex = q_i;
+
+        if ((prop.queueFlags & VK_QUEUE_COMPUTE_BIT) && _computeQueueFamilyIndex < 0)
+            _computeQueueFamilyIndex = q_i;
+
         VkBool32 canPresent = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(Device, q_i, instance->GetSurface(), &canPresent);
-        if (canPresent && PresentQueueFamilyIndex < 0) {
-            PresentQueueFamilyIndex = q_i;
+        if (canPresent && _presentQueueFamilyIndex < 0) {
+            _presentQueueFamilyIndex = q_i;
         }
     }
 
-    if (GraphicsQueueFamilyIndex >= 0 && PresentQueueFamilyIndex >= 0) { //if we found right queue family
+    if (_graphicsQueueFamilyIndex >= 0 && _presentQueueFamilyIndex >= 0 && _computeQueueFamilyIndex >= 0) { //if we found right queue family
         QueueGraphicsCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         QueueGraphicsCreateInfo.pNext = nullptr;
-        QueueGraphicsCreateInfo.queueFamilyIndex = static_cast<uint32_t>(GraphicsQueueFamilyIndex);
+        QueueGraphicsCreateInfo.queueFamilyIndex = static_cast<uint32_t>(_graphicsQueueFamilyIndex);
         QueueGraphicsCreateInfo.queueCount = 1;
         QueueGraphicsCreateInfo.flags = 0;
         float priority = 1.0f;
@@ -113,13 +120,21 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
         QueuePresentCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         QueuePresentCreateInfo.pNext = nullptr;
-        QueuePresentCreateInfo.queueFamilyIndex = static_cast<uint32_t>(PresentQueueFamilyIndex);
+        QueuePresentCreateInfo.queueFamilyIndex = static_cast<uint32_t>(_presentQueueFamilyIndex);
         QueuePresentCreateInfo.queueCount = 1;
         QueuePresentCreateInfo.flags = 0;
         QueuePresentCreateInfo.pQueuePriorities = &priority;
+
+        QueueComputeCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        QueueComputeCreateInfo.pNext = nullptr;
+        QueueComputeCreateInfo.queueFamilyIndex = static_cast<uint32_t>(_computeQueueFamilyIndex);
+        QueueComputeCreateInfo.queueCount = 1;
+        QueueComputeCreateInfo.flags = 0;
+        QueueComputeCreateInfo.pQueuePriorities = &priority;
         //push create structs to vector
         QueuesToCreate.push_back(QueueGraphicsCreateInfo);
         QueuesToCreate.push_back(QueuePresentCreateInfo);
+        QueuesToCreate.push_back(QueueComputeCreateInfo);
     }
 
     VkPhysicalDeviceFeatures features = {};
@@ -151,20 +166,24 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     if (vkCreateDevice(Device, &logical_gpu_create_info, nullptr, &mDevice) != VK_SUCCESS) //creating logical device
         return false;                                                           
     //get graphics queue
-    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(GraphicsQueueFamilyIndex), 0, &this->mGraphicsQueue);
+    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(_graphicsQueueFamilyIndex), 0, &this->_graphicsQueue);
     //get present queue
-    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(PresentQueueFamilyIndex), 0, &this->mPresentQueue);
+    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(_presentQueueFamilyIndex), 0, &this->_presentQueue);
+    //get compute queue
+    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(_computeQueueFamilyIndex), 0, &this->_computeQueue);
 
     mCreated = true;
 
     return true;
 }
 
-VkQueue VulkanDevice::GetGraphicsQueue() { return mGraphicsQueue; }
-VkQueue VulkanDevice::GetPresentQueue() { return mPresentQueue; }
+VkQueue VulkanDevice::GetGraphicsQueue() { return _graphicsQueue; }
+VkQueue VulkanDevice::GetPresentQueue() { return _presentQueue; }
+VkQueue VulkanDevice::GetComputeQueue() { return _computeQueue; }
 
-int32 VulkanDevice::GetGraphicsQueueFamilyIndex() { return GraphicsQueueFamilyIndex; }
-int32 VulkanDevice::GetPresentQueueFamilyIndex() { return PresentQueueFamilyIndex; }
+int32 VulkanDevice::GetGraphicsQueueFamilyIndex() { return _graphicsQueueFamilyIndex; }
+int32 VulkanDevice::GetPresentQueueFamilyIndex() { return _presentQueueFamilyIndex; }
+int32 VulkanDevice::GetComputeQueueFamilyIndex() { return _computeQueueFamilyIndex; }
 
 uint32 VulkanDevice::GetUniformBufferMinAlignment() {
     return (uint32)DeviceProps.limits.minUniformBufferOffsetAlignment;

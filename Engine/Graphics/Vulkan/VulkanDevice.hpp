@@ -11,11 +11,13 @@ namespace VSGE {
         VkPhysicalDevice mPhysicalDevice;
         VkDevice mDevice; //logical device, created from physical device
 
-        VkQueue mGraphicsQueue; //queue of logical device
-        VkQueue mPresentQueue; //queue to present
+        VkQueue _graphicsQueue; //queue of logical device
+        VkQueue _presentQueue; //queue to present
+        VkQueue _computeQueue;
 
-        int32 GraphicsQueueFamilyIndex;
-        int32 PresentQueueFamilyIndex;
+        int32 _graphicsQueueFamilyIndex;
+        int32 _presentQueueFamilyIndex;
+        int32 _computeQueueFamilyIndex;
 
         VkPhysicalDeviceProperties DeviceProps;
 
@@ -38,9 +40,11 @@ namespace VSGE {
 
         VkQueue GetGraphicsQueue();
         VkQueue GetPresentQueue();
+        VkQueue GetComputeQueue();
 
         int32 GetGraphicsQueueFamilyIndex();
         int32 GetPresentQueueFamilyIndex();
+        int32 GetComputeQueueFamilyIndex();
 
         VulkanDevice();
     };

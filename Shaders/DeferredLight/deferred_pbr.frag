@@ -9,6 +9,7 @@ layout(binding = 4) uniform sampler2D normal;
 layout(binding = 5) uniform sampler2D pos;
 layout(binding = 6) uniform sampler2D material;
 layout(binding = 7) uniform sampler2D shadows;
+layout(binding = 8) uniform sampler2D brdf_lut;
 
 #define LIGHTSOURCE_DIR 0
 #define LIGHTSOURCE_POINT 1

@@ -198,11 +198,12 @@ void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action){
     }
 
     GtkWidget* dialog = gtk_message_dialog_new (nullptr,
-                                  GTK_DIALOG_MODAL,
-                                  mtype,
-                                  btype,
-                                  desc->dialog_title.c_str()
-                                  );
+                                GTK_DIALOG_MODAL,
+                                mtype,
+                                btype,
+                                "%s",
+                                desc->dialog_title.c_str()
+                                );
     GtkWidget* text_edit = nullptr;
 
     if(desc->has_text_field){
@@ -212,7 +213,7 @@ void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action){
         gtk_container_add (vbox, text_edit);
     }
 
-    gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), desc->message.c_str());
+    gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "%s", desc->message.c_str());
 
     gtk_widget_show_all((dialog));
 

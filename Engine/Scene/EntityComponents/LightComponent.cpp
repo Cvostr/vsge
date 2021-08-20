@@ -170,7 +170,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 				Vec3 cam_pos = cam->GetPosition() + cam->GetFront() * w;
 				Mat4 matview = GetViewRH(cam_pos, cam_pos - direction, Vec3(0, 1, 0));
 
-				Mat4 projectionMat = GetOrthoRH_ZeroOne(-w , w , -w , w, -40.f, 85.f);
+				Mat4 projectionMat = GetOrthoRH_ZeroOne(-w , w , -w , w, -85.f, 85.f);
 
 				result[i] = matview * projectionMat;
 			}

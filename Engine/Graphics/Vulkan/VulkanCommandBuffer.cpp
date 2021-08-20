@@ -120,11 +120,11 @@ void VulkanCommandBuffer::BindComputePipeline(VulkanComputePipeline& pipeline){
     vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline.GetPipeline());
 }
 
-void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount, const uint32* offsets) {
+void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount, const uint32* offsets, VkPipelineBindPoint bind_point) {
     for (uint32 set_i = 0; set_i < setsCount; set_i++) {
         temp_sets[set_i] = sets[set_i].GetDescriptorSet();
     }
-    vkCmdBindDescriptorSets(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout.GetPipelineLayout(), firstSet, setsCount, temp_sets, dynOffsetCount, offsets);
+    vkCmdBindDescriptorSets(mCommandBuffer, bind_point, layout.GetPipelineLayout(), firstSet, setsCount, temp_sets, dynOffsetCount, offsets);
 }
 
 void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
@@ -196,3 +196,20 @@ void VulkanCommandBuffer::Destroy() {
         mCreated = false;
     }
 }
+
+VkImageMemoryBarrier VSGE::GetImageBarrier(VulkanTexture* texture, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout)
+	{
+		VkImageMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.srcAccessMask = srcAccessMask;
+		barrier.dstAccessMask = dstAccessMask;
+		barrier.oldLayout = oldLayout;
+		barrier.newLayout = newLayout;
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.image = texture->GetImage();
+		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		barrier.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
+		barrier.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
+		return barrier;
+	}

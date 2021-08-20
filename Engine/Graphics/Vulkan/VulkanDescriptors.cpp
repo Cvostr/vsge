@@ -122,13 +122,12 @@ void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* bu
 void VulkanDescriptorSet::WriteDescriptorImage(
     uint32 binding,
     VulkanTexture* texture,
-    VulkanSampler* sampler) 
+    VulkanSampler* sampler,
+    VkImageLayout layout) 
 {
-    VkImageLayout image_layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    if(texture->GetImageLayout() == VK_IMAGE_LAYOUT_GENERAL)
-        image_layout = VK_IMAGE_LAYOUT_GENERAL;
+
     VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = image_layout;
+    imageInfo.imageLayout = layout;
     imageInfo.imageView = texture->GetImageView();
     if(sampler)
         imageInfo.sampler = sampler->GetSampler();

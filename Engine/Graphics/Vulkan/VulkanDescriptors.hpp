@@ -97,7 +97,8 @@ namespace VSGE {
 		void WriteDescriptorImage(
 			uint32 binding,
 			VulkanTexture* texture,
-			VulkanSampler* sampler);
+			VulkanSampler* sampler = nullptr,
+			VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		void WriteDescriptorImages(
 			uint32 binding, 

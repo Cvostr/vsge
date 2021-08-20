@@ -17,6 +17,8 @@ namespace VSGE {
 	VkCommandBuffer CreateSingleTimeComdbuf(VkCommandPool commandPool);
 	void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool);
 
+	VkImageMemoryBarrier GetImageBarrier(VulkanTexture* texture, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout);
+
 	class VulkanCommandPool : public IGpuObject {
 	private:
 		VkCommandPool mCommandPool;
@@ -53,8 +55,8 @@ namespace VSGE {
 		void BindPipeline(VulkanPipeline& pipeline);
 
 		void BindComputePipeline(VulkanComputePipeline& pipeline);
-
-		void BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount = 0, const uint32* offsets = nullptr);
+		
+		void BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount = 0, const uint32* offsets = nullptr, VkPipelineBindPoint bind_point = VK_PIPELINE_BIND_POINT_GRAPHICS);
 
 		void BindVertexBuffer(VulkanBuffer& buffer);
 

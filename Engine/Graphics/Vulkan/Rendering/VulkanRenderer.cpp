@@ -165,6 +165,7 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Create POOL
 	mObjectsPool->Create();
@@ -204,6 +205,7 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(6, (VulkanTexture*)mGBuffer->GetColorAttachments()[3], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(7, _shadowmapper->GetOutputTexture(), mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(8, _brdf_lut->GetTextureLut(), mAttachmentSampler);
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
