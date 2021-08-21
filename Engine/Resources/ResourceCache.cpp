@@ -135,17 +135,6 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     }
 
     res->SetName(res_name);
-    
-    //if it is mesh group - load it to create meshes
-    if (type == RESOURCE_TYPE_MESHGROUP) {
-        res->Load();
-    }
-    //if resource is script, then load it
-    if (type == RESOURCE_TYPE_SCRIPT) {
-        res->Load();
-        _loader->WaitForLoading(res);
-        res->PostLoad();
-    }
     //Push resource
     PushResource(res);
 }

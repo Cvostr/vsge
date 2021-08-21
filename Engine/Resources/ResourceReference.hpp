@@ -17,10 +17,12 @@ namespace VSGE{
 
 		template<class T>
 		T* GetResource() {
-			return static_cast<T*>(_resourcePointer);
+			return static_cast<T*>(GetResource());
 		}
 
 		Resource* GetResource();
+
+		Resource* GetParentResource();
 
 		const std::string& GetResourceName() const;
 

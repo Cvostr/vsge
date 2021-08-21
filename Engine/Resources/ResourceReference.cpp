@@ -22,7 +22,16 @@ void ResourceReference::SetResourceType(ResourceType type) {
 }
 
 Resource* ResourceReference::GetResource() {
+	if (!_resourcePointer)
+		_resourcePointer = ResourceCache::Get()->GetResource(_resourceName);
 	return _resourcePointer;
+}
+
+Resource* ResourceReference::GetParentResource() {
+	if (_resourcePointer)
+		if (_resourcePointer->GetParent())
+			return _resourcePointer->GetParent();
+	return ResourceCache::Get()->GetResource(_parentName);
 }
 
 const std::string& ResourceReference::GetResourceName() const {

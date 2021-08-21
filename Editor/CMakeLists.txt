@@ -50,6 +50,8 @@ set(SRC_FILES
                 Windows/ToolbarWindow.cpp
                 main.cpp)
 
+
+
 include_directories("./" REQUIRED)
 include_directories(../Engine REQUIRED)
 include_directories(../ImGui/src REQUIRED)
@@ -59,12 +61,12 @@ include_directories("../vendor/headers/" REQUIRED)
 IF(UNIX)
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(GTK REQUIRED gtk+-3.0)
-
 find_package(GTK REQUIRED)
 include_directories(${GTK_INCLUDE_DIRS} REQUIRED)
 link_directories(${GTK_LIBRARY_DIRS})
 ADD_DEFINITIONS(${GTK_CFLAGS_OTHER})
 ENDIF()
+
 
 add_executable (Editor ${SRC_FILES} ${HEADER_FILES})
 IF (WIN32)

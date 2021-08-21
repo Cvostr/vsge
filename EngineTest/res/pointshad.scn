@@ -12,6 +12,7 @@ Entities:
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
+        mesh_group: ""
         mesh: Cube
       - Component: 2
         material: red
@@ -65,6 +66,7 @@ Entities:
     rot: [0, 0.00871096738, 0, 0.999959528]
     components:
       - Component: 3
+        mesh_group: ""
         mesh: Cube
       - Component: 2
         material: red
@@ -99,6 +101,7 @@ Entities:
     rot: [0.109596707, 0.988778412, 0.02758375, 0.0976694301]
     components:
       - Component: 3
+        mesh_group: ""
         mesh: Sphere
       - Component: 2
         material: Default Material

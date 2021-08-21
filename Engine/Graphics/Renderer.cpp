@@ -35,9 +35,12 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
 		if (mesh->GetMeshResource()) {
-			
 			mesh->GetMeshResource()->Load();
 			HasMesh = true;
+		}
+		else if (!mesh->GetResourceReference().GetResourceName().empty() && !mesh->GetResourceReference().GetResourceParentName().empty()) {
+			mesh->GetResourceReference().GetParentResource()->Load();
+			HasMesh = false;
 		}
 		else
 			HasMesh = false;

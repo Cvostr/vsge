@@ -12,6 +12,7 @@ Entities:
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
+        mesh_group: ""
         mesh: Sphere
       - Component: 2
         material: pbr
@@ -26,6 +27,7 @@ Entities:
     rot: [0.328912586, 0.11794164, -0.190649256, 0.917365074]
     components:
       - Component: 3
+        mesh_group: ""
         mesh: Cube
       - Component: 2
         material: pbr
@@ -60,6 +62,7 @@ Entities:
     rot: [0, 0.99513036, 0, 0.0985414833]
     components:
       - Component: 3
+        mesh_group: ""
         mesh: Cube
       - Component: 2
         material: material
@@ -118,6 +121,7 @@ Entities:
       - Component: 2
         material: particle_mat
       - Component: 3
+        mesh_group: ""
         mesh: Plane
   - Entity: Particles
     uid: [2604799160, 1957353781, 568189493, 1247167554]
@@ -155,6 +159,7 @@ Entities:
       - Component: 2
         material: particle_mat
       - Component: 3
+        mesh_group: ""
         mesh: Plane
   - Entity: Directional Light
     uid: [4022663197, 3646530176, 2222185782, 1077532849]
@@ -174,7 +179,7 @@ Entities:
         color: [1, 1, 1, 1]
         castShadows: true
         shadowStrength: 0.600000024
-        shadowBias: 0.00100000005
+        shadowBias: 0.00200000009
         pcf: 4
   - Entity: RootNode
     uid: [186694011, 1344920229, 3883134295, 1663786131]
@@ -1499,6 +1504,7 @@ Entities:
     rot: [0, 0.963047087, 0, 0.26933229]
     components:
       - Component: 3
+        mesh_group: Pilot_LP_Animated
         mesh: Mesh
       - Component: 2
         material: material
@@ -1526,6 +1532,7 @@ Entities:
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
+        mesh_group: untitled
         mesh: tree.003
       - Component: 2
         material: emptymat
@@ -1540,6 +1547,7 @@ Entities:
     rot: [0, 0, 0, 1]
     components:
       - Component: 3
+        mesh_group: untitled
         mesh: tree.002
       - Component: 2
         material: Default Material

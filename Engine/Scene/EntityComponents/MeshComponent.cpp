@@ -17,10 +17,11 @@ ResourceReference& MeshComponent::GetResourceReference() {
 }
 
 void MeshComponent::Serialize(YAML::Emitter& e) {
-	//e << Key << "mesh_group" << Value << this->_meshResource.GetResource()->GetParent()->GetName();
+	e << Key << "mesh_group" << Value << this->_meshResource.GetResourceParentName();
 	e << Key << "mesh" << Value << this->_meshResource.GetResourceName();
 }
 void MeshComponent::Deserialize(YAML::Node& entity) {
+	_meshResource.SetParentResource(entity["mesh_group"].as<std::string>());
 	SetMeshName(entity["mesh"].as<std::string>());
 }
 

@@ -144,6 +144,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     features.imageCubeArray = true;
     features.independentBlend = true;
     features.samplerAnisotropy = true;
+    features.depthClamp = true;
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT eds_features = {};
     eds_features.extendedDynamicState = true;
 
