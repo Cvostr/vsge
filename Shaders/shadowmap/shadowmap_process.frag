@@ -100,8 +100,14 @@ void main(){
             uint texture_index = GetPointShadowTextureIndex(caster_i);
             float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r;
             float real_depth = length(dir);
-            if(shadowmap_depth < casters[caster_i].range && result < 0.01)
-                result += (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
+            if(shadowmap_depth < casters[caster_i].range){
+                float shadow = (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
+                if(result < 0.01)
+                    result += shadow;
+                else if(shadow > 0.01) {
+                    result = casters[caster_i].ShadowStrength;
+                }
+            }
         }
         if(casters[caster_i].caster_type == 2){
             vec4 objPosLightSpace = casters[caster_i].projections[0] * vec4(FragPos, 1);

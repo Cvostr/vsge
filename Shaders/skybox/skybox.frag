@@ -1,7 +1,6 @@
 #version 450 core
 
 layout (location = 0) out vec4 tDiffuse;
-layout (location = 1) out vec4 tMasks;
 
 layout (location = 0) in vec2 _uv;
 layout (location = 1) in vec3 _pos;
@@ -21,7 +20,7 @@ layout (std140, set = 1, binding = 0) uniform MaterialData{
 	bool hasBottom;
 	bool hasTop;
 
-	vec3 tint_color;
+	vec4 tint_color;
 	float Exposure;
 };
 
@@ -174,9 +173,8 @@ void main()
 	int index = convert_xyz_to_cube_index(_pos.x, _pos.y, _pos.z);
   vec2 uv = convert_xyz_to_cube_uv(vec3(_pos.x, _pos.y, _pos.z));
 	vec3 color = sample_sky(index, uv);
-	color *= tint_color;
+	color *= tint_color.rgb;
 	color *= Exposure;
 
-	tDiffuse.xyz = color;
-	tMasks = vec4(0, 0, 0, 0);
+	tDiffuse = vec4(color, 1);
 }

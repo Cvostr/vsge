@@ -38,6 +38,16 @@ namespace VSGE {
 	typedef std::vector<MaterialTexture> tMaterialTexturesList;
 	typedef std::vector<MaterialParameter> tMaterialParamsList;
 
+	struct TextureTypesIds {
+		uint8 _albedo_index;
+		uint8 _normal_index;
+
+		TextureTypesIds() : 
+			_albedo_index(0),
+			_normal_index(1)
+		{}
+	};
+
 	class MaterialTemplate {
 	private:
 		std::string _name;
@@ -51,6 +61,7 @@ namespace VSGE {
 		CullMode _cullMode;
 		bool _depthTest;
 		std::map<uint32, BlendAttachmentDesc> _blendDescs;
+		TextureTypesIds _texture_ids;
 
 		void SetupDefaultVertexLayout();
 	public:
@@ -58,31 +69,70 @@ namespace VSGE {
 		MaterialTemplate();
 
 		~MaterialTemplate();
-
+		/// <summary>
+		/// Get name of template
+		/// </summary>
+		/// <returns></returns>
 		const std::string& GetName();
-
+		/// <summary>
+		/// Set name to material template
+		/// </summary>
+		/// <param name="name">- name of template</param>
 		void SetName(const std::string& name);
 
 		void SetPipeline(GraphicsPipeline* pipeline);
 
 		GraphicsPipeline* GetPipeline();
-
+		/// <summary>
+		/// Get array of template textures
+		/// </summary>
+		/// <returns></returns>
 		tMaterialTexturesList& GetTextures();
-
+		/// <summary>
+		/// Get array of template params
+		/// </summary>
+		/// <returns></returns>
 		tMaterialParamsList& GetParams();
 
+		TextureTypesIds& GetTexturesIds() {
+			return _texture_ids;
+		}
+		/// <summary>
+		/// Add new template parameter description
+		/// </summary>
+		/// <param name="name">- name of parameter field</param>
+		/// <param name="baseValue"></param>
 		void AddParameter(const std::string& name, MultitypeValue baseValue);
-		
+		/// <summary>
+		/// Add new template texture description
+		/// </summary>
+		/// <param name="name">- name of texture field</param>
+		/// <param name="binding">- binding of texture</param>
 		void AddTexture(const std::string& name, uint32 binding);
-
+		/// <summary>
+		/// Get shader of material template pointer
+		/// </summary>
+		/// <returns></returns>
 		Shader* GetShader();
-
+		/// <summary>
+		/// Set shader to material template
+		/// </summary>
+		/// <param name="shader"></param>
 		void SetShader(Shader* shader);
-
+		/// <summary>
+		/// Set shader to material template
+		/// </summary>
+		/// <param name="shader"></param>
 		void SetShader(const std::string& shader_name);
-
+		/// <summary>
+		/// Get current face cull mode of template
+		/// </summary>
+		/// <returns></returns>
 		CullMode GetCullMode();
-
+		/// <summary>
+		/// Set new face cull mode to template
+		/// </summary>
+		/// <param name="mode">- new face cull mode</param>
 		void SetCullMode(CullMode mode);
 
 		bool GetDepthTest();

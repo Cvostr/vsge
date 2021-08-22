@@ -10,6 +10,7 @@ using namespace VSGE;
 #define SPHERE_STACKS 18
 
 static MeshResource* cube_mesh = nullptr;
+static MeshResource* sphere_mesh = nullptr;
 
 static Vertex cube_vertices[] = {
     // back face
@@ -76,6 +77,10 @@ void VSGE::AddDefaultMaterial() {
 
 void* VSGE::GetCubeMesh(){
     return cube_mesh;
+}
+
+void* VSGE::GetSphereMesh() {
+    return sphere_mesh;
 }
 
 void VSGE::AddDefaultMeshes() {
@@ -178,7 +183,7 @@ void VSGE::AddDefaultMeshes() {
     ProcessTangentSpace(sphere_v.data(), sphere_indices.data(), sphere_indices.size());
     verts = new VertexSkinningData[sphere_v.size()];
 
-    MeshResource* sphere_mesh = new MeshResource;
+    sphere_mesh = new MeshResource;
     sphere_mesh->SetName("Sphere");
     sphere_mesh->SetDefault();
     sphere_mesh->GetMesh()->SetVertexBuffer(sphere_v.data(), sphere_v.size());

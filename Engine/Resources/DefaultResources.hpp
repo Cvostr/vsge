@@ -5,4 +5,5 @@ namespace VSGE {
 	void AddDefaultMaterial();
 
 	void* GetCubeMesh();
+	void* GetSphereMesh();
 }

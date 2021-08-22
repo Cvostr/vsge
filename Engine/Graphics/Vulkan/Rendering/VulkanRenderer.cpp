@@ -164,8 +164,16 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//shadows
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//depth
 	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//brdf lut
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 9, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//specular env map
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//irradiance env map
+	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 11, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Create POOL
 	mObjectsPool->Create();
@@ -205,7 +213,8 @@ void VulkanRenderer::SetupRenderer() {
 	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(6, (VulkanTexture*)mGBuffer->GetColorAttachments()[3], mAttachmentSampler);
 	mDeferredPassSet->WriteDescriptorImage(7, _shadowmapper->GetOutputTexture(), mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(8, _brdf_lut->GetTextureLut(), mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(8, (VulkanTexture*)mGBuffer->GetDepthAttachment(), mAttachmentSampler);
+	mDeferredPassSet->WriteDescriptorImage(9, _brdf_lut->GetTextureLut(), mAttachmentSampler);
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -417,40 +426,6 @@ void VulkanRenderer::StoreWorldObjects() {
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
-	if(mScene){
-		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
-
-		if(env_settings._skybox_material.IsResourceSpecified()){
-			MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
-			if (resource){
-
-				if(resource->IsUnloaded()){
-					resource->Load();
-				}
-
-				if(resource->IsReady()){
-					resource->Use();
-					Material* mat = resource->GetMaterial();
-					UpdateMaterialDescrSet(mat);
-					VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
-					MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
-					VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
-					VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
-
-					mGBufferCmdbuf->BindPipeline(*pipl);
-					mGBufferCmdbuf->SetViewport(0, 0, mOutputWidth, mOutputHeight);
-					uint32 offsets[2] = {0, 0};
-					mGBufferCmdbuf->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets);
-					mGBufferCmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
-
-					VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
-					mGBufferCmdbuf->BindMesh(*cube);
-					mGBufferCmdbuf->Draw(cube->GetVerticesCount());
-				}
-			}
-		}
-	}
-
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 
@@ -549,6 +524,8 @@ void VulkanRenderer::StoreWorldObjects() {
 	mLightsCmdbuf->Begin();
 	mOutputPass->CmdBegin(*mLightsCmdbuf, *mOutputBuffer);
 
+	DrawSkybox(mLightsCmdbuf);
+
 	mLightsCmdbuf->BindPipeline(*mDeferredPipeline);
 	mLightsCmdbuf->SetViewport(0, 0, mOutputWidth, mOutputHeight);
 	mLightsCmdbuf->BindDescriptorSets(*mDeferredPipeline->GetPipelineLayout(), 0, 1, mDeferredPassSet);
@@ -558,6 +535,41 @@ void VulkanRenderer::StoreWorldObjects() {
 	mLightsCmdbuf->EndRenderPass();
 	mLightsCmdbuf->End();
 
+}
+
+void VulkanRenderer::DrawSkybox(VulkanCommandBuffer* cmdbuffer) {
+	if (mScene) {
+		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
+		if (env_settings._skybox_material.IsResourceSpecified()) {
+			MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
+			if (resource) {
+
+				if (resource->IsUnloaded()) {
+					resource->Load();
+				}
+
+				if (resource->IsReady()) {
+					resource->Use();
+					Material* mat = resource->GetMaterial();
+					UpdateMaterialDescrSet(mat);
+					VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+					MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
+					VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+					VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+
+					cmdbuffer->BindPipeline(*pipl);
+					cmdbuffer->SetViewport(0, 0, mOutputWidth, mOutputHeight);
+					uint32 offsets[2] = { 0, 0 };
+					cmdbuffer->BindDescriptorSets(*ppl, 0, 1, mVertexDescriptorSets[0], 2, offsets);
+					cmdbuffer->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+
+					VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
+					cmdbuffer->BindMesh(*cube);
+					cmdbuffer->Draw(cube->GetVerticesCount());
+				}
+			}
+		}
+	}
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {

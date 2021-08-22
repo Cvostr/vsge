@@ -9,7 +9,8 @@ layout(binding = 4) uniform sampler2D normal;
 layout(binding = 5) uniform sampler2D pos;
 layout(binding = 6) uniform sampler2D material;
 layout(binding = 7) uniform sampler2D shadows;
-layout(binding = 8) uniform sampler2D brdf_lut;
+layout(binding = 8) uniform sampler2D depth;
+layout(binding = 9) uniform sampler2D brdf_lut;
 
 #define LIGHTSOURCE_DIR 0
 #define LIGHTSOURCE_POINT 1
@@ -41,6 +42,9 @@ layout (std140, binding = 2) uniform Lights{
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0);
 
 void main() {
+    float depth = texture(depth, UVCoord).r;
+    if(depth == 1.0)
+        discard;
     vec4 diffuse = texture(color, UVCoord);
     vec3 normal = texture(normal, UVCoord).rgb;
     vec3 pos = texture(pos, UVCoord).rgb;
