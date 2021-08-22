@@ -222,7 +222,6 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 			Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, _range);
 			projection[1][1] *= -1;
 			Vec3 pos = GetEntity()->GetAbsolutePosition();
-			Mat4 pmat = GetTranslationMatrix(pos);
 
 			result[0] = GetViewRH(pos, pos + Vec3(1, 0, 0), Vec3(0, -1, 0)) * projection;
 			result[1] = GetViewRH(pos, pos + Vec3(-1, 0, 0), Vec3(0, -1, 0)) * projection;
@@ -230,6 +229,14 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 			result[3] = GetViewRH(pos, pos + Vec3(0, -1, 0), Vec3(0, 0, -1)) * projection;
 			result[4] = GetViewRH(pos, pos + Vec3(0, 0, 1), Vec3(0, -1, 0)) * projection;
 			result[5] = GetViewRH(pos, pos + Vec3(0, 0, -1), Vec3(0, -1, 0)) * projection;
+		}
+		else if (_lightType == LIGHT_TYPE_SPOT) {
+			result = new Mat4[1];
+			Mat4 projection = GetPerspectiveRH_ZeroOne((_spot_angle + 12) * 2, 1, 0.1f, _range);
+			Vec3 pos = GetEntity()->GetAbsolutePosition();
+			Vec3 lightDir = (GetDirection()).GetNormalized();
+
+			result[0] = GetViewRH(pos, pos + lightDir, Vec3(0, 1, 0)) * projection;
 		}
 	}
 	return result;

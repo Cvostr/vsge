@@ -103,6 +103,22 @@ void main(){
             if(shadowmap_depth < casters[caster_i].range && result < 0.01)
                 result += (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
         }
+        if(casters[caster_i].caster_type == 2){
+            vec4 objPosLightSpace = casters[caster_i].projections[0] * vec4(FragPos, 1);
+            vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
+            float realDepth = shadowProjection.z;
+            vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
+            float shadowFactor = casters[caster_i].ShadowStrength;
+            float shadowmap_depth = GetShadowmapSample(caster_i, 0, start_offset);
+            if(realDepth <= 1.0 && shadowmap_depth < 1.0){
+                float shadow = (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
+                if(result < 0.01) 
+                    result += shadow;
+                else if(shadow > 0.01) {
+                    result = casters[caster_i].ShadowStrength;
+                }
+            }
+        }
     }
 
     tColor = vec4(result, 0, 0, 0);

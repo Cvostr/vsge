@@ -18,10 +18,10 @@ layout (std140, set = 1, binding = 1) uniform CascadesDir{
 
 
 void main() { 
-
 	uint _cascades = cascades_count;
 
 	if(type == 1) _cascades = 6;
+	else if(type == 2) _cascades = 1;
 
 	for( int cascade = 0; cascade < _cascades; cascade++){
 		gl_Layer = cascade;

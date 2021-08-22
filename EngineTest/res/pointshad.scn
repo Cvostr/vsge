@@ -7,7 +7,7 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-0.296381712, -9.07172585, -22.9429436]
+    pos: [-29.5994759, -9.07172585, -22.9429436]
     scale: [66.77285, 1, 80]
     rot: [0, 0, 0, 1]
     components:
@@ -111,14 +111,32 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [-19.3477535, 0, -57.9092598]
+    pos: [-27.0857925, 7.62368584, -36.8170929]
     scale: [1, 1, 1]
-    rot: [0.0849880204, -0.936087608, 0.340128809, 0.0280946717]
+    rot: [0.124048971, -0.939499736, 0.306449175, -0.0894222856]
     components:
       - Component: 1
         light_type: 2
         intensity: 100
-        range: 30
+        range: 300
         sp_angle: 12.5
         color: [1, 1, 1, 1]
-        castShadows: false
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 0.00499999989
+        pcf: 4
+  - Entity: Sphere
+    uid: [1972424954, 3086373205, 3684836906, 3633861471]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [-28.4634132, 0.211945534, -45.9780846]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 3
+        mesh_group: ""
+        mesh: Sphere
+      - Component: 2
+        material: Default Material

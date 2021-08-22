@@ -1501,7 +1501,7 @@ Entities:
     parent: [186694011, 1344920229, 3883134295, 1663786131]
     pos: [-32.0082741, -11.1510553, -60.9862633]
     scale: [0.477338105, 0.477338463, 0.477338105]
-    rot: [0, 0.963047087, 0, 0.26933229]
+    rot: [0, 0.173190489, 0, 0.984885752]
     components:
       - Component: 3
         mesh_group: Pilot_LP_Animated
@@ -1557,14 +1557,17 @@ Entities:
     static: false
     view_mask: 18446744073709551615
     parent: [0, 0, 0, 0]
-    pos: [14.1747723, -8.8414011, -28.7820263]
+    pos: [7.63036776, -1.03815627, -2.70824218]
     scale: [1, 1, 1]
-    rot: [0.415318102, -0.0579986498, 0.212117136, -0.882690132]
+    rot: [0.223756477, -0.0646219924, 0.231258646, -0.944590688]
     components:
       - Component: 1
         light_type: 2
         intensity: 200
-        range: 12
-        sp_angle: 12.5
+        range: 90
+        sp_angle: 20
         color: [1, 0, 0, 1]
-        castShadows: false
+        castShadows: true
+        shadowStrength: 0.600000024
+        shadowBias: 9.99999975e-05
+        pcf: 4

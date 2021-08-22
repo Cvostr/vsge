@@ -207,20 +207,27 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	}
 
 	uint32 image_layers_count = 6;
-	if(caster_type == LIGHT_TYPE_DIRECTIONAL){
+	if (caster_type == LIGHT_TYPE_DIRECTIONAL) {
 		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
 		image_layers_count = env_settings.GetShadowCascadesCount();
 	}
+	else if (caster_type == LIGHT_TYPE_SPOT)
+		image_layers_count = 1;
 
 	uint32 layers = caster->_framebuffer->GetLayersCount();
 	if (layers != image_layers_count || caster->_caster_type != caster_type) {
 		bool is_point = (caster_type == LIGHT_TYPE_POINT);
+		bool is_spot = (caster_type == LIGHT_TYPE_SPOT);
 		caster->_framebuffer->Destroy();
 		caster->_framebuffer->SetSize(MAP_SIZE, MAP_SIZE);
 		caster->_framebuffer->SetLayersCount(image_layers_count);
 		if (is_point) {
 			caster->_framebuffer->AddAttachment(FORMAT_R32F, 6, true);
 			caster->_framebuffer->Create(_shadowmap_point_RenderPass);
+		}
+		else if (is_spot) {
+			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, 1, false);
+			caster->_framebuffer->Create(_shadowmapRenderPass);
 		}
 		else {
 			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count);
@@ -286,7 +293,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 
 	cmdbuf->Begin();
 	
-	if (caster->_caster_type == LIGHT_TYPE_DIRECTIONAL) {
+	if (caster->_caster_type == LIGHT_TYPE_DIRECTIONAL || caster->_caster_type == LIGHT_TYPE_SPOT) {
 		_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmapPipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
