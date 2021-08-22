@@ -17,5 +17,7 @@ namespace VSGE {
 		VulkanTexture* _irmap_output_texture;
 	public:
 		void Create();
+
+		VulkanTexture* GetIrradianceMap();
 	};
 }

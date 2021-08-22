@@ -33,12 +33,12 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmapSecondSemaphore->Create();
 
 	_shadowmapRenderPass = new VulkanRenderPass;
-	_shadowmapRenderPass->SetClearSize(2048, 2048);
+	_shadowmapRenderPass->SetClearSize(MAP_SIZE, MAP_SIZE);
 	_shadowmapRenderPass->PushDepthAttachment(FORMAT_DEPTH_32);
 	_shadowmapRenderPass->Create();
 
 	_shadowmap_point_RenderPass = new VulkanRenderPass;
-	_shadowmap_point_RenderPass->SetClearSize(2048, 2048);
+	_shadowmap_point_RenderPass->SetClearSize(MAP_SIZE, MAP_SIZE);
 	_shadowmap_point_RenderPass->PushColorAttachment(FORMAT_R32F);
 	_shadowmap_point_RenderPass->Create();
 
@@ -222,11 +222,11 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		caster->_framebuffer->SetSize(MAP_SIZE, MAP_SIZE);
 		caster->_framebuffer->SetLayersCount(image_layers_count);
 		if (is_point) {
-			caster->_framebuffer->AddAttachment(FORMAT_R32F, 6, true);
+			caster->_framebuffer->AddAttachment(FORMAT_R32F, image_layers_count, true);
 			caster->_framebuffer->Create(_shadowmap_point_RenderPass);
 		}
 		else if (is_spot) {
-			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, 1, false);
+			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count, false);
 			caster->_framebuffer->Create(_shadowmapRenderPass);
 		}
 		else {
@@ -327,10 +327,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 				cmdbuf->DrawIndexed(mesh->GetIndexCount());
 			else
 				cmdbuf->Draw(mesh->GetVerticesCount());
-		}
-
-		if (_writtenBones % 4 > 0) {
-			_writtenBones += 4 - (_writtenBones % 4);
 		}
 	}
 

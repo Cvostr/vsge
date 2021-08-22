@@ -14,12 +14,6 @@ layout (location = 10) in vec4 Weights2;
 //Amount of bones, that control this vertex
 layout (location = 11) in uint bones;
 
-layout (std140, set = 1, binding = 0) uniform ShadowData{
-    mat4 projections[10];
-    vec3 pos;
-    int type;
-};
-
 layout (std140, binding = 1) uniform Transform{
     uniform mat4 obj_model[4];
 };

@@ -19,3 +19,7 @@ void VulkanIrradianceMap::Create() {
     _irmap_output_texture->Create(1024, 1024, FORMAT_RGBA16F, 6, 1);
     _irmap_output_texture->CreateImageView();
 }
+
+VulkanTexture* VulkanIrradianceMap::GetIrradianceMap() {
+    return _irmap_output_texture;
+}

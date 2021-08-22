@@ -114,6 +114,7 @@ set(SRC_FILES
 				Scene/EntityComponents/MeshComponent.cpp
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
+				Scene/EntityComponents/TerrainComponent.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				)
