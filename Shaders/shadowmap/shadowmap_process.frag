@@ -28,11 +28,12 @@ layout (std140, binding = 2) uniform CamMatrices{
     vec3 cam_position;
 };
 
-layout(binding = 3) uniform sampler2DArray shadowmaps[33];
+layout(binding = 3) uniform sampler2DArray shadowmaps[2];
 layout(binding = 4) uniform samplerCube shadowmaps_point[32];
+layout(binding = 5) uniform sampler2D shadowmaps_spot[32];
 
 
-layout(binding = 5) uniform dir_shadow_cascades{
+layout(binding = 6) uniform dir_shadow_cascades{
     float distances[10];
     uint cascades_count;
     uint shadowmap_size;
@@ -56,10 +57,32 @@ float GetShadowmapSample(uint shadowmap, uint cascade, vec2 uv){
     return texture(shadowmaps[shadowmap], vec3(uv, cascade)).r; 
 }
 
+float GetSpotShadowmapSample(uint shadowmap, vec2 uv){
+    return texture(shadowmaps_spot[shadowmap], uv).r; 
+}
+
+uint GetDirectionalShadowTextureIndex(uint caster_index){
+    uint pcaster_index = 0;
+    for(uint i = 0; i < caster_index; i ++){
+        if(casters[i].caster_type == 0)
+            pcaster_index++;
+    }
+    return pcaster_index;
+}
+
 uint GetPointShadowTextureIndex(uint caster_index){
     uint pcaster_index = 0;
     for(uint i = 0; i < caster_index; i ++){
         if(casters[i].caster_type == 1)
+            pcaster_index++;
+    }
+    return pcaster_index;
+}
+
+uint GetSpotShadowTextureIndex(uint caster_index){
+    uint pcaster_index = 0;
+    for(uint i = 0; i < caster_index; i ++){
+        if(casters[i].caster_type == 2)
             pcaster_index++;
     }
     return pcaster_index;
@@ -89,7 +112,7 @@ void main(){
                     vec2 offset = vec2(x, y) / shadowmap_size;
             
                     vec2 uvoffset = start_offset + offset;
-                    float shadowmap_depth = GetShadowmapSample(caster_i, cascade, uvoffset);
+                    float shadowmap_depth = GetShadowmapSample(GetDirectionalShadowTextureIndex(caster_i), cascade, uvoffset);
                     if(realDepth <= 1.0) 
                         result += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
                 }
@@ -115,7 +138,7 @@ void main(){
             float realDepth = shadowProjection.z;
             vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
             float shadowFactor = casters[caster_i].ShadowStrength;
-            float shadowmap_depth = GetShadowmapSample(caster_i, 0, start_offset);
+            float shadowmap_depth = GetSpotShadowmapSample(GetSpotShadowTextureIndex(caster_i), start_offset);
             if(realDepth <= 1.0 && shadowmap_depth < 1.0){
                 float shadow = (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
                 if(result < 0.01) 

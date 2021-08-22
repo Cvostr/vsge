@@ -81,9 +81,10 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 33);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	_shadowcasters_descPool->Create();
 
@@ -95,7 +96,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorImage(1, _gbuffer_pos, _gbuffer_sampler);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
-	_shadowrenderer_descrSet->WriteDescriptorBuffer(5, _cascadeinfo_buffer);
+	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
 	
 
@@ -371,15 +372,20 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 	//Write shadowmaps to descriptor set
 	std::vector<VulkanTexture*> shadowmaps;
 	std::vector<VulkanTexture*> shadowmaps_point;
+	std::vector<VulkanTexture*> shadowmaps_spot;
 	for (auto caster : _casters) {
 		if (caster->_caster_type == LIGHT_TYPE_POINT)
 			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetColorAttachments()[0]);
+		else if (caster->_caster_type == LIGHT_TYPE_SPOT)
+			shadowmaps_spot.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
+
 		else
 			shadowmaps.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 	}
 
 	_shadowrenderer_descrSet->WriteDescriptorImages(3, shadowmaps.data(), _shadowmap_sampler, shadowmaps.size());
 	_shadowrenderer_descrSet->WriteDescriptorImages(4, shadowmaps_point.data(), _shadowmap_sampler, shadowmaps_point.size());
+	_shadowrenderer_descrSet->WriteDescriptorImages(5, shadowmaps_spot.data(), _shadowmap_sampler, shadowmaps_spot.size());
 	_shadowprocess_buffer->WriteData(43008, 4, &_added_casters);
 	RecordShadowProcessingCmdbuf();
 

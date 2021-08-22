@@ -61,6 +61,7 @@ void SceneWindow::OnDrawWindow() {
                     Entity* newEntity = scene->AddNewEntity("Spot Light");
                     LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
                     light->GetLightType() = LIGHT_TYPE_SPOT;
+                    light->SetShadowsBias(0.0001f);
                 }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Particle Emitter")) {
