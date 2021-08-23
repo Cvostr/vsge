@@ -50,7 +50,7 @@ namespace VSGE {
         uint32 _maxHeight; //Height of best mip map
         uint32 _mipLevels; //Count of mip levels
         uint32 _layers; //Count of layers in texture array
-        char _flags;
+        uint32 _flags;
 
         TextureFormat _format;
     public:
@@ -73,6 +73,8 @@ namespace VSGE {
 
         void SetStorage(bool storage);
         bool IsStorage();
+
+        void SetFlags(uint32 flags);
 
         /// <summary>
         /// Destroy texture and release memory

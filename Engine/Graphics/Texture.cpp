@@ -41,6 +41,10 @@ bool Texture::IsStorage(){
     return _flags & TEXTURE_FLAG_IS_STORAGE;
 }
 
+void Texture::SetFlags(uint32 flags){
+    _flags = flags;
+}
+
 bool Texture::CreateFromFile(std::string filePath) {
     byte* texture_data;
     uint32 size;

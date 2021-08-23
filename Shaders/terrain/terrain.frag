@@ -12,6 +12,13 @@ layout (std140, set = 1, binding = 0) uniform MaterialData{
 
 };
 
+#define MAX_TEXTURES 16
+
+layout(binding = 1) uniform sampler2D albedo[MAX_TEXTURES];
+layout(binding = 2) uniform sampler2D normal[MAX_TEXTURES];
+layout(binding = 3) uniform sampler2D roughness[MAX_TEXTURES];
+layout(binding = 4) uniform sampler2D metallic[MAX_TEXTURES];
+
 float CalcLuminance(vec3 color)
 {
     return dot(color, vec3(0.299, 0.587, 0.114));

@@ -72,12 +72,25 @@ void TerrainComponent::UpdateMesh() {
 			heightmap[x * _height + y].uv = Vec2(static_cast<float>(x) / _width, static_cast<float>(y) / _height);
 		}
 	}
+	//Calculate normals
+	for(uint32 ind_i = 0; ind_i < GetIndicesCount() ; ind_i += 3){
+        //Get pointer to next terrain vertex
+        Vertex* v1 = &heightmap[indices[ind_i]];
+        //Get pointers to other vertices of triangle
+        Vertex* v2 = &heightmap[indices[ind_i + 1]];
+        Vertex* v3 = &heightmap[indices[ind_i + 2]];
+        //Poses of other vertices of triangle
+        Vec3 v12 = v1->pos - v2->pos;
+        Vec3 v13 = v1->pos - v3->pos;
+        //Calculate normal
+        v1->normal = v12.Cross(v13).GetNormalized();
+	}
+
+	ProcessTangentSpace(heightmap, indices, GetIndicesCount());
 
 	_heightmap_mesh->SetVertexBuffer(heightmap, GetVerticesCount());
 	_heightmap_mesh->SetIndexBuffer(indices, GetIndicesCount());
 	_heightmap_mesh->Create();
-
-	ProcessTangentSpace(heightmap, indices, GetIndicesCount());
 }
 void TerrainComponent::UpdateTextureMasks() {
 	if (!_texture_masks) {
