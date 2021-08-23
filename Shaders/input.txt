@@ -7,6 +7,9 @@ shader pbr/brdf_lut.comp
 shader pbr/irmap.comp
 shader pbr/spmap.comp
 
+shader terrain/terrain.vert
+shader terrain/terrain.frag
+
 shader particle/particle.vert
 shader particle/particle.frag
 

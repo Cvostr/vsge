@@ -11,6 +11,7 @@
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 #include <Scene/Camera.hpp>
+#include <Scene/EntityComponents/TerrainComponent.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -46,6 +47,10 @@ void SceneWindow::OnDrawWindow() {
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
                     mat->SetMaterialName("Default Material");
                 }
+                if (ImGui::MenuItem("Terrain")) {
+                    Entity* newEntity = scene->AddNewEntity("Terrain");
+                    TerrainComponent* terrain = newEntity->AddComponent<TerrainComponent>();
+                }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Directional Light")) {
                     Entity* newEntity = scene->AddNewEntity("Directional Light");
@@ -61,7 +66,7 @@ void SceneWindow::OnDrawWindow() {
                     Entity* newEntity = scene->AddNewEntity("Spot Light");
                     LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
                     light->GetLightType() = LIGHT_TYPE_SPOT;
-                    light->SetShadowsBias(0.0001f);
+                    light->SetShadowsBias(0.001f);
                 }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Particle Emitter")) {

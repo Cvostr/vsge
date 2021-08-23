@@ -20,6 +20,20 @@ TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_texture_masks);
 }
 
+uint32 TerrainComponent::GetWidth() {
+	return _width;
+}
+uint32 TerrainComponent::GetHeight() {
+	return _height;
+}
+
+void TerrainComponent::SetWidth(uint32 width) {
+	_width = width;
+}
+void TerrainComponent::SetHeight(uint32 height) {
+	_height = height;
+}
+
 uint32 TerrainComponent::GetVerticesCount() {
 	return _width * _height;
 }

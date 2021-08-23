@@ -20,6 +20,10 @@ void VulkanIrradianceMap::Create() {
     _irmap_output_texture->CreateImageView();
 }
 
+void VulkanIrradianceMap::SetInputTexture(VulkanTexture* texture) {
+    _irmap_input_texture = texture;
+}
+
 VulkanTexture* VulkanIrradianceMap::GetIrradianceMap() {
     return _irmap_output_texture;
 }

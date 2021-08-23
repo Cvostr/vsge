@@ -14,10 +14,12 @@ namespace VSGE {
 		VulkanDescriptorPool* _irmap_descr_pool;
 		VulkanDescriptorSet* _irmap_descr_set;
 
+		VulkanTexture* _irmap_input_texture;
 		VulkanTexture* _irmap_output_texture;
 	public:
 		void Create();
 
+		void SetInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetIrradianceMap();
 	};
 }

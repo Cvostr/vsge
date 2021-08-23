@@ -123,7 +123,7 @@ Entities:
         color: [1, 1, 1, 1]
         castShadows: true
         shadowStrength: 0.600000024
-        shadowBias: 0.00499999989
+        shadowBias: 0.00100000005
         pcf: 4
   - Entity: Sphere
     uid: [1972424954, 3086373205, 3684836906, 3633861471]

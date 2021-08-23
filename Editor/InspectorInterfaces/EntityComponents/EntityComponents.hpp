@@ -10,6 +10,7 @@
 #include <Scene/EntityComponents/ColliderComponent.hpp>
 #include <Scene/EntityComponents/EntityScriptComponent.hpp>
 #include <Scene/Camera.hpp>
+#include <Scene/EntityComponents/TerrainComponent.hpp>
 
 namespace VSGEditor {
 	void DrawLightsourceComponent(VSGE::LightsourceComponent* light);
@@ -22,4 +23,5 @@ namespace VSGEditor {
 	void DrawColliderComponent(VSGE::ColliderComponent* clc);
 	void DrawScriptComponent(VSGE::EntityScriptComponent* esc);
 	void DrawCameraComponent(VSGE::Camera* cac);
+	void DrawTerrainComponent(VSGE::TerrainComponent* tc);
 }

@@ -8,9 +8,9 @@ layout(location = 1) in vec3 InNormal;
 layout(location = 2) in vec2 UVCoord;
 layout(location = 3) in mat3 TBN;
 
-layout (std140, set = 1, binding = 0) uniform MaterialData{
+//layout (std140, set = 1, binding = 0) uniform MaterialData{
 
-};
+//};
 
 #define MAX_TEXTURES 16
 

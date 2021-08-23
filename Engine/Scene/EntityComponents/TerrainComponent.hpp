@@ -33,6 +33,12 @@ namespace VSGE{
 			TerrainComponent();
 			~TerrainComponent();
 
+			uint32 GetWidth();
+			uint32 GetHeight();
+
+			void SetWidth(uint32 width);
+			void SetHeight(uint32 height);
+
 			uint32 GetVerticesCount();
 			uint32 GetIndicesCount();
 

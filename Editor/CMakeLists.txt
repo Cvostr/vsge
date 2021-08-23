@@ -28,6 +28,7 @@ set(SRC_FILES
                 InspectorInterfaces/EntityComponents/MeshComponent.cpp
                 InspectorInterfaces/EntityComponents/ParticleEmitter.cpp
                 InspectorInterfaces/EntityComponents/RigidBody.cpp
+                InspectorInterfaces/EntityComponents/Terrain.cpp
                 Menus/File_Menu.cpp
                 Menus/Edit_Menu.cpp
                 Menus/Windows_Menu.cpp
