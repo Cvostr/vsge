@@ -202,6 +202,10 @@ void VulkanRenderer::SetupRenderer() {
 		mEmptyTexture);
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 
+	_terrain_renderer = new VulkanTerrainRenderer;
+	_terrain_renderer->Create(mGBufferPass, mVertexDescriptorSets);
+	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
+
 	_brdf_lut = new Vulkan_BRDF_LUT;
 	_brdf_lut->Create();
 
@@ -297,7 +301,9 @@ void VulkanRenderer::SetupRenderer() {
 }
 
 void VulkanRenderer::DestroyRenderer() {
-
+	delete _brdf_lut;
+	delete _terrain_renderer;
+	delete _shadowmapper;
 }
 
 void VulkanRenderer::StoreWorldObjects() {
@@ -335,7 +341,11 @@ void VulkanRenderer::StoreWorldObjects() {
 		Entity* entity = _entitiesToRender[e_i];
 		transforms[e_i * 4] = entity->GetWorldTransform();
 
-		MeshResource* mresource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		if (!mesh_component)
+			continue;
+
+		MeshResource* mresource = mesh_component->GetMeshResource();
 		AnimatorComponent* anim_comp = entity->GetComponent<AnimatorComponent>();
 
 		for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
@@ -421,7 +431,12 @@ void VulkanRenderer::StoreWorldObjects() {
 		_shadowmapper->ProcessShadowCaster(caster_i);
 	}
 	//-----------------------------
-
+	//-------------TERRAINS------------------
+	_terrain_renderer->ResetProcessedTerrains();
+	for (uint32 terrain_i = 0; terrain_i < _terrains.size(); terrain_i++) {
+		_terrain_renderer->ProcessTerrain(_terrains[terrain_i]);
+	}
+	//-----------------------------
 
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
@@ -429,10 +444,21 @@ void VulkanRenderer::StoreWorldObjects() {
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 
+	for (uint32 terrain_i = 0; terrain_i < _terrains.size(); terrain_i++) {
+		_terrain_renderer->DrawTerrain(mGBufferCmdbuf, terrain_i, terrain_i);
+	}
+
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
 		Entity* entity = _entitiesToRender[e_i];
-		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
-		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
+
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
+
+		if (!mesh_component && !material_component)
+			continue;
+
+		MeshResource* mesh_resource = mesh_component->GetMeshResource();
+		MaterialResource* mat_resource = material_component->GetMaterialResource();
 		
 		if (mat_resource->GetState() != RESOURCE_STATE_READY)
 			continue;
@@ -455,7 +481,7 @@ void VulkanRenderer::StoreWorldObjects() {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 			
-			uint32 offsets[2] = {0, e_i * UNI_ALIGN };
+			uint32 offsets[2] = {0, e_i * UNI_ALIGN % 65535 };
 			uint32 anim_offset = _writtenBones * 64;
 			_writtenBones += mesh->GetBones().size();
 

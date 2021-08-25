@@ -6,6 +6,7 @@
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+#include <Scene/EntityComponents/TerrainComponent.hpp>
 
 using namespace VSGE;
 
@@ -15,6 +16,7 @@ void IRenderer::CreateRenderList() {
 	_shadowcasters.clear();
 	_particleEmitters.clear();
 	_cameras.clear();
+	_terrains.clear();
 	if(mScene)
 		ProcessEntity(mScene->GetRootEntity());
 }
@@ -32,6 +34,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	bool hasLightsource = entity->HasComponent<LightsourceComponent>();
 	bool hasParticleEmitter = entity->HasComponent<ParticleEmitterComponent>();
 	bool hasCamera = entity->HasComponent<Camera>();
+	bool hasTerrain = entity->HasComponent<TerrainComponent>();
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
 		if (mesh->GetMeshResource()) {
@@ -73,6 +76,11 @@ void IRenderer::ProcessEntity(Entity* entity) {
 
 	if (hasCamera) {
 		_cameras.push_back(entity);
+	}
+
+	if (hasTerrain) {
+		_entitiesToRender.push_back(entity);
+		_terrains.push_back(entity);
 	}
 
 	for (uint32 child_i = 0; child_i < entity->GetChildrenCount(); child_i ++) {

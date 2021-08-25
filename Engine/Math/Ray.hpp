@@ -30,6 +30,7 @@ namespace VSGE {
 		Vec3 GetPoint(float dist);
 
 		float GetHitdistance(const AABB& box);
+		bool IntersectTriangle(const Vec3& v0, const Vec3& v1, const Vec3& v2, float &distance, Vec2& position) const;
 	};
 
 	class RayHit {

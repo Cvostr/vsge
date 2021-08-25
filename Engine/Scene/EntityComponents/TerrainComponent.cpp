@@ -11,6 +11,9 @@ TerrainComponent::TerrainComponent() {
 
 	_heightmap_mesh = nullptr;
 	_texture_masks = nullptr;
+
+	heightmap = nullptr;
+	indices = nullptr;
 }
 TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_heightmap);
@@ -42,6 +45,14 @@ uint32 TerrainComponent::GetIndicesCount() {
 	return (_width - 1) * (_height - 1) * 2 * 3;
 }
 
+Mesh* TerrainComponent::GetTerrainMesh() {
+	return _heightmap_mesh;
+}
+
+Texture* TerrainComponent::GetTerrainMasksTexture() {
+	return _texture_masks;
+}
+
 void TerrainComponent::Flat(float height) {
 	SAFE_RELEASE_ARR(_heightmap);
 	SAFE_RELEASE_ARR(_texture_factors);
@@ -55,13 +66,49 @@ void TerrainComponent::Flat(float height) {
 		_heightmap[i] = height;
 	}
 }
+
+void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) {
+	//Iterate over all pixels
+	for (int y = 0; y < _width; y++) {
+		for (int x = 0; x < _height; x++) {
+			//if pixel is in circle
+			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
+			if (dist <= range) {
+				//calculate modifier
+				float toApply = height - (dist * dist) / static_cast<float>(range);
+				if (toApply > 0) {
+					_heightmap[y * _height + x] += (toApply);
+				}
+			}
+		}
+	}
+}
+
+Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
+	for (uint32 index_i = 0; index_i < GetIndicesCount(); index_i += 3) {
+		Vec3 v0 = heightmap[indices[index_i]].pos;
+		Vec3 v1 = heightmap[indices[index_i + 1]].pos;
+		Vec3 v2 = heightmap[indices[index_i + 2]].pos;
+
+		float dist = 0;
+		Vec2 pos;
+		bool intersects = ray.IntersectTriangle(v0, v1, v2, dist, pos);
+		if (intersects) {
+			return Vec2i(v0.z, v0.x);
+		}
+	}
+	return Vec2i(0);
+}
+
 void TerrainComponent::UpdateMesh() {
 	if (!_heightmap_mesh) {
 		_heightmap_mesh = CreateMesh();
 	}
+	else
+		_heightmap_mesh->Destroy();
 
-	Vertex* heightmap = new Vertex[GetVerticesCount()];
-	uint32* indices = new uint32[GetIndicesCount()];
+	heightmap = new Vertex[GetVerticesCount()];
+	indices = new uint32[GetIndicesCount()];
 
 	uint32 inds = 0;
 	for (uint32 y = 0; y < _height - 1; y++) {
@@ -108,7 +155,7 @@ void TerrainComponent::UpdateMesh() {
 }
 void TerrainComponent::UpdateTextureMasks() {
 	if (!_texture_masks) {
-		uint32 layers_count = MAX_TEXTURES_PER_VERTEX / 4;
+		uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 		_texture_masks = CreateTexture();
 		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
 	}

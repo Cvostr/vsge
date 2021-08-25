@@ -11,6 +11,7 @@
 
 #include "VulkanMaterials.hpp"
 #include "VulkanShadowmapping.hpp"
+#include "VulkanTerrainRenderer.hpp"
 #include "PBR/Vulkan_BRDF_LUT.hpp"
 
 #define MAX_OBJECTS_RENDER 40000
@@ -75,6 +76,7 @@ namespace VSGE {
 
 		//--------------------Shadowmapping--------------
 		VulkanShadowmapping* _shadowmapper;
+		VulkanTerrainRenderer* _terrain_renderer;
 		Vulkan_BRDF_LUT* _brdf_lut;
 
 

@@ -14,10 +14,11 @@ layout(location = 3) in mat3 TBN;
 
 #define MAX_TEXTURES 16
 
-layout(binding = 1) uniform sampler2D albedo[MAX_TEXTURES];
-layout(binding = 2) uniform sampler2D normal[MAX_TEXTURES];
-layout(binding = 3) uniform sampler2D roughness[MAX_TEXTURES];
-layout(binding = 4) uniform sampler2D metallic[MAX_TEXTURES];
+layout(binding = 1) uniform sampler2D masks;
+layout(binding = 2) uniform sampler2D albedo[MAX_TEXTURES];
+layout(binding = 3) uniform sampler2D normal[MAX_TEXTURES];
+layout(binding = 4) uniform sampler2D roughness[MAX_TEXTURES];
+layout(binding = 5) uniform sampler2D metallic[MAX_TEXTURES];
 
 float CalcLuminance(vec3 color)
 {
@@ -30,5 +31,5 @@ void main() {
     tColor = vec4(1, 1, 1, 1);
     tNormal = normal;
     tPos = FragPos;
-    tMaterial = vec4(0, 0, 0, 0);
+    tMaterial = vec4(1, 0, 0, 1);
 }   

@@ -22,6 +22,9 @@ namespace VSGE {
 		tEntityList _particleEmitters;
 		//Entities with camera
 		tEntityList _cameras;
+		//Entities with terrain
+		tEntityList _terrains;
+
 	public:
 
 		IRenderer() : 

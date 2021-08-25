@@ -94,3 +94,49 @@ float Ray::GetHitdistance(const AABB& box) {
 
     return hit_distance;
 }
+
+bool Ray::IntersectTriangle(
+    const Vec3& v0,
+    const Vec3& v1,
+    const Vec3& v2, 
+    float& distance,
+    Vec2& position) const {
+    Vec3 edge1 = v1 - v0;
+    Vec3 edge2 = v2 - v0;
+    Vec3 p = _direction.Cross(edge2);
+    float det = edge1.Dot(p);
+    Vec3 Perpendicular(0);
+
+    if (det > std::numeric_limits<float>::epsilon())
+    {
+        Vec3 dist = _origin - v0;
+        position.x = dist.Dot(p);
+        if (position.x < 0.0f || position.x > det)
+            return false;
+
+        Perpendicular = dist.Cross(edge1);
+        position.y = _direction.Dot(Perpendicular);
+        if ((position.y < 0.f) || ((position.x + position.y) > det))
+            return false;
+    }
+    else if (det < -std::numeric_limits<float>::epsilon())
+    {
+        Vec3 dist = _origin - v0;
+        position.x = dist.Dot(p);
+        if ((position.x > 0.f) || (position.x < det))
+            return false;
+
+        Perpendicular = dist.Cross(edge1);
+        position.y = _direction.Dot(Perpendicular);
+        if ((position.y > 0.0f) || (position.x + position.y < det))
+            return false;
+    }
+    else
+        return false;
+
+    float inv_det = 1.f / det;
+    distance = edge2.Dot(Perpendicular) * inv_det;
+    position *= inv_det;
+
+    return true;
+}

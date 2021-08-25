@@ -89,7 +89,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowcasters_descPool->Create();
 
 	_shadowcaster_descrSet->Create();
-	_shadowcaster_descrSet->WriteDescriptorBuffer(0, _shadowcasters_buffer, 0, 65535);
+	_shadowcaster_descrSet->WriteDescriptorBuffer(0, _shadowcasters_buffer);
 	_shadowcaster_descrSet->WriteDescriptorBuffer(1, _cascadeinfo_buffer);
 
 	_shadowrenderer_descrSet->Create();

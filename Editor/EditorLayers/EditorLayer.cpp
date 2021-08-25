@@ -170,6 +170,15 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				VulkanRenderer* renderer = VulkanRenderer::Get();
 
 				Ray ray(mEditorCamera->GetPosition(), dir.GetNormalized());
+				//Try pick terrain vertex
+				if (_pickedEntity) {
+					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
+					if (terrain) {
+						Vec2i coord = terrain->GetRayIntersectionTraingle(ray);
+						terrain->ModifyHeight(coord, 50, 20);
+						terrain->UpdateMesh();
+					}
+				}
 
 				std::vector<RayHit> hits;
 
@@ -190,10 +199,6 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				if (hits.size() > 0) {
 					SetPickedEntity((Entity*)hits[0].GetHitObject());
 					insp->SetShowingEntity((Entity*)hits[0].GetHitObject());
-				}
-				else {
-				//	SetPickedEntity(nullptr);
-				//	insp->SetShowingEntity(nullptr);
 				}
 			}
 		}

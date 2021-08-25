@@ -3,17 +3,18 @@
 #include "../IEntityComponent.hpp"
 #include <Graphics/Mesh.hpp>
 #include <Graphics/Texture.hpp>
+#include <Math/Ray.hpp>
 
-#define MAX_TEXTURES_PER_VERTEX 16
+#define MAX_TEXTURES_PER_TERRAIN 16
 
 namespace VSGE{
 
 	class TerrainTexturesFactors {
 	public:
-		uint8 _textures_factors[MAX_TEXTURES_PER_VERTEX];
+		uint8 _textures_factors[MAX_TEXTURES_PER_TERRAIN];
 
 		TerrainTexturesFactors() {
-			for (uint32 i = 0; i < MAX_TEXTURES_PER_VERTEX; i++) {
+			for (uint32 i = 0; i < MAX_TEXTURES_PER_TERRAIN; i++) {
 				_textures_factors[i] = 0;
 			}
 		}
@@ -29,6 +30,9 @@ namespace VSGE{
 
 			Mesh* _heightmap_mesh;
 			Texture* _texture_masks;
+
+			Vertex* heightmap;
+			uint32* indices;
 		public:
 			TerrainComponent();
 			~TerrainComponent();
@@ -43,9 +47,13 @@ namespace VSGE{
 			uint32 GetIndicesCount();
 
 			void Flat(float height);
-
+			void ModifyHeight(const Vec2i& position, float height, uint32 range);
 			void UpdateMesh();
 			void UpdateTextureMasks();
+			Vec2i& GetRayIntersectionTraingle(const Ray& ray);
+
+			Mesh* GetTerrainMesh();
+			Texture* GetTerrainMasksTexture();
 
 			DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_TERRAIN, "Terrain")
 	};
