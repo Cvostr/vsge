@@ -1,4 +1,4 @@
-#include "VulkanTerrainRenderer.hpp"
+#include "VulkanRenderer.hpp"
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Entity.hpp>
 
@@ -16,6 +16,12 @@ VulkanDescriptorSet* VulkanTerrain::GetDescriptorSet() {
 }
 void VulkanTerrain::SetTerrain(TerrainComponent* terrain) {
 	_terrain = terrain;
+
+	if (_terrain->GetTerrainMasksTexture())
+		_terrain_descr_set->WriteDescriptorImage(
+			1, 
+			(VulkanTexture*)_terrain->GetTerrainMasksTexture(),
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler());
 }
 TerrainComponent* VulkanTerrain::GetTerrain() {
 	return _terrain;
@@ -80,6 +86,9 @@ void VulkanTerrainRenderer::Create(
 	_terrain_pipeline->SetDepthTest(true);
 	_terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_terrain_pipeline->Create(_terrain_shader, gbuffer_renderpass, _vertexLayout, _terrain_pipeline_layout);
+
+	_terrain_masks_sampler = new VulkanSampler;
+	_terrain_masks_sampler->Create();
 }
 
 void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
@@ -101,6 +110,10 @@ void VulkanTerrainRenderer::ResetProcessedTerrains() {
 void VulkanTerrainRenderer::SetOutputSizes(uint32 width, uint32 height) {
 	_outputWidth = width;
 	_outputHeight = height;
+}
+
+VulkanSampler* VulkanTerrainRenderer::GetTerrainMasksTextureSampler() {
+	return _terrain_masks_sampler;
 }
 
 void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index) {

@@ -27,6 +27,7 @@ namespace VSGE{
         VulkanShader* _terrain_shader;
         VulkanPipelineLayout* _terrain_pipeline_layout;
         VulkanPipeline* _terrain_pipeline;
+        VulkanSampler* _terrain_masks_sampler;
 
         VulkanRenderPass* _gbuffer_renderpass;
         std::vector<VulkanDescriptorSet*>* _entity_descr_set;
@@ -49,5 +50,6 @@ namespace VSGE{
         void ResetProcessedTerrains();
         void DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index);
         void SetOutputSizes(uint32 width, uint32 height);
+        VulkanSampler* GetTerrainMasksTextureSampler();
     };
 }

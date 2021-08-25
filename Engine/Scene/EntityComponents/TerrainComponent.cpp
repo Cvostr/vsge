@@ -75,7 +75,7 @@ void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
 			if (dist <= range) {
 				//calculate modifier
-				float toApply = height - (dist * dist) / static_cast<float>(range);
+				float toApply = (height) - static_cast<float>(dist * dist) / (float)range;
 				if (toApply > 0) {
 					_heightmap[y * _height + x] += (toApply);
 				}
@@ -154,9 +154,28 @@ void TerrainComponent::UpdateMesh() {
 	_heightmap_mesh->Create();
 }
 void TerrainComponent::UpdateTextureMasks() {
+	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 	if (!_texture_masks) {
-		uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 		_texture_masks = CreateTexture();
 		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
 	}
+
+	for (uint32 layer_i = 0; layer_i < layers_count; layer_i++) {
+		uint32 buffer_size = _width * _height * 4;
+		byte* mask = new byte[buffer_size];
+
+		for (uint32 y = 0; y < _height; y++) {
+			for (uint32 x = 0; x < _width; x++) {
+				TerrainTexturesFactors* texture_factors = &_texture_factors[x * _height + y];
+
+				mask[(x * _height + y) * 4] = texture_factors->_textures_factors[layer_i * 4];
+				mask[(x * _height + y) * 4 + 1] = texture_factors->_textures_factors[layer_i * 4 + 1];
+				mask[(x * _height + y) * 4 + 2] = texture_factors->_textures_factors[layer_i * 4 + 2];
+				mask[(x * _height + y) * 4 + 3] = texture_factors->_textures_factors[layer_i * 4 + 3];
+			}
+		}
+		_texture_masks->AddMipLevel(mask, buffer_size, _width, _height, 0, layer_i);
+	}
+
+	_texture_masks->CreateImageView();
 }

@@ -656,3 +656,7 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mGBufferPass->SetClearSize(width, height);
 	mOutputPass->SetClearSize(width, height);
 }
+
+VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
+	return _terrain_renderer;
+}

@@ -135,6 +135,8 @@ namespace VSGE {
 		void DrawScene(VSGE::Camera* cam);
 		void DrawSkybox(VulkanCommandBuffer* cmdbuffer);
 
+		VulkanTerrainRenderer* GetTerrainRenderer();
+
 		void ResizeOutput(uint32 width, uint32 height);
 	};
 }

@@ -15,6 +15,8 @@
 #include "../Windows/EnvironmentSettingsWindow.hpp"
 #include "../Windows/ProjectSettingsWindow.hpp"
 
+#include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
+
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Edit_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
@@ -175,7 +177,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
 					if (terrain) {
 						Vec2i coord = terrain->GetRayIntersectionTraingle(ray);
-						terrain->ModifyHeight(coord, 50, 20);
+						terrain->ModifyHeight(coord, GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
 						terrain->UpdateMesh();
 					}
 				}

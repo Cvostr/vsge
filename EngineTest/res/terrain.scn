@@ -1,0 +1,31 @@
+Scene: Untitled
+env_amb_color: [1, 1, 1, 1]
+Entities:
+  - Entity: Terrain
+    uid: [2525732799, 2872747498, 1633639561, 826702723]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0, 0, 0, 1]
+    components:
+      - Component: 11
+  - Entity: Directional Light
+    uid: [1461155738, 1709833397, 1069317450, 3729123811]
+    active: true
+    static: false
+    view_mask: 18446744073709551615
+    parent: [0, 0, 0, 0]
+    pos: [0, 0, 0]
+    scale: [1, 1, 1]
+    rot: [0.50677079, 0, 0, 0.862079382]
+    components:
+      - Component: 1
+        light_type: 0
+        intensity: 1
+        range: 5.5
+        sp_angle: 12.5
+        color: [1, 1, 1, 1]
+        castShadows: false

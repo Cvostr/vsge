@@ -3,6 +3,9 @@
 
 using namespace VSGEditor;
 
+float brush_size = 20;
+float opacity = 15;
+
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	int width = tc->GetWidth();
 	int height = tc->GetHeight();
@@ -13,13 +16,22 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	tc->SetWidth(width);
 	tc->SetHeight(height);
 
-	if (ImGui::Button("TEST FLAT", ImVec2(ImGui::GetWindowWidth(), 0))) {
-		tc->Flat(10);
+	ImGui::Separator();
+	if (ImGui::Button("Clear terrain", ImVec2(ImGui::GetWindowWidth(), 0))) {
+		tc->Flat(0);
 		tc->UpdateMesh();
+		tc->UpdateTextureMasks();
 	}
 
-	if (ImGui::Button("H1", ImVec2(ImGui::GetWindowWidth(), 0))) {
-		tc->ModifyHeight(Vec2i(100, 100), 50, 20);
-		tc->UpdateMesh();
-	}
+	ImGui::Separator();
+
+	ImGui::InputFloat("Brush size", &brush_size);
+	ImGui::InputFloat("Opacity", &opacity);
+}
+
+float VSGEditor::GetTerrainEditorOpacity() {
+	return opacity;
+}
+float VSGEditor::GetTerrainEditorBrushSize() {
+	return brush_size;
 }

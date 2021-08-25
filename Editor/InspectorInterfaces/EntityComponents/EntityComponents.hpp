@@ -23,5 +23,8 @@ namespace VSGEditor {
 	void DrawColliderComponent(VSGE::ColliderComponent* clc);
 	void DrawScriptComponent(VSGE::EntityScriptComponent* esc);
 	void DrawCameraComponent(VSGE::Camera* cac);
+
 	void DrawTerrainComponent(VSGE::TerrainComponent* tc);
+	float GetTerrainEditorOpacity();
+	float GetTerrainEditorBrushSize();
 }
