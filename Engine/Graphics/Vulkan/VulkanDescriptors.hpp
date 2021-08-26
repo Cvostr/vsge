@@ -98,7 +98,8 @@ namespace VSGE {
 			uint32 binding,
 			VulkanTexture* texture,
 			VulkanSampler* sampler = nullptr,
-			VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			uint32 first_texture = 0);
 
 		void WriteDescriptorImages(
 			uint32 binding, 

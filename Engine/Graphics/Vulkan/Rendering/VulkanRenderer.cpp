@@ -121,7 +121,7 @@ void VulkanRenderer::SetupRenderer() {
 	mEmptyTexture = new VulkanTexture;
 	mEmptyTexture->Create(2, 2);
 	char* empty_texture_data = new char[2 * 2 * 4];
-	memset(empty_texture_data, 255, 16);
+	memset(empty_texture_data, 0, 16);
 	mEmptyTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
 	mEmptyTexture->CreateImageView();
 	delete[] empty_texture_data;
@@ -203,7 +203,7 @@ void VulkanRenderer::SetupRenderer() {
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 
 	_terrain_renderer = new VulkanTerrainRenderer;
-	_terrain_renderer->Create(mGBufferPass, mVertexDescriptorSets);
+	_terrain_renderer->Create(mGBufferPass, mVertexDescriptorSets, mEmptyTexture);
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_brdf_lut = new Vulkan_BRDF_LUT;

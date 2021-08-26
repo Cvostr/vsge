@@ -19,6 +19,7 @@ namespace VSGE{
         void SetTerrain(TerrainComponent* terrain);
         TerrainComponent* GetTerrain();
         void Create(VulkanDescriptorPool* pool);
+        void SetImagesToEmpty();
         void Destroy();
     };
 
@@ -30,6 +31,7 @@ namespace VSGE{
         VulkanSampler* _terrain_masks_sampler;
 
         VulkanRenderPass* _gbuffer_renderpass;
+        VulkanTexture* _emptyTexture;
         std::vector<VulkanDescriptorSet*>* _entity_descr_set;
 
         VulkanDescriptorPool* _terrains_descr_pool;
@@ -45,11 +47,13 @@ namespace VSGE{
 
         void Create(
             VulkanRenderPass* gbuffer_renderpass,
-            std::vector<VulkanDescriptorSet*>& descr_set);
+            std::vector<VulkanDescriptorSet*>& descr_set,
+            VulkanTexture* emptyTexture);
         void ProcessTerrain(Entity* terrain);
         void ResetProcessedTerrains();
         void DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index);
         void SetOutputSizes(uint32 width, uint32 height);
         VulkanSampler* GetTerrainMasksTextureSampler();
+        VulkanTexture* GetEmptyTexture();
     };
 }

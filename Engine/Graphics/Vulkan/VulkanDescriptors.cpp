@@ -123,7 +123,8 @@ void VulkanDescriptorSet::WriteDescriptorImage(
     uint32 binding,
     VulkanTexture* texture,
     VulkanSampler* sampler,
-    VkImageLayout layout) 
+    VkImageLayout layout,
+    uint32 first_texture)
 {
 
     VkDescriptorImageInfo imageInfo{};
@@ -136,7 +137,7 @@ void VulkanDescriptorSet::WriteDescriptorImage(
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     descriptorWrite.dstSet = mDescriptorSet;
     descriptorWrite.dstBinding = binding;
-    descriptorWrite.dstArrayElement = 0;
+    descriptorWrite.dstArrayElement = first_texture;
 
     VkDescriptorType DescrType = bindings_types.at(binding);
 

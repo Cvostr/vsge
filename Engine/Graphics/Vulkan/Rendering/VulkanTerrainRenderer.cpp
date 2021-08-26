@@ -22,6 +22,36 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain) {
 			1, 
 			(VulkanTexture*)_terrain->GetTerrainMasksTexture(),
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler());
+
+	for (uint32 i = 0; i < terrain->GetTerrainTextures().size(); i++) {
+		Resource* resource = terrain->GetTerrainTextures()[i]._albedo_reference.GetResource();
+		TextureResource* texture_res = static_cast<TextureResource*>(resource);
+		if (texture_res == nullptr) {
+			//if no texture bound, then bind default white texture
+			_terrain_descr_set->WriteDescriptorImage(2,
+				VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyTexture(),
+				VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler(),
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+				i);
+			continue;
+		}
+
+		if (texture_res->IsUnloaded()) {
+			//Load texture
+			texture_res->Load();
+		}
+
+		if (texture_res->IsReady()) {
+			//Mark texture resource as used in this frame
+			texture_res->Use();
+			//Write texture to descriptor
+			_terrain_descr_set->WriteDescriptorImage(2,
+				(VulkanTexture*)texture_res->GetTexture(),
+				VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler(),
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+				i);
+		}
+	}
 }
 TerrainComponent* VulkanTerrain::GetTerrain() {
 	return _terrain;
@@ -34,8 +64,23 @@ void VulkanTerrain::Create(VulkanDescriptorPool* pool) {
 	_terrain_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_PER_TERRAIN);
 	_terrain_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_PER_TERRAIN);
 	_terrain_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_PER_TERRAIN);
+	_terrain_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_PER_TERRAIN);
+	_terrain_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_TEXTURES_PER_TERRAIN);
 	_terrain_descr_set->Create();
 }
+
+void VulkanTerrain::SetImagesToEmpty() {
+	for (uint32 i = 0; i < MAX_TEXTURES_PER_TERRAIN; i++) {
+		//bind default black texture
+		_terrain_descr_set->WriteDescriptorImage(2,
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyTexture(),
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			i);
+		continue;
+	}
+}
+
 void VulkanTerrain::Destroy() {
 	delete _terrain_descr_set;
 }
@@ -49,10 +94,12 @@ VulkanTerrainRenderer::~VulkanTerrainRenderer() {
 
 void VulkanTerrainRenderer::Create(
 	VulkanRenderPass* gbuffer_renderpass,
-	std::vector<VulkanDescriptorSet*>& descr_set
+	std::vector<VulkanDescriptorSet*>& descr_set,
+	VulkanTexture* emptyTexture
 ) {
 	this->_gbuffer_renderpass = gbuffer_renderpass;
 	this->_entity_descr_set = &descr_set;
+	this->_emptyTexture = emptyTexture;
 	
 	_terrains_descr_pool = new VulkanDescriptorPool;
 	_terrains_descr_pool->SetDescriptorSetsCount(1000);
@@ -95,6 +142,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 	if (_terrains_processed + 1 > _terrains.size()) {
 		VulkanTerrain* new_terrain = new VulkanTerrain;
 		new_terrain->Create(_terrains_descr_pool);
+		new_terrain->SetImagesToEmpty();
 		_terrains.push_back(new_terrain);
 	}
 	VulkanTerrain* vk_terrain = _terrains[_terrains_processed];
@@ -114,6 +162,10 @@ void VulkanTerrainRenderer::SetOutputSizes(uint32 width, uint32 height) {
 
 VulkanSampler* VulkanTerrainRenderer::GetTerrainMasksTextureSampler() {
 	return _terrain_masks_sampler;
+}
+
+VulkanTexture* VulkanTerrainRenderer::GetEmptyTexture() {
+	return _emptyTexture;
 }
 
 void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index) {

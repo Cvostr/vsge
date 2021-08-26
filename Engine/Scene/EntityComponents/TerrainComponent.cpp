@@ -2,6 +2,24 @@
 
 using namespace VSGE;
 
+void TerrainTexturesFactors::add(uint32 texture_id, uint32 val) {
+	uint8* ptr = &_textures_factors[texture_id];
+	if (static_cast<int>(*ptr) + val <= 255)
+		*ptr += val;
+	else {
+		*ptr = 255;
+	}
+}
+void TerrainTexturesFactors::reduce(uint32 texture_id, uint32 val) {
+	uint8* ptr = &_textures_factors[texture_id];
+	int result = static_cast<int>(*ptr) - val;
+	if (result >= 0)
+		*ptr -= val;
+	else {
+		*ptr = 0;
+	}
+}
+
 TerrainComponent::TerrainComponent() {
 	_width = 500;
 	_height = 500;
@@ -84,6 +102,31 @@ void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 
 	}
 }
 
+void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id) {
+	//Iterate over all pixels
+	for (int y = 0; y < _width; y++) {
+		for (int x = 0; x < _height; x++) {
+			//if pixel is in circle
+			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
+			//if vertex is inside circle
+			if (dist <= range) {
+				float toApply = opacity - static_cast<float>(dist * dist) / (float)range;
+				int _toApply = (int)(toApply);
+
+				if (_toApply < 0)
+					continue;
+
+				for (uint32 texture_f = 0; texture_f < MAX_TEXTURES_PER_TERRAIN; texture_f++) {
+					if (texture_f != texture_id)
+						_texture_factors[y * _height + x].reduce(texture_f, _toApply);
+
+				}
+				_texture_factors[y * _height + x].add(texture_id, _toApply);
+			}
+		}
+	}
+}
+
 Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
 	for (uint32 index_i = 0; index_i < GetIndicesCount(); index_i += 3) {
 		Vec3 v0 = heightmap[indices[index_i]].pos;
@@ -97,7 +140,7 @@ Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
 			return Vec2i(v0.z, v0.x);
 		}
 	}
-	return Vec2i(0);
+	return Vec2i(-1);
 }
 
 void TerrainComponent::UpdateMesh() {
@@ -178,4 +221,9 @@ void TerrainComponent::UpdateTextureMasks() {
 	}
 
 	_texture_masks->CreateImageView();
+}
+
+void TerrainComponent::AddNewTexture() {
+	TerrainTexture ttexture;
+	_terrain_textures.push_back(ttexture);
 }

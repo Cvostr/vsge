@@ -12,6 +12,10 @@
 #include <Scene/Camera.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 
+#define TERRAIN_EDITOR_EDIT_MODE_HEIGHT 1
+#define TERRAIN_EDITOR_EDIT_MODE_TEXTURES 2
+#define TERRAIN_EDITOR_EDIT_MODE_GRASS 3
+
 namespace VSGEditor {
 	void DrawLightsourceComponent(VSGE::LightsourceComponent* light);
 	void DrawMeshComponent(VSGE::MeshComponent* light);
@@ -25,6 +29,8 @@ namespace VSGEditor {
 	void DrawCameraComponent(VSGE::Camera* cac);
 
 	void DrawTerrainComponent(VSGE::TerrainComponent* tc);
+	int GetTerrainEditorMode();
 	float GetTerrainEditorOpacity();
 	float GetTerrainEditorBrushSize();
+	uint32 GetTerrainEditorTextureIndex();
 }

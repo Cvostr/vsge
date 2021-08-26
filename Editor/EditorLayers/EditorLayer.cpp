@@ -177,8 +177,17 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
 					if (terrain) {
 						Vec2i coord = terrain->GetRayIntersectionTraingle(ray);
-						terrain->ModifyHeight(coord, GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
-						terrain->UpdateMesh();
+						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
+							terrain->ModifyHeight(coord, GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
+							terrain->UpdateMesh();
+						}
+						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
+							terrain->ModifyTexture(Vec2i(coord.y, coord.x),
+								GetTerrainEditorOpacity(),
+								GetTerrainEditorBrushSize(),
+								GetTerrainEditorTextureIndex());
+							terrain->UpdateTextureMasks();
+						}
 					}
 				}
 
