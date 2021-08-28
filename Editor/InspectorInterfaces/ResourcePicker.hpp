@@ -6,5 +6,5 @@
 
 namespace VSGEditor {
 
-	void DrawResourcePicker(std::string label, VSGE::ResourceReference& reference, bool empty_res = false);
+	void DrawResourcePicker(std::string label, VSGE::ResourceReference& reference, bool empty_res = false, uint32 index = 0);
 }

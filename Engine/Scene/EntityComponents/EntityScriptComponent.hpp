@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../IEntityComponent.hpp"
-#include <Resources/ResourceTypes/ScriptResource.hpp>
 #include <vector>
 
 namespace VSGE {

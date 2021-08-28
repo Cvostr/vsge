@@ -4,6 +4,7 @@
 #include "../Windows/ResourcePickWindow.hpp"
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include <ImageBtnText.h>
+#include "../ResourcePicker.hpp"
 
 using namespace VSGEditor;
 
@@ -13,6 +14,7 @@ float brush_size = 20;
 float opacity = 15;
 int edit_mode = TERRAIN_EDITOR_EDIT_MODE_HEIGHT;
 uint32 picked_texture_index = 0;
+uint32 picked_grass_index = 0;
 
 void DrawTerrainTexturePickBtn(VSGE::ResourceReference& reference, const std::string& tex_type,
 	 uint32 texture_index) {
@@ -53,6 +55,22 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	ImGui::SameLine();
 
 	DrawTerrainTexturePickBtn(terrain_texture->_metallic_reference, "Metallic", texture_index);
+}
+
+void DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass) {
+	bool is_picked = grass_index == picked_grass_index;
+	std::string tte = "##" + std::to_string(grass_index);
+	is_picked = ImGui::RadioButton(tte.c_str(), is_picked);
+	if (is_picked)
+		picked_grass_index = grass_index;
+
+	DrawResourcePicker("Diffuse", terrain_grass->_texture_reference, true, grass_index);
+
+	std::string width_text = "Grass width##" + std::to_string(grass_index);
+	std::string height_text = "Grass height##" + std::to_string(grass_index);
+
+	ImGui::InputFloat(width_text.c_str(), &terrain_grass->_width);
+	ImGui::InputFloat(height_text.c_str(), &terrain_grass->_height);
 }
 
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
@@ -98,8 +116,22 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 			DrawTerrainResourcePicker(i, texture);
 		}
 
-		if (ImGui::Button("Add Texture", ImVec2(ImGui::GetWindowWidth(), 0))) {
-			tc->AddNewTexture();
+		if(tc->GetTerrainTextures().size() < MAX_TEXTURES_PER_TERRAIN)
+			if (ImGui::Button("Add Texture", ImVec2(ImGui::GetWindowWidth(), 0))) {
+				tc->AddNewTexture();
+			}
+	}
+
+	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_GRASS) {
+		uint32 vegetables_count = tc->GetTerrainVegetables().size();
+
+		for (uint32 i = 0; i < vegetables_count; i++) {
+			VSGE::TerrainGrass* grass = &(tc->GetTerrainVegetables()[i]);
+			DrawTerrainGrassEdit(i, grass);
+		}
+
+		if (ImGui::Button("Add Grass", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			tc->AddNewGrass();
 		}
 	}
 }

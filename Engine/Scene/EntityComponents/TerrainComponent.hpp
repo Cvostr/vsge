@@ -43,6 +43,20 @@ namespace VSGE{
 		}
 	};
 
+	class TerrainGrass {
+	public:
+		ResourceReference _texture_reference;
+
+		float _width;
+		float _height;
+
+		TerrainGrass() {
+			_texture_reference.SetResourceType(RESOURCE_TYPE_TEXTURE);
+			_width = 1;
+			_height = 1;
+		}
+	};
+
 	class TerrainComponent : public IEntityComponent {
 		private:
 			uint32 _width;
@@ -51,6 +65,7 @@ namespace VSGE{
 			float* _heightmap;
 			TerrainTexturesFactors* _texture_factors;
 			std::vector<TerrainTexture> _terrain_textures;
+			std::vector<TerrainGrass> _terrain_grass;
 			//graphics api objects
 			Mesh* _heightmap_mesh;
 			Texture* _texture_masks;
@@ -80,10 +95,20 @@ namespace VSGE{
 			std::vector<TerrainTexture>& GetTerrainTextures() {
 				return _terrain_textures;
 			}
+			std::vector<TerrainGrass>& GetTerrainVegetables() {
+				return _terrain_grass;
+			}
+
 			void AddNewTexture();
+			void AddNewGrass();
 
 			Mesh* GetTerrainMesh();
 			Texture* GetTerrainMasksTexture();
+
+			void Serialize(YAML::Emitter& e);
+			void Deserialize(YAML::Node& entity);
+			void Serialize(ByteSerialize& serializer);
+			void Deserialize(ByteSolver& solver);
 
 			DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_TERRAIN, "Terrain")
 	};

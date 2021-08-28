@@ -1,6 +1,7 @@
 #include "TerrainComponent.hpp"
 
 using namespace VSGE;
+using namespace YAML;
 
 void TerrainTexturesFactors::add(uint32 texture_id, uint32 val) {
 	uint8* ptr = &_textures_factors[texture_id];
@@ -32,6 +33,8 @@ TerrainComponent::TerrainComponent() {
 
 	heightmap = nullptr;
 	indices = nullptr;
+
+	Flat(0);
 }
 TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_heightmap);
@@ -130,6 +133,9 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 }
 
 Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
+	if (!heightmap || !indices)
+		return Vec2i(-1);
+
 	for (uint32 index_i = 0; index_i < GetIndicesCount(); index_i += 3) {
 		Vec3 v0 = heightmap[indices[index_i]].pos;
 		Vec3 v1 = heightmap[indices[index_i + 1]].pos;
@@ -228,4 +234,85 @@ void TerrainComponent::UpdateTextureMasks() {
 void TerrainComponent::AddNewTexture() {
 	TerrainTexture ttexture;
 	_terrain_textures.push_back(ttexture);
+}
+
+void TerrainComponent::AddNewGrass() {
+	TerrainGrass tgrass;
+	_terrain_grass.push_back(tgrass);
+}
+
+void TerrainComponent::Serialize(YAML::Emitter& e) {
+	e << Key << "width" << Value << _width;
+	e << Key << "height" << Value << _height;
+
+	e << YAML::Key << "textures" << YAML::Value << YAML::BeginSeq;
+	for (auto& texture : _terrain_textures) {
+		e << BeginMap;
+		e << Key << "albedo" << Value << texture._albedo_reference.GetResourceName();
+		e << Key << "normal" << Value << texture._normal_reference.GetResourceName();
+		e << Key << "roughness" << Value << texture._roughness_reference.GetResourceName();
+		e << Key << "metallic" << Value << texture._metallic_reference.GetResourceName();
+		e << Key << "ao" << Value << texture._ao_reference.GetResourceName();
+		e << Key << "height" << Value << texture._height_reference.GetResourceName();
+		e << YAML::EndMap; // Anim resource
+	}
+	e << YAML::EndSeq;
+}
+void TerrainComponent::Deserialize(YAML::Node& entity) {
+	_width = entity["width"].as<uint32>();
+	_height = entity["height"].as<uint32>();
+
+	YAML::Node textures = entity["textures"];
+	for (const auto& texture : textures) {
+		std::string albedo = texture["albedo"].as<std::string>();
+		std::string normal = texture["normal"].as<std::string>();
+		std::string roughness = texture["roughness"].as<std::string>();
+		std::string metallic = texture["metallic"].as<std::string>();
+		std::string ao = texture["ao"].as<std::string>();
+		std::string height = texture["height"].as<std::string>();
+
+		TerrainTexture texture;
+		texture._albedo_reference.SetResource(albedo);
+		texture._normal_reference.SetResource(normal);
+		texture._roughness_reference.SetResource(roughness);
+		texture._metallic_reference.SetResource(metallic);
+		texture._ao_reference.SetResource(ao);
+		texture._height_reference.SetResource(height);
+		_terrain_textures.push_back(texture);
+	}
+
+}
+void TerrainComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_width);
+	serializer.Serialize(_height);
+
+	uint32 textures_count = _terrain_textures.size();
+	uint32 vegetables_count = _terrain_grass.size();
+
+	serializer.Serialize(textures_count);
+	serializer.Serialize(vegetables_count);
+
+	for (auto& texture : _terrain_textures) {
+		serializer.Serialize(texture._albedo_reference.GetResourceName());
+		serializer.Serialize(texture._normal_reference.GetResourceName());
+		serializer.Serialize(texture._roughness_reference.GetResourceName());
+		serializer.Serialize(texture._metallic_reference.GetResourceName());
+		serializer.Serialize(texture._ao_reference.GetResourceName());
+		serializer.Serialize(texture._height_reference.GetResourceName());
+	}
+}
+void TerrainComponent::Deserialize(ByteSolver& solver) {
+	_width = solver.GetValue<uint32>();
+	_height = solver.GetValue<uint32>();
+
+	uint32 textures_count = solver.GetValue<uint32>();
+	uint32 vegetables_count = solver.GetValue<uint32>();
+
+	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) {
+
+	}
+
+	for (uint32 grass_i = 0; grass_i < vegetables_count; grass_i++) {
+
+	}
 }

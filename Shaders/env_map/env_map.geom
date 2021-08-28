@@ -1,7 +1,7 @@
 #version 450
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 30) out;
+layout(triangle_strip, max_vertices = 18) out;
 
 layout (location = 0) out vec3 FragPos;
 

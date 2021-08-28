@@ -8,7 +8,8 @@
 #include "ResourceTypes/MaterialResource.hpp"
 #include "ResourceTypes/AnimationResource.hpp"
 #include "ResourceTypes/AudioClipResource.hpp"
-#include "ResourceTypes/ScriptResource.hpp"
+#include "ResourceTypes/SceneResource.hpp"
+#include "ResourceTypes/PrefabResource.hpp"
 
 namespace fs = std::filesystem;
 using namespace VSGE;
@@ -56,8 +57,10 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
         return RESOURCE_TYPE_ANIMATION;
     if (ext == ".wav")
         return RESOURCE_TYPE_AUDIOCLIP;
-    if (ext == ".as")
-        return RESOURCE_TYPE_SCRIPT;
+    if (ext == ".scn")
+        return RESOURCE_TYPE_SCENE;
+    if (ext == ".prefab")
+        return RESOURCE_TYPE_PREFAB;
     return RESOURCE_TYPE_NONE;
 }
 
@@ -110,8 +113,11 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     else if (type == RESOURCE_TYPE_AUDIOCLIP) {
         res = new AudioClipResource;
     }
-    else if (type == RESOURCE_TYPE_SCRIPT) {
-        res = new ScriptResource;
+    else if (type == RESOURCE_TYPE_SCENE) {
+        res = new SceneResource;
+    }
+    else if (type == RESOURCE_TYPE_PREFAB) {
+        res = new PrefabResource;
     }
 
     if(res != nullptr)

@@ -3,19 +3,28 @@
 #include "../Windows/ResourcePickWindow.hpp"
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include "../Misc/Thumbnails.hpp"
+#include "ImageBtnText.h"
 
 using namespace VSGE;
 using namespace VSGEditor;
 
-void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& reference, bool empty_res)
+void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& reference, bool empty_res, uint32 index)
 {
+	ImVec2 win_size = ImGui::GetWindowSize();
+	ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
+
+	ImVec2 cursor = ImGui::GetCursorPos();
+	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE)
+		ImGui::SetCursorPos(cursor + ImVec2(0, 32));
+
 	ImGui::Text(label.c_str());
 
 	ImGui::SameLine();
 
+	ImguiVulkanTexture* texture = nullptr;
+
 	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE) {
-		ImGui::SameLine();
-		ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
+		texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
 		Resource* resource = reference.GetResource();
 		
@@ -24,39 +33,36 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 			if (tex)
 				texture = tex;
 		}
-
-		if(texture)
-			ImGui::Image((void*)texture->imtexture, ImVec2(64, 64));
-	}else
+	}
+	else {
 		ImGui::Text(reference.GetResourceName().c_str());
+		text_size.x += ImGui::CalcTextSize(reference.GetResourceName().c_str()).x;
+		
+	}
 
 	ImGui::SameLine();
 
-	std::string btn_text = "Select " + label;
+	cursor = ImGui::GetCursorPos();
 
-	if (ImGui::Button(btn_text.c_str())) {
+	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE)
+		ImGui::SetCursorPos(cursor + ImVec2(win_size.x - text_size.x - 120, -32));
+	else
+		ImGui::SetCursorPos(cursor + ImVec2(win_size.x - text_size.x - 90, 0));
+
+	std::string btn_text = "Select##" + label + std::to_string(index);
+	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE && texture) {
+		if (ImageButtonWithText((void*)texture->imtexture, btn_text.c_str(), nullptr, nullptr, ImVec2(64, 64))) {
+			ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
+			rpw->SetAllowEmptyResource(empty_res);
+			rpw->SetResourceReference(&reference);
+			rpw->Show();
+		}
+	}
+	else if (ImGui::Button(btn_text.c_str())) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 		rpw->SetAllowEmptyResource(empty_res);
 		rpw->SetResourceReference(&reference);
 		rpw->Show();
 	}
-
-	/*if (ImGui::BeginPopup("resources"))
-	{
-		ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 0.7f), "--- Meshes ---");
-
-		uint32 resources_size = ResourceCache::Get()->GetResourcesCount();
-
-		for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) {
-			Resource* resource = ResourceCache::Get()->GetResources()[resource_i];
-			if (resource->GetResourceType() == type) {
-				if (ImGui::Button(resource->GetName().c_str())) {
-					resource_name_out = resource->GetName();
-				}
-			}
-		}
-
-		ImGui::EndPopup();
-	}*/
-
+	ImGui::Separator();
 }

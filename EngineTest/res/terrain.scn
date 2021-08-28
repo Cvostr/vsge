@@ -12,6 +12,21 @@ Entities:
     rot: [0, 0, 0, 1]
     components:
       - Component: 11
+        width: 500
+        height: 500
+        textures:
+          - albedo: grass
+            normal: ground_normal
+            roughness: ""
+            metallic: ""
+            ao: ""
+            height: ""
+          - albedo: test_bc
+            normal: ""
+            roughness: ""
+            metallic: ""
+            ao: ""
+            height: ""
   - Entity: Directional Light
     uid: [1461155738, 1709833397, 1069317450, 3729123811]
     active: true
