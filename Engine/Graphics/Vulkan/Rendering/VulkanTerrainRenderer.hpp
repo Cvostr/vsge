@@ -17,6 +17,7 @@ namespace VSGE{
         ~VulkanTerrain();
         VulkanDescriptorSet* GetDescriptorSet();
         void SetTerrain(TerrainComponent* terrain);
+        void SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index);
         TerrainComponent* GetTerrain();
         void Create(VulkanDescriptorPool* pool);
         void SetImagesToEmpty();
@@ -29,6 +30,7 @@ namespace VSGE{
         VulkanPipelineLayout* _terrain_pipeline_layout;
         VulkanPipeline* _terrain_pipeline;
         VulkanSampler* _terrain_masks_sampler;
+        VulkanSampler* _terrain_textures_sampler;
 
         VulkanRenderPass* _gbuffer_renderpass;
         VulkanTexture* _emptyTexture;
@@ -54,6 +56,7 @@ namespace VSGE{
         void DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index);
         void SetOutputSizes(uint32 width, uint32 height);
         VulkanSampler* GetTerrainMasksTextureSampler();
+        VulkanSampler* GetTerrainTextureSampler();
         VulkanTexture* GetEmptyTexture();
     };
 }

@@ -14,6 +14,36 @@ VulkanTerrain::~VulkanTerrain() {
 VulkanDescriptorSet* VulkanTerrain::GetDescriptorSet() {
 	return _terrain_descr_set;
 }
+
+void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index) {
+	TextureResource* texture_res = static_cast<TextureResource*>(texture);
+	if (texture_res == nullptr) {
+		//if no texture bound, then bind default white texture
+		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyTexture(),
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			texture_index);
+		return;
+	}
+
+	if (texture_res->IsUnloaded()) {
+		//Load texture
+		texture_res->Load();
+	}
+
+	if (texture_res->IsReady()) {
+		//Mark texture resource as used in this frame
+		texture_res->Use();
+		//Write texture to descriptor
+		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
+			(VulkanTexture*)texture_res->GetTexture(),
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			texture_index);
+	}
+}
+
 void VulkanTerrain::SetTerrain(TerrainComponent* terrain) {
 	_terrain = terrain;
 
@@ -24,33 +54,36 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain) {
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler());
 
 	for (uint32 i = 0; i < terrain->GetTerrainTextures().size(); i++) {
-		Resource* resource = terrain->GetTerrainTextures()[i]._albedo_reference.GetResource();
-		TextureResource* texture_res = static_cast<TextureResource*>(resource);
-		if (texture_res == nullptr) {
-			//if no texture bound, then bind default white texture
-			_terrain_descr_set->WriteDescriptorImage(2,
-				VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyTexture(),
-				VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler(),
-				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-				i);
-			continue;
-		}
-
-		if (texture_res->IsUnloaded()) {
-			//Load texture
-			texture_res->Load();
-		}
-
-		if (texture_res->IsReady()) {
-			//Mark texture resource as used in this frame
-			texture_res->Use();
-			//Write texture to descriptor
-			_terrain_descr_set->WriteDescriptorImage(2,
-				(VulkanTexture*)texture_res->GetTexture(),
-				VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler(),
-				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-				i);
-		}
+		Resource* albedo_resource = terrain->GetTerrainTextures()[i]._albedo_reference.GetResource();
+		Resource* normal_resource = terrain->GetTerrainTextures()[i]._normal_reference.GetResource();
+		Resource* roughness_resource = terrain->GetTerrainTextures()[i]._roughness_reference.GetResource();
+		Resource* metallic_resource = terrain->GetTerrainTextures()[i]._metallic_reference.GetResource();
+		Resource* ao_resource = terrain->GetTerrainTextures()[i]._ao_reference.GetResource();
+		Resource* height_resource = terrain->GetTerrainTextures()[i]._height_reference.GetResource();
+		//albedo
+		SetDescriptorTexture(albedo_resource,
+			0,
+			i);
+		//normal
+		SetDescriptorTexture(normal_resource,
+			1,
+			i);
+		//roughness
+		SetDescriptorTexture(roughness_resource,
+			2,
+			i);
+		//metallic
+		SetDescriptorTexture(metallic_resource,
+			3,
+			i);
+		//ao
+		SetDescriptorTexture(ao_resource,
+			4,
+			i);
+		//height
+		SetDescriptorTexture(height_resource,
+			5,
+			i);
 	}
 }
 TerrainComponent* VulkanTerrain::GetTerrain() {
@@ -72,11 +105,31 @@ void VulkanTerrain::Create(VulkanDescriptorPool* pool) {
 void VulkanTerrain::SetImagesToEmpty() {
 	for (uint32 i = 0; i < MAX_TEXTURES_PER_TERRAIN; i++) {
 		//bind default black texture
-		_terrain_descr_set->WriteDescriptorImage(2,
-			VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyTexture(),
-			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainMasksTextureSampler(),
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+		//albedo
+		SetDescriptorTexture(nullptr,
+			0,
 			i);
+		//normal
+		SetDescriptorTexture(nullptr,
+			1,
+			i);
+		//roughness
+		SetDescriptorTexture(nullptr,
+			2,
+			i);
+		//metallic
+		SetDescriptorTexture(nullptr,
+			3,
+			i);
+		//ao
+		SetDescriptorTexture(nullptr,
+			4,
+			i);
+		//height
+		SetDescriptorTexture(nullptr,
+			5,
+			i);
+
 		continue;
 	}
 }
@@ -136,6 +189,10 @@ void VulkanTerrainRenderer::Create(
 
 	_terrain_masks_sampler = new VulkanSampler;
 	_terrain_masks_sampler->Create();
+
+	_terrain_textures_sampler = new VulkanSampler;
+	_terrain_textures_sampler->SetWrapModes(SAMPLER_WRAP_MIRRORED_REPEAT, SAMPLER_WRAP_MIRRORED_REPEAT);
+	_terrain_textures_sampler->Create();
 }
 
 void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
@@ -162,6 +219,10 @@ void VulkanTerrainRenderer::SetOutputSizes(uint32 width, uint32 height) {
 
 VulkanSampler* VulkanTerrainRenderer::GetTerrainMasksTextureSampler() {
 	return _terrain_masks_sampler;
+}
+
+VulkanSampler* VulkanTerrainRenderer::GetTerrainTextureSampler() {
+	return _terrain_textures_sampler;
 }
 
 VulkanTexture* VulkanTerrainRenderer::GetEmptyTexture() {

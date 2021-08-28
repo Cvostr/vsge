@@ -54,8 +54,12 @@ vec3 GetAo(vec2 uv, uint texture_id){
     return texture(ao[texture_id], uv).rgb;
 }
 
+vec3 GetHeight(vec2 uv, uint texture_id){
+    return texture(height[texture_id], uv).rgb;
+}
+
 vec3 GetFragment(vec2 uv){
-    vec3 result = vec3(0,0,0);
+    vec3 result = vec3(0);
 
     vec2 nuv = uv;
     nuv.x *= WIDTH / 64;
@@ -70,10 +74,34 @@ vec3 GetFragment(vec2 uv){
     return result;
 }
 
+vec3 GetNormal(vec2 uv){
+    vec3 result = vec3(0);
+
+    vec2 nuv = uv;
+    nuv.x *= WIDTH / 64;
+    nuv.y *= HEIGHT / 64;
+    float alpha = 1;
+    for(int i = 0; i < MAX_TEXTURES; i ++){
+        float factor = GetFactor(uv, i);
+        vec3 normal = GetNormal(nuv, i);
+        if(normal == vec3(0))
+            normal = InNormal;
+        else{
+            normal = normalize(normal * 2 - 1);
+		    normal = normalize(TBN * normal);
+        }
+        result = mix(result, normal, factor);
+    }
+        
+    return result;
+}
+
 void main() {
-    vec3 normal = InNormal;
     vec3 fragm = GetFragment(UVCoord);
     tColor = vec4(fragm, 1);
+
+    vec3 normal = GetNormal(UVCoord);
+    
     tNormal = normal;
     tPos = FragPos;
     tMaterial = vec4(1, 0, 0, 1);

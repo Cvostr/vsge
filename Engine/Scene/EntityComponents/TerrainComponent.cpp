@@ -82,7 +82,9 @@ void TerrainComponent::Flat(float height) {
 
 	for (uint32 i = 0; i < vertices_count; i++) {
 		_heightmap[i] = height;
+		_texture_factors[i]._textures_factors[0] = 255;
 	}
+
 }
 
 void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) {

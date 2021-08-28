@@ -45,7 +45,8 @@ bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _si
     int addv = text_end > (int)size.x + (int)innerSpacing ? text_end - (int)size.x - (int)innerSpacing : 0;
 
     const ImVec2 totalSizeWithoutPadding(size.x + innerSpacing + addv, size.y + textSize.y);
-    *_size = (int)totalSizeWithoutPadding.x;
+    if(_size != nullptr)
+        *_size = (int)totalSizeWithoutPadding.x;
 
     const ImRect bb(window->DC.CursorPos, window->DC.CursorPos + totalSizeWithoutPadding + padding * 2);
     ImVec2 start(0, 0);

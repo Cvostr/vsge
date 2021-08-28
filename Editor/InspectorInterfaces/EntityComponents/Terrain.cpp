@@ -3,6 +3,7 @@
 #include "../Misc/Thumbnails.hpp"
 #include "../Windows/ResourcePickWindow.hpp"
 #include "../EditorLayers/ImGuiLayer.hpp"
+#include <ImageBtnText.h>
 
 using namespace VSGEditor;
 
@@ -13,7 +14,8 @@ float opacity = 15;
 int edit_mode = TERRAIN_EDITOR_EDIT_MODE_HEIGHT;
 uint32 picked_texture_index = 0;
 
-void DrawTerrainTexturePickBtn(VSGE::ResourceReference& reference) {
+void DrawTerrainTexturePickBtn(VSGE::ResourceReference& reference, const std::string& tex_type,
+	 uint32 texture_index) {
 	
 	ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 	VSGE::Resource* resource = reference.GetResource();
@@ -22,7 +24,8 @@ void DrawTerrainTexturePickBtn(VSGE::ResourceReference& reference) {
 		if (tex)
 			texture = tex;
 	}
-	if (ImGui::ImageButton((void*)texture->imtexture,
+	std::string text = tex_type + "##" + std::to_string(texture_index);
+	if (ImageButtonWithText((void*)texture->imtexture, text.c_str(), nullptr, nullptr,
 		ImVec2(TERRAIN_TEXTURE_BTN_SIZE, TERRAIN_TEXTURE_BTN_SIZE))
 	) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
@@ -40,16 +43,16 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 		picked_texture_index = texture_index;
 	ImGui::SameLine();
 
-	DrawTerrainTexturePickBtn(terrain_texture->_albedo_reference);
+	DrawTerrainTexturePickBtn(terrain_texture->_albedo_reference, "Albedo", texture_index);
 	ImGui::SameLine();
 
-	DrawTerrainTexturePickBtn(terrain_texture->_normal_reference);
+	DrawTerrainTexturePickBtn(terrain_texture->_normal_reference, "Normal", texture_index);
 	ImGui::SameLine();
 
-	DrawTerrainTexturePickBtn(terrain_texture->_roughness_reference);
+	DrawTerrainTexturePickBtn(terrain_texture->_roughness_reference, "Roughness", texture_index);
 	ImGui::SameLine();
 
-	DrawTerrainTexturePickBtn(terrain_texture->_metallic_reference);
+	DrawTerrainTexturePickBtn(terrain_texture->_metallic_reference, "Metallic", texture_index);
 }
 
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
