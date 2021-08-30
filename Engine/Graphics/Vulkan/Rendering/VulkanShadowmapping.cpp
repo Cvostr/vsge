@@ -308,7 +308,13 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
 		Entity* entity = _entitiesToRender->at(e_i);
-		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+
+		if (!mesh_component)
+			continue;
+
+		MeshResource* mesh_resource = mesh_component->GetMeshResource();
 
 		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();

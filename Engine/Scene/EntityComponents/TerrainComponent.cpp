@@ -43,8 +43,8 @@ TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_heightmap);
 	SAFE_RELEASE_ARR(_texture_factors);
 
-	SAFE_RELEASE_ARR(_heightmap_mesh);
-	SAFE_RELEASE_ARR(_texture_masks);
+	SAFE_RELEASE(_heightmap_mesh);
+	SAFE_RELEASE(_texture_masks);
 }
 
 uint32 TerrainComponent::GetWidth() {
@@ -166,6 +166,9 @@ void TerrainComponent::UpdateMesh() {
 	}
 	else
 		_heightmap_mesh->Destroy();
+
+	SAFE_RELEASE_ARR(heightmap)
+	SAFE_RELEASE_ARR(indices)
 
 	heightmap = new Vertex[GetVerticesCount()];
 	indices = new uint32[GetIndicesCount()];

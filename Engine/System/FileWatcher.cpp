@@ -76,7 +76,7 @@ void FileWatcher::WatchWin32() {
                                 (FileChangeActionType)record->Action );
                 
                 mMutex->Lock();
-                Application::Get()->ScheduleEvent(fc);
+                Application::Get()->QueueEvent(fc);
                 mMutex->Release();
                 
                 delete[] mb_filepath;
@@ -107,7 +107,7 @@ void FileWatcher::WatchWin32() {
                     this->mWatchingDirectory + "\\" + newFileName);
 
                 mMutex->Lock();
-                Application::Get()->ScheduleEvent(fc);
+                Application::Get()->QueueEvent(fc);
                 mMutex->Release();
             }
 

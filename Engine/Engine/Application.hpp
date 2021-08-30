@@ -3,6 +3,7 @@
 #include "ApplicationLayer.hpp"
 #include "Window.hpp"
 #include <string>
+#include <Core/Threading/Mutex.hpp>
 
 namespace VSGE {
 
@@ -33,7 +34,8 @@ namespace VSGE {
 		//registered application layers list
 		tApplicationLayerList _layers;
 		//Events, created (usually) from other thread
-		std::vector<IEvent*> _scheduledEvents;
+		std::vector<IEvent*> _queuedEvents;
+		Mutex* _queuedEventsMutex;
 
 		Window* _window;
 
@@ -43,6 +45,7 @@ namespace VSGE {
 		static Application* _this;
 
 		Application(ApplicationCreateInfo descr);
+		~Application();
 
 		const ApplicationCreateInfo& GetDescription() { return _description; }
 
@@ -76,7 +79,7 @@ namespace VSGE {
 		void OnSDL2Event(void* event);
 		void OnEvent(const IEvent& event);
 
-		void ScheduleEvent(const IEvent* event);
+		void QueueEvent(const IEvent* event);
 
 		template<typename T>
 		T* GetLayer() {

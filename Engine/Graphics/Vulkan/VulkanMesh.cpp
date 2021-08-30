@@ -34,6 +34,8 @@ void VulkanMesh::Destroy() {
 			SAFE_RELEASE(indexBuffer)
 		}
 
+		SAFE_RELEASE_ARR(_positions_array)
+
 		mCreated = false;
 	}
 }

@@ -59,7 +59,7 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
         //Send Resource load event
         mMutex->Lock();
         ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
-        Application::Get()->ScheduleEvent(rle);
+        Application::Get()->QueueEvent(rle);
         mMutex->Release();
    }
 }

@@ -10,11 +10,15 @@ using namespace VSGE;
 ResourcePickerWindow::ResourcePickerWindow() {
     SetSize(600, 600);
     _showCloseCross = true;
+    _allow_empty_resource = false;
+    reference = nullptr;
 }
 
 void ResourcePickerWindow::OnDrawWindow() {
     if (Draw("Select")) {
         uint32 resources_size = ResourceCache::Get()->GetResourcesCount();
+        float width = ImGui::GetCurrentWindow()->Size.x;
+        uint32 drawn_pix = 0;
 
         if (reference == nullptr)
             resources_size = 0;
@@ -45,6 +49,15 @@ void ResourcePickerWindow::OnDrawWindow() {
                         if (clicked) {
                             SetResourceToReference(resource);
                         }
+
+                        //Summarize pixels
+                        drawn_pix += pix;
+                        //If we have enough space
+                        if ((width - drawn_pix) > 256)
+                            //Then draw next in same line
+                            ImGui::SameLine();
+                        else
+                            drawn_pix = 0;
                     }
                 }else if (ImGui::Button(resource->GetName().c_str())) {
                     SetResourceToReference(resource);
@@ -72,10 +85,4 @@ void ResourcePickerWindow::SetAllowEmptyResource(bool empty_resource) {
 
 void ResourcePickerWindow::SetResourceReference(VSGE::ResourceReference* reference) {
     this->reference = reference;
-    script = nullptr;
-}
-
-void ResourcePickerWindow::SetScriptReference(VSGE::EntityScriptComponent* script) {
-    this->reference = nullptr;
-    this->script = script;
 }

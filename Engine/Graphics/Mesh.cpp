@@ -20,6 +20,7 @@ void Mesh::SetVertexBuffer(Vertex* vertices, uint32 vertexCount) {
 	//Create aabb
 	_meshBoundingBox.CreateFromVertexArray(vertices, vertexCount);
 	//store positions on separate array
+	SAFE_RELEASE_ARR(_positions_array);
 	_positions_array = new Vec3[vertexCount];
 	for (uint32 vertex_i = 0; vertex_i < vertexCount; vertex_i++) {
 		_positions_array[vertex_i] = vertices[vertex_i].pos;

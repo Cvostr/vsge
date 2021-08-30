@@ -11,20 +11,29 @@ extern Application* VSGEMain();
 Application::Application(ApplicationCreateInfo descr) :
 	_running(false),
 	_window(new Window()),
-	_description(descr)
+	_description(descr),
+	_queuedEventsMutex(new Mutex())
 {
 	_this = this;
 }
 
+Application::~Application() {
+	SAFE_RELEASE(_window)
+	SAFE_RELEASE(_queuedEventsMutex)
+}
+
 void Application::OnUpdate() {
 	TimePerf::Get()->Tick();
-	for (uint32 event_i = 0; event_i < _scheduledEvents.size(); event_i ++) {
-		IEvent* event_ptr = _scheduledEvents[0];
+	_queuedEventsMutex->Lock();
+	for (uint32 event_i = 0; event_i < _queuedEvents.size(); event_i ++) {
+		IEvent* event_ptr = _queuedEvents[0];
 		OnEvent(*(event_ptr));
-		std::remove(_scheduledEvents.begin(), _scheduledEvents.end(), event_ptr);
-		_scheduledEvents.pop_back();
+		std::remove(_queuedEvents.begin(), _queuedEvents.end(), event_ptr);
+		_queuedEvents.pop_back();
 		delete event_ptr;
 	}
+	_queuedEventsMutex->Release();
+
 	for (auto Layer : _layers) {
 		Layer->OnUpdate();
 	}
@@ -43,8 +52,10 @@ void Application::OnEvent(const IEvent& event) {
 	}
 }
 
-void Application::ScheduleEvent(const IEvent* event) {
-	_scheduledEvents.push_back((IEvent*)event);
+void Application::QueueEvent(const IEvent* event) {
+	_queuedEventsMutex->Lock();
+	_queuedEvents.push_back((IEvent*)event);
+	_queuedEventsMutex->Release();
 }
 
 void Application::Run() {

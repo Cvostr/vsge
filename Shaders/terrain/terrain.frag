@@ -25,6 +25,9 @@ layout(set = 1, binding = 5) uniform sampler2D metallic[MAX_TEXTURES];
 layout(set = 1, binding = 6) uniform sampler2D ao[MAX_TEXTURES];
 layout(set = 1, binding = 7) uniform sampler2D height[MAX_TEXTURES];
 
+float texture_factors[MAX_TEXTURES];
+vec2 terrain_uv;
+
 float CalcLuminance(vec3 color)
 {
     return dot(color, vec3(0.299, 0.587, 0.114));
@@ -61,13 +64,9 @@ vec3 GetHeight(vec2 uv, uint texture_id){
 vec3 GetFragment(vec2 uv){
     vec3 result = vec3(0);
 
-    vec2 nuv = uv;
-    nuv.x *= WIDTH / 64;
-    nuv.y *= HEIGHT / 64;
-
     for(int i = 0; i < MAX_TEXTURES; i ++){
-        float factor = GetFactor(uv, i);
-        vec3 diffuse = GetAlbedo(nuv, i);
+        float factor = texture_factors[i];
+        vec3 diffuse = GetAlbedo(terrain_uv, i);
         result = mix(result, diffuse, factor);
     }
         
@@ -77,13 +76,10 @@ vec3 GetFragment(vec2 uv){
 vec3 GetNormal(vec2 uv){
     vec3 result = vec3(0);
 
-    vec2 nuv = uv;
-    nuv.x *= WIDTH / 64;
-    nuv.y *= HEIGHT / 64;
     float alpha = 1;
     for(int i = 0; i < MAX_TEXTURES; i ++){
-        float factor = GetFactor(uv, i);
-        vec3 normal = GetNormal(nuv, i);
+        float factor = texture_factors[i];
+        vec3 normal = GetNormal(terrain_uv, i);
         if(normal == vec3(0))
             normal = InNormal;
         else{
@@ -97,12 +93,14 @@ vec3 GetNormal(vec2 uv){
 }
 
 void main() {
-    vec3 fragm = GetFragment(UVCoord);
-    tColor = vec4(fragm, 1);
+    for(uint i = 0; i < MAX_TEXTURES; i ++){
+        texture_factors[i] = GetFactor(UVCoord, i);
+    }
+    terrain_uv.x = UVCoord.x * WIDTH / 64;
+    terrain_uv.y = UVCoord.y * HEIGHT / 64;
 
-    vec3 normal = GetNormal(UVCoord);
-    
-    tNormal = normal;
+    tColor = vec4(GetFragment(UVCoord), 1);
+    tNormal = GetNormal(UVCoord);
     tPos = FragPos;
     tMaterial = vec4(1, 0, 0, 1);
 }   
