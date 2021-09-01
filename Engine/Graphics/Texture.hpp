@@ -3,6 +3,7 @@
 #include <Core/VarTypes/Base.hpp>
 #include "GpuObject.hpp"
 #include <string>
+#include <Resources/TextureProcessor.hpp>
 
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
@@ -93,6 +94,8 @@ namespace VSGE {
         /// <param name="filePath">path to file</param>
         /// <returns>true if successful</returns>
         bool CreateFromFile(std::string filePath);
+
+        bool CreateFromProcessed(const ProcessedTexture& texture); 
         /// <summary>
         /// Create blank texture with specified parameters
         /// </summary>

@@ -18,10 +18,10 @@ void TextureResource::OnRelease() {
 }
 
 void TextureResource::PostLoad() {
-	_texture->CreateFromBuffer(_loadedData, _description.size);
+	_texture->CreateFromProcessed(_processed_texture);
 }
 
 void TextureResource::Prepare(){
-	//PostLoad();
-	//SetState(RESOURCE_STATE_READY);
+	_processed_texture.Destroy();
+	ProcessTexture(GetLoadedData(), GetDataDescription().size, _processed_texture);
 }

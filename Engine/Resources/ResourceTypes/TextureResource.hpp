@@ -2,12 +2,15 @@
 
 #include "../Resource.hpp"
 #include <Graphics/Texture.hpp>
+#include "../TextureProcessor.hpp"
 
 namespace VSGE {
 	class TextureResource : public Resource {
 	private:
 		Texture* _texture;
 		bool _isRenderTarget;
+
+		ProcessedTexture _processed_texture;
 	public:
 
 		TextureResource();
