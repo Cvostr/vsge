@@ -84,6 +84,7 @@ set(SRC_FILES
 				Math/Vertex.cpp
 				Physics/PhysicsLayer.cpp
 				Resources/AnimationParser.cpp
+				Resources/TextureProcessor.cpp
 				Resources/AsyncLoader.cpp
 				Resources/ResourcesWatchdog.cpp
 				Resources/DefaultResources.cpp

@@ -55,6 +55,12 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	ImGui::SameLine();
 
 	DrawTerrainTexturePickBtn(terrain_texture->_metallic_reference, "Metallic", texture_index);
+	ImGui::SameLine();
+
+	DrawTerrainTexturePickBtn(terrain_texture->_ao_reference, "AO", texture_index);
+	ImGui::SameLine();
+
+	DrawTerrainTexturePickBtn(terrain_texture->_height_reference, "Height", texture_index);
 }
 
 void DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass) {

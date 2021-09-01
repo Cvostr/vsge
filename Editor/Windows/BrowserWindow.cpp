@@ -14,6 +14,7 @@
 #include <Resources/ResourceTypes/MaterialResource.hpp>
 #include <Misc/Thumbnails.hpp>
 #include <Misc/DialogWindows.hpp>
+#include <Misc/EditorIcons.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -70,13 +71,7 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
     _itemsSize = 64;
     SetDirectory(RootDir);
 
-    sampler.Create();
-
-    FileIcons.mBackBtnIcon.CreateFromFile("res/icons/dir_back.png", sampler);
-    FileIcons.mDirIcon.CreateFromFile("res/icons/dir.png", sampler);
-    FileIcons.mUnknownFile.CreateFromFile("res/icons/unknown.png", sampler);
-    FileIcons.m3DModelIcon.CreateFromFile("res/icons/3dmodel.png", sampler);
-    FileIcons.mSceneIcon.CreateFromFile("res/icons/3d_scene.png", sampler);
+    EditorIcons::Get()->LoadIcons();
 }
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
@@ -132,7 +127,7 @@ void FileBrowserWindow::OnDrawWindow() {
 
     bool renameFile = false;
 
-    if (ImGui::ImageButton(FileIcons.mBackBtnIcon.imtexture, ImVec2(20, 20)))
+    if (ImGui::ImageButton(EditorIcons::Get()->GetBackBtnIcon(), ImVec2(20, 20)))
         cd_up();
 
     std::string dir_name = "";
@@ -161,11 +156,11 @@ void FileBrowserWindow::OnDrawWindow() {
     uint32 drawn_pix = 0;
     for (uint32 f_i = 0; f_i < _files.size(); f_i++) {
         FileEntry* e = &_files[f_i];
-        ImguiVulkanTexture* icon = &FileIcons.mUnknownFile;
+        void* icon = EditorIcons::Get()->GetUnknownFileIcon();
         //if file is directory, then set directory icon
-        if (e->isDir) icon = &FileIcons.mDirIcon;
-        if (e->is3dModel()) icon = &FileIcons.m3DModelIcon;
-        if (e->is3dWorld()) icon = &FileIcons.mSceneIcon;
+        if (e->isDir) icon = EditorIcons::Get()->GetDirIcon();
+        if (e->is3dModel()) icon = EditorIcons::Get()->Get3DModelIcon();
+        if (e->is3dWorld()) icon = EditorIcons::Get()->GetSceneIcon();
 
         if (e->isMaterial()) {
             MaterialResource* mat = (MaterialResource*)ResourceCache::Get()->GetResourceWithFilePath(e->abs_path);
@@ -178,13 +173,13 @@ void FileBrowserWindow::OnDrawWindow() {
         if (e->isTexture()) {
             ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(e->abs_path);
             if (tex)
-                icon = tex;
+                icon = tex->imtexture;
         }
 
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
-        bool clicked = ImageButtonWithText(icon->imtexture, e->name.c_str(), &pix, &hovered, ImVec2(_itemsSize, _itemsSize));
+        bool clicked = ImageButtonWithText(icon, e->name.c_str(), &pix, &hovered, ImVec2(_itemsSize, _itemsSize));
         
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())

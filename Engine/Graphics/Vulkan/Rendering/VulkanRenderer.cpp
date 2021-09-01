@@ -145,7 +145,7 @@ void VulkanRenderer::SetupRenderer() {
 	//Create base vertex descriptors sets
 	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = new VulkanDescriptorSet(mObjectsPool);
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Camera
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //Camera
 		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 		mVertexDescriptorSets.push_back(set);
 	}

@@ -3,7 +3,6 @@
 #include "../Base/ImGuiWindow.hpp"
 #include <vector>
 #include <string>
-#include "../Base/ImVulkanTexture.hpp"
 #include <Resources/Resource.hpp>
 
 namespace VSGEditor {
@@ -41,15 +40,6 @@ namespace VSGEditor {
 		std::string _rootDir;
 
 		int _itemsSize;
-
-		VSGE::VulkanSampler sampler;
-		struct {
-			ImguiVulkanTexture mBackBtnIcon;
-			ImguiVulkanTexture mDirIcon;
-			ImguiVulkanTexture mUnknownFile;
-			ImguiVulkanTexture m3DModelIcon;
-			ImguiVulkanTexture mSceneIcon;
-		}FileIcons;
 		
 		void CreateResource(VSGE::ResourceType type);
 	public:

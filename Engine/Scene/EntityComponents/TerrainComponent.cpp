@@ -360,6 +360,10 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 
 	for (uint32 i = 0; i < GetVerticesCount(); i++) {
 		serializer.Serialize(_heightmap[i]);
+
+		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
+			serializer.Serialize(_texture_factors[i]._textures_factors[texture_i]);
+		}
 	}
 }
 void TerrainComponent::Deserialize(ByteSolver& solver) {
@@ -403,6 +407,10 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 
 	for (uint32 i = 0; i < GetVerticesCount(); i++) {
 		_heightmap[i] = solver.GetValue<float>();
+
+		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
+			_texture_factors[i]._textures_factors[texture_i] = solver.GetValue<uint8>();
+		}
 	}
 
 	UpdateMesh();

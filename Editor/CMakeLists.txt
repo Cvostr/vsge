@@ -36,6 +36,7 @@ set(SRC_FILES
                 Misc/ResourceImporter.cpp
                 Misc/SceneExt.cpp
                 Misc/Thumbnails.cpp
+                Misc/EditorIcons.cpp
                 Misc/DialogWindows.cpp
                 ProjectBuild/ResourcePacker.cpp
                 Windows/BrowserWindow.cpp
