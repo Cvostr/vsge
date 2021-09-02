@@ -38,10 +38,17 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="width">- new width of fb</param>
 		/// <param name="height">- new height of fb</param>
-		virtual void SetSize(uint32 width, uint32 height){
+		void SetSize(uint32 width, uint32 height){
 			_width = width;
 			_height = height;
 		}
+		/// <summary>
+		/// Change size of framebuffer and resize all attachments in this framebuffer
+		/// </summary>
+		/// <param name="width">- new width of fb</param>
+		/// <param name="height">- new height of fb</param>
+		virtual void Resize(uint32 width, uint32 height) = 0;
+
 		Texture** GetColorAttachments() {
 			return _attachments.data();
 		}

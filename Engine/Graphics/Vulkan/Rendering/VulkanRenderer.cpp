@@ -201,6 +201,7 @@ void VulkanRenderer::SetupRenderer() {
 		mAttachmentSampler,
 		mEmptyTexture);
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
+	_shadowmapper->SetTerrainsToRender(&_terrains);
 
 	_terrain_renderer = new VulkanTerrainRenderer;
 	_terrain_renderer->Create(mGBufferPass, mVertexDescriptorSets, mEmptyTexture);
@@ -650,8 +651,8 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputWidth = width;
 	mOutputHeight = height;
 
-	mGBuffer->SetSize(width, height);
-	mOutputBuffer->SetSize(width, height);
+	mGBuffer->Resize(width, height);
+	mOutputBuffer->Resize(width, height);
 
 	mGBufferPass->SetClearSize(width, height);
 	mOutputPass->SetClearSize(width, height);

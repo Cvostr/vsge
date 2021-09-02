@@ -39,11 +39,11 @@ namespace VSGE {
 		/// <param name="Layers">- count of layers of new depth texture</param>
 		void AddDepth(TextureFormat format = FORMAT_DEPTH_24_STENCIL_8, uint32 layers = 1, bool cubemap = false);
 		/// <summary>
-		/// Change size property of framebuffer
+		/// Change size of framebuffer and resize all attachments in this framebuffer
 		/// </summary>
 		/// <param name="width">- new width of fb</param>
 		/// <param name="height">- new height of fb</param>
-		void SetSize(uint32 width, uint32 height);
+		void Resize(uint32 width, uint32 height);
 		/// <summary>
 		/// Set count of layers in framebuffer
 		/// </summary>

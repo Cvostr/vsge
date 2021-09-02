@@ -1,5 +1,6 @@
 Scene: Untitled
 env_amb_color: [1, 1, 1, 1]
+env_skybox: ""
 Entities:
   - Entity: Cube (2)
     uid: [2278826814, 575420708, 1424792874, 3214824675]

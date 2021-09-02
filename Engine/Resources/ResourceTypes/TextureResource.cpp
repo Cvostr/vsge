@@ -19,9 +19,9 @@ void TextureResource::OnRelease() {
 
 void TextureResource::PostLoad() {
 	_texture->CreateFromProcessed(_processed_texture);
+	_processed_texture.Destroy();
 }
 
 void TextureResource::Prepare(){
-	_processed_texture.Destroy();
 	ProcessTexture(GetLoadedData(), GetDataDescription().size, _processed_texture);
 }

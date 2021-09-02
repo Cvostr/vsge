@@ -6,6 +6,7 @@ using namespace VSGE;
 
 VulkanFramebuffer::VulkanFramebuffer() :
 	_framebuffer(VK_NULL_HANDLE),
+	_renderpass(nullptr),
 	_layers(1) 
 {}
 
@@ -53,13 +54,17 @@ void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 	_views.push_back(vulkan_rapi->GetSwapChain()->GetImageViewAtIndex(Index));
 }
 
-void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
+void VulkanFramebuffer::Resize(uint32 width, uint32 height) {
 	if (_width != width || _height != height) {
-		Framebuffer::SetSize(width, height);
+		SetSize(width, height);
 
 		if (IsCreated()) {
-			uint32 layers = _layers;
-			Destroy();
+			//Destroy old vulkan fb instance
+			VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+			VulkanDevice* device = vulkan_rapi->GetDevice();
+			vkDestroyFramebuffer(device->getVkDevice(), _framebuffer, nullptr);
+			_views.clear();
+			mCreated = false;
 
 			for (auto attachment : _attachments) {
 				attachment->Resize(width, height);
@@ -73,11 +78,11 @@ void VulkanFramebuffer::SetSize(uint32 width, uint32 height) {
 				_views.push_back(((VulkanTexture*)_depthAttachment)->GetImageView());
 			}
 
-			_layers = layers;
 			Create(_renderpass);
 		}
 	}
 }
+
 
 void VulkanFramebuffer::SetLayersCount(uint32 layers) {
 	_layers = layers;
@@ -120,6 +125,19 @@ void VulkanFramebuffer::Destroy() {
 		vkDestroyFramebuffer(device->getVkDevice(), _framebuffer, nullptr);
 		_views.clear();
 		_layers = 1;
+		
+		for (auto attachment : _attachments) {
+			attachment->Destroy();
+			SAFE_RELEASE(attachment)
+		}
+
+		if (_depthAttachment) {
+			_depthAttachment->Destroy();
+			SAFE_RELEASE(_depthAttachment)
+		}
+		_attachments.clear();
+		
+
 		mCreated = false;
 	}
 }

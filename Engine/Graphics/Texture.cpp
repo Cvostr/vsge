@@ -61,11 +61,7 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
     ProcessedTexture processed_texture;
     ProcessTexture(data, size, processed_texture);
     CreateFromProcessed(processed_texture);
-    /*
-    else if (data[0] == 'R' && data[1] == 'T' && data[2] == 'B') {
-        SetRenderTargetFlag(true);
-        Create(512, 512);
-    }*/
+
     return false;
 }
 

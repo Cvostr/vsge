@@ -80,7 +80,8 @@ namespace VSGE {
 
 		Camera* cam;
 		Scene* _scene;
-		std::vector<Entity*>* _entitiesToRender;
+		tEntityList* _entitiesToRender;
+		tEntityList* _terrainsToRender;
 		VulkanTexture* _gbuffer_pos;
 		VulkanSampler* _gbuffer_sampler;
 		VulkanMesh* _screenPlane;
@@ -106,8 +107,11 @@ namespace VSGE {
 		void SetScene(Scene* scene){
 			_scene = scene;
 		}
-		void SetEntitiesToRender(std::vector<Entity*>* entities) {
+		void SetEntitiesToRender(tEntityList* entities) {
 			_entitiesToRender = entities;
+		}
+		void SetTerrainsToRender(tEntityList* terrains) {
+			_terrainsToRender = terrains;
 		}
 
 		void ResizeOutput(uint32 width, uint32 height);

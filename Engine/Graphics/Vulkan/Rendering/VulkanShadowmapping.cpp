@@ -3,6 +3,7 @@
 #include "../VulkanPipeline.hpp"
 #include <Resources/ResourceTypes/MeshResource.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Scene.hpp>
 
 using namespace VSGE;
@@ -306,21 +307,27 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
 	}
 
+
 	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
 		Entity* entity = _entitiesToRender->at(e_i);
-		
+		VulkanMesh* mesh = nullptr;
+
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		if (mesh_component) {
+			MeshResource* mesh_resource = mesh_component->GetMeshResource();
+			if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+				//Mark mesh resource used in this frame
+				mesh_resource->Use();
+				mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			}
+		}
+		else {
+			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
+			//mesh = (VulkanMesh*)terrain->GetTerrainMesh();
+		}
 
-		if (!mesh_component)
-			continue;
 
-		MeshResource* mesh_resource = mesh_component->GetMeshResource();
-
-		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
-			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
-			//Mark mesh resource used in this frame
-			mesh_resource->Use();
-
+		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };
 			uint32 anim_offset = _writtenBones * 64;
 			_writtenBones += mesh->GetBones().size();

@@ -170,7 +170,7 @@ void SceneSerializer::Serialize(const std::string& path) {
 	//Store environment settings
 	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
 	out << YAML::Key << "env_amb_color" << YAML::Value << settings.GetAmbientColor();
-
+	out << YAML::Key << "env_skybox" << YAML::Value << settings._skybox_material.GetResourceName();
 
 	out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 	
@@ -215,6 +215,7 @@ bool SceneSerializer::Deserialize(const std::string& path) {
 	//Load environment settings
 	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
 	settings.SetAmbientColor(data["env_amb_color"].as<Color>());
+	settings._skybox_material.SetResource(data["env_skybox"].as<std::string>());
 
 	auto entities = data["Entities"];
 	if (entities)
