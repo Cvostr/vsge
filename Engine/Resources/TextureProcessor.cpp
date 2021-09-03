@@ -7,6 +7,10 @@ using namespace VSGE;
 
 TextureMipLevel::TextureMipLevel() {
     _mip_data = nullptr;
+    _mip_data_size = 0;
+
+    _mip_width = 0;
+    _mip_height = 0;
 }
 
 TextureMipLevel::~TextureMipLevel() {

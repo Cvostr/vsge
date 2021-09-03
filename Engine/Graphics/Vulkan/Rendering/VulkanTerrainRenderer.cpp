@@ -18,9 +18,14 @@ VulkanDescriptorSet* VulkanTerrain::GetDescriptorSet() {
 void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index) {
 	TextureResource* texture_res = static_cast<TextureResource*>(texture);
 	if (texture_res == nullptr) {
-		//if no texture bound, then bind default white texture
+		//if no texture bound, then bind default texture
+
+		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
+		if(texture_type == 2 || texture_type == 4)
+			default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyWhiteTexture();
+
 		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
-			VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyTexture(),
+			default_texture,
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			texture_index);
@@ -148,11 +153,13 @@ VulkanTerrainRenderer::~VulkanTerrainRenderer() {
 void VulkanTerrainRenderer::Create(
 	VulkanRenderPass* gbuffer_renderpass,
 	std::vector<VulkanDescriptorSet*>& descr_set,
-	VulkanTexture* emptyTexture
+	VulkanTexture* emptyTexture,
+	VulkanTexture* emptyOneTexture
 ) {
 	this->_gbuffer_renderpass = gbuffer_renderpass;
 	this->_entity_descr_set = &descr_set;
-	this->_emptyTexture = emptyTexture;
+	this->_emptyZeroTexture = emptyTexture;
+	_emptyOneTexture = emptyOneTexture;
 	
 	_terrains_descr_pool = new VulkanDescriptorPool;
 	_terrains_descr_pool->SetDescriptorSetsCount(1000);
@@ -225,8 +232,12 @@ VulkanSampler* VulkanTerrainRenderer::GetTerrainTextureSampler() {
 	return _terrain_textures_sampler;
 }
 
-VulkanTexture* VulkanTerrainRenderer::GetEmptyTexture() {
-	return _emptyTexture;
+VulkanTexture* VulkanTerrainRenderer::GetEmptyZeroTexture() {
+	return _emptyZeroTexture;
+}
+
+VulkanTexture* VulkanTerrainRenderer::GetEmptyWhiteTexture() {
+	return _emptyOneTexture;
 }
 
 void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index) {

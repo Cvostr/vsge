@@ -66,7 +66,7 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
 }
 
 bool Texture::CreateFromProcessed(const ProcessedTexture& texture) {
-    Create(texture._width, texture._height, texture._format, 1, texture._mip_levels.size());
+    Create(texture._width, texture._height, texture._format, 1, (uint32)texture._mip_levels.size());
 
     for (uint32 mip_i = 0; mip_i < texture._mip_levels.size(); mip_i++) {
         const TextureMipLevel* mip = &texture._mip_levels[mip_i];

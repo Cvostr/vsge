@@ -118,12 +118,18 @@ void VulkanRenderer::SetupRenderer() {
 	mSpriteMesh->SetIndexBuffer(plane_inds, 6);
 	mSpriteMesh->Create();
 
-	mEmptyTexture = new VulkanTexture;
-	mEmptyTexture->Create(2, 2);
+	mEmptyZeroTexture = new VulkanTexture;
+	mEmptyZeroTexture->Create(2, 2);
 	char* empty_texture_data = new char[2 * 2 * 4];
 	memset(empty_texture_data, 0, 16);
-	mEmptyTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
-	mEmptyTexture->CreateImageView();
+	mEmptyZeroTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
+	mEmptyZeroTexture->CreateImageView();
+
+	mEmptyOneTexture = new VulkanTexture;
+	mEmptyOneTexture->Create(2, 2);
+	memset(empty_texture_data, 255, 16);
+	mEmptyOneTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
+	mEmptyOneTexture->CreateImageView();
 	delete[] empty_texture_data;
 
 	//---------------------Samplers------------------
@@ -199,12 +205,12 @@ void VulkanRenderer::SetupRenderer() {
 		mSpriteMesh,
 		(VulkanTexture*)mGBuffer->GetColorAttachments()[2],
 		mAttachmentSampler,
-		mEmptyTexture);
+		mEmptyZeroTexture);
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 	_shadowmapper->SetTerrainsToRender(&_terrains);
 
 	_terrain_renderer = new VulkanTerrainRenderer;
-	_terrain_renderer->Create(mGBufferPass, mVertexDescriptorSets, mEmptyTexture);
+	_terrain_renderer->Create(mGBufferPass, mVertexDescriptorSets, mEmptyZeroTexture, mEmptyOneTexture);
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_brdf_lut = new Vulkan_BRDF_LUT;
@@ -258,6 +264,7 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_template->AddParameter("Color", Color(1, 1, 1, 1));
 	pbr_template->AddParameter("Roughness factor", 1.f);
 	pbr_template->AddParameter("Metallic factor", 1.f);
+	pbr_template->AddParameter("Height factor", 1.f);
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
 

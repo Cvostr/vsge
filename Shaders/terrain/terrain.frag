@@ -25,8 +25,11 @@ layout(set = 1, binding = 5) uniform sampler2D metallic[MAX_TEXTURES];
 layout(set = 1, binding = 6) uniform sampler2D ao[MAX_TEXTURES];
 layout(set = 1, binding = 7) uniform sampler2D height[MAX_TEXTURES];
 
-float texture_factors[MAX_TEXTURES];
-vec2 terrain_uv;
+vec3 result_albedo;
+vec3 result_normal;
+float result_roughness;
+float result_metallic;
+float result_ao;
 
 float CalcLuminance(vec3 color)
 {
@@ -45,40 +48,39 @@ vec3 GetNormal(vec2 uv, uint texture_id){
     return texture(normal[texture_id], uv).rgb;
 }
 
-vec3 GetRoughness(vec2 uv, uint texture_id){
-    return texture(roughness[texture_id], uv).rgb;
+float GetRoughness(vec2 uv, uint texture_id){
+    return texture(roughness[texture_id], uv).r;
 }
 
-vec3 GetMetallic(vec2 uv, uint texture_id){
-    return texture(metallic[texture_id], uv).rgb;
+float GetMetallic(vec2 uv, uint texture_id){
+    return texture(metallic[texture_id], uv).r;
 }
 
-vec3 GetAo(vec2 uv, uint texture_id){
-    return texture(ao[texture_id], uv).rgb;
+float GetAo(vec2 uv, uint texture_id){
+    return texture(ao[texture_id], uv).r;
 }
 
-vec3 GetHeight(vec2 uv, uint texture_id){
-    return texture(height[texture_id], uv).rgb;
+float GetHeight(vec2 uv, uint texture_id){
+    return texture(height[texture_id], uv).r;
 }
 
-vec3 GetFragment(vec2 uv){
-    vec3 result = vec3(0);
+void CalculateTextures(vec2 uv){
+    vec2 terrain_uv = vec2(0);
+    terrain_uv.x = uv.x * WIDTH / 64;
+    terrain_uv.y = uv.y * HEIGHT / 64;
+
+    result_albedo = vec3(0);
+    result_normal = vec3(0);
+    result_roughness = 1;
+    result_metallic = 0;
+    result_ao = 1;
 
     for(int i = 0; i < MAX_TEXTURES; i ++){
-        float factor = texture_factors[i];
-        vec3 diffuse = GetAlbedo(terrain_uv, i);
-        result = mix(result, diffuse, factor);
-    }
-        
-    return result;
-}
-
-vec3 GetNormal(vec2 uv){
-    vec3 result = vec3(0);
-
-    float alpha = 1;
-    for(int i = 0; i < MAX_TEXTURES; i ++){
-        float factor = texture_factors[i];
+        float factor = GetFactor(uv, i);
+        //albedo
+        vec3 tex_sample = GetAlbedo(terrain_uv, i);
+        result_albedo = mix(result_albedo, tex_sample, factor);
+        //normal
         vec3 normal = GetNormal(terrain_uv, i);
         if(normal == vec3(0))
             normal = InNormal;
@@ -86,21 +88,23 @@ vec3 GetNormal(vec2 uv){
             normal = normalize(normal * 2 - 1);
 		    normal = normalize(TBN * normal);
         }
-        result = mix(result, normal, factor);
+        result_normal = mix(result_normal, normal, factor);
+        //roughness
+        float roughness_sample = GetRoughness(terrain_uv, i);
+        result_roughness = mix(result_roughness, roughness_sample, factor);
+        //metallic
+        float metallic_sample = GetMetallic(terrain_uv, i);
+        result_metallic = mix(result_metallic, metallic_sample, factor);
+        //ao
+        float ao_sample = GetAo(terrain_uv, i);
+        result_ao = mix(result_ao, ao_sample, factor);
     }
-        
-    return result;
 }
 
 void main() {
-    for(uint i = 0; i < MAX_TEXTURES; i ++){
-        texture_factors[i] = GetFactor(UVCoord, i);
-    }
-    terrain_uv.x = UVCoord.x * WIDTH / 64;
-    terrain_uv.y = UVCoord.y * HEIGHT / 64;
-
-    tColor = vec4(GetFragment(UVCoord), 1);
-    tNormal = GetNormal(UVCoord);
+    CalculateTextures(UVCoord);
+    tColor = vec4(result_albedo, 1);
+    tNormal = result_normal;
     tPos = FragPos;
-    tMaterial = vec4(1, 0, 0, 1);
+    tMaterial = vec4(result_roughness, result_metallic, 0, result_ao);
 }   

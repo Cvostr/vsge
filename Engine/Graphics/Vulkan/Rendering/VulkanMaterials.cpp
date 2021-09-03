@@ -86,7 +86,7 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 			TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
 			if (texture_res == nullptr) {
 				//if no texture bound, then bind default white texture
-				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, mEmptyTexture, this->mMaterialMapsSampler);
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, mEmptyZeroTexture, this->mMaterialMapsSampler);
 				continue;
 			}
 

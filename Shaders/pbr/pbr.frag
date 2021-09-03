@@ -34,6 +34,7 @@ layout (std140, set = 1, binding = 0) uniform MaterialData{
     vec4 color;
     float roughness_factor;
     float metallic_factor;
+    float height_factor;
 };
 
 float CalcLuminance(vec3 color)
@@ -42,9 +43,9 @@ float CalcLuminance(vec3 color)
 }
 
 vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir){
-    float height = texture(height_map, uv).r;    
-    vec2 p = view_dir.xy / view_dir.z * height;
-    return uv - p;   
+    float height = texture(height_map, uv).r;
+    vec2 p = view_dir.xy / view_dir.z * (height * height_factor);
+    return uv - p;
 }
 
 void main() {
@@ -54,7 +55,7 @@ void main() {
     vec2 uv_coords = UVCoord;
 
     if(hasHeight){
-        vec3 view_dir = TBN * cam_position - TBN * FragPos;
+        vec3 view_dir = normalize(TBN * cam_position - TBN * FragPos);
         uv_coords = CalcParallaxOcclusion(UVCoord, view_dir);
     }
 
