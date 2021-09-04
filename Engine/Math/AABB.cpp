@@ -3,6 +3,11 @@
 #include <Core/VarTypes/Base.hpp>
 #include "Math/MatrixTransform.hpp"
 
+void AABB::SetZero() {
+	_min = Vec3(0);
+	_max = Vec3(0);
+}
+
 void AABB::Extend(const AABB& box) {
 	if (box._min.x < _min.x)
 		_min.x = box._min.x;

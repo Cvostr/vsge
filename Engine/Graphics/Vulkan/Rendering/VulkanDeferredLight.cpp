@@ -1,4 +1,5 @@
 #include "VulkanDeferredLight.hpp"
+#include "VulkanRenderer.hpp"
 
 using namespace VSGE;
 
@@ -8,6 +9,8 @@ VulkanDefferedLight::VulkanDefferedLight() {
 }
 
 VulkanDefferedLight::~VulkanDefferedLight() {
+	SAFE_RELEASE(_deferred_pipeline)
+
 	SAFE_RELEASE(_deferred_fb)
 	SAFE_RELEASE(_deferred_rp)
 }
@@ -48,4 +51,65 @@ void VulkanDefferedLight::CreateDescriptorSet(){
 
 	_deferred_pool->Create();
 	_deferred_descriptor->Create();
+}
+
+void VulkanDefferedLight::CreatePipeline() {
+	_deferred_pipeline_layout = new VulkanPipelineLayout;
+	_deferred_pipeline_layout->PushDescriptorSet(_deferred_descriptor);
+	_deferred_pipeline_layout->Create();
+
+	VertexLayout _vertexLayout;
+	_vertexLayout.AddBinding(sizeof(Vertex));
+	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
+
+	_deferred_pipeline = new VulkanPipeline;
+	_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
+}
+
+void VulkanDefferedLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
+	_lights_buffer = lights_buffer;
+	_deferred_descriptor->WriteDescriptorBuffer(2, lights_buffer);
+}
+
+void VulkanDefferedLight::SetCamerasBuffer(VulkanBuffer* cam_buffer) {
+	_cam_buffer = cam_buffer;
+	_deferred_descriptor->WriteDescriptorBuffer(1, cam_buffer);
+}
+
+void VulkanDefferedLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
+	if (!_deferred_descriptor)
+		return;
+
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+
+	_deferred_descriptor->WriteDescriptorImage(3, gbuffer->GetAlbedoAttachment(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(4, gbuffer->GetNormalAttachment(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(5, gbuffer->GetPositionAttachment(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(6, gbuffer->GetMaterialsAttachment(), attachment_sampler);
+	//depth
+	_deferred_descriptor->WriteDescriptorImage(8, gbuffer->GetDepthAttachment(), attachment_sampler);
+}
+
+void VulkanDefferedLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
+	if (!_deferred_descriptor)
+		return;
+
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+
+	_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
+}
+
+void VulkanDefferedLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
+	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
+
+	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
+	//DrawSkybox(mLightsCmdbuf);
+	cmdbuf->BindPipeline(*_deferred_pipeline);
+	cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor);
+	cmdbuf->BindMesh(*mesh, 0);
+	cmdbuf->DrawIndexed(6);
+
+	cmdbuf->EndRenderPass();
 }

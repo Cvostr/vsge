@@ -33,3 +33,25 @@ void VulkanGBufferRenderer::CreateFramebuffer() {
 	_gbuffer_fb->AddDepth(GetTextureFormat(device->GetSuitableDepthFormat()));
 	_gbuffer_fb->Create(_gbuffer_renderpass);
 }
+
+VulkanFramebuffer* VulkanGBufferRenderer::GetFramebuffer() {
+	return _gbuffer_fb;
+}
+VulkanRenderPass* VulkanGBufferRenderer::GetRenderPass() {
+	return _gbuffer_renderpass;
+}
+VulkanTexture* VulkanGBufferRenderer::GetAlbedoAttachment() {
+	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[0];
+}
+VulkanTexture* VulkanGBufferRenderer::GetNormalAttachment() {
+	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[1];
+}
+VulkanTexture* VulkanGBufferRenderer::GetPositionAttachment() {
+	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[2];
+}
+VulkanTexture* VulkanGBufferRenderer::GetMaterialsAttachment() {
+	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[3];
+}
+VulkanTexture* VulkanGBufferRenderer::GetDepthAttachment() {
+	return (VulkanTexture*)_gbuffer_fb->GetDepthAttachment();
+}

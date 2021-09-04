@@ -448,6 +448,8 @@ void VulkanRenderer::StoreWorldObjects() {
 	mGBufferCmdbuf->Begin();
 	mGBufferPass->CmdBegin(*mGBufferCmdbuf, *mGBuffer);
 
+	DrawSkybox(mGBufferCmdbuf);
+
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 	uint32 drawn_terrains = 0;
@@ -560,7 +562,7 @@ void VulkanRenderer::StoreWorldObjects() {
 	mLightsCmdbuf->Begin();
 	mOutputPass->CmdBegin(*mLightsCmdbuf, *mOutputBuffer);
 
-	DrawSkybox(mLightsCmdbuf);
+	//DrawSkybox(mLightsCmdbuf);
 
 	mLightsCmdbuf->BindPipeline(*mDeferredPipeline);
 	mLightsCmdbuf->SetViewport(0, 0, mOutputWidth, mOutputHeight);

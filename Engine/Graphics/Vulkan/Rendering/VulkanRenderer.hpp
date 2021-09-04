@@ -129,6 +129,10 @@ namespace VSGE {
 			return mAttachmentSampler;
 		}
 
+		VulkanMesh* GetScreenMesh() {
+			return mSpriteMesh;
+		}
+
 		void StoreWorldObjects();
 
 		void SetupRenderer();

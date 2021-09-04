@@ -11,6 +11,7 @@ private:
 
 public:
 	
+	void SetZero();
 	void Extend(const AABB& box);
 	void Extend(const Vec3& vec);
 	void PrepareForExtend();

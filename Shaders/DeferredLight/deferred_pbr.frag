@@ -43,30 +43,33 @@ vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos, float roughness, floa
 
 void main() {
     float depth = texture(depth, UVCoord).r;
-    if(depth == 1.0)
-        discard;
     vec4 diffuse = texture(color, UVCoord);
-    vec3 normal = texture(normal, UVCoord).rgb;
-    vec3 pos = texture(pos, UVCoord).rgb;
-    vec4 material = texture(material, UVCoord);
-    float shadow = texture(shadows, UVCoord).r;
 
-    vec3 albedo = pow(diffuse.rgb, vec3(2.2));
-    float roughness = material.r;
-    float metallic = material.g;
-    float emission = material.b;
-    float ao = material.a;
+    if(depth == 1.0)
+        tColor = vec4(diffuse.rgb, 1);
+    else{
+        vec3 normal = texture(normal, UVCoord).rgb;
+        vec3 pos = texture(pos, UVCoord).rgb;
+        vec4 material = texture(material, UVCoord);
+        float shadow = texture(shadows, UVCoord).r;
 
-    vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, albedo, metallic);
+        vec3 albedo = pow(diffuse.rgb, vec3(2.2));
+        float roughness = material.r;
+        float metallic = material.g;
+        float emission = material.b;
+        float ao = material.a;
 
-    vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
-    vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
-    
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2)); 
+        vec3 F0 = vec3(0.04); 
+        F0 = mix(F0, albedo, metallic);
 
-    tColor = vec4(color, 1);
+        vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
+        vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
+        
+        color = color / (color + vec3(1.0));
+        color = pow(color, vec3(1.0/2.2)); 
+
+        tColor = vec4(color, 1);
+    }
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)

@@ -17,5 +17,13 @@ namespace VSGE {
 		~VulkanGBufferRenderer();
 
 		void CreateFramebuffer();
+
+		VulkanFramebuffer* GetFramebuffer();
+		VulkanRenderPass* GetRenderPass();
+		VulkanTexture* GetAlbedoAttachment();
+		VulkanTexture* GetNormalAttachment();
+		VulkanTexture* GetPositionAttachment();
+		VulkanTexture* GetMaterialsAttachment();
+		VulkanTexture* GetDepthAttachment();
 	};
 }

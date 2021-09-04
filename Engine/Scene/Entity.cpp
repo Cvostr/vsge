@@ -236,6 +236,8 @@ const AABB& Entity::GetAABB(bool extendChildren) {
 			_boundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
 		}
 	}
+	else
+		_boundingBox.SetZero();
 
 	_boundingBox.ApplyTransform(_worldTransform);
 	if (extendChildren) {
