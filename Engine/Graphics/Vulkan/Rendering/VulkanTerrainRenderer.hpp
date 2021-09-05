@@ -6,19 +6,23 @@
 
 #define UNI_ALIGN 256
 #define TERRAIN_DATA_ELEM_SIZE 512
+#define MAX_GRASS_TRANSFORMS 60000
 
 namespace VSGE{
 
     class VulkanTerrain {
     private:
         VulkanDescriptorSet* _terrain_descr_set;
+        std::vector<VulkanDescriptorSet*> _grass_descriptor_sets;
         TerrainComponent* _terrain;
+
     public:
         VulkanTerrain();
         ~VulkanTerrain();
         VulkanDescriptorSet* GetDescriptorSet();
-        void SetTerrain(TerrainComponent* terrain);
+        void SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* pool);
         void SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index);
+        void SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index);
         TerrainComponent* GetTerrain();
         void Create(VulkanDescriptorPool* pool, VulkanBuffer* terrains_buffer = nullptr);
         void SetImagesToEmpty();
@@ -33,6 +37,7 @@ namespace VSGE{
         VulkanSampler* _terrain_masks_sampler;
         VulkanSampler* _terrain_textures_sampler;
         VulkanBuffer* _terrains_buffer;
+        VulkanBuffer* _grass_transform_buffer;
 
         VulkanRenderPass* _gbuffer_renderpass;
         VulkanTexture* _emptyZeroTexture;
@@ -40,6 +45,7 @@ namespace VSGE{
         std::vector<VulkanDescriptorSet*>* _entity_descr_set;
 
         VulkanDescriptorPool* _terrains_descr_pool;
+        VulkanDescriptorPool* _vegetables_descr_pool;
 
         std::vector<VulkanTerrain*> _terrains;
         uint32 _terrains_processed;

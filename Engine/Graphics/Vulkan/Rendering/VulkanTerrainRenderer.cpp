@@ -49,7 +49,35 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 	}
 }
 
-void VulkanTerrain::SetTerrain(TerrainComponent* terrain) {
+void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index) {
+	TextureResource* texture_res = static_cast<TextureResource*>(texture);
+	if (texture_res == nullptr) {
+		//if no texture bound, then bind default texture
+		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
+		_terrain_descr_set->WriteDescriptorImage(1,
+			default_texture,
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		return;
+	}
+
+	if (texture_res->IsUnloaded()) {
+		//Load texture
+		texture_res->Load();
+	}
+
+	if (texture_res->IsReady()) {
+		//Mark texture resource as used in this frame
+		texture_res->Use();
+		//Write texture to descriptor
+		_terrain_descr_set->WriteDescriptorImage(1,
+			(VulkanTexture*)texture_res->GetTexture(),
+			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+}
+
+void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* pool) {
 	_terrain = terrain;
 
 	if (_terrain->GetTerrainMasksTexture())
@@ -89,6 +117,22 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain) {
 		SetDescriptorTexture(height_resource,
 			5,
 			i);
+	}
+
+	uint32 grass_count = terrain->GetTerrainVegetables().size();
+
+	while (_grass_descriptor_sets.size() < grass_count) {
+		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(pool);
+		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+		grass_descr_set->Create();
+		//grass_descr_set->WriteDescriptorBuffer(0, );
+		_grass_descriptor_sets.push_back(grass_descr_set);
+	}
+
+	for (uint32 veg_i = 0; veg_i < grass_count; veg_i ++) {
+		auto& grass = terrain->GetTerrainVegetables()[veg_i];
+		VulkanDescriptorSet* grass_descr_set = _grass_descriptor_sets[veg_i];
 	}
 }
 TerrainComponent* VulkanTerrain::GetTerrain() {
@@ -150,7 +194,13 @@ VulkanTerrainRenderer::VulkanTerrainRenderer() {
 	_terrains_processed = 0;
 }
 VulkanTerrainRenderer::~VulkanTerrainRenderer() {
+	SAFE_RELEASE(_terrain_pipeline)
 
+	SAFE_RELEASE(_terrains_buffer)
+	SAFE_RELEASE(_grass_transform_buffer)
+
+	SAFE_RELEASE(_terrain_masks_sampler)
+	SAFE_RELEASE(_terrain_textures_sampler)
 }
 
 void VulkanTerrainRenderer::Create(
@@ -167,8 +217,14 @@ void VulkanTerrainRenderer::Create(
 	_terrains_descr_pool = new VulkanDescriptorPool;
 	_terrains_descr_pool->SetDescriptorSetsCount(1000);
 	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
-	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5000);
+	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6000);
 	_terrains_descr_pool->Create();
+
+	_vegetables_descr_pool = new VulkanDescriptorPool;
+	_vegetables_descr_pool->SetDescriptorSetsCount(1000);
+	_vegetables_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
+	_vegetables_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000);
+	_vegetables_descr_pool->Create();
 
 	_terrain_shader = new VulkanShader;
 	_terrain_shader->AddShaderFromFile("terrain.vert", SHADER_STAGE_VERTEX);
@@ -206,6 +262,9 @@ void VulkanTerrainRenderer::Create(
 
 	_terrains_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	_terrains_buffer->Create(65535);
+
+	_grass_transform_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
+	_grass_transform_buffer->Create(MAX_GRASS_TRANSFORMS);
 }
 
 void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
@@ -217,7 +276,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 	}
 	VulkanTerrain* vk_terrain = _terrains[_terrains_processed];
 	TerrainComponent* terrain_component = terrain->GetComponent<TerrainComponent>();
-	vk_terrain->SetTerrain(terrain_component);
+	vk_terrain->SetTerrain(terrain_component, _vegetables_descr_pool);
 
 	uint32 offset = _terrains_processed * TERRAIN_DATA_ELEM_SIZE;
 

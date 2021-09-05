@@ -104,7 +104,6 @@ void VulkanDefferedLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
-	//DrawSkybox(mLightsCmdbuf);
 	cmdbuf->BindPipeline(*_deferred_pipeline);
 	cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
 	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor);
