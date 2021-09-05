@@ -7,6 +7,11 @@
 #include <Resources/ResourceReference.hpp>
 
 #define MAX_TEXTURES_PER_TERRAIN 16
+#define MAX_GRASSES_PER_TERRAIN 200
+
+#define NO_GRASS 255
+
+typedef uint8 GRASS_ID;
 
 namespace VSGE{
 
@@ -57,6 +62,24 @@ namespace VSGE{
 		}
 	};
 
+	class GrassIdTransforms {
+	private:
+		std::vector<Mat4> _transforms;
+	public:
+
+		void Clear() {
+			_transforms.clear();
+		}
+
+		void AddTransform(const Mat4& transform) {
+			_transforms.push_back(transform);
+		}
+
+		const std::vector<Mat4>& GetTransforms() {
+			return _transforms;
+		}
+	};
+
 	class TerrainComponent : public IEntityComponent {
 		private:
 			uint32 _width;
@@ -64,6 +87,8 @@ namespace VSGE{
 	
 			float* _heightmap;
 			TerrainTexturesFactors* _texture_factors;
+			GRASS_ID* _vegetables_data;
+
 			std::vector<TerrainTexture> _terrain_textures;
 			std::vector<TerrainGrass> _terrain_grass;
 			//graphics api objects
@@ -72,6 +97,7 @@ namespace VSGE{
 			//computed geometry
 			Vertex* heightmap;
 			uint32* indices;
+			std::vector<GrassIdTransforms> _grass_transforms;
 		public:
 			TerrainComponent();
 			~TerrainComponent();
@@ -88,8 +114,12 @@ namespace VSGE{
 			void Flat(float height);
 			void ModifyHeight(const Vec2i& position, float height, uint32 range);
 			void ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id);
+			void ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id);
+			
 			void UpdateMesh();
 			void UpdateTextureMasks();
+			void UpdateVegetables();
+
 			Vec2i& GetRayIntersectionTraingle(const Ray& ray);
 
 			std::vector<TerrainTexture>& GetTerrainTextures() {
@@ -104,6 +134,7 @@ namespace VSGE{
 
 			Mesh* GetTerrainMesh();
 			Texture* GetTerrainMasksTexture();
+			std::vector<GrassIdTransforms>& GetGrassTransforms();
 
 			void Serialize(YAML::Emitter& e);
 			void Deserialize(YAML::Node& entity);

@@ -8,14 +8,23 @@ layout(location = 1) in vec3 InNormal;
 layout(location = 2) in vec2 UVCoord;
 layout(location = 3) in mat3 TBN;
 
-//layout (std140, set = 1, binding = 0) uniform MaterialData{
-
-//};
-
 #define MAX_TEXTURES 16
-
 #define WIDTH 500
 #define HEIGHT 500
+
+struct MaterialFactors{
+    float roughness_factor;
+    float metallic_factor;
+    float height_factor;
+};
+
+layout (std140, set = 1, binding = 0) uniform TerrainData{
+    float texture_uv_x;
+    float texture_uv_y;
+    uint textures_count;
+
+    MaterialFactors factors[MAX_TEXTURES];
+};
 
 layout(set = 1, binding = 1) uniform sampler2DArray masks;
 layout(set = 1, binding = 2) uniform sampler2D albedo[MAX_TEXTURES];
@@ -66,8 +75,8 @@ float GetHeight(vec2 uv, uint texture_id){
 
 void CalculateTextures(vec2 uv){
     vec2 terrain_uv = vec2(0);
-    terrain_uv.x = uv.x * WIDTH / 64;
-    terrain_uv.y = uv.y * HEIGHT / 64;
+    terrain_uv.x = uv.x * texture_uv_x;
+    terrain_uv.y = uv.y * texture_uv_y;
 
     result_albedo = vec3(0);
     result_normal = vec3(0);
@@ -75,29 +84,31 @@ void CalculateTextures(vec2 uv){
     result_metallic = 0;
     result_ao = 1;
 
-    for(int i = 0; i < MAX_TEXTURES; i ++){
+    for(uint i = 0; i < textures_count; i ++){
         float factor = GetFactor(uv, i);
-        //albedo
-        vec3 tex_sample = GetAlbedo(terrain_uv, i);
-        result_albedo = mix(result_albedo, tex_sample, factor);
-        //normal
-        vec3 normal = GetNormal(terrain_uv, i);
-        if(normal == vec3(0))
-            normal = InNormal;
-        else{
-            normal = normalize(normal * 2 - 1);
-		    normal = normalize(TBN * normal);
+        if(factor > 0.001){
+            //albedo
+            vec3 tex_sample = GetAlbedo(terrain_uv, i);
+            result_albedo = mix(result_albedo, tex_sample, factor);
+            //normal
+            vec3 normal = GetNormal(terrain_uv, i);
+            if(normal == vec3(0))
+                normal = InNormal;
+            else{
+                normal = normalize(normal * 2 - 1);
+                normal = normalize(TBN * normal);
+            }
+            result_normal = mix(result_normal, normal, factor);
+            //roughness
+            float roughness_sample = GetRoughness(terrain_uv, i);
+            result_roughness = mix(result_roughness, roughness_sample, factor);
+            //metallic
+            float metallic_sample = GetMetallic(terrain_uv, i);
+            result_metallic = mix(result_metallic, metallic_sample, factor);
+            //ao
+            float ao_sample = GetAo(terrain_uv, i);
+            result_ao = mix(result_ao, ao_sample, factor);
         }
-        result_normal = mix(result_normal, normal, factor);
-        //roughness
-        float roughness_sample = GetRoughness(terrain_uv, i);
-        result_roughness = mix(result_roughness, roughness_sample, factor);
-        //metallic
-        float metallic_sample = GetMetallic(terrain_uv, i);
-        result_metallic = mix(result_metallic, metallic_sample, factor);
-        //ao
-        float ao_sample = GetAo(terrain_uv, i);
-        result_ao = mix(result_ao, ao_sample, factor);
     }
 }
 

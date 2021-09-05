@@ -1,5 +1,6 @@
 #include "TerrainComponent.hpp"
 #include <Scene/Entity.hpp>
+#include <Math/MatrixTransform.hpp>
 
 using namespace VSGE;
 using namespace YAML;
@@ -42,6 +43,7 @@ TerrainComponent::TerrainComponent() {
 TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_heightmap);
 	SAFE_RELEASE_ARR(_texture_factors);
+	SAFE_RELEASE_ARR(_vegetables_data)
 
 	SAFE_RELEASE(_heightmap_mesh);
 	SAFE_RELEASE(_texture_masks);
@@ -77,6 +79,10 @@ Texture* TerrainComponent::GetTerrainMasksTexture() {
 	return _texture_masks;
 }
 
+std::vector<GrassIdTransforms>& TerrainComponent::GetGrassTransforms() {
+	return _grass_transforms;
+}
+
 void TerrainComponent::Flat(float height) {
 	SAFE_RELEASE_ARR(_heightmap);
 	SAFE_RELEASE_ARR(_texture_factors);
@@ -85,10 +91,12 @@ void TerrainComponent::Flat(float height) {
 
 	_heightmap = new float[vertices_count];
 	_texture_factors = new TerrainTexturesFactors[vertices_count];
+	_vegetables_data = new GRASS_ID[vertices_count];
 
 	for (uint32 i = 0; i < vertices_count; i++) {
 		_heightmap[i] = height;
 		_texture_factors[i]._textures_factors[0] = 255;
+		_vegetables_data[i] = NO_GRASS;
 	}
 
 }
@@ -133,6 +141,10 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 			}
 		}
 	}
+}
+
+void TerrainComponent::ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id) {
+
 }
 
 Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
@@ -243,9 +255,44 @@ void TerrainComponent::UpdateTextureMasks() {
 	_texture_masks->CreateImageView();
 }
 
+void TerrainComponent::UpdateVegetables() {
+	float step = 0.5f;
+
+	for (auto& transforms : _grass_transforms) {
+		transforms.Clear();
+	}
+
+	for (float x = 0.f; x < (float)_width; x += step) {
+		for (float y = 0.f; y < (float)_height; y += step) {
+			int orig_x = (int)ceil(x);
+			int orig_y = (int)ceil(y);
+
+			GRASS_ID vegetable_id = _vegetables_data[orig_x * _height + orig_y];
+			if (vegetable_id == NO_GRASS)
+				continue;
+
+			while ((GRASS_ID)_grass_transforms.size() < (vegetable_id + 1)) {
+				GrassIdTransforms transforms;
+				_grass_transforms.push_back(transforms);
+			}
+
+			auto& grass_transforms = _grass_transforms[vegetable_id];
+			auto& grass = _terrain_grass[vegetable_id];
+
+			Vec3 position = Vec3(x, _heightmap[orig_x * _height + orig_y], y);
+			Vec3 scale = Vec3(grass._width, grass._height, grass._width);
+
+			Mat4 transform = GetTransform(position, scale, Quat(0, 0, 0, 0));
+			grass_transforms.AddTransform(transform);
+		}
+	}
+}
+
 void TerrainComponent::AddNewTexture() {
-	TerrainTexture ttexture;
-	_terrain_textures.push_back(ttexture);
+	if (_terrain_textures.size() < MAX_TEXTURES_PER_TERRAIN) {
+		TerrainTexture ttexture;
+		_terrain_textures.push_back(ttexture);
+	}
 }
 
 void TerrainComponent::AddNewGrass() {

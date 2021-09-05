@@ -5,6 +5,7 @@
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
 #define UNI_ALIGN 256
+#define TERRAIN_DATA_ELEM_SIZE 512
 
 namespace VSGE{
 
@@ -19,7 +20,7 @@ namespace VSGE{
         void SetTerrain(TerrainComponent* terrain);
         void SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index);
         TerrainComponent* GetTerrain();
-        void Create(VulkanDescriptorPool* pool);
+        void Create(VulkanDescriptorPool* pool, VulkanBuffer* terrains_buffer = nullptr);
         void SetImagesToEmpty();
         void Destroy();
     };
@@ -31,6 +32,7 @@ namespace VSGE{
         VulkanPipeline* _terrain_pipeline;
         VulkanSampler* _terrain_masks_sampler;
         VulkanSampler* _terrain_textures_sampler;
+        VulkanBuffer* _terrains_buffer;
 
         VulkanRenderPass* _gbuffer_renderpass;
         VulkanTexture* _emptyZeroTexture;
