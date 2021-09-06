@@ -10,17 +10,23 @@
 
 namespace VSGE{
 
+    class VulkanTerrainRenderer;
+
+    struct VulkanTerrainGrassRange {
+        uint32 offset;
+        uint32 count;
+    };
+
     class VulkanTerrain {
     private:
         VulkanDescriptorSet* _terrain_descr_set;
         std::vector<VulkanDescriptorSet*> _grass_descriptor_sets;
         TerrainComponent* _terrain;
-
     public:
         VulkanTerrain();
         ~VulkanTerrain();
         VulkanDescriptorSet* GetDescriptorSet();
-        void SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* pool);
+        void SetTerrain(TerrainComponent* terrain, VulkanTerrainRenderer* terrain_renderer);
         void SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index);
         void SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index);
         TerrainComponent* GetTerrain();
@@ -34,10 +40,16 @@ namespace VSGE{
         VulkanShader* _terrain_shader;
         VulkanPipelineLayout* _terrain_pipeline_layout;
         VulkanPipeline* _terrain_pipeline;
+
+        VulkanShader* _grass_shader;
+        VulkanPipelineLayout* _grass_pipeline_layout;
+        VulkanPipeline* _grass_pipeline;
+
         VulkanSampler* _terrain_masks_sampler;
         VulkanSampler* _terrain_textures_sampler;
         VulkanBuffer* _terrains_buffer;
         VulkanBuffer* _grass_transform_buffer;
+        VulkanMesh* _grass_mesh;
 
         VulkanRenderPass* _gbuffer_renderpass;
         VulkanTexture* _emptyZeroTexture;
@@ -49,6 +61,7 @@ namespace VSGE{
 
         std::vector<VulkanTerrain*> _terrains;
         uint32 _terrains_processed;
+        uint32 _vegetables_transforms_written;
 
         uint32 _outputWidth;
         uint32 _outputHeight;
@@ -69,5 +82,8 @@ namespace VSGE{
         VulkanSampler* GetTerrainTextureSampler();
         VulkanTexture* GetEmptyZeroTexture();
         VulkanTexture* GetEmptyWhiteTexture();
+        VulkanDescriptorPool* GetTerrainDescriptorPool();
+        VulkanDescriptorPool* GetGrassDescriptorPool();
+        VulkanBuffer* GetGrassTransformsBuffer();
     };
 }

@@ -10,9 +10,6 @@ shader pbr/spmap.comp
 shader terrain/terrain.vert
 shader terrain/terrain.frag
 
-shader grass/grass.vert
-shader grass/grass.frag
-
 shader particle/particle.vert
 shader particle/particle.frag
 
@@ -28,3 +25,6 @@ shader shadowmap/shadowmap.geom
 
 shader shadowmap/shadowmap_process.vert
 shader shadowmap/shadowmap_process.frag
+
+shader grass/grass.vert
+shader grass/grass.frag

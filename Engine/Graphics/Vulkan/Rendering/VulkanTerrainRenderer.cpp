@@ -4,6 +4,19 @@
 
 using namespace VSGE;
 
+static Vertex grass_vertices[] = {
+	// back face
+	Vertex(Vec3(-0.5f, 0.0f, 0.0f), Vec2(0.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
+	Vertex(Vec3(0.5f, 0.0f, 0.0f), Vec2(1.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-right
+	Vertex(Vec3(0.5f, 0.5f, 0.0f), Vec2(1.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-right
+	Vertex(Vec3(-0.5f, 0.5f, 0.0f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-right
+	Vertex(Vec3(0.0f, 0.0f, 0.5f), Vec2(1.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
+	Vertex(Vec3(0.0f, 0.0f, -0.5f), Vec2(0.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-left
+	Vertex(Vec3(0.0f, 0.5f, 0.5f), Vec2(1.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f)), // bottom-left
+	Vertex(Vec3(0.0f, 0.5f, -0.5f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f)), // bottom-right
+};
+static uint32 grass_ind[] = { 0,1,2,2,1,0,  0,2,3,3,2,0,   4,5,7,7,5,4,  4,7,6,6,7,4 };
+
 VulkanTerrain::VulkanTerrain() {
 	_terrain_descr_set = nullptr;
 	_terrain = nullptr;
@@ -51,10 +64,11 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 
 void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index) {
 	TextureResource* texture_res = static_cast<TextureResource*>(texture);
+	VulkanDescriptorSet* grass_set = _grass_descriptor_sets[vegetable_index];
 	if (texture_res == nullptr) {
 		//if no texture bound, then bind default texture
 		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
-		_terrain_descr_set->WriteDescriptorImage(1,
+		grass_set->WriteDescriptorImage(1,
 			default_texture,
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -70,14 +84,14 @@ void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetabl
 		//Mark texture resource as used in this frame
 		texture_res->Use();
 		//Write texture to descriptor
-		_terrain_descr_set->WriteDescriptorImage(1,
+		grass_set->WriteDescriptorImage(1,
 			(VulkanTexture*)texture_res->GetTexture(),
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 }
 
-void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* pool) {
+void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanTerrainRenderer* terrain_renderer) {
 	_terrain = terrain;
 
 	if (_terrain->GetTerrainMasksTexture())
@@ -119,20 +133,21 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* 
 			i);
 	}
 
+	//Create vegetables descriptors
 	uint32 grass_count = terrain->GetTerrainVegetables().size();
-
 	while (_grass_descriptor_sets.size() < grass_count) {
-		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(pool);
-		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(terrain_renderer->GetGrassDescriptorPool());
+		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
 		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 		grass_descr_set->Create();
-		//grass_descr_set->WriteDescriptorBuffer(0, );
+		grass_descr_set->WriteDescriptorBuffer(0, terrain_renderer->GetGrassTransformsBuffer());
 		_grass_descriptor_sets.push_back(grass_descr_set);
 	}
 
 	for (uint32 veg_i = 0; veg_i < grass_count; veg_i ++) {
 		auto& grass = terrain->GetTerrainVegetables()[veg_i];
-		VulkanDescriptorSet* grass_descr_set = _grass_descriptor_sets[veg_i];
+		SetDescriptorGrassTexture(grass._texture_reference.GetResource(), veg_i);
+		
 	}
 }
 TerrainComponent* VulkanTerrain::GetTerrain() {
@@ -214,12 +229,14 @@ void VulkanTerrainRenderer::Create(
 	this->_emptyZeroTexture = emptyTexture;
 	_emptyOneTexture = emptyOneTexture;
 	
+	//terrains descriptor pool
 	_terrains_descr_pool = new VulkanDescriptorPool;
 	_terrains_descr_pool->SetDescriptorSetsCount(1000);
 	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
 	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6000);
 	_terrains_descr_pool->Create();
-
+	
+	//vegetables descriptor pool
 	_vegetables_descr_pool = new VulkanDescriptorPool;
 	_vegetables_descr_pool->SetDescriptorSetsCount(1000);
 	_vegetables_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
@@ -229,6 +246,10 @@ void VulkanTerrainRenderer::Create(
 	_terrain_shader = new VulkanShader;
 	_terrain_shader->AddShaderFromFile("terrain.vert", SHADER_STAGE_VERTEX);
 	_terrain_shader->AddShaderFromFile("terrain.frag", SHADER_STAGE_FRAGMENT);
+
+	_grass_shader = new VulkanShader;
+	_grass_shader->AddShaderFromFile("grass.vert", SHADER_STAGE_VERTEX);
+	_grass_shader->AddShaderFromFile("grass.frag", SHADER_STAGE_FRAGMENT);
 
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
@@ -248,6 +269,22 @@ void VulkanTerrainRenderer::Create(
 
 	delete sample_terrain;
 
+
+	VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(_vegetables_descr_pool);
+	grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
+	grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	grass_descr_set->Create();
+	_grass_pipeline_layout = new VulkanPipelineLayout;
+	_grass_pipeline_layout->PushDescriptorSet(_entity_descr_set->at(0));
+	_grass_pipeline_layout->PushDescriptorSet(grass_descr_set);
+	_grass_pipeline_layout->Create();
+	delete grass_descr_set;
+
+	_grass_pipeline = new VulkanPipeline;
+	_grass_pipeline->SetDepthTest(true);
+	//_grass_pipeline->SetCullMode();
+	_grass_pipeline->Create(_grass_shader, gbuffer_renderpass, _vertexLayout, _grass_pipeline_layout);
+
 	_terrain_pipeline = new VulkanPipeline;
 	_terrain_pipeline->SetDepthTest(true);
 	_terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
@@ -264,7 +301,12 @@ void VulkanTerrainRenderer::Create(
 	_terrains_buffer->Create(65535);
 
 	_grass_transform_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
-	_grass_transform_buffer->Create(MAX_GRASS_TRANSFORMS);
+	_grass_transform_buffer->Create(MAX_GRASS_TRANSFORMS * sizeof(Mat4));
+
+	_grass_mesh = new VulkanMesh;
+	_grass_mesh->SetVertexBuffer(grass_vertices, 8);
+	_grass_mesh->SetIndexBuffer(grass_ind, 24);
+	_grass_mesh->Create();
 }
 
 void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
@@ -276,7 +318,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 	}
 	VulkanTerrain* vk_terrain = _terrains[_terrains_processed];
 	TerrainComponent* terrain_component = terrain->GetComponent<TerrainComponent>();
-	vk_terrain->SetTerrain(terrain_component, _vegetables_descr_pool);
+	vk_terrain->SetTerrain(terrain_component, this);
 
 	uint32 offset = _terrains_processed * TERRAIN_DATA_ELEM_SIZE;
 
@@ -293,6 +335,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 
 void VulkanTerrainRenderer::ResetProcessedTerrains() {
 	_terrains_processed = 0;
+	_vegetables_transforms_written = 0;
 }
 
 void VulkanTerrainRenderer::SetOutputSizes(uint32 width, uint32 height) {
@@ -314,6 +357,18 @@ VulkanTexture* VulkanTerrainRenderer::GetEmptyZeroTexture() {
 
 VulkanTexture* VulkanTerrainRenderer::GetEmptyWhiteTexture() {
 	return _emptyOneTexture;
+}
+
+VulkanDescriptorPool* VulkanTerrainRenderer::GetTerrainDescriptorPool() {
+	return _terrains_descr_pool;
+}
+
+VulkanDescriptorPool* VulkanTerrainRenderer::GetGrassDescriptorPool() {
+	return _vegetables_descr_pool;
+}
+
+VulkanBuffer* VulkanTerrainRenderer::GetGrassTransformsBuffer() {
+	return _grass_transform_buffer;
 }
 
 void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index) {
