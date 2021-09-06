@@ -33,4 +33,5 @@ namespace VSGEditor {
 	float GetTerrainEditorOpacity();
 	float GetTerrainEditorBrushSize();
 	uint32 GetTerrainEditorTextureIndex();
+	uint32 GetTerrainEditorVegetableIndex();
 }

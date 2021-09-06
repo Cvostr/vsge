@@ -6,13 +6,14 @@
 
 #define UNI_ALIGN 256
 #define TERRAIN_DATA_ELEM_SIZE 512
-#define MAX_GRASS_TRANSFORMS 60000
+#define MAX_GRASS_TRANSFORMS 500000
 
 namespace VSGE{
 
     class VulkanTerrainRenderer;
 
-    struct VulkanTerrainGrassRange {
+    struct VulkanTerrainGrass {
+        VulkanDescriptorSet* _descr_set;
         uint32 offset;
         uint32 count;
     };
@@ -20,12 +21,13 @@ namespace VSGE{
     class VulkanTerrain {
     private:
         VulkanDescriptorSet* _terrain_descr_set;
-        std::vector<VulkanDescriptorSet*> _grass_descriptor_sets;
+        std::vector<VulkanTerrainGrass> _grass_descriptor_sets;
         TerrainComponent* _terrain;
     public:
         VulkanTerrain();
         ~VulkanTerrain();
         VulkanDescriptorSet* GetDescriptorSet();
+        std::vector<VulkanTerrainGrass>& GetVegetables();
         void SetTerrain(TerrainComponent* terrain, VulkanTerrainRenderer* terrain_renderer);
         void SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index);
         void SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index);
@@ -85,5 +87,7 @@ namespace VSGE{
         VulkanDescriptorPool* GetTerrainDescriptorPool();
         VulkanDescriptorPool* GetGrassDescriptorPool();
         VulkanBuffer* GetGrassTransformsBuffer();
+        VulkanBuffer* GetTerrainsBuffer();
+        uint32& GetWrittenGrassTransforms();
     };
 }

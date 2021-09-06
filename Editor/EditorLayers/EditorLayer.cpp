@@ -188,6 +188,12 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 								GetTerrainEditorTextureIndex());
 							terrain->UpdateTextureMasks();
 						}
+						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_GRASS && coord.x >= 0) {
+							terrain->ModifyGrass(Vec2i(coord.x, coord.y),
+								GetTerrainEditorOpacity(),
+								GetTerrainEditorVegetableIndex());
+							terrain->UpdateVegetables();
+						}
 					}
 				}
 

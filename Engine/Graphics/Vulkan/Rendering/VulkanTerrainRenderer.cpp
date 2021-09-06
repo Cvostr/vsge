@@ -27,6 +27,9 @@ VulkanTerrain::~VulkanTerrain() {
 VulkanDescriptorSet* VulkanTerrain::GetDescriptorSet() {
 	return _terrain_descr_set;
 }
+std::vector<VulkanTerrainGrass>& VulkanTerrain::GetVegetables() {
+	return _grass_descriptor_sets;
+}
 
 void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index) {
 	TextureResource* texture_res = static_cast<TextureResource*>(texture);
@@ -64,7 +67,7 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 
 void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index) {
 	TextureResource* texture_res = static_cast<TextureResource*>(texture);
-	VulkanDescriptorSet* grass_set = _grass_descriptor_sets[vegetable_index];
+	VulkanDescriptorSet* grass_set = _grass_descriptor_sets[vegetable_index]._descr_set;
 	if (texture_res == nullptr) {
 		//if no texture bound, then bind default texture
 		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
@@ -141,13 +144,29 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanTerrainRenderer*
 		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 		grass_descr_set->Create();
 		grass_descr_set->WriteDescriptorBuffer(0, terrain_renderer->GetGrassTransformsBuffer());
-		_grass_descriptor_sets.push_back(grass_descr_set);
+		
+		VulkanTerrainGrass grass;
+		grass._descr_set = grass_descr_set;
+		_grass_descriptor_sets.push_back(grass);
 	}
 
-	for (uint32 veg_i = 0; veg_i < grass_count; veg_i ++) {
+	for (uint32 veg_i = 0; veg_i < grass_count; veg_i++) {
 		auto& grass = terrain->GetTerrainVegetables()[veg_i];
+		auto& grass_transforms = terrain->GetGrassTransforms()[veg_i];
+
 		SetDescriptorGrassTexture(grass._texture_reference.GetResource(), veg_i);
 		
+		uint32& grass_offset = terrain_renderer->GetWrittenGrassTransforms();
+		uint32 transforms_count = grass_transforms.GetTransforms().size();
+		const Mat4* transforms = grass_transforms.GetTransforms().data();
+		terrain_renderer->GetGrassTransformsBuffer()->WriteData(grass_offset * sizeof(Mat4), transforms_count * sizeof(Mat4), (void*)transforms);
+		
+
+		auto& grass_render_info = _grass_descriptor_sets[veg_i];
+		grass_render_info.offset = grass_offset;
+		grass_render_info.count = transforms_count;
+
+		grass_offset += transforms_count;
 	}
 }
 TerrainComponent* VulkanTerrain::GetTerrain() {
@@ -371,16 +390,24 @@ VulkanBuffer* VulkanTerrainRenderer::GetGrassTransformsBuffer() {
 	return _grass_transform_buffer;
 }
 
+VulkanBuffer* VulkanTerrainRenderer::GetTerrainsBuffer() {
+	return _terrains_buffer;
+}
+
+uint32& VulkanTerrainRenderer::GetWrittenGrassTransforms() {
+	return _vegetables_transforms_written;
+}
+
 void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index) {
 	VulkanTerrain* vk_terrain = _terrains[terrain_index];
 	TerrainComponent* terrain = vk_terrain->GetTerrain();
 
+	uint32 offsets[2] = { 0, draw_index * UNI_ALIGN % 65535 };
+	int vertexDescriptorID = (draw_index * UNI_ALIGN) / 65535;
+
 	VulkanMesh* terrain_mesh = (VulkanMesh*)terrain->GetTerrainMesh();
 	if (terrain_mesh) {
 		cmdbuffer->BindPipeline(*_terrain_pipeline);
-
-		uint32 offsets[2] = { 0, draw_index * UNI_ALIGN % 65535 };
-		int vertexDescriptorID = (draw_index * UNI_ALIGN) / 65535;
 		cmdbuffer->SetViewport(0, 0, _outputWidth, _outputHeight);
 		uint32 terrain_data_offset = terrain_index * TERRAIN_DATA_ELEM_SIZE;
 
@@ -389,5 +416,17 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 
 		cmdbuffer->BindMesh(*terrain_mesh);
 		cmdbuffer->DrawIndexed(terrain->GetIndicesCount());
+	}
+
+	cmdbuffer->BindPipeline(*_grass_pipeline);
+	cmdbuffer->SetViewport(0, 0, _outputWidth, _outputHeight);
+	cmdbuffer->BindDescriptorSets(*_grass_pipeline_layout, 0, 1, _entity_descr_set->at(vertexDescriptorID), 2, offsets);
+
+	for (uint32 grass_i = 0; grass_i < vk_terrain->GetVegetables().size(); grass_i ++) {
+		auto& vegetable = vk_terrain->GetVegetables()[grass_i];
+		uint32 offset = vegetable.offset * sizeof(Mat4);
+		cmdbuffer->BindDescriptorSets(*_grass_pipeline_layout, 1, 1, vegetable._descr_set, 1, &offset);
+		cmdbuffer->BindMesh(*_grass_mesh);
+		cmdbuffer->DrawIndexed(_grass_mesh->GetIndexCount(), vegetable.count);
 	}
 }

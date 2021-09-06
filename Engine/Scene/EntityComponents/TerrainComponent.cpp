@@ -98,7 +98,6 @@ void TerrainComponent::Flat(float height) {
 		_texture_factors[i]._textures_factors[0] = 255;
 		_vegetables_data[i] = NO_GRASS;
 	}
-
 }
 
 void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) {
@@ -129,7 +128,7 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 				float toApply = opacity - static_cast<float>(dist * dist) / (float)range;
 				int _toApply = (int)(toApply);
 
-				if (_toApply < 0)
+				if (_toApply <= 0)
 					continue;
 
 				for (uint32 texture_f = 0; texture_f < MAX_TEXTURES_PER_TERRAIN; texture_f++) {
@@ -144,7 +143,16 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 }
 
 void TerrainComponent::ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id) {
-
+	//Iterate over all pixels
+	for (int y = 0; y < _width; y++) {
+		for (int x = 0; x < _height; x++) {
+			//if pixel is in circle
+			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
+			if (dist <= range) {
+				_vegetables_data[y * _height + x] = grass_id;
+			}
+		}
+	}
 }
 
 Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
@@ -256,10 +264,15 @@ void TerrainComponent::UpdateTextureMasks() {
 }
 
 void TerrainComponent::UpdateVegetables() {
-	float step = 0.5f;
+	float step = 1.0f;
 
 	for (auto& transforms : _grass_transforms) {
 		transforms.Clear();
+	}
+
+	while ((GRASS_ID)_grass_transforms.size() < _terrain_grass.size()) {
+		GrassIdTransforms transforms;
+		_grass_transforms.push_back(transforms);
 	}
 
 	for (float x = 0.f; x < (float)_width; x += step) {
@@ -270,11 +283,6 @@ void TerrainComponent::UpdateVegetables() {
 			GRASS_ID vegetable_id = _vegetables_data[orig_x * _height + orig_y];
 			if (vegetable_id == NO_GRASS)
 				continue;
-
-			while ((GRASS_ID)_grass_transforms.size() < (vegetable_id + 1)) {
-				GrassIdTransforms transforms;
-				_grass_transforms.push_back(transforms);
-			}
 
 			auto& grass_transforms = _grass_transforms[vegetable_id];
 			auto& grass = _terrain_grass[vegetable_id];
@@ -462,4 +470,5 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 
 	UpdateMesh();
 	UpdateTextureMasks();
+	UpdateVegetables();
 }

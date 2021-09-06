@@ -154,3 +154,6 @@ float VSGEditor::GetTerrainEditorBrushSize() {
 uint32 VSGEditor::GetTerrainEditorTextureIndex() {
 	return picked_texture_index;
 }
+uint32 VSGEditor::GetTerrainEditorVegetableIndex() {
+	return picked_grass_index;
+}
