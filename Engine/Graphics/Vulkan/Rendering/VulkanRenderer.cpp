@@ -74,8 +74,7 @@ void VulkanRenderer::SetupRenderer() {
 	mShadowprocessingEndSemaphore->Create();
 	
 	//---------------------Buffers--------------------------------
-	mCameraShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mCameraShaderBuffer->Create(MAX_CAMERAS * UNI_ALIGN);
+	_cameras_buffer = new VulkanCamerasBuffer;
 
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN);
@@ -157,7 +156,7 @@ void VulkanRenderer::SetupRenderer() {
 		VulkanDescriptorSet* set = mVertexDescriptorSets[desc_i];
 		set->Create();
 
-		set->WriteDescriptorBuffer(0, mCameraShaderBuffer);
+		set->WriteDescriptorBuffer(0, _cameras_buffer->GetCamerasBuffer());
 		set->WriteDescriptorBuffer(1, mTransformsShaderBuffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
 	}
 
@@ -170,7 +169,7 @@ void VulkanRenderer::SetupRenderer() {
 	_shadowmapper = new VulkanShadowmapping(
 		&mVertexDescriptorSets,
 		mAnimationsDescriptorSet,
-		mCameraShaderBuffer,
+		_cameras_buffer->GetCamerasBuffer(),
 		mSpriteMesh,
 		(VulkanTexture*)mGBuffer->GetColorAttachments()[2],
 		mAttachmentSampler,
@@ -185,13 +184,13 @@ void VulkanRenderer::SetupRenderer() {
 	_brdf_lut = new Vulkan_BRDF_LUT;
 	_brdf_lut->Create();
 
+	
 	_deferred_renderer = new VulkanDeferredLight;
 	_deferred_renderer->CreateFramebuffer();
 	_deferred_renderer->CreateDescriptorSet();
 	_deferred_renderer->CreatePipeline();
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
 	_deferred_renderer->SetLightsBuffer(_lightsBuffer);
-	_deferred_renderer->SetCamerasBuffer(mCameraShaderBuffer);
 	_deferred_renderer->SetGBufferFromFramebuffer(mGBuffer);
 	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
@@ -565,21 +564,11 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	_shadowmapper->SetScene(mScene);
 	//---------------------
 
-	cam->UpdateMatrices();
-	mCameraShaderBuffer->WriteData(0, sizeof(Mat4), (void*)&cam->GetProjectionViewMatrix());
-
-	Mat4 skybox_viewproj = RemoveTranslationFromViewMat(cam->GetViewMatrix()) * cam->GetProjectionMatrix();
-
-	mCameraShaderBuffer->WriteData(sizeof(Mat4), sizeof(Mat4), &skybox_viewproj);
-	mCameraShaderBuffer->WriteData(sizeof(Mat4) * 2, sizeof(Vec3), (void*)&cam->GetPosition());
-
+	_cameras_buffer->SetCamera(0, cam);
+	
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
 		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();
-		camera->UpdateMatrices();
-		mCameraShaderBuffer->WriteData(
-			camera_i * UNI_ALIGN,
-			sizeof(Mat4),
-			(void*)&camera->GetProjectionViewMatrix());
+		_cameras_buffer->SetCamera(camera_i, camera);
 	}
 
 	StoreWorldObjects();
@@ -617,6 +606,7 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
 	_terrain_renderer->SetOutputSizes(width, height);
+	_shadowmapper->ResizeOutput(width, height);
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {

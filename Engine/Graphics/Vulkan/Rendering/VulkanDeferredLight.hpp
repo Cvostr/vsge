@@ -19,7 +19,6 @@ namespace VSGE {
 		VulkanPipeline* _deferred_pipeline;
 
 		//Buffers
-		VulkanBuffer* _cam_buffer;
 		VulkanBuffer* _lights_buffer;
 
 		uint32 _fb_width;
@@ -32,7 +31,6 @@ namespace VSGE {
 		void CreateDescriptorSet();
 		void CreatePipeline();
 
-		void SetCamerasBuffer(VulkanBuffer* cam_buffer);
 		void SetLightsBuffer(VulkanBuffer* lights_buffer);
 		void SetGBuffer(VulkanGBufferRenderer* gbuffer);
 		void SetGBufferFromFramebuffer(VulkanFramebuffer* fb);

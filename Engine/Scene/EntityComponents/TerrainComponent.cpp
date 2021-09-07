@@ -296,14 +296,18 @@ void TerrainComponent::UpdateVegetables() {
 			auto& grass_transforms = _grass_transforms[vegetable_id];
 			auto& grass = _terrain_grass[vegetable_id];
 
+			Vec3 rotation = Vec3(0, Random(0, 360), 0);
+			if (heightmap) {
+				Vec3 normal = heightmap[orig_x * _height + orig_y].normal;
+			}
+
 			Vec3 position = Vec3(x, _heightmap[orig_x * _height + orig_y], y);
 			Vec3 scale = Vec3(grass._width, grass._height, grass._width);
-			float rotation_y = Random(0, 360);
 
 			Mat4 scale_mat = GetScaleMatrix(scale);
 			Mat4 translation_mat = GetTranslationMatrix(position);
 
-			Mat4 transform = scale_mat * GetRotationYMatrixEuler(rotation_y) * translation_mat;
+			Mat4 transform = scale_mat * GetRotationMatrix(rotation) * translation_mat;
 			grass_transforms.AddTransform(transform);
 		}
 	}

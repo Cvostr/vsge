@@ -51,6 +51,8 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 
 	_deferred_pool->Create();
 	_deferred_descriptor->Create();
+
+	_deferred_descriptor->WriteDescriptorBuffer(1, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
 }
 
 void VulkanDeferredLight::CreatePipeline() {
@@ -70,11 +72,6 @@ void VulkanDeferredLight::CreatePipeline() {
 void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
 	_lights_buffer = lights_buffer;
 	_deferred_descriptor->WriteDescriptorBuffer(2, lights_buffer);
-}
-
-void VulkanDeferredLight::SetCamerasBuffer(VulkanBuffer* cam_buffer) {
-	_cam_buffer = cam_buffer;
-	_deferred_descriptor->WriteDescriptorBuffer(1, cam_buffer);
 }
 
 void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {

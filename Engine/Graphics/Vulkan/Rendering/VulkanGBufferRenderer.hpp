@@ -2,6 +2,12 @@
 
 #include "../VulkanFramebuffer.hpp"
 #include "../VulkanDescriptors.hpp"
+#include <Scene/Entity.hpp>
+
+#define MAX_OBJECTS_RENDER 40000
+#define MAX_ANIMATION_MATRICES 20000
+#define MAX_PARTICLES_MATRICES 20000
+#define VERTEX_DESCR_SETS 40
 
 namespace VSGE {
 	class VulkanGBufferRenderer {
@@ -9,14 +15,39 @@ namespace VSGE {
 		VulkanFramebuffer* _gbuffer_fb;
 		VulkanRenderPass* _gbuffer_renderpass;
 
+		//---------------------DESCRIPTORS-----------------
+		VulkanDescriptorPool* _objects_descr_pool;
+		std::vector<VulkanDescriptorSet*> _vertex_descriptor_sets;
+		VulkanDescriptorSet* _animations_descriptor_set;
+		VulkanDescriptorSet* _particles_descriptor_set;
+		//----------------------BUFFERS----------------------
+		VulkanBuffer* _transforms_buffer;
+		VulkanBuffer* _animations_buffer;
+		VulkanBuffer* _particles_buffer;
+
 		uint32 _fb_width;
 		uint32 _fb_height;
+
+		uint32 _camera_index;
+		tEntityList* _entities_to_render;
 	public:
 
 		VulkanGBufferRenderer();
 		~VulkanGBufferRenderer();
 
 		void CreateFramebuffer();
+		void CreateDescriptorSets();
+		void SetCameraIndex(uint32 camera_index);
+
+		void SetEntitiesToRender(tEntityList& entities);
+		void SetBuffers(
+			VulkanBuffer* transforms_buffer = nullptr,
+			VulkanBuffer* anims_buffer = nullptr,
+			VulkanBuffer* particles_buffer = nullptr);
+		void CreateBuffers();
+		void Resize(uint32 width, uint32 height);
+
+		void RecordCmdBuffer(VulkanCommandBuffer* cmdbuf);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
@@ -25,5 +56,8 @@ namespace VSGE {
 		VulkanTexture* GetPositionAttachment();
 		VulkanTexture* GetMaterialsAttachment();
 		VulkanTexture* GetDepthAttachment();
+		VulkanBuffer* GetTransformsBuffer();
+		VulkanBuffer* GetAnimationsBuffer();
+		VulkanBuffer* GetParticlesBuffer();
 	};
 }

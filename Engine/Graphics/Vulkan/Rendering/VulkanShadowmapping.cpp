@@ -25,6 +25,9 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_screenPlane = screenPlane;
 	_empty_texture = empty_texture;
 
+	_outputWidth = 1280;
+	_outputHeight = 720;
+
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
 	_shadowmapFirstSemaphore = new VulkanSemaphore;
@@ -135,12 +138,12 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	//-------------------------SHADOW PROCESS -----------------------------
 	_shadowprocessRenderPass = new VulkanRenderPass;
-	_shadowprocessRenderPass->SetClearSize(1280, 720);
+	_shadowprocessRenderPass->SetClearSize(_outputWidth, _outputHeight);
 	_shadowprocessRenderPass->PushColorAttachment(FORMAT_RGBA);
 	_shadowprocessRenderPass->Create();
 
 	_shadowprocess_framebuffer = new VulkanFramebuffer;
-	_shadowprocess_framebuffer->SetSize(1280, 720);
+	_shadowprocess_framebuffer->SetSize(_outputWidth, _outputHeight);
 	_shadowprocess_framebuffer->AddAttachment();
 	_shadowprocess_framebuffer->Create(_shadowprocessRenderPass);
 

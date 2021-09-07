@@ -12,16 +12,15 @@
 #include "VulkanMaterials.hpp"
 #include "VulkanTerrainRenderer.hpp"
 #include "VulkanDeferredLight.hpp"
+#include "VulkanCamerasBuffer.hpp"
+#include "VulkanGBufferRenderer.hpp"
 
-#define MAX_OBJECTS_RENDER 40000
-#define MAX_ANIMATION_MATRICES 20000
-#define MAX_PARTICLES_MATRICES 20000
 
 #define MAX_CAMERAS 10
 #define UNI_ALIGN 256
 #define MATERIAL_SIZE 512
 
-#define VERTEX_DESCR_SETS 40
+
 
 namespace VSGE {
 
@@ -52,7 +51,6 @@ namespace VSGE {
 		VulkanDescriptorSet* mParticlesDescriptorSet;
 
 		//--------------------Buffers--------------------
-		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
 		VulkanBuffer* mParticlesTransformShaderBuffer;
@@ -71,6 +69,7 @@ namespace VSGE {
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
 		Vulkan_BRDF_LUT* _brdf_lut;
+		VulkanCamerasBuffer* _cameras_buffer;
 		VulkanDeferredLight* _deferred_renderer;
 
 		MaterialTemplate* pbr_template;
@@ -122,6 +121,10 @@ namespace VSGE {
 
 		VulkanMesh* GetScreenMesh() {
 			return mSpriteMesh;
+		}
+
+		VulkanCamerasBuffer* GetCamerasBuffer() {
+			return _cameras_buffer;
 		}
 
 		void StoreWorldObjects();
