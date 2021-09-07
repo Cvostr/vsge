@@ -180,6 +180,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
 							terrain->ModifyHeight(coord, GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
 							terrain->UpdateMesh();
+							terrain->UpdateVegetables();
 						}
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
 							terrain->ModifyTexture(Vec2i(coord.y, coord.x),

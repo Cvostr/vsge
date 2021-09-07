@@ -63,7 +63,8 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	DrawTerrainTexturePickBtn(terrain_texture->_height_reference, "Height", texture_index);
 }
 
-void DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass) {
+bool DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass) {
+	bool changed = false;
 	bool is_picked = grass_index == picked_grass_index;
 	std::string tte = "##" + std::to_string(grass_index);
 	is_picked = ImGui::RadioButton(tte.c_str(), is_picked);
@@ -75,8 +76,16 @@ void DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass)
 	std::string width_text = "Grass width##" + std::to_string(grass_index);
 	std::string height_text = "Grass height##" + std::to_string(grass_index);
 
-	ImGui::InputFloat(width_text.c_str(), &terrain_grass->_width);
-	ImGui::InputFloat(height_text.c_str(), &terrain_grass->_height);
+	float width = terrain_grass->_width;
+	float height = terrain_grass->_height;
+	ImGui::InputFloat(width_text.c_str(), &width);
+	ImGui::InputFloat(height_text.c_str(), &height);
+	if (width != terrain_grass->_width || height != terrain_grass->_height)
+		changed = true;
+	terrain_grass->_width = width;
+	terrain_grass->_height = height;
+
+	return changed;
 }
 
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
@@ -133,7 +142,8 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 
 		for (uint32 i = 0; i < vegetables_count; i++) {
 			VSGE::TerrainGrass* grass = &(tc->GetTerrainVegetables()[i]);
-			DrawTerrainGrassEdit(i, grass);
+			if (DrawTerrainGrassEdit(i, grass))
+				tc->UpdateVegetables();
 		}
 
 		if (ImGui::Button("Add Grass", ImVec2(ImGui::GetWindowWidth(), 0))) {

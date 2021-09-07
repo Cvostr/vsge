@@ -135,6 +135,7 @@ namespace VSGE{
 			Mesh* GetTerrainMesh();
 			Texture* GetTerrainMasksTexture();
 			std::vector<GrassIdTransforms>& GetGrassTransforms();
+			const AABB GetBoundingBox();
 
 			void Serialize(YAML::Emitter& e);
 			void Deserialize(YAML::Node& entity);

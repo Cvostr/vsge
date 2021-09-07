@@ -1,6 +1,7 @@
 #include "TerrainComponent.hpp"
 #include <Scene/Entity.hpp>
 #include <Math/MatrixTransform.hpp>
+#include <Core/Random.hpp>
 
 using namespace VSGE;
 using namespace YAML;
@@ -77,6 +78,14 @@ Mesh* TerrainComponent::GetTerrainMesh() {
 
 Texture* TerrainComponent::GetTerrainMasksTexture() {
 	return _texture_masks;
+}
+
+const AABB TerrainComponent::GetBoundingBox() {
+	AABB result;
+	result.PrepareForExtend();
+	result.Extend(Vec3(0, 0, 0));
+	result.Extend(Vec3(_width, 0, _height));
+	return result;
 }
 
 std::vector<GrassIdTransforms>& TerrainComponent::GetGrassTransforms() {
@@ -289,8 +298,12 @@ void TerrainComponent::UpdateVegetables() {
 
 			Vec3 position = Vec3(x, _heightmap[orig_x * _height + orig_y], y);
 			Vec3 scale = Vec3(grass._width, grass._height, grass._width);
+			float rotation_y = Random(0, 360);
 
-			Mat4 transform = GetTransform(position, scale, Quat(0, 0, 0, 0));
+			Mat4 scale_mat = GetScaleMatrix(scale);
+			Mat4 translation_mat = GetTranslationMatrix(position);
+
+			Mat4 transform = scale_mat * GetRotationYMatrixEuler(rotation_y) * translation_mat;
 			grass_transforms.AddTransform(transform);
 		}
 	}
@@ -419,6 +432,8 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
 			serializer.Serialize(_texture_factors[i]._textures_factors[texture_i]);
 		}
+
+		serializer.Serialize(_vegetables_data[i]);
 	}
 }
 void TerrainComponent::Deserialize(ByteSolver& solver) {
@@ -466,6 +481,8 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
 			_texture_factors[i]._textures_factors[texture_i] = solver.GetValue<uint8>();
 		}
+
+		_vegetables_data[i] = solver.GetValue<GRASS_ID>();
 	}
 
 	UpdateMesh();

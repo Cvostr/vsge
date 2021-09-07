@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "EntityComponents/MeshComponent.hpp"
 #include "EntityComponents/AnimatorComponent.hpp"
+#include "EntityComponents/TerrainComponent.hpp"
 #include <Math/MatrixTransform.hpp>
 #include "SceneSerialization.hpp"
 #include "string.h"
@@ -214,15 +215,12 @@ void Entity::RemoveAllComponents() {
 
 void Entity::SetPosition(const Vec3& position) {
 	_position = position;
-	//mTransformDirty = true;
 }
 void Entity::SetScale(const Vec3& scale) {
 	_scale = scale;
-	//mTransformDirty = true;
 }
 void Entity::SetRotation(const Quat& rotation) {
 	_rotation = rotation;
-	//mTransformDirty = true;
 }
 
 const AABB& Entity::GetAABB(bool extendChildren) {
@@ -236,7 +234,9 @@ const AABB& Entity::GetAABB(bool extendChildren) {
 			_boundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
 		}
 	}
-	else
+	else if (GetComponent<TerrainComponent>()) {
+		_boundingBox = GetComponent<TerrainComponent>()->GetBoundingBox();
+	}else
 		_boundingBox.SetZero();
 
 	_boundingBox.ApplyTransform(_worldTransform);
