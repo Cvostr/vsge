@@ -269,6 +269,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 }
 
 void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
+	_outputWidth = width;
+	_outputHeight = height;
 	_shadowprocess_framebuffer->SetSize(width, height);
 }
 
@@ -372,7 +374,7 @@ void VulkanShadowmapping::RecordShadowProcessingCmdbuf() {
 	_shadowprocess_cmdbuf->Begin();
 	_shadowprocessRenderPass->CmdBegin(*_shadowprocess_cmdbuf, *_shadowprocess_framebuffer);
 	_shadowprocess_cmdbuf->BindPipeline(*_shadowprocess_pipeline);
-	_shadowprocess_cmdbuf->SetViewport(0, 0, 1280, 720);
+	_shadowprocess_cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
 	_shadowprocess_cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet);
 	_shadowprocess_cmdbuf->BindMesh(*_screenPlane);
 	_shadowprocess_cmdbuf->DrawIndexed(6);

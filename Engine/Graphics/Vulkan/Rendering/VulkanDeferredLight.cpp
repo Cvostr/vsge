@@ -3,19 +3,19 @@
 
 using namespace VSGE;
 
-VulkanDefferedLight::VulkanDefferedLight() {
+VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_width = 1280;
 	_fb_height = 720;
 }
 
-VulkanDefferedLight::~VulkanDefferedLight() {
+VulkanDeferredLight::~VulkanDeferredLight() {
 	SAFE_RELEASE(_deferred_pipeline)
 
 	SAFE_RELEASE(_deferred_fb)
 	SAFE_RELEASE(_deferred_rp)
 }
 
-void VulkanDefferedLight::CreateFramebuffer() {
+void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_rp = new VulkanRenderPass;
 	_deferred_rp->SetClearSize(_fb_width, _fb_height);
 	_deferred_rp->PushColorAttachment(FORMAT_RGBA);
@@ -27,7 +27,7 @@ void VulkanDefferedLight::CreateFramebuffer() {
 	_deferred_fb->Create(_deferred_rp);
 }
 
-void VulkanDefferedLight::CreateDescriptorSet(){
+void VulkanDeferredLight::CreateDescriptorSet(){
 	//Allocate pool
 	_deferred_pool = new VulkanDescriptorPool;
 
@@ -53,7 +53,7 @@ void VulkanDefferedLight::CreateDescriptorSet(){
 	_deferred_descriptor->Create();
 }
 
-void VulkanDefferedLight::CreatePipeline() {
+void VulkanDeferredLight::CreatePipeline() {
 	_deferred_pipeline_layout = new VulkanPipelineLayout;
 	_deferred_pipeline_layout->PushDescriptorSet(_deferred_descriptor);
 	_deferred_pipeline_layout->Create();
@@ -67,17 +67,17 @@ void VulkanDefferedLight::CreatePipeline() {
 	_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
 }
 
-void VulkanDefferedLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
+void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
 	_lights_buffer = lights_buffer;
 	_deferred_descriptor->WriteDescriptorBuffer(2, lights_buffer);
 }
 
-void VulkanDefferedLight::SetCamerasBuffer(VulkanBuffer* cam_buffer) {
+void VulkanDeferredLight::SetCamerasBuffer(VulkanBuffer* cam_buffer) {
 	_cam_buffer = cam_buffer;
 	_deferred_descriptor->WriteDescriptorBuffer(1, cam_buffer);
 }
 
-void VulkanDefferedLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
+void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
 	if (!_deferred_descriptor)
 		return;
 
@@ -91,7 +91,18 @@ void VulkanDefferedLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
 	_deferred_descriptor->WriteDescriptorImage(8, gbuffer->GetDepthAttachment(), attachment_sampler);
 }
 
-void VulkanDefferedLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
+void VulkanDeferredLight::SetGBufferFromFramebuffer(VulkanFramebuffer* fb) {
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+
+	_deferred_descriptor->WriteDescriptorImage(3, (VulkanTexture*)fb->GetColorAttachments()[0], attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(4, (VulkanTexture*)fb->GetColorAttachments()[1], attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(5, (VulkanTexture*)fb->GetColorAttachments()[2], attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(6, (VulkanTexture*)fb->GetColorAttachments()[3], attachment_sampler);
+	//depth
+	_deferred_descriptor->WriteDescriptorImage(8, (VulkanTexture*)fb->GetDepthAttachment(), attachment_sampler);
+}
+
+void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	if (!_deferred_descriptor)
 		return;
 
@@ -100,7 +111,7 @@ void VulkanDefferedLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
 }
 
-void VulkanDefferedLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
+void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
@@ -111,4 +122,16 @@ void VulkanDefferedLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->DrawIndexed(6);
 
 	cmdbuf->EndRenderPass();
+}
+
+void VulkanDeferredLight::Resize(uint32 width, uint32 height) {
+	_fb_width = width;
+	_fb_height = height;
+
+	_deferred_fb->Resize(width, height);
+	_deferred_rp->SetClearSize(width, height);
+}
+
+VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {
+	return _deferred_fb;
 }

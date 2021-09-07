@@ -90,6 +90,9 @@ namespace VSGE {
 
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
+
+		uint32 _outputWidth;
+		uint32 _outputHeight;
 	public:
 
 		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets,

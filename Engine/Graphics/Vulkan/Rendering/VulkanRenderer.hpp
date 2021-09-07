@@ -10,9 +10,8 @@
 #include "../VulkanPipeline.hpp"
 
 #include "VulkanMaterials.hpp"
-#include "VulkanShadowmapping.hpp"
 #include "VulkanTerrainRenderer.hpp"
-#include "PBR/Vulkan_BRDF_LUT.hpp"
+#include "VulkanDeferredLight.hpp"
 
 #define MAX_OBJECTS_RENDER 40000
 #define MAX_ANIMATION_MATRICES 20000
@@ -33,9 +32,6 @@ namespace VSGE {
 
 		VulkanFramebuffer* mGBuffer;
 		VulkanRenderPass* mGBufferPass;
-
-		VulkanFramebuffer* mOutputBuffer;
-		VulkanRenderPass* mOutputPass;
 		
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
@@ -55,7 +51,6 @@ namespace VSGE {
 		VulkanDescriptorSet* mAnimationsDescriptorSet;
 		VulkanDescriptorSet* mParticlesDescriptorSet;
 
-		VulkanDescriptorSet* mDeferredPassSet;
 		//--------------------Buffers--------------------
 		VulkanBuffer* mCameraShaderBuffer;
 		VulkanBuffer* mTransformsShaderBuffer;
@@ -72,14 +67,11 @@ namespace VSGE {
 		VulkanTexture* mEmptyZeroTexture;
 		VulkanTexture* mEmptyOneTexture;
 
-		//--------------------Pipelines------------------
-		VulkanPipeline* mDeferredPipeline;
-
 		//--------------------Shadowmapping--------------
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
 		Vulkan_BRDF_LUT* _brdf_lut;
-
+		VulkanDeferredLight* _deferred_renderer;
 
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;
@@ -104,13 +96,12 @@ namespace VSGE {
 	public:
 
 		VulkanRenderer() : IRenderer() {
-			SetupRenderer();
 			_this = this;
+			SetupRenderer();
 		}
 
 		~VulkanRenderer() {
 			DestroyRenderer();
-			_this = this;
 		}
 
 		static VulkanRenderer* Get() {

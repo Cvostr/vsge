@@ -56,19 +56,6 @@ void VulkanRenderer::SetupRenderer() {
 	mGBuffer->AddAttachment(FORMAT_RGBA); //Material
 	mGBuffer->AddDepth(GetTextureFormat(device->GetSuitableDepthFormat()));
 	mGBuffer->Create(mGBufferPass);
-
-	mOutputPass = new VulkanRenderPass;
-	mOutputPass->SetClearSize(mOutputWidth, mOutputHeight);
-	mOutputPass->PushColorAttachment(FORMAT_RGBA);
-	mOutputPass->Create();
-
-	mOutputBuffer = new VulkanFramebuffer;
-	mOutputBuffer->SetSize(mOutputWidth, mOutputHeight);
-	mOutputBuffer->AddAttachment(FORMAT_RGBA);
-	mOutputBuffer->Create(mOutputPass);
-	
-
-	mOutput = mOutputBuffer->GetColorAttachments()[0];
 	
 	//-----------------------Prepare semaphores-------------------
 	mBeginSemaphore = new VulkanSemaphore;
@@ -163,24 +150,6 @@ void VulkanRenderer::SetupRenderer() {
 	mParticlesDescriptorSet = new VulkanDescriptorSet(mObjectsPool);
 	mParticlesDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
 
-	mDeferredPassSet = new VulkanDescriptorSet(mObjectsPool);
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//shadows
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//depth
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//brdf lut
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 9, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//specular env map
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//irradiance env map
-	mDeferredPassSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 11, VK_SHADER_STAGE_FRAGMENT_BIT);
-
 	//Create POOL
 	mObjectsPool->Create();
 	//Create descriptor sets
@@ -216,16 +185,15 @@ void VulkanRenderer::SetupRenderer() {
 	_brdf_lut = new Vulkan_BRDF_LUT;
 	_brdf_lut->Create();
 
-	mDeferredPassSet->Create();
-	mDeferredPassSet->WriteDescriptorBuffer(1, mCameraShaderBuffer);
-	mDeferredPassSet->WriteDescriptorBuffer(2, _lightsBuffer);
-	mDeferredPassSet->WriteDescriptorImage(3, (VulkanTexture*)mGBuffer->GetColorAttachments()[0], mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(4, (VulkanTexture*)mGBuffer->GetColorAttachments()[1], mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(5, (VulkanTexture*)mGBuffer->GetColorAttachments()[2], mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(6, (VulkanTexture*)mGBuffer->GetColorAttachments()[3], mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(7, _shadowmapper->GetOutputTexture(), mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(8, (VulkanTexture*)mGBuffer->GetDepthAttachment(), mAttachmentSampler);
-	mDeferredPassSet->WriteDescriptorImage(9, _brdf_lut->GetTextureLut(), mAttachmentSampler);
+	_deferred_renderer = new VulkanDeferredLight;
+	_deferred_renderer->CreateFramebuffer();
+	_deferred_renderer->CreateDescriptorSet();
+	_deferred_renderer->CreatePipeline();
+	_deferred_renderer->SetShadowmapper(_shadowmapper);
+	_deferred_renderer->SetLightsBuffer(_lightsBuffer);
+	_deferred_renderer->SetCamerasBuffer(mCameraShaderBuffer);
+	_deferred_renderer->SetGBufferFromFramebuffer(mGBuffer);
+	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -237,18 +205,10 @@ void VulkanRenderer::SetupRenderer() {
 	mLightsCmdbuf = new VulkanCommandBuffer;
 	mLightsCmdbuf->Create(mCmdPool);
 
-	//--------------------Pipeline--------------------------------
-	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
-	p_layout->PushDescriptorSet(mDeferredPassSet);
-	p_layout->Create();
-
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
-
-	mDeferredPipeline = new VulkanPipeline;
-	mDeferredPipeline->Create(deferred_light, mOutputPass, _vertexLayout, p_layout);
 
 	//---Material test ----
 	pbr_template = new MaterialTemplate;
@@ -558,21 +518,9 @@ void VulkanRenderer::StoreWorldObjects() {
 	mGBufferCmdbuf->EndRenderPass();
 	mGBufferCmdbuf->End();
 
-
 	mLightsCmdbuf->Begin();
-	mOutputPass->CmdBegin(*mLightsCmdbuf, *mOutputBuffer);
-
-	//DrawSkybox(mLightsCmdbuf);
-
-	mLightsCmdbuf->BindPipeline(*mDeferredPipeline);
-	mLightsCmdbuf->SetViewport(0, 0, mOutputWidth, mOutputHeight);
-	mLightsCmdbuf->BindDescriptorSets(*mDeferredPipeline->GetPipelineLayout(), 0, 1, mDeferredPassSet);
-	mLightsCmdbuf->BindMesh(*mSpriteMesh, 0);
-	mLightsCmdbuf->DrawIndexed(6);
-
-	mLightsCmdbuf->EndRenderPass();
+	_deferred_renderer->RecordCmdbuf(mLightsCmdbuf);
 	mLightsCmdbuf->End();
-
 }
 
 void VulkanRenderer::DrawSkybox(VulkanCommandBuffer* cmdbuffer) {
@@ -663,10 +611,12 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputHeight = height;
 
 	mGBuffer->Resize(width, height);
-	mOutputBuffer->Resize(width, height);
-
 	mGBufferPass->SetClearSize(width, height);
-	mOutputPass->SetClearSize(width, height);
+
+	_deferred_renderer->Resize(width, height);
+	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
+
+	_terrain_renderer->SetOutputSizes(width, height);
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
