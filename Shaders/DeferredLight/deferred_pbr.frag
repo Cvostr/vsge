@@ -110,9 +110,11 @@ vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_colo
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
-vec3 CalculateIBL(vec3 Normal, vec3 F0, float cosLo, float roughness, float metalness, vec3 albedo){
+vec3 CalculateIBL(vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, float metalness, vec3 albedo){
     Normal.y *= -1;
-    vec3 irradiance = texture(env_cube, Normal).rgb;
+    vec3 Lr = 2.0 * cosLo * Normal - Lo;
+    
+    vec3 irradiance = texture(env_cube, Lr).rgb;
     return irradiance * metalness;
     /*vec3 F = fresnelSchlick(cosLo, F0);
     vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
@@ -129,10 +131,9 @@ vec3 CalculateIBL(vec3 Normal, vec3 F0, float cosLo, float roughness, float meta
     return diffuseIBL + specularIBL;*/
 }
 
-vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0) {
+vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0) {
     vec3 result = vec3(0);
     //Calculate direction from camera to processing fragment
-    vec3 camToFragDirection = normalize(cam_position - pos);
     //iterate over all lights and calculate them
     for(int light_i = 0; light_i < lights_count; light_i ++) {
 
@@ -140,7 +141,7 @@ vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, flo
 			vec3 L = lights[light_i].direction;
             result += CalculateLight(L, 
                                     lights[light_i].intensity, 
-                                    camToFragDirection,
+                                    Lo,
                                     lights[light_i].color,
                                     albedo,
                                     normal,
@@ -156,7 +157,7 @@ vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, flo
             
             result += CalculateLight(L, 
                                     attenuation, 
-                                    camToFragDirection,
+                                    Lo,
                                     lights[light_i].color,
                                     albedo,
                                     normal,
@@ -178,7 +179,7 @@ vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, flo
 
             result += CalculateLight(L, 
                                     intensity * lights[light_i].intensity, 
-                                    camToFragDirection,
+                                    Lo,
                                     lights[light_i].color,
                                     albedo,
                                     normal,
@@ -212,12 +213,14 @@ void main() {
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, albedo, metallic);
 
-        vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
+        vec3 Lo = normalize(cam_position - pos);
+
+        vec3 lightning = CalculateLightning(Lo, albedo, normal, pos, roughness, metallic, F0) * ao;
         vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
         
-        vec3 Lo = normalize(cam_position - pos);
+        
         float cosLo = max(0.0, dot(normal, Lo));
-        vec3 ambient = CalculateIBL(normal, F0, cosLo, roughness, metallic, albedo);
+        vec3 ambient = CalculateIBL(normal, F0, Lo, cosLo, roughness, metallic, albedo);
         color += ambient;
 
         color = color / (color + vec3(1.0));
