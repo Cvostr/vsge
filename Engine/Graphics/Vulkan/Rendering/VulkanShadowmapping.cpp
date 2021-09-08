@@ -241,6 +241,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	}
 
 	caster->_caster_type = entity->GetComponent<LightsourceComponent>()->GetLightType();
+	caster->_caster_pos = light->GetEntity()->GetAbsolutePosition();
+	caster->_caster_range = light->GetRange();
 
 	Mat4* cascades_projections = light->GetShadowcastMatrices(cam);
 	_shadowcasters_buffer->WriteData(_added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * image_layers_count, cascades_projections);
@@ -255,8 +257,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	uint32 pcf = light->GetShadowPCF();
 	float strength = light->GetShadowStrength();
 	LightType type = light->GetLightType();
-	Vec3 pos = light->GetEntity()->GetAbsolutePosition();
-	float range = light->GetRange();
+	Vec3 pos = caster->_caster_pos;
+	float range = caster->_caster_range;
 
 	_shadowprocess_buffer->WriteData(offset, 4, &bias);
 	_shadowprocess_buffer->WriteData(offset + 4, 4, &pcf);
@@ -267,6 +269,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 
 	_shadowcasters_buffer->WriteData(offset_casters, 12, &pos);
 	_shadowcasters_buffer->WriteData(offset_casters + 12, 4, &type);
+
+	
 
 	_added_casters++;
 }
@@ -331,6 +335,12 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex) {
 			//mesh = (VulkanMesh*)terrain->GetTerrainMesh();
 		}
 
+		//Check distance
+		/*if (caster->_caster_type == LIGHT_TYPE_POINT || caster->_caster_type == LIGHT_TYPE_SPOT) {
+			float distance = caster->_caster_pos.DistanceTo(entity->GetAbsolutePosition());
+			if (distance > caster->_caster_range)
+				continue;
+		}*/
 
 		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };

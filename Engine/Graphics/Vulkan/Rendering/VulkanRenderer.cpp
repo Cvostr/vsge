@@ -144,12 +144,20 @@ void VulkanRenderer::SetupRenderer() {
 	_deferred_renderer->CreateDescriptorSet();
 	_deferred_renderer->CreatePipeline();
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
+	_deferred_renderer->SetBRDF_LUT(_brdf_lut);
 	_deferred_renderer->SetLightsBuffer(_lightsBuffer);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	_deferred_renderer->SetCameraIndex(0);
 	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
 	_env_map = new VulkanEnvMap;
+	_env_map->SetInputData(
+		_entitiesToRender,
+		_particleEmitters,
+		mTransformsShaderBuffer,
+		mAnimationTransformsShaderBuffer,
+		mParticlesTransformShaderBuffer,
+		_lightsBuffer);
 	_env_map->Create();
 
 	//---------------------Command buffers------------------------
@@ -371,6 +379,8 @@ void VulkanRenderer::StoreWorldObjects() {
 	mLightsCmdbuf->Begin();
 	_deferred_renderer->RecordCmdbuf(mLightsCmdbuf);
 	mLightsCmdbuf->End();
+
+	_env_map->RecordCmdbufs();
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
@@ -378,6 +388,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	this->cam = cam;
 	_shadowmapper->SetCamera(cam);
 	_shadowmapper->SetScene(mScene);
+	_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
 	//---------------------
 
 	_cameras_buffer->SetCamera(0, cam);
@@ -408,7 +419,11 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
 
-	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *mEndSemaphore);
+	VulkanSemaphore* end_semaphore = _env_map->GetBeginSemaphore();
+
+	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
+
+	_env_map->Execute(mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
@@ -425,4 +440,28 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
 	return _terrain_renderer;
+}
+
+VulkanSemaphore* VulkanRenderer::GetBeginSemaphore() {
+	return mBeginSemaphore;
+}
+
+VulkanSemaphore* VulkanRenderer::GetEndSemaphore() {
+	return mEndSemaphore;
+}
+
+VulkanSampler* VulkanRenderer::GetAttachmentSampler() {
+	return mAttachmentSampler;
+}
+
+VulkanTexture* VulkanRenderer::GetBlackTexture() {
+	return mEmptyZeroTexture;
+}
+
+VulkanMesh* VulkanRenderer::GetScreenMesh() {
+	return mSpriteMesh;
+}
+
+VulkanCamerasBuffer* VulkanRenderer::GetCamerasBuffer() {
+	return _cameras_buffer;
 }

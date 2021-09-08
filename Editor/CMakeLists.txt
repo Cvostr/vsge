@@ -85,13 +85,25 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/freetype.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/assimp/assimp.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/openal/OpenAL32.lib)
 
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp.lib)
+if (CMAKE_BUILD_TYPE MATCHES Release)
+#bullet
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletCollision.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath.lib)
+#yaml
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp-rel.lib)
+ENDIF()
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
 #bullet
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletCollision_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
+#yaml
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp-dbg.lib)
+ENDIF()
 
 #Win32 libs
 target_link_libraries(Editor Winmm.lib)

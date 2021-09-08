@@ -22,6 +22,8 @@ namespace VSGE {
 	class VulkanShadowCaster {
 	public:
 		LightType _caster_type;
+		Vec3 _caster_pos;
+		float _caster_range;
 		VulkanFramebuffer* _framebuffer;
 		VulkanCommandBuffer* _cmdbuf;
 

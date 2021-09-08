@@ -108,6 +108,8 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	uint32 _writtenParticleTransforms = 0;
 	uint32 drawn_terrains = 0;
 
+	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
+
 	VulkanTerrainRenderer* terrain_renderer = VulkanRenderer::Get()->GetTerrainRenderer();
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
@@ -134,7 +136,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 						cmdbuf->BindPipeline(*pipl);
 						cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-						uint32 offsets[2] = { _camera_index, 0 };
+						uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
 						cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets);
 						cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 
@@ -148,6 +150,11 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
 		Entity* entity = (*_entities_to_render)[e_i];
+
+		AABB bounding_box = entity->GetAABB();
+
+		if (!camera->IsVisibleInFrustum(bounding_box))
+			continue;
 
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
 		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
@@ -184,7 +191,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
-			uint32 offsets[2] = { _camera_index, e_i * UNI_ALIGN % 65535 };
+			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
 			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
 			_drawn_bones += mesh->GetBones().size();
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
@@ -227,7 +234,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
-			uint32 offsets1[2] = { _camera_index, 0 };
+			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
 			uint32 offset2 = _writtenParticleTransforms * sizeof(Mat4);
 
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets1);

@@ -36,6 +36,7 @@ namespace VSGE {
 		void SetGBuffer(VulkanGBufferRenderer* gbuffer);
 		void SetGBufferFromFramebuffer(VulkanFramebuffer* fb);
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
+		void SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut);
 		void SetCameraIndex(uint32 camera_index);
 
 		VulkanFramebuffer* GetFramebuffer();

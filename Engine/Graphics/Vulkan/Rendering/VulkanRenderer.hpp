@@ -99,25 +99,17 @@ namespace VSGE {
 			return _this;
 		}
 
-		VulkanSemaphore* GetBeginSemaphore() {
-			return mBeginSemaphore;
-		}
+		VulkanSemaphore* GetBeginSemaphore();
 
-		VulkanSemaphore* GetEndSemaphore() {
-			return mEndSemaphore;
-		}
+		VulkanSemaphore* GetEndSemaphore();
 
-		VulkanSampler* GetAttachmentSampler() {
-			return mAttachmentSampler;
-		}
+		VulkanSampler* GetAttachmentSampler();
 
-		VulkanMesh* GetScreenMesh() {
-			return mSpriteMesh;
-		}
+		VulkanTexture* GetBlackTexture();
 
-		VulkanCamerasBuffer* GetCamerasBuffer() {
-			return _cameras_buffer;
-		}
+		VulkanMesh* GetScreenMesh();
+
+		VulkanCamerasBuffer* GetCamerasBuffer();
 
 		void StoreWorldObjects();
 

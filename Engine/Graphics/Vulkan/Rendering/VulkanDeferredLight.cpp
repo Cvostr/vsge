@@ -54,6 +54,9 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	_deferred_descriptor->Create();
 
 	_deferred_descriptor->WriteDescriptorBuffer(1, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
+	//write base textures
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderer::Get()->GetBlackTexture(), attachment_sampler);
 }
 
 void VulkanDeferredLight::CreatePipeline() {
@@ -109,13 +112,23 @@ void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
 }
 
+void VulkanDeferredLight::SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut) {
+	if (!_deferred_descriptor)
+		return;
+
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+
+	_deferred_descriptor->WriteDescriptorImage(9, brdf_lut->GetTextureLut(), attachment_sampler);
+}
+
 void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
 	cmdbuf->BindPipeline(*_deferred_pipeline);
 	cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &_camera_index);
+	uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
+	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
 	cmdbuf->BindMesh(*mesh, 0);
 	cmdbuf->DrawIndexed(6);
 

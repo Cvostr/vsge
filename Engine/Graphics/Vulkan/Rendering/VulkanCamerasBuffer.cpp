@@ -39,11 +39,14 @@ void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float far_plane
 		_cameras[i]->SetPosition(position);
 		_cameras[i]->SetFarPlane(far_plane);
 
-		_cameras[i]->SetFront(fronts[i]);
-		_cameras[i]->SetUp(ups[i]);
+		_cameras[i]->SetFront(fronts[i - ENVMAP_CAMS_POS]);
+		_cameras[i]->SetUp(ups[i - ENVMAP_CAMS_POS]);
 		_cameras[i]->UpdateMatrices();
 
-		WriteCameraToBuffer(i, _cameras[i]->GetProjectionMatrix(), _cameras[i]->GetViewMatrix(), position);
+		Mat4 projection = _cameras[i]->GetProjectionMatrix();
+		projection[1][1] *= -1;
+
+		WriteCameraToBuffer(i, projection, _cameras[i]->GetViewMatrix(), position);
 	}
 }
 
