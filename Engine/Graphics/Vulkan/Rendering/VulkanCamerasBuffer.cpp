@@ -14,7 +14,15 @@ void VulkanCamerasBuffer::Create() {
 	_cameras_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	_cameras_buffer->Create((MAX_CAMERAS + 6) * CAMERA_ELEM_SIZE);
 
-	_cameras = new Camera * [MAX_CAMERAS];
+	_cameras = new Camera* [MAX_CAMERAS + 6];
+
+	//Fill last 6 cameras with empty cameras
+	for (uint32 i = ENVMAP_CAMS_POS; i < ENVMAP_CAMS_POS + 6; i++) {
+		_cameras[i] = new Camera;
+		_cameras[i]->SetFOV(90);
+		_cameras[i]->SetAspectRatio(1.f);
+		_cameras[i]->SetNearPlane(0.1f);
+	}
 }
 void VulkanCamerasBuffer::Destroy() {
 	SAFE_RELEASE(_cameras_buffer)
@@ -24,18 +32,19 @@ void VulkanCamerasBuffer::Destroy() {
 void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float far_plane) {
 	Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, far_plane);
 
-	Mat4 view = GetViewRH(position, position + Vec3(1, 0, 0), Vec3(0, -1, 0));
-	WriteCameraToBuffer(ENVMAP_CAMS_POS, projection, view, position);
-	view = GetViewRH(position, position + Vec3(-1, 0, 0), Vec3(0, -1, 0));
-	WriteCameraToBuffer(ENVMAP_CAMS_POS + 1, projection, view, position);
-	view = GetViewRH(position, position + Vec3(0, 1, 0), Vec3(0, 0, 1));
-	WriteCameraToBuffer(ENVMAP_CAMS_POS + 2, projection, view, position);
-	view = GetViewRH(position, position + Vec3(0, -1, 0), Vec3(0, 0, -1));
-	WriteCameraToBuffer(ENVMAP_CAMS_POS + 3, projection, view, position);
-	view = GetViewRH(position, position + Vec3(0, 0, 1), Vec3(0, -1, 0));
-	WriteCameraToBuffer(ENVMAP_CAMS_POS + 4, projection, view, position);
-	view = GetViewRH(position, position + Vec3(0, 0, -1), Vec3(0, -1, 0));
-	WriteCameraToBuffer(ENVMAP_CAMS_POS + 5, projection, view, position);
+	Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, 1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
+	Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
+
+	for (uint32 i = ENVMAP_CAMS_POS; i < ENVMAP_CAMS_POS + 6; i++) {
+		_cameras[i]->SetPosition(position);
+		_cameras[i]->SetFarPlane(far_plane);
+
+		_cameras[i]->SetFront(fronts[i]);
+		_cameras[i]->SetUp(ups[i]);
+		_cameras[i]->UpdateMatrices();
+
+		WriteCameraToBuffer(i, _cameras[i]->GetProjectionMatrix(), _cameras[i]->GetViewMatrix(), position);
+	}
 }
 
 void VulkanCamerasBuffer::WriteCameraToBuffer(
@@ -72,6 +81,7 @@ uint32 VulkanCamerasBuffer::GetCameraId(Camera* camera) {
 		if (_cameras[i] == camera)
 			return i;
 	}
+	return 0xFFFFFFFF;
 }
 Camera* VulkanCamerasBuffer::GetCameraByIndex(uint32 index) {
 	return _cameras[index];

@@ -7,12 +7,12 @@ using namespace VSGE;
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
 	//Add common vertex descriptor
-	p_layout->PushDescriptorSet(mVertexDescriptorSets[0]);
+	p_layout->PushDescriptorSet(_gbuffer_renderer->GetVertexDescriptorSets()[0]);
 
 	//Add materials descriptor
 	VulkanDescriptorSet* materialsDescrSet = CreateDescriptorSetFromMaterialTemplate(mat_template);
 	p_layout->PushDescriptorSet(materialsDescrSet);
-	p_layout->PushDescriptorSet(mAnimationsDescriptorSet);
+	p_layout->PushDescriptorSet(_gbuffer_renderer->GetAnimationsDescriptorSet());
 	//Create pipeline layout
 	p_layout->Create();
 
@@ -21,7 +21,7 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 	pipeline->SetDepthTest(mat_template->GetDepthTest());
 	pipeline->SetCullMode(mat_template->GetCullMode());
 	pipeline->SetBlendingDescs(mat_template->GetBlendingAttachmentDescs());
-	pipeline->Create((VulkanShader*)mat_template->GetShader(), mGBufferPass, mat_template->GetLayout(), p_layout);
+	pipeline->Create((VulkanShader*)mat_template->GetShader(), _gbuffer_renderer->GetRenderPass(), mat_template->GetLayout(), p_layout);
 	//Store pipeline pointer in material template	
 	mat_template->SetPipeline(pipeline);
 

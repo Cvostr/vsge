@@ -1,6 +1,10 @@
 #include "VulkanGBufferRenderer.hpp"
 #include "../VulkanRAPI.hpp"
 #include "VulkanRenderer.hpp"
+#include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
+#include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+#include <Resources/DefaultResources.hpp>
 
 using namespace VSGE;
 
@@ -94,12 +98,153 @@ void VulkanGBufferRenderer::SetBuffers(VulkanBuffer* transforms_buffer, VulkanBu
 	}
 }
 
-void VulkanGBufferRenderer::SetEntitiesToRender(tEntityList& entities) {
+void VulkanGBufferRenderer::SetEntitiesToRender(tEntityList& entities, tEntityList& particles) {
 	_entities_to_render = &entities;
+	_particles_to_render = &particles;
 }
 
 void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
+	uint32 _drawn_bones = 0;
+	uint32 _writtenParticleTransforms = 0;
+	uint32 drawn_terrains = 0;
 
+	VulkanTerrainRenderer* terrain_renderer = VulkanRenderer::Get()->GetTerrainRenderer();
+
+	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
+
+	Scene* scene = VulkanRenderer::Get()->GetScene();
+		if (scene) {
+			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
+			if (env_settings._skybox_material.IsResourceSpecified()) {
+				MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
+				if (resource) {
+
+					if (resource->IsUnloaded()) {
+						resource->Load();
+					}
+
+					if (resource->IsReady()) {
+						resource->Use();
+						Material* mat = resource->GetMaterial();
+						VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
+						VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+						MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
+						VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+						VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+
+						cmdbuf->BindPipeline(*pipl);
+						cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+						uint32 offsets[2] = { _camera_index, 0 };
+						cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets);
+						cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+
+						VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
+						cmdbuf->BindMesh(*cube);
+						cmdbuf->Draw(cube->GetVerticesCount());
+					}
+				}
+			}
+		}
+
+	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
+		Entity* entity = (*_entities_to_render)[e_i];
+
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
+
+		if (!mesh_component && !material_component) {
+			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
+			if (terrain) {
+				terrain_renderer->DrawTerrain(cmdbuf, drawn_terrains++, e_i);
+			}
+			continue;
+		}
+
+		MeshResource* mesh_resource = mesh_component->GetMeshResource();
+		MaterialResource* mat_resource = material_component->GetMaterialResource();
+
+		if (mat_resource->GetState() != RESOURCE_STATE_READY)
+			continue;
+
+		//bind material
+		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+		Material* mat = mat_resource->GetMaterial();
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+
+		cmdbuf->BindPipeline(*pipl);
+		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+
+		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			//Mark mesh resource used in this frame
+			mesh_resource->Use();
+			//Mark material resource used in this frame
+			mat_resource->Use();
+
+			uint32 offsets[2] = { _camera_index, e_i * UNI_ALIGN % 65535 };
+			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
+			_drawn_bones += mesh->GetBones().size();
+			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
+
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[vertexDescriptorID], 2, offsets);
+			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _animations_descriptor_set, 1, &anim_offset);
+			cmdbuf->BindMesh(*mesh);
+			if (mesh->GetIndexCount() > 0)
+				cmdbuf->DrawIndexed(mesh->GetIndexCount());
+			else
+				cmdbuf->Draw(mesh->GetVerticesCount());
+		}
+	}
+
+	for (uint32 particle_em_i = 0; particle_em_i < _particles_to_render->size(); particle_em_i++) {
+		Entity* entity = (*_particles_to_render)[particle_em_i];
+		ParticleEmitterComponent* particle_emitter = entity->GetComponent<ParticleEmitterComponent>();
+
+		if (!particle_emitter->IsSimulating())
+			continue;
+
+		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
+
+		//bind material
+		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+		Material* mat = mat_resource->GetMaterial();
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+
+		cmdbuf->BindPipeline(*pipl);
+		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+
+		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			//Mark mesh resource used in this frame
+			mesh_resource->Use();
+			//Mark material resource used in this frame
+			mat_resource->Use();
+
+			uint32 offsets1[2] = { _camera_index, 0 };
+			uint32 offset2 = _writtenParticleTransforms * sizeof(Mat4);
+
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets1);
+			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _particles_descriptor_set, 1, &offset2);
+			cmdbuf->BindMesh(*mesh);
+			uint32 instances_count = particle_emitter->GetAliveParticlesCount();
+			if (mesh->GetIndexCount() > 0)
+				cmdbuf->DrawIndexed(mesh->GetIndexCount(), instances_count);
+			else
+				cmdbuf->Draw(mesh->GetVerticesCount(), instances_count);
+
+			uint32 particles_count = particle_emitter->GetAliveParticlesCount();
+			_writtenParticleTransforms += particles_count;
+		}
+	}
+
+	cmdbuf->EndRenderPass();
 }
 
 void VulkanGBufferRenderer::CreateBuffers() {
@@ -145,4 +290,11 @@ VulkanBuffer* VulkanGBufferRenderer::GetAnimationsBuffer() {
 }
 VulkanBuffer* VulkanGBufferRenderer::GetParticlesBuffer() {
 	return _particles_buffer;
+}
+
+std::vector<VulkanDescriptorSet*>& VulkanGBufferRenderer::GetVertexDescriptorSets() {
+	return _vertex_descriptor_sets;
+}
+VulkanDescriptorSet* VulkanGBufferRenderer::GetAnimationsDescriptorSet() {
+	return _animations_descriptor_set;
 }

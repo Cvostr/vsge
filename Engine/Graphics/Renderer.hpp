@@ -34,11 +34,10 @@ namespace VSGE {
 			mOutputHeight(720)
 		{}
 
-		void SetScene(Scene* scene) { mScene = scene; }
+		void SetScene(Scene* scene);
+		Scene* GetScene();
 
-		Texture* GetOutputTexture() {
-			return mOutput;
-		}
+		Texture* GetOutputTexture();
 
 		virtual void ResizeOutput(uint32 width, uint32 height) = 0;
 

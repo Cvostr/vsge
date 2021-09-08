@@ -6,6 +6,7 @@ using namespace VSGE;
 VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_width = 1280;
 	_fb_height = 720;
+	_camera_index = 0;
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
@@ -32,7 +33,7 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	_deferred_pool = new VulkanDescriptorPool;
 
 	_deferred_descriptor = new VulkanDescriptorSet(_deferred_pool);
-	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -114,7 +115,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
 	cmdbuf->BindPipeline(*_deferred_pipeline);
 	cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor);
+	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &_camera_index);
 	cmdbuf->BindMesh(*mesh, 0);
 	cmdbuf->DrawIndexed(6);
 
@@ -127,6 +128,10 @@ void VulkanDeferredLight::Resize(uint32 width, uint32 height) {
 
 	_deferred_fb->Resize(width, height);
 	_deferred_rp->SetClearSize(width, height);
+}
+
+void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {
+	_camera_index = camera_index;
 }
 
 VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {

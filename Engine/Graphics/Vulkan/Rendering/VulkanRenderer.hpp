@@ -14,13 +14,10 @@
 #include "VulkanDeferredLight.hpp"
 #include "VulkanCamerasBuffer.hpp"
 #include "VulkanGBufferRenderer.hpp"
+#include "VulkanEnvMap.hpp"
 
-
-#define MAX_CAMERAS 10
 #define UNI_ALIGN 256
 #define MATERIAL_SIZE 512
-
-
 
 namespace VSGE {
 
@@ -28,9 +25,6 @@ namespace VSGE {
 	private:
 
 		static VulkanRenderer* _this;
-
-		VulkanFramebuffer* mGBuffer;
-		VulkanRenderPass* mGBufferPass;
 		
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
@@ -44,11 +38,7 @@ namespace VSGE {
 		VulkanCommandBuffer* mGBufferCmdbuf;
 		VulkanCommandBuffer* mLightsCmdbuf;
 		//--------------------Descriptors----------------
-		VulkanDescriptorPool* mObjectsPool;
 		VulkanDescriptorPool* mMaterialsDescriptorPool;
-		std::vector<VulkanDescriptorSet*> mVertexDescriptorSets;
-		VulkanDescriptorSet* mAnimationsDescriptorSet;
-		VulkanDescriptorSet* mParticlesDescriptorSet;
 
 		//--------------------Buffers--------------------
 		VulkanBuffer* mTransformsShaderBuffer;
@@ -65,12 +55,14 @@ namespace VSGE {
 		VulkanTexture* mEmptyZeroTexture;
 		VulkanTexture* mEmptyOneTexture;
 
-		//--------------------Shadowmapping--------------
+
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
 		Vulkan_BRDF_LUT* _brdf_lut;
 		VulkanCamerasBuffer* _cameras_buffer;
+		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanDeferredLight* _deferred_renderer;
+		VulkanEnvMap* _env_map;
 
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;
@@ -82,7 +74,7 @@ namespace VSGE {
 
 		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
 
-		void UpdateMaterialDescrSet(Material* mat);
+		
 		void BindMaterial(Material* mat);
 	
 		uint32 _writtenBones;
@@ -132,7 +124,7 @@ namespace VSGE {
 		void SetupRenderer();
 		void DestroyRenderer();
 		void DrawScene(VSGE::Camera* cam);
-		void DrawSkybox(VulkanCommandBuffer* cmdbuffer);
+		void UpdateMaterialDescrSet(Material* mat);
 
 		VulkanTerrainRenderer* GetTerrainRenderer();
 

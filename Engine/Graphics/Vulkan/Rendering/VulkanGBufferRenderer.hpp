@@ -30,6 +30,7 @@ namespace VSGE {
 
 		uint32 _camera_index;
 		tEntityList* _entities_to_render;
+		tEntityList* _particles_to_render;
 	public:
 
 		VulkanGBufferRenderer();
@@ -39,7 +40,7 @@ namespace VSGE {
 		void CreateDescriptorSets();
 		void SetCameraIndex(uint32 camera_index);
 
-		void SetEntitiesToRender(tEntityList& entities);
+		void SetEntitiesToRender(tEntityList& entities, tEntityList& particles);
 		void SetBuffers(
 			VulkanBuffer* transforms_buffer = nullptr,
 			VulkanBuffer* anims_buffer = nullptr,
@@ -59,5 +60,8 @@ namespace VSGE {
 		VulkanBuffer* GetTransformsBuffer();
 		VulkanBuffer* GetAnimationsBuffer();
 		VulkanBuffer* GetParticlesBuffer();
+
+		std::vector<VulkanDescriptorSet*>& GetVertexDescriptorSets();
+		VulkanDescriptorSet* GetAnimationsDescriptorSet();
 	};
 }

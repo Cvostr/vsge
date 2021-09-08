@@ -88,3 +88,13 @@ void IRenderer::ProcessEntity(Entity* entity) {
 		ProcessEntity(child);
 	}
 }
+
+void IRenderer::SetScene(Scene* scene) { 
+	mScene = scene; 
+}
+Scene* IRenderer::GetScene() { 
+	return mScene; 
+}
+Texture* IRenderer::GetOutputTexture() {
+	return mOutput;
+}

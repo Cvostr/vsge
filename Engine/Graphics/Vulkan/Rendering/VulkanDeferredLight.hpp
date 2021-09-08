@@ -23,6 +23,7 @@ namespace VSGE {
 
 		uint32 _fb_width;
 		uint32 _fb_height;
+		uint32 _camera_index;
 	public:
 		VulkanDeferredLight();
 		~VulkanDeferredLight();
@@ -35,6 +36,7 @@ namespace VSGE {
 		void SetGBuffer(VulkanGBufferRenderer* gbuffer);
 		void SetGBufferFromFramebuffer(VulkanFramebuffer* fb);
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
+		void SetCameraIndex(uint32 camera_index);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
