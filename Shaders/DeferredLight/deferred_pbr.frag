@@ -11,6 +11,8 @@ layout(binding = 6) uniform sampler2D material;
 layout(binding = 7) uniform sampler2D shadows;
 layout(binding = 8) uniform sampler2D depth;
 layout(binding = 9) uniform sampler2D brdf_lut;
+layout(binding = 10) uniform samplerCube env_cube;
+layout(binding = 11) uniform samplerCube env_cube_irradiance;
 
 #define LIGHTSOURCE_DIR 0
 #define LIGHTSOURCE_POINT 1
@@ -41,36 +43,7 @@ layout (std140, binding = 2) uniform Lights{
 
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0);
 
-void main() {
-    float depth = texture(depth, UVCoord).r;
-    vec4 diffuse = texture(color, UVCoord);
 
-    if(depth == 1.0)
-        tColor = vec4(diffuse.rgb, 1);
-    else{
-        vec3 normal = texture(normal, UVCoord).rgb;
-        vec3 pos = texture(pos, UVCoord).rgb;
-        vec4 material = texture(material, UVCoord);
-        float shadow = texture(shadows, UVCoord).r;
-
-        vec3 albedo = pow(diffuse.rgb, vec3(2.2));
-        float roughness = material.r;
-        float metallic = material.g;
-        float emission = material.b;
-        float ao = material.a;
-
-        vec3 F0 = vec3(0.04); 
-        F0 = mix(F0, albedo, metallic);
-
-        vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
-        vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
-        
-        color = color / (color + vec3(1.0));
-        color = pow(color, vec3(1.0/2.2)); 
-
-        tColor = vec4(color, 1);
-    }
-}
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -137,6 +110,25 @@ vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_colo
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
+vec3 CalculateIBL(vec3 Normal, vec3 F0, float cosLo, float roughness, float metalness, vec3 albedo){
+    Normal.y *= -1;
+    vec3 irradiance = texture(env_cube, Normal).rgb;
+    return irradiance * metalness;
+    /*vec3 F = fresnelSchlick(cosLo, F0);
+    vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
+    vec3 diffuseIBL = kd * albedo * irradiance;
+
+    vec2 specularBRDF = texture(brdf_lut, vec2(cosLo, roughness)).rg;
+
+
+	vec3 specularIrradiance = diffuseIBL;
+    // Total specular IBL contribution.
+	vec3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
+
+
+    return diffuseIBL + specularIBL;*/
+}
+
 vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0) {
     vec3 result = vec3(0);
     //Calculate direction from camera to processing fragment
@@ -195,5 +187,42 @@ vec3 CalculateLightning(vec3 albedo, vec3 normal, vec3 pos, float roughness, flo
                                     F0);
         }
     }
+
     return result;
+}
+
+void main() {
+    float depth = texture(depth, UVCoord).r;
+    vec4 diffuse = texture(color, UVCoord);
+
+    if(depth == 1.0)
+        tColor = vec4(diffuse.rgb, 1);
+    else{
+        vec3 normal = texture(normal, UVCoord).rgb;
+        vec3 pos = texture(pos, UVCoord).rgb;
+        vec4 material = texture(material, UVCoord);
+        float shadow = texture(shadows, UVCoord).r;
+
+        vec3 albedo = pow(diffuse.rgb, vec3(2.2));
+        float roughness = material.r;
+        float metallic = material.g;
+        float emission = material.b;
+        float ao = material.a;
+
+        vec3 F0 = vec3(0.04); 
+        F0 = mix(F0, albedo, metallic);
+
+        vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
+        vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
+        
+        vec3 Lo = normalize(cam_position - pos);
+        float cosLo = max(0.0, dot(normal, Lo));
+        vec3 ambient = CalculateIBL(normal, F0, cosLo, roughness, metallic, albedo);
+        color += ambient;
+
+        color = color / (color + vec3(1.0));
+        color = pow(color, vec3(1.0/2.2)); 
+
+        tColor = vec4(color, 1);
+    }
 }

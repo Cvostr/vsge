@@ -7,6 +7,7 @@ VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_width = 1280;
 	_fb_height = 720;
 	_camera_index = 0;
+	_is_envmap = false;
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
@@ -70,7 +71,10 @@ void VulkanDeferredLight::CreatePipeline() {
 	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 
 	_deferred_pipeline = new VulkanPipeline;
-	_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
+	if(_is_envmap)
+		_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred_envmap"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
+	else
+		_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
 }
 
 void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
@@ -121,6 +125,15 @@ void VulkanDeferredLight::SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut) {
 	_deferred_descriptor->WriteDescriptorImage(9, brdf_lut->GetTextureLut(), attachment_sampler);
 }
 
+void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture) {
+	if (!_deferred_descriptor)
+		return;
+
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+
+	_deferred_descriptor->WriteDescriptorImage(binding, texture, attachment_sampler);
+}
+
 void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
@@ -145,6 +158,10 @@ void VulkanDeferredLight::Resize(uint32 width, uint32 height) {
 
 void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {
 	_camera_index = camera_index;
+}
+
+void VulkanDeferredLight::SetEnvmap(bool envmap) {
+	_is_envmap = envmap;
 }
 
 VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {

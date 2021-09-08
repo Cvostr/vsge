@@ -27,6 +27,11 @@ void VulkanRenderer::SetupRenderer() {
 	deferred_light->AddShaderFromFile("deferred_pbr.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(deferred_light, "Deferred");
 
+	VulkanShader* deferred_light_envmap = new VulkanShader;
+	deferred_light_envmap->AddShaderFromFile("deferred.vert", SHADER_STAGE_VERTEX);
+	deferred_light_envmap->AddShaderFromFile("deferred_pbr_envmap.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(deferred_light_envmap, "Deferred_envmap");
+
 	VulkanShader* particle = new VulkanShader;
 	particle->AddShaderFromFile("particle.vert", SHADER_STAGE_VERTEX);
 	particle->AddShaderFromFile("particle.frag", SHADER_STAGE_FRAGMENT);
@@ -145,6 +150,7 @@ void VulkanRenderer::SetupRenderer() {
 	_deferred_renderer->CreatePipeline();
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
 	_deferred_renderer->SetBRDF_LUT(_brdf_lut);
+	
 	_deferred_renderer->SetLightsBuffer(_lightsBuffer);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	_deferred_renderer->SetCameraIndex(0);
@@ -159,6 +165,8 @@ void VulkanRenderer::SetupRenderer() {
 		mParticlesTransformShaderBuffer,
 		_lightsBuffer);
 	_env_map->Create();
+
+	_deferred_renderer->SetTexture(10, _env_map->GetCubeTexture());
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;

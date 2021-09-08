@@ -37,6 +37,7 @@ void VulkanEnvMap::Create() {
 		_sides[i]._light->SetCameraIndex(ENVMAP_CAMS_POS + i);
 		_sides[i]._light->CreateFramebuffer();
 		_sides[i]._light->CreateDescriptorSet();
+		_sides[i]._light->SetEnvmap(true);
 		_sides[i]._light->CreatePipeline();
 		_sides[i]._light->SetLightsBuffer(_lights_buffer);
 		_sides[i]._light->SetGBuffer(_sides[i]._gbuffer);
@@ -61,6 +62,7 @@ void VulkanEnvMap::Create() {
 	_env_cube_texture = new VulkanTexture;
 	_env_cube_texture->SetCubemap(true);
 	_env_cube_texture->Create(_cube_size, _cube_size, FORMAT_RGBA, 6, 1);
+	_env_cube_texture->CreateImageView();
 }
 
 void VulkanEnvMap::Resize(uint32 new_size) {
@@ -128,6 +130,10 @@ void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
 			1, 
 			&copy_args[i]);
 	}
+}
+
+VulkanTexture* VulkanEnvMap::GetCubeTexture() {
+	return _env_cube_texture;
 }
 
 void VulkanEnvMap::Execute(VulkanSemaphore* end) {

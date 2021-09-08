@@ -24,6 +24,7 @@ namespace VSGE {
 		uint32 _fb_width;
 		uint32 _fb_height;
 		uint32 _camera_index;
+		bool _is_envmap;
 	public:
 		VulkanDeferredLight();
 		~VulkanDeferredLight();
@@ -37,11 +38,13 @@ namespace VSGE {
 		void SetGBufferFromFramebuffer(VulkanFramebuffer* fb);
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
 		void SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut);
+		void SetTexture(uint32 binding, VulkanTexture* texture);
 		void SetCameraIndex(uint32 camera_index);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
 		void RecordCmdbuf(VulkanCommandBuffer* cmdbuf);
 		void Resize(uint32 width, uint32 height);
+		void SetEnvmap(bool envmap);
 	};
 }

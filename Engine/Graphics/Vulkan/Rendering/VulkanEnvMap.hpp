@@ -50,6 +50,7 @@ namespace VSGE {
 		VulkanSemaphore* GetBeginSemaphore();
 		void CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf);
 
+		VulkanTexture* GetCubeTexture();
 		void SetInputData(tEntityList& entities,
 			tEntityList& particles,
 			VulkanBuffer* transforms,
