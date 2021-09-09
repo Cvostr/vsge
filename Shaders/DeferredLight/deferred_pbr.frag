@@ -114,21 +114,16 @@ vec3 CalculateIBL(vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, f
     Normal.y *= -1;
     vec3 Lr = 2.0 * cosLo * Normal - Lo;
     
-    vec3 irradiance = texture(env_cube, Lr).rgb;
-    return irradiance * metalness;
-    /*vec3 F = fresnelSchlick(cosLo, F0);
-    vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
-    vec3 diffuseIBL = kd * albedo * irradiance;
+    //vec3 irradiance = texture(env_cube_irradiance, Normal).rgb;
+    //vec3 F = fresnelSchlick(cosLo, F0);
+   // vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
+   // vec3 diffuseIBL = kd * albedo * irradiance;
 
+    vec3 specularIrradiance = texture(env_cube, Lr).rgb;
     vec2 specularBRDF = texture(brdf_lut, vec2(cosLo, roughness)).rg;
+    vec3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
-
-	vec3 specularIrradiance = diffuseIBL;
-    // Total specular IBL contribution.
-	vec3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
-
-
-    return diffuseIBL + specularIBL;*/
+    return specularIBL;
 }
 
 vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0) {

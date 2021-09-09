@@ -95,6 +95,9 @@ void VulkanEnvMap::RecordCmdbufs() {
 }
 
 void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
+	VkImageLayout old = _env_cube_texture->GetImageLayout();
+	_env_cube_texture->CmdChangeLayout(cmdbuf, old, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
 	VkImageCopy copy_args[6];
 	for (uint32 i = 0; i < 6; i++) {
 		VkImageSubresourceLayers src = {};
@@ -117,6 +120,8 @@ void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
 		copy_args[i].srcOffset = offset;
 		copy_args[i].dstOffset = offset;
 		copy_args[i].extent = { _cube_size , _cube_size , 1};
+
+		((VulkanTexture*)_sides[i]._light->GetFramebuffer()->GetColorAttachments()[0])->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	}
 
 	for (uint32 i = 0; i < 6; i++) {
@@ -124,12 +129,16 @@ void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
 		vkCmdCopyImage(
 			cmdbuf->GetCommandBuffer(),
 			image,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 			_env_cube_texture->GetImage(),
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1, 
 			&copy_args[i]);
+
+		((VulkanTexture*)_sides[i]._light->GetFramebuffer()->GetColorAttachments()[0])->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
+
+	_env_cube_texture->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 VulkanTexture* VulkanEnvMap::GetCubeTexture() {

@@ -1,5 +1,6 @@
 #include "VulkanTexture.hpp"
 #include "VulkanRAPI.hpp"
+#include "VulkanCommandBuffer.hpp"
 
 using namespace VSGE;
 
@@ -296,6 +297,32 @@ void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 
 	VkCommandBuffer cmdbuf = ma->GetSingleTimeCmdBuf();
 
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(cmdbuf, &beginInfo);
+
+	CmdChangeLayout(cmdbuf, _layout, newLayout);
+
+	vkEndCommandBuffer(cmdbuf);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &cmdbuf;
+
+	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(device->GetGraphicsQueue());
+
+	_layout = newLayout;
+}
+
+void VulkanTexture::CmdChangeLayout(VulkanCommandBuffer* cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout) {
+	CmdChangeLayout(cmdbuf->GetCommandBuffer(), oldLayout, newLayout);
+}
+
+void VulkanTexture::CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout) {
 	VkImageMemoryBarrier imgMemBarrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
 	imgMemBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	imgMemBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -304,17 +331,11 @@ void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 	imgMemBarrier.subresourceRange.levelCount = _mipLevels;
 	imgMemBarrier.subresourceRange.baseArrayLayer = 0;
 	imgMemBarrier.subresourceRange.layerCount = _layers;
-	imgMemBarrier.oldLayout = _layout;
+	imgMemBarrier.oldLayout = oldLayout;
 	imgMemBarrier.newLayout = newLayout;
 	imgMemBarrier.image = _image.Image;
 	imgMemBarrier.srcAccessMask = 0;
 	imgMemBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-	vkBeginCommandBuffer(cmdbuf, &beginInfo);
 
 	vkCmdPipelineBarrier(
 		cmdbuf,
@@ -324,18 +345,6 @@ void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 		0, nullptr,
 		0, nullptr,
 		1, &imgMemBarrier);
-
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &cmdbuf;
-
-	vkEndCommandBuffer(cmdbuf);
-
-	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
-
-	_layout = newLayout;
 }
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {

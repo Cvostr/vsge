@@ -72,6 +72,7 @@ void VSGE::AddDefaultMaterial() {
 	default_mat->SetName("Default Material");
     default_mat->SetDefault();
     default_mat->SetState(RESOURCE_STATE_READY);
+    default_mat->GetMaterial()->SetParameter("Metallic factor", 0.f);
 	ResourceCache::Get()->PushResource(default_mat);
 }
 

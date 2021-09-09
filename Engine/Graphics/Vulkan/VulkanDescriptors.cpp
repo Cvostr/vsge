@@ -92,7 +92,7 @@ void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, V
 void VulkanDescriptorSet::WriteDescriptorBuffer(uint32 binding, VulkanBuffer* buffer, uint32 offset, uint32 range) {
     VkDeviceSize _range = range;
     if (range == INT32_MAX)
-        _range = VK_WHOLE_SIZE;
+        _range = buffer->GetSize();
 
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.offset = offset;

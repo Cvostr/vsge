@@ -357,6 +357,14 @@ void TerrainComponent::Serialize(YAML::Emitter& e) {
 		e << Value << _heightmap[v];
 	}
 	e << YAML::EndSeq;
+
+	/*e << YAML::Key << "textures_factors" << YAML::Value << YAML::BeginSeq;
+	for (uint32 v = 0; v < GetVerticesCount(); v++) {
+		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
+			e << Value << (int)_texture_factors[v]._textures_factors[texture_i];
+		}
+	}
+	e << YAML::EndSeq;*/
 }
 void TerrainComponent::Deserialize(YAML::Node& entity) {
 	_width = entity["width"].as<uint32>();
@@ -401,6 +409,14 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 	for (const auto& height : heightmap) {
 		_heightmap[v++] = height.as<float>();
 	}
+
+	/*v = 0;
+	YAML::Node textures_factors = entity["textures_factors"];
+	for (const auto& factor : textures_factors) {
+		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
+			//_texture_factors[v++]._textures_factors[texture_i] = (uint8)factor.as<int>();
+		}
+	}*/
 	
 	UpdateMesh();
 	UpdateTextureMasks();

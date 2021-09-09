@@ -166,7 +166,12 @@ void VulkanRenderer::SetupRenderer() {
 		_lightsBuffer);
 	_env_map->Create();
 
+	_irmap = new VulkanIrradianceMap;
+	_irmap->Create();
+	_irmap->SetInputTexture(_env_map->GetCubeTexture());
+
 	_deferred_renderer->SetTexture(10, _env_map->GetCubeTexture());
+	_deferred_renderer->SetTexture(11, _irmap->GetIrradianceMap());
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -196,7 +201,7 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_template->AddTexture("Emission", 7);
 	pbr_template->AddParameter("Color", Color(1, 1, 1, 1));
 	pbr_template->AddParameter("Roughness factor", 1.f);
-	pbr_template->AddParameter("Metallic factor", 1.f);
+	pbr_template->AddParameter("Metallic factor", 0.5f);
 	pbr_template->AddParameter("Height factor", 1.f);
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
@@ -430,6 +435,9 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	VulkanSemaphore* end_semaphore = _env_map->GetBeginSemaphore();
 
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
+
+	//_env_map->Execute(_irmap->GetSemaphore());
+	//_irmap->ComputeIrmapTexture(mEndSemaphore);
 
 	_env_map->Execute(mEndSemaphore);
 }

@@ -8,6 +8,8 @@ namespace VSGE {
     VkFormat GetFormatVK(TextureFormat format);
     TextureFormat GetTextureFormat(VkFormat format);
 
+    class VulkanCommandBuffer;
+
 	class VulkanTexture : public Texture {
     private:
         VmaVkImage _image;
@@ -73,6 +75,8 @@ namespace VSGE {
         bool CreateImageView();
 
         void ChangeLayout(VkImageLayout newLayout);
+        void CmdChangeLayout(VulkanCommandBuffer* cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout);
+        void CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout);
 
         VkImageLayout GetImageLayout();
 
