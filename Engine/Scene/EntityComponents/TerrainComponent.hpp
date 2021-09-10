@@ -38,6 +38,10 @@ namespace VSGE{
 		ResourceReference _ao_reference;
 		ResourceReference _height_reference;
 
+		float _roughness_factor;
+		float _metallic_factor;
+		float _height_factor;
+
 		TerrainTexture() {
 			_albedo_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
 			_normal_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
@@ -45,6 +49,10 @@ namespace VSGE{
 			_metallic_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
 			_ao_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
 			_height_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+
+			_roughness_factor = 0.f;
+			_metallic_factor = 0.f;
+			_height_factor = 0.2f;
 		}
 	};
 

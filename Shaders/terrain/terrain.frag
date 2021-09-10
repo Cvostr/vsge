@@ -80,7 +80,7 @@ void CalculateTextures(vec2 uv){
 
     result_albedo = vec3(0);
     result_normal = vec3(0);
-    result_roughness = 1;
+    result_roughness = 0;
     result_metallic = 0;
     result_ao = 1;
 
@@ -100,10 +100,10 @@ void CalculateTextures(vec2 uv){
             }
             result_normal = mix(result_normal, normal, factor);
             //roughness
-            float roughness_sample = GetRoughness(terrain_uv, i);
+            float roughness_sample = GetRoughness(terrain_uv, i) * factors[i].roughness_factor;
             result_roughness = mix(result_roughness, roughness_sample, factor);
             //metallic
-            float metallic_sample = GetMetallic(terrain_uv, i);
+            float metallic_sample = GetMetallic(terrain_uv, i) * factors[i].metallic_factor;
             result_metallic = mix(result_metallic, metallic_sample, factor);
             //ao
             float ao_sample = GetAo(terrain_uv, i);

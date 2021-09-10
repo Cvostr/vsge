@@ -61,6 +61,26 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	ImGui::SameLine();
 
 	DrawTerrainTexturePickBtn(terrain_texture->_height_reference, "Height", texture_index);
+
+	std::string roughness_text = "Roughness factor" + tte;
+	std::string metallic_text = "Metallic factor" + tte;
+	std::string height_text = "Height factor" + tte;
+
+	float roughness_f = terrain_texture->_roughness_factor;
+	ImGui::InputFloat(roughness_text.c_str(), &roughness_f);
+	if (roughness_f <= 1.f)
+		terrain_texture->_roughness_factor = roughness_f;
+	else
+		terrain_texture->_roughness_factor = 1.f;
+
+	float metallic_f = terrain_texture->_metallic_factor;
+	ImGui::InputFloat(metallic_text.c_str(), &metallic_f);
+	if (metallic_f <= 1.f)
+		terrain_texture->_metallic_factor = roughness_f;
+	else
+		terrain_texture->_metallic_factor = 1.f;
+
+	ImGui::InputFloat(height_text.c_str(), &terrain_texture->_height_factor);
 }
 
 bool DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass) {
@@ -124,7 +144,7 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	ImGui::Separator();
 
 	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_TEXTURES) {
-		uint32 textures_count = tc->GetTerrainTextures().size();
+		uint32 textures_count = static_cast<uint32>(tc->GetTerrainTextures().size());
 
 		for (uint32 i = 0; i < textures_count; i++) {
 			VSGE::TerrainTexture* texture = &(tc->GetTerrainTextures()[i]);
@@ -138,7 +158,7 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	}
 
 	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_GRASS) {
-		uint32 vegetables_count = tc->GetTerrainVegetables().size();
+		uint32 vegetables_count = static_cast<uint32>(tc->GetTerrainVegetables().size());
 
 		for (uint32 i = 0; i < vegetables_count; i++) {
 			VSGE::TerrainGrass* grass = &(tc->GetTerrainVegetables()[i]);

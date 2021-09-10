@@ -48,13 +48,15 @@ ImguiVulkanTexture* TextureThumbnails::GetTextureResource(const std::string& fna
 
         if (ptr->second == nullptr) {
             TextureResource* texture = (TextureResource*)ResourceCache::Get()->GetResourceWithFilePath(fname);
-            if (texture->IsUnloaded()) {
-                texture->Load();
-            }
-            if (texture->GetState() == RESOURCE_STATE_READY) {
-                ptr->second = new ImguiVulkanTexture;
-                ptr->second->texture = (VulkanTexture*)texture->GetTexture();
-                ptr->second->CreateImgui(*sampler);
+            if (texture) {
+                if (texture->IsUnloaded()) {
+                    texture->Load();
+                }
+                if (texture->GetState() == RESOURCE_STATE_READY) {
+                    ptr->second = new ImguiVulkanTexture;
+                    ptr->second->texture = (VulkanTexture*)texture->GetTexture();
+                    ptr->second->CreateImgui(*sampler);
+                }
             }
         }
     }

@@ -19,5 +19,5 @@ void main() {
     tColor = vec4(color.rgb, 1);
     tNormal = Normal;
     tPos = FragPos;
-    tMaterial = vec4(1, 0, 0, 1);
+    tMaterial = vec4(0, 0, 0, 1);
 }

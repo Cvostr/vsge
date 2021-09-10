@@ -37,7 +37,7 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 		//if no texture bound, then bind default texture
 
 		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
-		if(texture_type == 2 || texture_type == 4)
+		if(texture_type == 2 || texture_type == 3 || texture_type == 4)
 			default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyWhiteTexture();
 
 		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
@@ -348,6 +348,15 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 	_terrains_buffer->WriteData(offset, 4, &uv_x);
 	_terrains_buffer->WriteData(offset + 4, 4, &uv_y);
 	_terrains_buffer->WriteData(offset + 8, 4, &textures_count);
+
+	offset += 16;
+	for (uint32 i = 0; i < terrain_component->GetTerrainTextures().size(); i++) {
+		TerrainTexture* texture = &terrain_component->GetTerrainTextures()[i];
+		_terrains_buffer->WriteData(offset, 4, &texture->_roughness_factor);
+		_terrains_buffer->WriteData(offset + 4, 4, &texture->_metallic_factor);
+		_terrains_buffer->WriteData(offset + 8, 4, &texture->_height_factor);
+		offset += 16;
+	}
 
 	_terrains_processed++;
 }
