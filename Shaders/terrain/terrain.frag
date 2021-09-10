@@ -1,3 +1,5 @@
+#version 450
+
 layout (location = 0) out vec4 tColor;
 layout (location = 1) out vec3 tNormal;
 layout (location = 2) out vec3 tPos;
@@ -89,7 +91,8 @@ void CalculateTextures(vec2 uv){
         if(factor > 0.001){
             //albedo
             vec3 tex_sample = GetAlbedo(terrain_uv, i);
-            result_albedo = mix(result_albedo, tex_sample, factor);
+            result_albedo += tex_sample * factor;
+
             //normal
             vec3 normal = GetNormal(terrain_uv, i);
             if(normal == vec3(0))
@@ -98,16 +101,16 @@ void CalculateTextures(vec2 uv){
                 normal = normalize(normal * 2 - 1);
                 normal = normalize(TBN * normal);
             }
-            result_normal = mix(result_normal, normal, factor);
+            result_normal += normal * factor;
             //roughness
             float roughness_sample = GetRoughness(terrain_uv, i) * factors[i].roughness_factor;
-            result_roughness = mix(result_roughness, roughness_sample, factor);
+            result_roughness += roughness_sample * factor;
             //metallic
             float metallic_sample = GetMetallic(terrain_uv, i) * factors[i].metallic_factor;
-            result_metallic = mix(result_metallic, metallic_sample, factor);
+            result_metallic += metallic_sample * factor;
             //ao
             float ao_sample = GetAo(terrain_uv, i);
-            result_ao = mix(result_ao, ao_sample, factor);
+            result_ao += ao_sample * factor;
         }
     }
 }

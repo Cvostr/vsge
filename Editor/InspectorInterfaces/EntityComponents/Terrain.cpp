@@ -76,7 +76,7 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	float metallic_f = terrain_texture->_metallic_factor;
 	ImGui::InputFloat(metallic_text.c_str(), &metallic_f);
 	if (metallic_f <= 1.f)
-		terrain_texture->_metallic_factor = roughness_f;
+		terrain_texture->_metallic_factor = metallic_f;
 	else
 		terrain_texture->_metallic_factor = 1.f;
 

@@ -374,9 +374,10 @@ void VulkanRenderer::StoreWorldObjects() {
 	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
 		_shadowmapper->AddEntity(_shadowcasters[caster_i]);
 	}
-	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
-		_shadowmapper->ProcessShadowCaster(caster_i);
-	}
+	//for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
+	//	_shadowmapper->ProcessShadowCaster(caster_i);
+	//}
+	_shadowmapper->ProcessShadowCasters();
 	//-----------------------------
 	//-------------TERRAINS------------------
 	_terrain_renderer->ResetProcessedTerrains();
@@ -413,17 +414,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	StoreWorldObjects();
 
-	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
-		VulkanSemaphore* shadowbegin = nullptr;
-		VulkanSemaphore* shadowend = nullptr;
-
-		if (caster_i == 0)
-			shadowbegin = mBeginSemaphore;
-		if (caster_i == _shadowcasters.size() - 1)
-			shadowend = mShadowmappingEndSemaphore;
-
-		_shadowmapper->ExecuteShadowCaster(caster_i, shadowbegin, shadowend);
-	}
+	_shadowmapper->ExecuteShadowCasters(mBeginSemaphore, mShadowmappingEndSemaphore);
 	VulkanSemaphore* begin = mShadowmappingEndSemaphore;
 	if (_shadowcasters.size() == 0)
 		begin = mBeginSemaphore;

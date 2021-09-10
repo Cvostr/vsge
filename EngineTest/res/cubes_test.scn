@@ -1511,7 +1511,7 @@ Entities:
         mesh_group: Pilot_LP_Animated
         mesh: Mesh
       - Component: 2
-        material: material
+        material: pilot
   - Entity: Tree
     uid: [2650036101, 648505759, 56455176, 2644870154]
     active: true

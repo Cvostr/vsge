@@ -15,7 +15,10 @@
 #define MAP_SIZE 2048
 
 #define SHADOWMAP_BUFFER_ELEMENT_SIZE 768
-#define SHADOWPROCESS_BUFFER_ELEMENT_SIZE 672
+#define SHADOWPROCESS_BUFFER_ELEMENT_SIZE 688
+
+#define SHADOWPROCESS_BUFFER_SIZE 44036
+#define SHADOWPROCESS_SHADOWCOUNT_OFFSET 44032
 
 namespace VSGE {
 
@@ -25,25 +28,20 @@ namespace VSGE {
 		Vec3 _caster_pos;
 		float _caster_range;
 		VulkanFramebuffer* _framebuffer;
-		VulkanCommandBuffer* _cmdbuf;
+		
 
 		VulkanShadowCaster() {
 			_framebuffer = new VulkanFramebuffer;
 			_framebuffer->SetLayersCount(0);
-			_cmdbuf = new VulkanCommandBuffer;
 		}
 
 		~VulkanShadowCaster() {
 			delete _framebuffer;
-			delete _cmdbuf;
 		}
 	};
 
 	class VulkanShadowmapping {
 	private:
-		//--------------Semaphores------------
-		VulkanSemaphore* _shadowmapFirstSemaphore;
-		VulkanSemaphore* _shadowmapSecondSemaphore;
 
 		VulkanRenderPass* _shadowmapRenderPass;
 		VulkanRenderPass* _shadowmap_point_RenderPass;
@@ -64,6 +62,7 @@ namespace VSGE {
 		VulkanPipeline* _shadowprocess_pipeline;
 		VulkanFramebuffer* _shadowprocess_framebuffer;
 		VulkanCommandBuffer* _shadowprocess_cmdbuf;
+		VulkanCommandBuffer* _shadowrenderer_cmdbuf;
 
 		std::vector<VulkanShadowCaster*> _casters;
 		uint32 _added_casters;
@@ -95,6 +94,8 @@ namespace VSGE {
 
 		uint32 _outputWidth;
 		uint32 _outputHeight;
+
+		uint32 GetShadowTextureIndex(uint32 caster_index, uint32 caster_type);
 	public:
 
 		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets,
@@ -125,8 +126,9 @@ namespace VSGE {
 		void AddEntity(Entity* entity);
 		void ResetCasters();
 		
-		void ProcessShadowCaster(uint32 casterIndex);
-		void ExecuteShadowCaster(uint32 casterIndex, VulkanSemaphore* begin = nullptr, VulkanSemaphore* end = nullptr);
+		void ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf);
+		void ProcessShadowCasters();
+		void ExecuteShadowCasters(VulkanSemaphore* begin, VulkanSemaphore* end);
 		
 		void RecordShadowProcessingCmdbuf();
 		void RenderShadows(VulkanSemaphore* begin, VulkanSemaphore* end);
