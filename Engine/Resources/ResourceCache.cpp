@@ -29,10 +29,18 @@ ResourceCache::ResourceCache() {
     _watchdog->SetThreadName("res_watchdog");
 }
 
-Resource* ResourceCache::GetResource(const std::string& name) {
-    for (Resource* resource : _resources) {
-        if (resource->GetName() == name)
-            return resource;
+Resource* ResourceCache::GetResource(const std::string& name, ResourceType type) {
+    if (type == RESOURCE_TYPE_NONE) {
+        for (Resource* resource : _resources) {
+            if (resource->GetName() == name)
+                return resource;
+        }
+    }
+    else {
+        for (Resource* resource : _resources) {
+            if (resource->GetName() == name && resource->GetResourceType() == type)
+                return resource;
+        }
     }
     return nullptr;
 }
@@ -141,6 +149,12 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     }
 
     res->SetName(res_name);
+
+    //if it is mesh group - load it to create meshes
+    if (type == RESOURCE_TYPE_MESHGROUP) {
+        res->Load();
+    }
+
     //Push resource
     PushResource(res);
 }

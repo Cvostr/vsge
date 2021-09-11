@@ -2,6 +2,7 @@
 
 #include <string>
 #include "Resource.hpp"
+#include "ResourceCache.hpp"
 
 namespace VSGE{
     class ResourceReference {
@@ -17,12 +18,14 @@ namespace VSGE{
 
 		template<class T>
 		T* GetResource() {
-			return static_cast<T*>(GetResource());
+			if (!_resourcePointer)
+				_resourcePointer = ResourceCache::Get()->GetResource<T>(_resourceName);
+			return (T*)_resourcePointer;
 		}
 
 		Resource* GetResource();
 
-		Resource* GetParentResource();
+		Resource* GetParentResource(ResourceType type = RESOURCE_TYPE_NONE);
 
 		const std::string& GetResourceName() const;
 

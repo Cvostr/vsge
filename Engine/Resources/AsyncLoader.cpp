@@ -65,13 +65,16 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
 }
 
 void AsyncLoader::AddToQueue(Resource* resource, bool justRead) {
+    if (resource->GetState() != RESOURCE_STATE_UNLOADED)
+        return;
+    //Lock array mutex
     mMutex->Lock();
     
     resource->SetState(RESOURCE_STATE_QUEUED);
     LoadRequest request(resource, justRead);
     loadQueue[LOADER_QUEUE_SIZE - 1 - (queue_length)] = request;
     queue_length++;
-
+    //release array mutex
     mMutex->Release();
 }
 

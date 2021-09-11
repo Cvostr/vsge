@@ -23,15 +23,15 @@ void ResourceReference::SetResourceType(ResourceType type) {
 
 Resource* ResourceReference::GetResource() {
 	if (!_resourcePointer)
-		_resourcePointer = ResourceCache::Get()->GetResource(_resourceName);
+		_resourcePointer = ResourceCache::Get()->GetResource(_resourceName, _resourceType);
 	return _resourcePointer;
 }
 
-Resource* ResourceReference::GetParentResource() {
+Resource* ResourceReference::GetParentResource(ResourceType type) {
 	if (_resourcePointer)
 		if (_resourcePointer->GetParent())
 			return _resourcePointer->GetParent();
-	return ResourceCache::Get()->GetResource(_parentName);
+	return ResourceCache::Get()->GetResource(_parentName, type);
 }
 
 const std::string& ResourceReference::GetResourceName() const {
@@ -47,7 +47,7 @@ void ResourceReference::SetResource(Resource* resource) {
 		return;
 
 	_resourceName = resource->GetName();
-	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName);
+	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName, _resourceType);
 	SetResourceType(resource->GetResourceType());
 
 	//if resource created from other resource
@@ -61,7 +61,7 @@ void ResourceReference::SetResource(const std::string& resourceName) {
 	if (resourceName.empty())
 		_resourcePointer = nullptr;
 	else
-		SetResource(ResourceCache::Get()->GetResource(_resourceName));
+		SetResource(ResourceCache::Get()->GetResource(_resourceName, _resourceType));
 }
 
 const std::string& ResourceReference::GetResourceParentName() const{

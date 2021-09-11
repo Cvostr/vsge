@@ -60,7 +60,16 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="name">- name of resource to find</param>
 		/// <returns>pointer to resource</returns>
-		Resource* GetResource(const std::string& name);
+		Resource* GetResource(const std::string& name, ResourceType type = RESOURCE_TYPE_NONE);
+
+		template<typename T>
+		T* GetResource(const std::string& name) {
+			for (Resource* resource : _resources) {
+				if (resource->GetName() == name && typeid(*resource) == typeid(T))
+					return (T*)resource;
+			}
+			return nullptr;
+		}
 
 		Resource* GetResourceWithFilePath(const std::string& fpath);
 		/// <summary>

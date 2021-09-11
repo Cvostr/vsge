@@ -303,7 +303,8 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 		}
 	}
 	if (fce.GetActionType() == FCAT_RENAMED) {
-		//Try to add this file as resource
+		//Try to find this file as resource
+		//To change resource name
 		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
 		if (res) {
 			DataDescription res_desc = res->GetDataDescription();
@@ -327,6 +328,10 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 
 			res->SetName(res_name);
 			res->SetDataDescription(res_desc);
+		}
+		else {
+			//Try to add this file as resource
+			ResourceCache::Get()->AddResourceFile(fce.GetNewAbsFilePath());
 		}
 	}
 }

@@ -16,7 +16,7 @@ void VSGEditor::cmat(aiMatrix4x4 matin, Mat4* matout){
             matout->Values[i][j] = matin[i][j];
 }
 
-bool VSGEditor::getSizes(std::string file_path, unsigned int* meshes, unsigned int* anims, unsigned int* textures, unsigned int* materials){
+bool VSGEditor::getSizes(const std::string& file_path, unsigned int* meshes, unsigned int* anims, unsigned int* textures, unsigned int* materials){
     const aiScene* scene = importer.ReadFile(file_path, 0);
 
     if(scene == nullptr) return false;
@@ -51,8 +51,12 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
     for (uint32 v = 0; v < mesh_ptr->vertexCount; v++) {
         aiVector3D vertex_pos = mesh->mVertices[v];
         aiVector3D vertex_normal = mesh->mNormals[v];
-        aiVector3D vertex_tangent = mesh->mTangents[v];
-        aiVector3D vertex_bitangent = mesh->mBitangents[v];
+        aiVector3D vertex_tangent;
+        aiVector3D vertex_bitangent;
+        if(mesh->mTangents)
+            vertex_tangent = mesh->mTangents[v];
+        if (mesh->mTangents)
+            vertex_bitangent = mesh->mBitangents[v];
 
         float U = mesh->mTextureCoords[0][v].x;
         float V = mesh->mTextureCoords[0][v].y;
@@ -110,7 +114,7 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
 }
 
 
-void VSGEditor::loadMesh(std::string file_path, MeshContainer* mesh_ptr, int index){
+void VSGEditor::loadMesh(const std::string& file_path, MeshContainer* mesh_ptr, int index){
     const aiScene* scene = importer.ReadFile(file_path, loadflags);
     std::cout << "Loading mesh " << scene->mMeshes[index]->mName.C_Str() << " from file " << file_path << std::endl;
 
@@ -118,7 +122,7 @@ void VSGEditor::loadMesh(std::string file_path, MeshContainer* mesh_ptr, int ind
     importer.FreeScene();
 }
 
-void VSGEditor::loadAnimation(std::string file_path, Animation* anim, int index){
+void VSGEditor::loadAnimation(const std::string& file_path, Animation* anim, int index){
     const aiScene* scene = importer.ReadFile(file_path, loadflagsAnim);
     std::cout << "Loading animation " << scene->mAnimations[index]->mName.C_Str() << " from file " << file_path << std::endl;
 
@@ -153,19 +157,16 @@ void VSGEditor::loadAnimation(std::string file_path, Animation* anim, int index)
         for(uint32 pos_k_i = 0; pos_k_i < channel->GetPosValues()->keysCount; pos_k_i ++){
             aiVector3D ai_pos_key = ai_channel->mPositionKeys[pos_k_i].mValue;
             channel->GetPosValues()->values[pos_k_i] = Vec3(ai_pos_key.x, ai_pos_key.y, ai_pos_key.z);
-
             channel->GetPosValues()->times[pos_k_i] = ai_channel->mPositionKeys[pos_k_i].mTime;
         }
         for(uint32 scale_k_i = 0; scale_k_i < channel->GetScaleValues()->keysCount; scale_k_i ++){
             aiVector3D ai_scale_key = ai_channel->mScalingKeys[scale_k_i].mValue;
             channel->GetScaleValues()->values[scale_k_i] = Vec3(ai_scale_key.x, ai_scale_key.y, ai_scale_key.z);
-
             channel->GetScaleValues()->times[scale_k_i] = ai_channel->mScalingKeys[scale_k_i].mTime;
         }
         for(uint32 rot_k_i = 0; rot_k_i < channel->GetRotationValues()->keysCount; rot_k_i ++){
             aiQuaternion ai_rot_key = ai_channel->mRotationKeys[rot_k_i].mValue.Normalize();
             channel->GetRotationValues()->values[rot_k_i] = Quat(ai_rot_key.x, ai_rot_key.y, ai_rot_key.z, ai_rot_key.w);
-
             channel->GetRotationValues()->times[rot_k_i] = ai_channel->mRotationKeys[rot_k_i].mTime;
         }
 
@@ -181,7 +182,7 @@ void VSGEditor::loadMaterial(std::string file_path, aiMaterial* material, int in
     importer.FreeScene();
 }
 
-void VSGEditor::loadNodeTree(std::string file_path, SceneNode* node){
+void VSGEditor::loadNodeTree(const std::string& file_path, SceneNode* node){
     const aiScene* scene = importer.ReadFile(file_path, loadflags);
 
     SceneNode* root_node = new SceneNode;

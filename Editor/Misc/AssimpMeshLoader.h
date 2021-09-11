@@ -16,13 +16,13 @@ namespace VSGEditor {
 void cmat(aiMatrix4x4 matin, Mat4* matout);
 
 void processNodeForTree(VSGE::SceneNode* node, aiNode* node_assimp, const aiScene* scene);
-void loadNodeTree(std::string file_path, VSGE::SceneNode* node);
+void loadNodeTree(const std::string& file_path, VSGE::SceneNode* node);
 
-bool getSizes(std::string file_path, unsigned int* meshes, unsigned int* anims, unsigned int* textures = nullptr, unsigned int* materials = nullptr);
+bool getSizes(const std::string& file_path, unsigned int* meshes, unsigned int* anims, unsigned int* textures = nullptr, unsigned int* materials = nullptr);
 
-void loadMesh(std::string file_path, VSGE::MeshContainer* mesh_ptr, int index);
+void loadMesh(const std::string& file_path, VSGE::MeshContainer* mesh_ptr, int index);
 
-void loadAnimation(std::string file_path, VSGE::Animation* anim, int index);
+void loadAnimation(const std::string& file_path, VSGE::Animation* anim, int index);
 
 void loadMaterial(std::string file_path, aiMaterial* material, int index);
 
