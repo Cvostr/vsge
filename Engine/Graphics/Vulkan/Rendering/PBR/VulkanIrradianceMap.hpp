@@ -24,16 +24,19 @@ namespace VSGE {
 		VulkanCommandBuffer* _irmap_cmdbuffer;
 
 		uint32 _irmap_size;
+		uint32 _steps_count;
+		uint32 _steps_passed;
 	public:
 
 		VulkanIrradianceMap();
 		~VulkanIrradianceMap();
 
 		void Create();
-
+		void RecordCmdBuffer();
 		void ComputeIrmapTexture(VulkanSemaphore* end_semaphore);
 		void SetInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetIrradianceMap();
 		VulkanSemaphore* GetBeginSemaphore();
+		void SetStepsCount(uint32 steps_count);
 	};
 }

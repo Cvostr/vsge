@@ -156,6 +156,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 					cmdbuf->BindPipeline(*pipl);
 					cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+					cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
 					uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
 					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets);
 					cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
@@ -244,6 +245,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 		cmdbuf->BindPipeline(*pipl);
 		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
 		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
 		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 

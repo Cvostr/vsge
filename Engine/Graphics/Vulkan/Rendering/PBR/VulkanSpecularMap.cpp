@@ -127,56 +127,11 @@ void VulkanSpecularMap::Destroy() {
 }
 
 void VulkanSpecularMap::FillCommandBuffer() {
-	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
-
-	VkCommandBuffer cmdbuf = _spmap_cmdbuffer->GetCommandBuffer();
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
 	VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(_spmap_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 	VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(_spmap_output_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkBeginCommandBuffer(_spmap_cmdbuffer->GetCommandBuffer(), &beginInfo);
-	//copy base mipmap level
-	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	_envmap_input_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-		VkImageSubresourceLayers src = {};
-		src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		src.mipLevel = 0;
-		src.baseArrayLayer = 0;
-		src.layerCount = 6;
+	_spmap_cmdbuffer->Begin();
 
-		VkImageSubresourceLayers dst = src;
-
-
-		
-
-		VkOffset3D offset;
-		offset.x = 0;
-		offset.y = 0;
-		offset.z = 0;
-
-		VkImageCopy img_copy;
-		img_copy.srcSubresource = src;
-		img_copy.dstSubresource = dst;
-		img_copy.srcOffset = offset;
-		img_copy.dstOffset = offset;
-		img_copy.extent = { MAX_MAP_SIZE , MAX_MAP_SIZE , 1 };
-
-		vkCmdCopyImage(
-			_spmap_cmdbuffer->GetCommandBuffer(),
-			_envmap_input_texture->GetImage(),
-			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-			_spmap_output_texture->GetImage(),
-			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			1,
-			&img_copy);
-
-	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_UNDEFINED);
-	_envmap_input_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	
 	_spmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {pre_irmap_barrier});
 	_spmap_cmdbuffer->BindComputePipeline(*_spmap_pipeline);
 	_spmap_cmdbuffer->BindDescriptorSets(*_spmap_pipeline_layout, 0, 1, _spmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
@@ -195,7 +150,45 @@ void VulkanSpecularMap::FillCommandBuffer() {
 	}
 
 	_spmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
-	vkEndCommandBuffer(_spmap_cmdbuffer->GetCommandBuffer());
+
+
+	//copy base mipmap level
+	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	_envmap_input_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	VkImageSubresourceLayers src = {};
+	src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	src.mipLevel = 0;
+	src.baseArrayLayer = 0;
+	src.layerCount = 6;
+
+	VkImageSubresourceLayers dst = src;
+
+	VkOffset3D offset;
+	offset.x = 0;
+	offset.y = 0;
+	offset.z = 0;
+
+	VkImageCopy img_copy;
+	img_copy.srcSubresource = src;
+	img_copy.dstSubresource = dst;
+	img_copy.srcOffset = offset;
+	img_copy.dstOffset = offset;
+	img_copy.extent = { MAX_MAP_SIZE , MAX_MAP_SIZE , 1 };
+
+	vkCmdCopyImage(
+		_spmap_cmdbuffer->GetCommandBuffer(),
+		_envmap_input_texture->GetImage(),
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+		_spmap_output_texture->GetImage(),
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		1,
+		&img_copy);
+
+	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	_envmap_input_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+
+	_spmap_cmdbuffer->End();
 }
 
 void VulkanSpecularMap::Execute(VulkanSemaphore* end_semaphore) {

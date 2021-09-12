@@ -33,7 +33,7 @@ void VulkanIBL::Create() {
 		_animations_buffer,
 		_particles_buffer,
 		_lights_buffer);
-	_envmap->SetStepsCount(6);
+	_envmap->SetStepsCount(3);
 	_envmap->Create();
 
 	_irmap = new VulkanIrradianceMap;
@@ -56,6 +56,7 @@ void VulkanIBL::Destroy() {
 
 void VulkanIBL::RecordCmdBufs() {
 	_envmap->RecordCmdbufs();
+	_irmap->RecordCmdBuffer();
 	_spmap->FillCommandBuffer();
 }
 
