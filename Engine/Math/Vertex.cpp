@@ -1,5 +1,21 @@
 #include "Vertex.hpp"
 
+void CalculateNormals(Vertex* vert_array, uint32* indices_array, uint32 indices_num) {
+    //Calculate normals
+    for (uint32 ind_i = 0; ind_i < indices_num; ind_i += 3) {
+        //Get pointer to next terrain vertex
+        Vertex* v1 = &vert_array[indices_array[ind_i]];
+        //Get pointers to other vertices of triangle
+        Vertex* v2 = &vert_array[indices_array[ind_i + 1]];
+        Vertex* v3 = &vert_array[indices_array[ind_i + 2]];
+        //Poses of other vertices of triangle
+        Vec3 v12 = v1->pos - v2->pos;
+        Vec3 v13 = v1->pos - v3->pos;
+        //Calculate normal
+        v1->normal = v12.Cross(v13).GetNormalized();
+    }
+}
+
 void ProcessTangentSpace(Vertex* vert_array, uint32* indices_array, uint32 indices_num) {
     for (int ind_i = 0; ind_i < indices_num; ind_i += 3) {
         Vertex v1 = vert_array[indices_array[ind_i]];

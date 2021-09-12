@@ -63,9 +63,6 @@ void main() {
 
         vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
         vec3 color = vec3(0.03) * albedo + lightning;
-        
-        color = color / (color + vec3(1.0));
-        color = pow(color, vec3(1.0/2.2)); 
 
         tColor = vec4(color, 1);
     }

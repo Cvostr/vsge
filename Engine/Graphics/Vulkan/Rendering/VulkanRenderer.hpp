@@ -17,6 +17,8 @@
 #include "VulkanEnvMap.hpp"
 #include "PBR/VulkanIrradianceMap.hpp"
 
+#include "PBR/VulkanIBL.hpp"
+
 #define UNI_ALIGN 256
 #define MATERIAL_SIZE 512
 
@@ -60,11 +62,12 @@ namespace VSGE {
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
 		Vulkan_BRDF_LUT* _brdf_lut;
-		VulkanIrradianceMap* _irmap;
+		//VulkanIrradianceMap* _irmap;
 		VulkanCamerasBuffer* _cameras_buffer;
 		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanDeferredLight* _deferred_renderer;
-		VulkanEnvMap* _env_map;
+		//VulkanEnvMap* _env_map;
+		VulkanIBL* _ibl_map;
 
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;

@@ -29,8 +29,12 @@ namespace VSGE {
 		uint32 _fb_height;
 
 		uint32 _camera_index;
+		bool _reverseCull;
 		tEntityList* _entities_to_render;
 		tEntityList* _particles_to_render;
+
+		VulkanPipeline* _boundPipeline;
+		void BindPipeline(VulkanCommandBuffer* cmdbuf, VulkanPipeline* pipeline);
 	public:
 
 		VulkanGBufferRenderer();
@@ -39,6 +43,7 @@ namespace VSGE {
 		void CreateFramebuffer();
 		void CreateDescriptorSets();
 		void SetCameraIndex(uint32 camera_index);
+		void EnableReverseCull();
 
 		void SetEntitiesToRender(tEntityList& entities, tEntityList& particles);
 		void SetBuffers(

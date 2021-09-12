@@ -322,6 +322,10 @@ void VulkanTerrainRenderer::Create(
 	_grass_transform_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	_grass_transform_buffer->Create(MAX_GRASS_TRANSFORMS * sizeof(Mat4));
 
+
+	CalculateNormals(grass_vertices, grass_ind, 24);
+	ProcessTangentSpace(grass_vertices, grass_ind, 24);
+
 	_grass_mesh = new VulkanMesh;
 	_grass_mesh->SetVertexBuffer(grass_vertices, 8);
 	_grass_mesh->SetIndexBuffer(grass_ind, 24);

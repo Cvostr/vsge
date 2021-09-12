@@ -3,7 +3,7 @@
 #include "../../VulkanComputePipeline.hpp"
 #include <Graphics/Vulkan/VulkanDescriptors.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
-#include "../../VulkanSynchronization.hpp"
+#include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
 namespace VSGE {
 	class VulkanIrradianceMap {
@@ -21,7 +21,7 @@ namespace VSGE {
 
 		VulkanSemaphore* _irmap_begin_semaphore;
 		VulkanCommandPool* _irmap_cmdpool;
-		VulkanCommandBuffer* _irmap_cmdbuf;
+		VulkanCommandBuffer* _irmap_cmdbuffer;
 
 		uint32 _irmap_size;
 	public:
@@ -34,6 +34,6 @@ namespace VSGE {
 		void ComputeIrmapTexture(VulkanSemaphore* end_semaphore);
 		void SetInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetIrradianceMap();
-		VulkanSemaphore* GetSemaphore();
+		VulkanSemaphore* GetBeginSemaphore();
 	};
 }

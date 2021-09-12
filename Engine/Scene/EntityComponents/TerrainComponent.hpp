@@ -50,7 +50,7 @@ namespace VSGE{
 			_ao_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
 			_height_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
 
-			_roughness_factor = 0.f;
+			_roughness_factor = 1.f;
 			_metallic_factor = 0.f;
 			_height_factor = 0.2f;
 		}

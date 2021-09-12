@@ -42,11 +42,6 @@ float result_roughness;
 float result_metallic;
 float result_ao;
 
-float CalcLuminance(vec3 color)
-{
-    return dot(color, vec3(0.299, 0.587, 0.114));
-}
-
 float GetFactor(vec2 uv, uint texture_id){
     return texture(masks, vec3(uv, texture_id / 4))[texture_id % 4];
 }
@@ -121,4 +116,4 @@ void main() {
     tNormal = result_normal;
     tPos = FragPos;
     tMaterial = vec4(result_roughness, result_metallic, 0, result_ao);
-}   
+}

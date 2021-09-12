@@ -13,6 +13,8 @@ VulkanGBufferRenderer::VulkanGBufferRenderer() {
 	_fb_height = 720;
 
 	_camera_index = 0;
+	_reverseCull = false;
+	_boundPipeline = nullptr;
 }
 VulkanGBufferRenderer::~VulkanGBufferRenderer() {
 	SAFE_RELEASE(_gbuffer_fb)
@@ -47,6 +49,10 @@ void VulkanGBufferRenderer::Resize(uint32 width, uint32 height) {
 
 	_gbuffer_renderpass->SetClearSize(width, height);
 	_gbuffer_fb->Resize(_fb_width, _fb_height);
+}
+
+void VulkanGBufferRenderer::EnableReverseCull() {
+	_reverseCull = true;
 }
 
 void VulkanGBufferRenderer::CreateDescriptorSets() {
@@ -103,6 +109,20 @@ void VulkanGBufferRenderer::SetEntitiesToRender(tEntityList& entities, tEntityLi
 	_particles_to_render = &particles;
 }
 
+void VulkanGBufferRenderer::BindPipeline(VulkanCommandBuffer* cmdbuf, VulkanPipeline* pipeline) {
+	if (pipeline != _boundPipeline) {
+		cmdbuf->BindPipeline(*pipeline);
+		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		if (_reverseCull) {
+			cmdbuf->SetCullMode(VK_CULL_MODE_BACK_BIT);
+		}
+		else
+			cmdbuf->SetCullMode(VK_CULL_MODE_FRONT_BIT);
+
+		_boundPipeline = pipeline;
+	}
+}
+
 void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	uint32 _drawn_bones = 0;
 	uint32 _writtenParticleTransforms = 0;
@@ -115,39 +135,40 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
 
 	Scene* scene = VulkanRenderer::Get()->GetScene();
-		if (scene) {
-			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
-			if (env_settings._skybox_material.IsResourceSpecified()) {
-				MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
-				if (resource) {
+	if (scene) {
+		SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
+		if (env_settings._skybox_material.IsResourceSpecified()) {
+			MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
+			if (resource) {
 
-					if (resource->IsUnloaded()) {
-						resource->Load();
-					}
+				if (resource->IsUnloaded()) {
+					resource->Load();
+				}
 
-					if (resource->IsReady()) {
-						resource->Use();
-						Material* mat = resource->GetMaterial();
-						VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
-						VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
-						MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
-						VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
-						VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+				if (resource->IsReady()) {
+					resource->Use();
+					Material* mat = resource->GetMaterial();
+					VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
+					VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+					MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
+					VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+					VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
 
-						cmdbuf->BindPipeline(*pipl);
-						cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-						uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
-						cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets);
-						cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+					cmdbuf->BindPipeline(*pipl);
+					cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+					uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
+					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets);
+					cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 
-						VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
-						cmdbuf->BindMesh(*cube);
-						cmdbuf->Draw(cube->GetVerticesCount());
-					}
+					VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
+					cmdbuf->BindMesh(*cube);
+					cmdbuf->Draw(cube->GetVerticesCount());
 				}
 			}
 		}
+	}
 
+	_boundPipeline = nullptr;
 	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
 		Entity* entity = (*_entities_to_render)[e_i];
 
@@ -179,8 +200,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 		Material* mat = mat_resource->GetMaterial();
 		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
 
-		cmdbuf->BindPipeline(*pipl);
-		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		BindPipeline(cmdbuf, pipl);
 		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
 		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 

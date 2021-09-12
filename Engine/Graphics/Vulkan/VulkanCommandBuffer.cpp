@@ -127,6 +127,10 @@ void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint3
     vkCmdBindDescriptorSets(mCommandBuffer, bind_point, layout.GetPipelineLayout(), firstSet, setsCount, temp_sets, dynOffsetCount, offsets);
 }
 
+void VulkanCommandBuffer::PushConstants(VulkanPipelineLayout& layout, VkShaderStageFlagBits stage, uint32 offset, uint32 size, void* data) {
+    vkCmdPushConstants(mCommandBuffer, layout.GetPipelineLayout(), stage, offset, size, data);
+}
+
 void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
     VkDeviceSize offsets[] = { 0 };
     VkBuffer _buffer = buffer.GetBuffer();
@@ -172,6 +176,11 @@ void VulkanCommandBuffer::SetViewport(float x, float y, float width, float heigh
     SetViewports(0, 1, &viewport);
     VkRect2D scissor = { 0, 0, (uint32)width, (uint32)height };
     vkCmdSetScissor(mCommandBuffer, 0, 1, &scissor);
+}
+
+void VulkanCommandBuffer::SetCullMode(VkCullModeFlags cull_mode) {
+    PFN_vkCmdSetCullModeEXT vkCmdSetCullModeEXT = (PFN_vkCmdSetCullModeEXT)vkGetInstanceProcAddr(VulkanRAPI::Get()->GetInstance()->GetInstance(), "vkCmdSetCullModeEXT");
+    vkCmdSetCullModeEXT(mCommandBuffer, cull_mode);
 }
 
 void VulkanCommandBuffer::ImagePipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, const std::vector<VkImageMemoryBarrier>& barriers){

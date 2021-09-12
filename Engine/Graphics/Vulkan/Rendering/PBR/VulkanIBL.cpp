@@ -1,0 +1,89 @@
+#include "VulkanIBL.hpp"
+
+using namespace VSGE;
+
+VulkanIBL::VulkanIBL() {
+
+}
+VulkanIBL::~VulkanIBL() {
+	Destroy();
+}
+
+void VulkanIBL::SetInputData(tEntityList& entities,
+	tEntityList& particles,
+	VulkanBuffer* transforms,
+	VulkanBuffer* animations,
+	VulkanBuffer* particles_buffer,
+	VulkanBuffer* lights) 
+{
+	_entities_to_render = &entities;
+	_particles_to_render = &particles;
+	_transforms_buffer = transforms;
+	_animations_buffer = animations;
+	_particles_buffer = particles_buffer;
+	_lights_buffer = lights;
+}
+
+void VulkanIBL::Create() {
+	_envmap = new VulkanEnvMap;
+	_envmap->SetInputData(
+		*_entities_to_render,
+		*_particles_to_render,
+		_transforms_buffer,
+		_animations_buffer,
+		_particles_buffer,
+		_lights_buffer);
+	_envmap->SetStepsCount(6);
+	_envmap->Create();
+
+	_irmap = new VulkanIrradianceMap;
+	_irmap->Create();
+	_irmap->SetInputTexture(_envmap->GetCubeTexture());
+
+	_spmap = new VulkanSpecularMap;
+	_spmap->SetEnvMapInputTexture(_envmap->GetCubeTexture());
+	_spmap->Create();
+
+	_spmap_sampler = new VulkanSampler;
+	_spmap_sampler->SetLodsRanges(-1000, 1000);
+	_spmap_sampler->Create();
+}
+void VulkanIBL::Destroy() {
+	SAFE_RELEASE(_spmap)
+	SAFE_RELEASE(_irmap)
+	SAFE_RELEASE(_envmap)
+}
+
+void VulkanIBL::RecordCmdBufs() {
+	_envmap->RecordCmdbufs();
+	_spmap->FillCommandBuffer();
+}
+
+void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
+	//_envmap->Execute(_irmap->GetBeginSemaphore());
+	//_irmap->ComputeIrmapTexture(end_semaphore);
+
+	//_envmap->Execute(_spmap->GetBeginSemaphore());
+	//_spmap->Execute(end_semaphore);
+
+	_envmap->Execute(_spmap->GetBeginSemaphore());
+	_spmap->Execute(_irmap->GetBeginSemaphore());
+	_irmap->ComputeIrmapTexture(end_semaphore);
+}
+
+VulkanSemaphore* VulkanIBL::GetBeginSemaphore() {
+	return _envmap->GetBeginSemaphore();
+}
+
+VulkanTexture* VulkanIBL::GetEnvMap() {
+	return _envmap->GetCubeTexture();
+}
+VulkanTexture* VulkanIBL::GetIrradianceMap() {
+	return _irmap->GetIrradianceMap();
+}
+VulkanTexture* VulkanIBL::GetSpecularMap() {
+	return _spmap->GetSpecularOutputTexture();
+}
+VulkanSampler* VulkanIBL::GetSpecularSampler() {
+	return _spmap_sampler;
+}

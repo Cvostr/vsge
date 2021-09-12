@@ -58,6 +58,8 @@ namespace VSGE {
 		
 		void BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount = 0, const uint32* offsets = nullptr, VkPipelineBindPoint bind_point = VK_PIPELINE_BIND_POINT_GRAPHICS);
 
+		void PushConstants(VulkanPipelineLayout& layout, VkShaderStageFlagBits stage, uint32 offset, uint32 size, void* data);
+
 		void BindVertexBuffer(VulkanBuffer& buffer);
 
 		void BindVertexBuffers(VulkanBuffer** buffer, uint32 size = 1, uint32 start = 0);
@@ -77,6 +79,8 @@ namespace VSGE {
 		void SetViewports(uint32 firstViewport, uint32 count, VkViewport* viewports);
 
 		void SetViewport(float x, float y, float width, float height, float depthMin = 0.f, float depthMax = 1.f, uint32 index = 0);
+
+		void SetCullMode(VkCullModeFlags cull_mode);
 
 		void EndRenderPass();
 

@@ -200,13 +200,12 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 		VK_DYNAMIC_STATE_VIEWPORT,
 		VK_DYNAMIC_STATE_SCISSOR,
 		VK_DYNAMIC_STATE_LINE_WIDTH,
-		VK_DYNAMIC_STATE_FRONT_FACE_EXT,
 		VK_DYNAMIC_STATE_CULL_MODE_EXT
 	};
 
 	VkPipelineDynamicStateCreateInfo dynamicState{};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = 3;
+	dynamicState.dynamicStateCount = 4;
 	dynamicState.pDynamicStates = dynamicStates;
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {};

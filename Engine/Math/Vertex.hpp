@@ -34,6 +34,8 @@ struct VertexSkinningData {
 	}
 };
 
+void CalculateNormals(Vertex* vert_array, uint32* indices_array, uint32 indices_num);
+
 void ProcessTangentSpace(Vertex* vert_array, uint32* indices_array, uint32 indices_num);
 
 void ProcessTangentSpace(Vertex* vert_array, uint32 vertices_num);

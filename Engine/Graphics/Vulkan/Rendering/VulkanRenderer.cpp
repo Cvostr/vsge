@@ -156,22 +156,19 @@ void VulkanRenderer::SetupRenderer() {
 	_deferred_renderer->SetCameraIndex(0);
 	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
-	_env_map = new VulkanEnvMap;
-	_env_map->SetInputData(
+	_ibl_map = new VulkanIBL;
+	_ibl_map->SetInputData(
 		_entitiesToRender,
 		_particleEmitters,
 		mTransformsShaderBuffer,
 		mAnimationTransformsShaderBuffer,
 		mParticlesTransformShaderBuffer,
 		_lightsBuffer);
-	_env_map->Create();
+	_ibl_map->Create();
 
-	_irmap = new VulkanIrradianceMap;
-	_irmap->Create();
-	_irmap->SetInputTexture(_env_map->GetCubeTexture());
 
-	_deferred_renderer->SetTexture(10, _env_map->GetCubeTexture());
-	_deferred_renderer->SetTexture(11, _irmap->GetIrradianceMap());
+	_deferred_renderer->SetTexture(10, _ibl_map->GetSpecularMap(), _ibl_map->GetSpecularSampler());
+	_deferred_renderer->SetTexture(11, _ibl_map->GetIrradianceMap());
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -374,9 +371,6 @@ void VulkanRenderer::StoreWorldObjects() {
 	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
 		_shadowmapper->AddEntity(_shadowcasters[caster_i]);
 	}
-	//for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
-	//	_shadowmapper->ProcessShadowCaster(caster_i);
-	//}
 	_shadowmapper->ProcessShadowCasters();
 	//-----------------------------
 	//-------------TERRAINS------------------
@@ -394,7 +388,8 @@ void VulkanRenderer::StoreWorldObjects() {
 	_deferred_renderer->RecordCmdbuf(mLightsCmdbuf);
 	mLightsCmdbuf->End();
 
-	_env_map->RecordCmdbufs();
+	_ibl_map->RecordCmdBufs();
+	//_env_map->RecordCmdbufs();
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
@@ -423,14 +418,15 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
 
-	VulkanSemaphore* end_semaphore = _env_map->GetBeginSemaphore();
+	VulkanSemaphore* end_semaphore = _ibl_map->GetBeginSemaphore();
 
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
 
+	_ibl_map->Execute(mEndSemaphore);
 	//_env_map->Execute(_irmap->GetSemaphore());
 	//_irmap->ComputeIrmapTexture(mEndSemaphore);
 
-	_env_map->Execute(mEndSemaphore);
+	//_env_map->Execute(mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {

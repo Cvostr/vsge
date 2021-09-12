@@ -38,6 +38,8 @@ namespace VSGE {
 		VulkanBuffer* _lights_buffer;
 		
 		uint32 _cube_size;
+		uint32 _steps;
+		uint32 _processed;
 	public:
 
 		VulkanEnvMap();
@@ -57,5 +59,6 @@ namespace VSGE {
 			VulkanBuffer* animations,
 			VulkanBuffer* particles_buffer,
 			VulkanBuffer* lights);
+		void SetStepsCount(uint32 steps);
 	};
 }

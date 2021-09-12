@@ -8,6 +8,7 @@ VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_height = 720;
 	_camera_index = 0;
 	_is_envmap = false;
+	_outputFormat = FORMAT_RGBA;
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
@@ -20,12 +21,12 @@ VulkanDeferredLight::~VulkanDeferredLight() {
 void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_rp = new VulkanRenderPass;
 	_deferred_rp->SetClearSize(_fb_width, _fb_height);
-	_deferred_rp->PushColorAttachment(FORMAT_RGBA);
+	_deferred_rp->PushColorAttachment(_outputFormat);
 	_deferred_rp->Create();
 
 	_deferred_fb = new VulkanFramebuffer;
 	_deferred_fb->SetSize(_fb_width, _fb_height);
-	_deferred_fb->AddAttachment(FORMAT_RGBA);
+	_deferred_fb->AddAttachment(_outputFormat);
 	_deferred_fb->Create(_deferred_rp);
 }
 
@@ -125,13 +126,14 @@ void VulkanDeferredLight::SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut) {
 	_deferred_descriptor->WriteDescriptorImage(9, brdf_lut->GetTextureLut(), attachment_sampler);
 }
 
-void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture) {
+void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler) {
 	if (!_deferred_descriptor)
 		return;
 
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	if(!sampler)
+		sampler = VulkanRenderer::Get()->GetAttachmentSampler();
 
-	_deferred_descriptor->WriteDescriptorImage(binding, texture, attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(binding, texture, sampler);
 }
 
 void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
@@ -162,8 +164,14 @@ void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {
 
 void VulkanDeferredLight::SetEnvmap(bool envmap) {
 	_is_envmap = envmap;
+	if (envmap)
+		_outputFormat = FORMAT_RGBA16F;
 }
 
 VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {
 	return _deferred_fb;
+}
+
+TextureFormat VulkanDeferredLight::GetOutputFormat() {
+	return _outputFormat;
 }

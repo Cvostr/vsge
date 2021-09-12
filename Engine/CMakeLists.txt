@@ -75,6 +75,7 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/PBR/Vulkan_BRDF_LUT.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanIrradianceMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanSpecularMap.cpp
+				Graphics/Vulkan/Rendering/PBR/VulkanIBL.cpp
 				Math/AABB.cpp
 				Math/Frustum.cpp
 				Math/Mat4.cpp

@@ -6,6 +6,8 @@ using namespace VSGE;
 
 VulkanEnvMap::VulkanEnvMap() {
 	_cube_size = 256;
+	_steps = 1;
+	_processed = 0;
 }
 VulkanEnvMap::~VulkanEnvMap() {
 	SAFE_RELEASE(_env_cube_texture);
@@ -33,11 +35,12 @@ void VulkanEnvMap::Create() {
 		_sides[i]._gbuffer->SetBuffers(_transforms_buffer, _animations_buffer, _particles_buffer);
 		_sides[i]._gbuffer->SetEntitiesToRender(*_entities_to_render, *_particles_to_render);
 		_sides[i]._gbuffer->Resize(_cube_size, _cube_size);
+		_sides[i]._gbuffer->EnableReverseCull();
 
 		_sides[i]._light->SetCameraIndex(ENVMAP_CAMS_POS + i);
+		_sides[i]._light->SetEnvmap(true);
 		_sides[i]._light->CreateFramebuffer();
 		_sides[i]._light->CreateDescriptorSet();
-		_sides[i]._light->SetEnvmap(true);
 		_sides[i]._light->CreatePipeline();
 		_sides[i]._light->SetLightsBuffer(_lights_buffer);
 		_sides[i]._light->SetGBuffer(_sides[i]._gbuffer);
@@ -61,7 +64,7 @@ void VulkanEnvMap::Create() {
 
 	_env_cube_texture = new VulkanTexture;
 	_env_cube_texture->SetCubemap(true);
-	_env_cube_texture->Create(_cube_size, _cube_size, FORMAT_RGBA, 6, 1);
+	_env_cube_texture->Create(_cube_size, _cube_size, _sides[0]._light->GetOutputFormat(), 6, 1);
 	_env_cube_texture->CreateImageView();
 }
 
@@ -74,24 +77,30 @@ void VulkanEnvMap::Resize(uint32 new_size) {
 	}
 
 	_env_cube_texture->Destroy();
-	_env_cube_texture->Create(_cube_size, _cube_size, FORMAT_RGBA, 6, 1);
+	_env_cube_texture->Create(_cube_size, _cube_size, _sides[0]._light->GetOutputFormat(), 6, 1);
 }
 
 void VulkanEnvMap::RecordCmdbufs() {
+	if (_processed == _steps)
+		_processed = 0;
+
+	uint32 step_c = 6 / _steps;
+
 	_envmap_gbuffers_cmdbuf->Begin();
-	for (uint32 i = 0; i < 6; i++) {
+	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
 		_sides[i]._gbuffer->RecordCmdBuffer(_envmap_gbuffers_cmdbuf);
 	}
 	_envmap_gbuffers_cmdbuf->End();
 
 	_envmap_lights_cmdbuf->Begin();
-	for (uint32 i = 0; i < 6; i++) {
+	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
 		_sides[i]._light->RecordCmdbuf(_envmap_lights_cmdbuf);
 	}
 
 	CopyImagesToCubeTexture(_envmap_lights_cmdbuf);
 
 	_envmap_lights_cmdbuf->End();
+	_processed++;
 }
 
 void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
@@ -168,4 +177,9 @@ void VulkanEnvMap::SetInputData(
 	_animations_buffer = animations;
 	_particles_buffer = particles_buffer;
 	_lights_buffer = lights;
+}
+
+void VulkanEnvMap::SetStepsCount(uint32 steps) {
+	if (steps < 6 || 6 % steps == 0)
+		_steps = steps;
 }

@@ -32,10 +32,10 @@ void VulkanCamerasBuffer::Destroy() {
 void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float far_plane) {
 	Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, far_plane);
 
-	Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, -1, 0), Vec3(0, 1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
-	Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, -1), Vec3(0, 0, 1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
-	//Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, 1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
-	//Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
+	//Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, -1, 0), Vec3(0, 1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
+	//Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, -1), Vec3(0, 0, 1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
+	Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, 1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
+	Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
 
 	for (uint32 i = ENVMAP_CAMS_POS; i < ENVMAP_CAMS_POS + 6; i++) {
 		_cameras[i]->SetPosition(position);
@@ -46,6 +46,7 @@ void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float far_plane
 		_cameras[i]->UpdateMatrices();
 
 		Mat4 projection = _cameras[i]->GetProjectionMatrix();
+		projection[1][1] *= -1;
 
 		WriteCameraToBuffer(i, projection, _cameras[i]->GetViewMatrix(), position);
 	}

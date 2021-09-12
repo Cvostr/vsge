@@ -146,20 +146,21 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     features.samplerAnisotropy = true;
     features.depthClamp = true;
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT eds_features = {};
+    eds_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
     eds_features.extendedDynamicState = true;
 
     VkDeviceCreateInfo logical_gpu_create_info = {};
     logical_gpu_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    logical_gpu_create_info.pNext = nullptr;
+    logical_gpu_create_info.pNext = &eds_features;
     logical_gpu_create_info.flags = 0;
-    logical_gpu_create_info.queueCreateInfoCount = static_cast<unsigned int>(QueuesToCreate.size()); //size of queues vector
+    logical_gpu_create_info.queueCreateInfoCount = static_cast<uint32>(QueuesToCreate.size()); //size of queues vector
     logical_gpu_create_info.pQueueCreateInfos = QueuesToCreate.data(); //pointer to start of queues vector
-    logical_gpu_create_info.enabledExtensionCount = static_cast<unsigned int>(deviceExtensions.size());
+    logical_gpu_create_info.enabledExtensionCount = static_cast<uint32>(deviceExtensions.size());
     logical_gpu_create_info.ppEnabledExtensionNames = &deviceExtensions[0];
     logical_gpu_create_info.pEnabledFeatures = &features;
 
     if (true) {
-        logical_gpu_create_info.enabledLayerCount = static_cast<unsigned int>(validationLayers.size());
+        logical_gpu_create_info.enabledLayerCount = static_cast<uint32>(validationLayers.size());
         logical_gpu_create_info.ppEnabledLayerNames = validationLayers.data();
     }
 
