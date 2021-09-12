@@ -27,7 +27,6 @@ void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers, bool 
 	new_attachment->SetCubemap(cubemap);
 	new_attachment->SetRenderTargetFlag(true);
 	new_attachment->Create(_width, _height, Format, layers, 1);
-	new_attachment->CreateImageView();
 	
 	AddAttachment(new_attachment);
 }
@@ -38,7 +37,6 @@ void VulkanFramebuffer::AddDepth(TextureFormat format, uint32 layers, bool cubem
 		new_attachment->SetCubemap(cubemap);
 		new_attachment->SetRenderTargetFlag(true);
 		new_attachment->Create(_width, _height, format, layers, 1);
-		new_attachment->CreateImageView();
 
 		_depthAttachment = new_attachment;
 		_views.push_back(((VulkanTexture*)new_attachment)->GetImageView());
@@ -68,13 +66,11 @@ void VulkanFramebuffer::Resize(uint32 width, uint32 height) {
 
 			for (auto attachment : _attachments) {
 				attachment->Resize(width, height);
-				attachment->CreateImageView();
 				_views.push_back(((VulkanTexture*)attachment)->GetImageView());
 			}
 
 			if (_depthAttachment) {
 				_depthAttachment->Resize(width, height);
-				_depthAttachment->CreateImageView();
 				_views.push_back(((VulkanTexture*)_depthAttachment)->GetImageView());
 			}
 

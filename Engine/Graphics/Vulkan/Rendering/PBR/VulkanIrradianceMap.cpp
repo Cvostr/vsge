@@ -45,7 +45,6 @@ void VulkanIrradianceMap::Create() {
     _irmap_output_texture->SetCubemap(true);
     _irmap_output_texture->SetStorage(true);
     _irmap_output_texture->Create(_irmap_size, _irmap_size, FORMAT_RGBA16F, 6, 1);
-    _irmap_output_texture->CreateImageView();
 
     _envmap_sampler = new VulkanSampler;
     _envmap_sampler->Create();

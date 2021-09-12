@@ -197,6 +197,8 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	{
 		ChangeLayout(VK_IMAGE_LAYOUT_GENERAL);
 	}
+
+	CreateImageView();
 }
 
 void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer) {
@@ -219,6 +221,9 @@ void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 he
 }
 
 bool VulkanTexture::CreateImageView() {
+
+	if (mCreated)
+		return false;
 
 	if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 		ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -345,6 +350,44 @@ void VulkanTexture::CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLay
 		0, nullptr,
 		0, nullptr,
 		1, &imgMemBarrier);
+}
+
+void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* destination) {
+	destination->CmdChangeLayout(cmdbuf, destination->GetImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	CmdChangeLayout(cmdbuf, GetImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+	VkImageCopy* copy_args = new VkImageCopy[_mipLevels];
+	for (uint32 i = 0; i < _mipLevels; i++) {
+		VkImageSubresourceLayers src = {};
+		src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		src.mipLevel = _mipLevels;
+		src.baseArrayLayer = 0;
+		src.layerCount = _layers;
+
+		copy_args[i].srcSubresource = src;
+		copy_args[i].dstSubresource = src;
+
+		VkOffset3D offset;
+		offset.x = 0;
+		offset.y = 0;
+		offset.z = 0;
+
+		copy_args[i].srcOffset = offset;
+		copy_args[i].dstOffset = offset;
+		copy_args[i].extent = { _maxWidth , _maxHeight , 1 };
+	}
+
+	vkCmdCopyImage(
+		cmdbuf->GetCommandBuffer(),
+		GetImage(),
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+		destination->GetImage(),
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		_mipLevels,
+		&copy_args[0]);
+
+	destination->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, destination->GetImageLayout());
+	CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, GetImageLayout());
 }
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {

@@ -95,13 +95,11 @@ void VulkanRenderer::SetupRenderer() {
 	char* empty_texture_data = new char[2 * 2 * 4];
 	memset(empty_texture_data, 0, 16);
 	mEmptyZeroTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
-	mEmptyZeroTexture->CreateImageView();
 
 	mEmptyOneTexture = new VulkanTexture;
 	mEmptyOneTexture->Create(2, 2);
 	memset(empty_texture_data, 255, 16);
 	mEmptyOneTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
-	mEmptyOneTexture->CreateImageView();
 	delete[] empty_texture_data;
 
 	//---------------------Samplers------------------

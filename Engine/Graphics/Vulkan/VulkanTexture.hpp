@@ -77,6 +77,7 @@ namespace VSGE {
         void ChangeLayout(VkImageLayout newLayout);
         void CmdChangeLayout(VulkanCommandBuffer* cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout);
         void CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout);
+        void CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* destination);
 
         VkImageLayout GetImageLayout();
 

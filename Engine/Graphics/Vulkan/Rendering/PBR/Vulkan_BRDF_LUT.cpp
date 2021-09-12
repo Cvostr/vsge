@@ -20,7 +20,6 @@ void Vulkan_BRDF_LUT::Create(){
     _brdf_lut_texture = new VulkanTexture;
     _brdf_lut_texture->SetStorage(true);
     _brdf_lut_texture->Create(1024, 1024, FORMAT_RG16F);
-    _brdf_lut_texture->CreateImageView();
 
     _brdf_descr_pool = new VulkanDescriptorPool;
     _brdf_descr_pool->SetDescriptorSetsCount(1);

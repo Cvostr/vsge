@@ -236,6 +236,7 @@ void TerrainComponent::UpdateMesh() {
 void TerrainComponent::UpdateTextureMasks() {
 	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 	if (!_texture_masks) {
+		SAFE_RELEASE(_texture_masks)
 		_texture_masks = CreateTexture();
 		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
 	}
@@ -255,9 +256,8 @@ void TerrainComponent::UpdateTextureMasks() {
 			}
 		}
 		_texture_masks->AddMipLevel(mask, buffer_size, _width, _height, 0, layer_i);
+		SAFE_RELEASE_ARR(mask)
 	}
-
-	_texture_masks->CreateImageView();
 }
 
 void TerrainComponent::UpdateVegetables() {
@@ -426,6 +426,10 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 		serializer.Serialize(texture._metallic_reference.GetResourceName());
 		serializer.Serialize(texture._ao_reference.GetResourceName());
 		serializer.Serialize(texture._height_reference.GetResourceName());
+		//write factors
+		serializer.Serialize(texture._roughness_factor);
+		serializer.Serialize(texture._metallic_factor);
+		serializer.Serialize(texture._height_factor);
 	}
 
 	for (auto& grass : _terrain_grass) {
@@ -468,6 +472,11 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 		texture._metallic_reference.SetResource(metallic);
 		texture._ao_reference.SetResource(ao);
 		texture._height_reference.SetResource(height);
+
+		texture._roughness_factor = solver.GetValue<float>();
+		texture._metallic_factor = solver.GetValue<float>();
+		texture._height_factor = solver.GetValue<float>();
+
 		_terrain_textures.push_back(texture);
 	}
 

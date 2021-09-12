@@ -32,7 +32,6 @@ void VulkanSpecularMap::Create() {
 	}
 
 	_spmap_output_texture->Create(MAX_MAP_SIZE, MAX_MAP_SIZE, MAP_FORMAT, 6, mips_levels);
-	_spmap_output_texture->CreateImageView();
 
 	for (uint32 i = 1; i < mips_levels; i++) {
 		SpecularMap_MipMapLevel* mplevel = &_mipmap_levels[i];
@@ -53,7 +52,6 @@ void VulkanSpecularMap::Create() {
 
 		vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &mplevel->_image_view);
 	}
-	
 
 	_spmap_descr_pool = new VulkanDescriptorPool;
 	_spmap_descr_pool->SetDescriptorSetsCount(1);
