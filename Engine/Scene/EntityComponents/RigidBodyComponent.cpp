@@ -211,10 +211,6 @@ void RigidBodyComponent::OnUpdate() {
 	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
 	Mat4 _new = mm * parent_tranform.invert();
 
-
-	//_entity->SetPosition(parent_tranform.invert() * pos);
-	//_entity->SetRotation(rot * GetRotationFromQuat(parent_tranform).Inverse());
-
 	_entity->SetPosition(_new.GetPosition());
 	_entity->SetRotation(GetRotationFromQuat(_new));
 
