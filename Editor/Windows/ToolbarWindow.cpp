@@ -86,6 +86,7 @@ void ToolbarWindow::StopScene() {
 
     InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
     insp->SetShowingEntity(nullptr);
+    EditorLayer::Get()->SetPickedEntity(nullptr);
     //Clear scene
     scene_layer->GetWorkingScene()->NewScene();
     //Deserialize temp scene

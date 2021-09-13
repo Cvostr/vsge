@@ -31,6 +31,9 @@ namespace VSGE {
 		VulkanCommandPool* _spmap_cmdpool;
 		VulkanCommandBuffer* _spmap_cmdbuffer;
 		VulkanSemaphore* _spmap_begin_semaphore;
+
+		uint32 _steps_count;
+		uint32 _steps_passed;
 	public:
 
 		VulkanSpecularMap();
@@ -47,5 +50,7 @@ namespace VSGE {
 		void SetEnvMapInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetSpecularOutputTexture();
 		VulkanSemaphore* GetBeginSemaphore();
+
+		void SetStepsCount(uint32 steps_count);
 	};
 }

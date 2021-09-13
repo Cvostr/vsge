@@ -5,10 +5,15 @@
 using namespace VSGE;
 
 VulkanSpecularMap::VulkanSpecularMap() {
-
+	_steps_count = 1;
+	_steps_passed = 0;
 }
 VulkanSpecularMap::~VulkanSpecularMap() {
 	Destroy();
+}
+
+void VulkanSpecularMap::SetStepsCount(uint32 steps_count) {
+	_steps_count = steps_count;
 }
 
 void VulkanSpecularMap::Create() {
@@ -93,7 +98,7 @@ void VulkanSpecularMap::Create() {
 
 	_spmap_pipeline_layout = new VulkanPipelineLayout;
 	_spmap_pipeline_layout->PushDescriptorSet(_spmap_descr_set);
-	_spmap_pipeline_layout->AddPushConstantRange(0, 8, VK_SHADER_STAGE_COMPUTE_BIT);
+	_spmap_pipeline_layout->AddPushConstantRange(0, 12, VK_SHADER_STAGE_COMPUTE_BIT);
 	_spmap_pipeline_layout->Create();
 
 	_spmap_pipeline = new VulkanComputePipeline;
@@ -136,19 +141,30 @@ void VulkanSpecularMap::FillCommandBuffer() {
 
 	uint32 mip_map_levels = (uint32)_mipmap_levels.size();
 	const float deltaRoughness = 1.0f / std::max(float(mip_map_levels), 1.0f);
+
+	if (_steps_passed == _steps_count)
+		_steps_passed = 0;
+
+	uint32 per_time = 6 / _steps_count;
+	uint32 passed = _steps_passed * per_time;
+
 	for (uint32_t level = 1, size = MAX_MAP_SIZE / 2; level < mip_map_levels; ++level, size /= 2) {
 		const uint32_t numGroups = std::max<uint32_t>(1, size / 32);
 
-		uint32 pc_level = level - 1;
+		int32 pc_level = level - 1;
 		float roughness = level * deltaRoughness;
 
 		_spmap_cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &pc_level);
 		_spmap_cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 4, 4, &roughness);
-		_spmap_cmdbuffer->Dispatch(numGroups, numGroups, 6);
+		_spmap_cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 8, 4, &passed);
+
+
+		_spmap_cmdbuffer->Dispatch(numGroups, numGroups, per_time);
 	}
 
 	_spmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
 
+	_steps_passed++;
 
 	//copy base mipmap level
 	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);

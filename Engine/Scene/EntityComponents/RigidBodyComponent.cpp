@@ -207,10 +207,16 @@ void RigidBodyComponent::OnUpdate() {
 	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
 	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
 
+	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
 	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
+	Mat4 _new = mm * parent_tranform.invert();
 
-	_entity->SetPosition(parent_tranform.invert() * pos);
-	_entity->SetRotation(rot * GetRotationFromQuat(parent_tranform).Inverse());
+
+	//_entity->SetPosition(parent_tranform.invert() * pos);
+	//_entity->SetRotation(rot * GetRotationFromQuat(parent_tranform).Inverse());
+
+	_entity->SetPosition(_new.GetPosition());
+	_entity->SetRotation(GetRotationFromQuat(_new));
 
 	Activate();
 }

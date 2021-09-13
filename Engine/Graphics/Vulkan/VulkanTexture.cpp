@@ -352,7 +352,10 @@ void VulkanTexture::CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLay
 		1, &imgMemBarrier);
 }
 
-void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* destination) {
+void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* destination, uint32 first_layer, uint32 layers_count) {
+	if (layers_count == 0)
+		layers_count = _layers;
+
 	destination->CmdChangeLayout(cmdbuf, destination->GetImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	CmdChangeLayout(cmdbuf, GetImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
@@ -361,8 +364,8 @@ void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* d
 		VkImageSubresourceLayers src = {};
 		src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		src.mipLevel = _mipLevels;
-		src.baseArrayLayer = 0;
-		src.layerCount = _layers;
+		src.baseArrayLayer = first_layer;
+		src.layerCount = layers_count;
 
 		copy_args[i].srcSubresource = src;
 		copy_args[i].dstSubresource = src;
@@ -388,6 +391,8 @@ void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* d
 
 	destination->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, destination->GetImageLayout());
 	CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, GetImageLayout());
+
+	SAFE_RELEASE_ARR(copy_args)
 }
 
 void VulkanTexture::Resize(uint32 width, uint32 height) {

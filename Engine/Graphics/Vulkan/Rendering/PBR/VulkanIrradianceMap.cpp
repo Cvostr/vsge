@@ -5,7 +5,7 @@ using namespace VSGE;
 
 VulkanIrradianceMap::VulkanIrradianceMap() {
     _irmap_size = 32;
-    _steps_count = 2;
+    _steps_count = 1;
     _steps_passed = 0;
 }
 VulkanIrradianceMap::~VulkanIrradianceMap() {
@@ -35,7 +35,7 @@ void VulkanIrradianceMap::Create() {
     
     _irmap_pipeline_layout = new VulkanPipelineLayout;
     _irmap_pipeline_layout->PushDescriptorSet(_irmap_descr_set);
-    //_irmap_pipeline_layout->AddPushConstantRange(0, 4, VK_SHADER_STAGE_COMPUTE_BIT);
+    _irmap_pipeline_layout->AddPushConstantRange(0, 4, VK_SHADER_STAGE_COMPUTE_BIT);
     _irmap_pipeline_layout->Create();
 
     _irmap_pipeline = new VulkanComputePipeline;
@@ -89,13 +89,13 @@ void VulkanIrradianceMap::RecordCmdBuffer() {
     _irmap_cmdbuffer->BindComputePipeline(*_irmap_pipeline);
     _irmap_cmdbuffer->BindDescriptorSets(*_irmap_pipeline_layout, 0, 1, _irmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
     
-    //_irmap_cmdbuffer->PushConstants(*_irmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &passed);
-    
-    _irmap_cmdbuffer->Dispatch(_irmap_size / 32, _irmap_size / 32, 6);
-    _irmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
-    _irmap_cmdbuffer->End();
+    _irmap_cmdbuffer->PushConstants(*_irmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &passed);
+    _irmap_cmdbuffer->Dispatch(_irmap_size / 32, _irmap_size / 32, per_time);
+    _steps_passed++;
 
-    passed++;
+    _irmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
+    
+    _irmap_cmdbuffer->End();
 }
 
 void VulkanIrradianceMap::ComputeIrmapTexture(VulkanSemaphore* end_semaphore) {
