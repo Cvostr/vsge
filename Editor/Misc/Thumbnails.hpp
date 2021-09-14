@@ -24,4 +24,5 @@ public:
 	ImguiVulkanTexture* GetTextureResource(const std::string& fname);
 
 	ImguiVulkanTexture* GetCheckerboardTexture() { return _emptyTextureIcon; }
+
 };

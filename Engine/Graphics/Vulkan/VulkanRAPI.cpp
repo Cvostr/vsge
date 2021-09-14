@@ -9,7 +9,7 @@ void VSGE::VulkanRAPI::Create(Window* window) {
 	Application* app = Application::Get();
 
 	Instance = new VulkanInstance;
-	Instance->init(false, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion);
+	Instance->init(true, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion);
 
 	Device = CreatePrimaryDevice();
 

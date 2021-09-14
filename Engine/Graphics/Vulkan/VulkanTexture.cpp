@@ -147,9 +147,9 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	{
 		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-	if (!IsRenderTarget()) {
-		_usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-	}
+	//if (!IsRenderTarget()) {
+	//	_usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	//}
 	if(IsStorage()){
 		_usage = VK_IMAGE_USAGE_STORAGE_BIT;
 	}
@@ -172,7 +172,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	imageInfo.format = TexFormat;
 	imageInfo.tiling = imageTiling;
 	imageInfo.initialLayout = imageLayout;
-	imageInfo.usage = _usage | VK_IMAGE_USAGE_SAMPLED_BIT;
+	imageInfo.usage = _usage | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -224,9 +224,6 @@ bool VulkanTexture::CreateImageView() {
 
 	if (mCreated)
 		return false;
-
-	if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-		ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	VkImageViewType ImageViewType = VK_IMAGE_VIEW_TYPE_2D;
 	if (_layers > 1)
@@ -363,7 +360,7 @@ void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* d
 	for (uint32 i = 0; i < _mipLevels; i++) {
 		VkImageSubresourceLayers src = {};
 		src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		src.mipLevel = _mipLevels;
+		src.mipLevel = i;
 		src.baseArrayLayer = first_layer;
 		src.layerCount = layers_count;
 
@@ -398,6 +395,11 @@ void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* d
 void VulkanTexture::Resize(uint32 width, uint32 height) {
 	Destroy();
 	Create(width, height, _format, _layers, _mipLevels);
+}
+
+void VulkanTexture::SetReadyToUseInShaders() {
+	if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 VkImageLayout VulkanTexture::GetImageLayout(){

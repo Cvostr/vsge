@@ -71,8 +71,16 @@ namespace VSGE {
         /// <param name="width">- new width of texture</param>
         /// <param name="height">- new height of texture</param>
         void Resize(uint32 width, uint32 height);
-
+        /// <summary>
+        /// Force image view creation
+        /// </summary>
+        /// <returns></returns>
         bool CreateImageView();
+        /// <summary>
+        /// Vulkan specific - change layout to SHADER_READONLY_OPTIMAL
+        /// </summary>
+        /// <returns></returns>
+        void SetReadyToUseInShaders();
 
         void ChangeLayout(VkImageLayout newLayout);
         void CmdChangeLayout(VulkanCommandBuffer* cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout);

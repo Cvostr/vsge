@@ -41,16 +41,19 @@ Application* VSGEMain() {
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
 	
-	VkMaterialsThumbnails* thumbs = new VkMaterialsThumbnails;
-	thumbs->Create();
+	
 
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
 
-	app->GetWindow().SetPosition(settings->_windowPosX, settings->_windowPosY);
-
 	AddDefaultMaterial();
 	AddDefaultMeshes();
+	VkMaterialsThumbnails* thumbs = new VkMaterialsThumbnails;
+	thumbs->Create();
+
+	app->GetWindow().SetPosition(settings->_windowPosX, settings->_windowPosY);
+
+
 
 	ResourcePickerWindow* rpw = new ResourcePickerWindow;
 	rpw->Hide();

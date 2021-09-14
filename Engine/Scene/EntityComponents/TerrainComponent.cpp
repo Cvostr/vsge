@@ -164,7 +164,7 @@ void TerrainComponent::ModifyGrass(const Vec2i& position, uint32 range, uint32 g
 	}
 }
 
-Vec2i& TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
+Vec2i TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
 	if (!heightmap || !indices)
 		return Vec2i(-1);
 
@@ -256,6 +256,7 @@ void TerrainComponent::UpdateTextureMasks() {
 			}
 		}
 		_texture_masks->AddMipLevel(mask, buffer_size, _width, _height, 0, layer_i);
+		_texture_masks->SetReadyToUseInShaders();
 		SAFE_RELEASE_ARR(mask)
 	}
 }

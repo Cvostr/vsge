@@ -73,5 +73,7 @@ bool Texture::CreateFromProcessed(const ProcessedTexture& texture) {
         AddMipLevel(mip->_mip_data, mip->_mip_data_size, mip->_mip_width, mip->_mip_height, mip_i, 0);
     }
 
+    SetReadyToUseInShaders();
+
     return true;
 }

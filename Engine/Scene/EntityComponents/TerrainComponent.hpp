@@ -128,7 +128,7 @@ namespace VSGE{
 			void UpdateTextureMasks();
 			void UpdateVegetables();
 
-			Vec2i& GetRayIntersectionTraingle(const Ray& ray);
+			Vec2i GetRayIntersectionTraingle(const Ray& ray);
 
 			std::vector<TerrainTexture>& GetTerrainTextures() {
 				return _terrain_textures;

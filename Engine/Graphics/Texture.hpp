@@ -105,7 +105,12 @@ namespace VSGE {
         /// <param name="layers">- count of layers of new texture</param>
         virtual void Create(uint32 width, uint32 height, TextureFormat format = TextureFormat::FORMAT_RGBA, uint32 layers = 1, uint32 mipLevels = 1) = 0;
         /// <summary>
-        /// Finish texture creation and prepare it to work by creating ImageView
+        /// Vulkan specific - change layout to SHADER_READONLY_OPTIMAL
+        /// </summary>
+        /// <returns></returns>
+        virtual void SetReadyToUseInShaders() {}
+        /// <summary>
+        /// Force image view creation
         /// </summary>
         /// <returns></returns>
         virtual bool CreateImageView() = 0;

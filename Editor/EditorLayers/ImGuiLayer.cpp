@@ -4,6 +4,7 @@
 #include <Engine/Application.hpp>
 #include <Engine/Window.hpp>
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <Misc/VkMaterialsThumbnails.hpp>
 
 using namespace VSGEditor;
 
@@ -56,14 +57,14 @@ void ImGuiLayer::OnAttach() {
         { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
         { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-       // { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-        //{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-        //{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
         { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-        //{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 }
-        //{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-        //{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
     };
 
     imgui_pool.SetPoolSizes(pool_sizes, 5);
@@ -117,6 +118,9 @@ void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data) {
 
     cmdbuf.EndRenderPass();
     cmdbuf.End();
+
+
+    VkMaterialsThumbnails::Get()->RecordCmdBuffer();
 }
 
 void ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore) {
@@ -180,11 +184,14 @@ void ImGuiLayer::OnUpdate() {
     ImGui::End();
 
     ImGui::Render();
+    
     ImDrawData* draw_data = ImGui::GetDrawData();
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 
-    VulkanRender(draw_data, renderer->GetBeginSemaphore());
+    //VulkanRender(draw_data, renderer->GetBeginSemaphore());
+    VulkanRender(draw_data, VkMaterialsThumbnails::Get()->GetBeginSemaphore());
+    VkMaterialsThumbnails::Get()->CmdExecute(renderer->GetBeginSemaphore());
 
     if(recreated){
        return;

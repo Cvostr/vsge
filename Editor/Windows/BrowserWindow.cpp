@@ -15,6 +15,7 @@
 #include <Misc/Thumbnails.hpp>
 #include <Misc/DialogWindows.hpp>
 #include <Misc/EditorIcons.hpp>
+#include <Misc/VkMaterialsThumbnails.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -169,6 +170,12 @@ void FileBrowserWindow::OnDrawWindow() {
                     mat->Load();
                 }
             }
+
+            ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->GetName());
+            if (!thumb)
+                VkMaterialsThumbnails::Get()->CreateThumbnail(mat->GetName());
+            if (thumb)
+                icon = thumb;
         }
         if (e->isTexture()) {
             ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(e->abs_path);

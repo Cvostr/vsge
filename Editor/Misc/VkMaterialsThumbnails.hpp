@@ -16,14 +16,11 @@ public:
 	std::string material_name;
 	VSGE::VulkanTexture* texture;
 	ImTextureID imtexture;
+	bool deleted;
 
-	VkMaterialThumbnail() {
+	VkMaterialThumbnail(VSGE::VulkanSampler* sampler);
 
-	}
-
-	~VkMaterialThumbnail() {
-
-	}
+	~VkMaterialThumbnail();
 };
 
 class VkMaterialsThumbnails {
@@ -33,18 +30,24 @@ private:
 	VSGE::VulkanGBufferRenderer* _gbuffer;
 	VSGE::VulkanDeferredLight* _light;
 
+	VSGE::Camera* _camera;
 	VSGE::Scene* _thumb_scene;
+	VSGE::Entity* _thumb_entity;
 	VSGE::tEntityList _entities_to_render;
 	VSGE::tEntityList _particles_to_render;
 	VSGE::VulkanBuffer* _transform_buffer;
 	VSGE::LightsBuffer* _lights_buffer;
+	VSGE::VulkanSampler* _sampler;
 
 	VSGE::VulkanCommandPool* _cmdpool;
 	VSGE::VulkanCommandBuffer* _cmdbuf;
 	VSGE::VulkanSemaphore* _begin_semaphore;
 
-	std::vector<VkMaterialThumbnail> _thumbnails;
+	std::vector<VkMaterialThumbnail*> _thumbnails;
 	std::vector<std::string> _queued;
+
+
+	VkMaterialThumbnail* GetPlace(const std::string& name);
 public:
 
 	VkMaterialsThumbnails();
@@ -59,7 +62,8 @@ public:
 
 	void RecreateAll();
 	void CreateThumbnail(const std::string& material_name);
-	ImTextureID GetMaterialThumbnail(const std::string& material_name);
+	VkMaterialThumbnail* GetMaterialThumbnail(const std::string& material_name);
+	ImTextureID GetMaterialThumbnailTexture(const std::string& material_name);
 
 	void RecordCmdBuffer();
 	void CmdExecute(VSGE::VulkanSemaphore* end);
