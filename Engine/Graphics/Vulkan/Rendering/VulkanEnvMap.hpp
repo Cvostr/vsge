@@ -59,6 +59,7 @@ namespace VSGE {
 			VulkanBuffer* animations,
 			VulkanBuffer* particles_buffer,
 			VulkanBuffer* lights);
+		void SetScene(Scene* scene);
 		void SetStepsCount(uint32 steps);
 	};
 }

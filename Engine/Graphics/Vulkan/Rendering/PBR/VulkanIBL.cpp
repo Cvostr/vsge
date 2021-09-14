@@ -26,6 +26,10 @@ void VulkanIBL::SetInputData(tEntityList& entities,
 	_lights_buffer = lights;
 }
 
+void VulkanIBL::SetScene(Scene* scene) {
+	_envmap->SetScene(scene);
+}
+
 void VulkanIBL::Create() {
 	_envmap = new VulkanEnvMap;
 	_envmap->SetInputData(

@@ -48,5 +48,6 @@ namespace VSGE {
 		VulkanTexture* GetIrradianceMap();
 		VulkanTexture* GetSpecularMap();
 		VulkanSampler* GetSpecularSampler();
+		void SetScene(Scene* scene);
 	};
 }

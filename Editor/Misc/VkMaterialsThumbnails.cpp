@@ -48,6 +48,9 @@ void VkMaterialsThumbnails::Create() {
     Mat4 transform = Mat4(1.f);
     _transform_buffer->WriteData(0, 64, &transform);
 
+    _storage_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE); 
+    _storage_buffer->Create(256);
+
     _lights_buffer = new LightsBuffer;
     _lights_buffer->SetMaxLightsCount(1);
     _lights_buffer->Create();
@@ -55,7 +58,7 @@ void VkMaterialsThumbnails::Create() {
     _lights_buffer->UpdateGpuBuffer();
 
     _camera = new Camera;
-    _camera->SetPosition(Vec3(0, 0, -2.2f));
+    _camera->SetPosition(Vec3(0, 0, -1.5f));
     _camera->SetFront(Vec3(0, 0, 1));
     _camera->SetUp(Vec3(0, 1, 0));
     _camera->SetAspectRatio(1.f);
@@ -71,7 +74,7 @@ void VkMaterialsThumbnails::Create() {
     _gbuffer->SetEntitiesToRender(_entities_to_render, _particles_to_render);
     _gbuffer->SetCameraIndex(99);
     _gbuffer->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
-    _gbuffer->SetBuffers(_transform_buffer, nullptr, nullptr);
+    _gbuffer->SetBuffers(_transform_buffer, _storage_buffer, _storage_buffer);
 
     _light = new VulkanDeferredLight;
     _light->CreateFramebuffer();
@@ -169,20 +172,16 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
         src->CmdCopyTexture(_cmdbuf, dst, 0, 1);
 
         //shrink array to left
-        //for (uint32 q_i = 1; q_i < _queued.size(); q_i++) {
-       //     _queued[q_i - 1] = _queued[q_i];
-        //}
-        //std::remove(_queued.begin(), _queued.end(), _queued[0]);
-        //_queued.pop_back();
+        for (uint32 q_i = 1; q_i < _queued.size(); q_i++) {
+            _queued[q_i - 1] = _queued[q_i];
+        }
+        _queued.pop_back();
     }
     _cmdbuf->End();
     
 }
 void VkMaterialsThumbnails::CmdExecute(VulkanSemaphore* end) {
     VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end);
-    if (_queued.size() > 0) {
-        //_queued.pop_back();
-    }
 }
 VulkanSemaphore* VkMaterialsThumbnails::GetBeginSemaphore() {
     return _begin_semaphore;

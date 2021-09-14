@@ -124,6 +124,7 @@ void VulkanRenderer::SetupRenderer() {
 	_gbuffer_renderer->CreateDescriptorSets();
 	_gbuffer_renderer->SetEntitiesToRender(_entitiesToRender, _particleEmitters);
 	_gbuffer_renderer->SetBuffers(mTransformsShaderBuffer, mAnimationTransformsShaderBuffer, mParticlesTransformShaderBuffer);
+	_gbuffer_renderer->SetScene(GetScene());
 	_gbuffer_renderer->SetCameraIndex(0);
 
 	_shadowmapper = new VulkanShadowmapping(
@@ -382,6 +383,8 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	this->cam = cam;
 	_shadowmapper->SetCamera(cam);
 	_shadowmapper->SetScene(mScene);
+	_gbuffer_renderer->SetScene(mScene);
+	_ibl_map->SetScene(mScene);
 	_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
 	//---------------------
 

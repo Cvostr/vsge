@@ -1,6 +1,7 @@
 #include "VulkanEnvMap.hpp"
 #include "VulkanCamerasBuffer.hpp"
 #include <Graphics/Vulkan/VulkanRAPI.hpp>
+#include "VulkanRenderer.hpp"
 
 using namespace VSGE;
 
@@ -34,6 +35,7 @@ void VulkanEnvMap::Create() {
 		_sides[i]._gbuffer->CreateDescriptorSets();
 		_sides[i]._gbuffer->SetBuffers(_transforms_buffer, _animations_buffer, _particles_buffer);
 		_sides[i]._gbuffer->SetEntitiesToRender(*_entities_to_render, *_particles_to_render);
+		_sides[i]._gbuffer->SetScene(VulkanRenderer::Get()->GetScene());
 		_sides[i]._gbuffer->Resize(_cube_size, _cube_size);
 		_sides[i]._gbuffer->EnableReverseCull();
 
@@ -181,4 +183,10 @@ void VulkanEnvMap::SetInputData(
 void VulkanEnvMap::SetStepsCount(uint32 steps) {
 	if (steps < 6 || 6 % steps == 0)
 		_steps = steps;
+}
+
+void VulkanEnvMap::SetScene(Scene* scene) {
+	for (uint32 i = 0; i < 6; i++) {
+		_sides[i]._gbuffer->SetScene(scene);
+	}
 }

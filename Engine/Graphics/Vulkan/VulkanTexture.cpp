@@ -203,7 +203,7 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 
 void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer) {
 
-	if (_layout == VK_IMAGE_LAYOUT_UNDEFINED)
+	//if (_layout == VK_IMAGE_LAYOUT_UNDEFINED)
 		ChangeLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 	VulkanRAPI* rapi = VulkanRAPI::Get();
@@ -349,12 +349,14 @@ void VulkanTexture::CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLay
 		1, &imgMemBarrier);
 }
 
-void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* destination, uint32 first_layer, uint32 layers_count) {
+void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* destination, uint32 first_layer, uint32 layers_count,
+	 VkImageLayout srcOldLayout, VkImageLayout dstOldLayout) 
+{
 	if (layers_count == 0)
 		layers_count = _layers;
 
-	destination->CmdChangeLayout(cmdbuf, destination->GetImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	CmdChangeLayout(cmdbuf, GetImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	destination->CmdChangeLayout(cmdbuf, dstOldLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	CmdChangeLayout(cmdbuf, srcOldLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
 	VkImageCopy* copy_args = new VkImageCopy[_mipLevels];
 	for (uint32 i = 0; i < _mipLevels; i++) {
@@ -386,8 +388,8 @@ void VulkanTexture::CmdCopyTexture(VulkanCommandBuffer* cmdbuf, VulkanTexture* d
 		_mipLevels,
 		&copy_args[0]);
 
-	destination->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, destination->GetImageLayout());
-	CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, GetImageLayout());
+	destination->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstOldLayout);
+	CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, srcOldLayout);
 
 	SAFE_RELEASE_ARR(copy_args)
 }
@@ -398,7 +400,7 @@ void VulkanTexture::Resize(uint32 width, uint32 height) {
 }
 
 void VulkanTexture::SetReadyToUseInShaders() {
-	if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+	//if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 		ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 

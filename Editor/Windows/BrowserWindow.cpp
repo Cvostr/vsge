@@ -172,10 +172,10 @@ void FileBrowserWindow::OnDrawWindow() {
             }
 
             ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->GetName());
-            if (!thumb)
+            if (mat->IsReady())
                 VkMaterialsThumbnails::Get()->CreateThumbnail(mat->GetName());
             if (thumb)
-                icon = thumb;
+               icon = thumb;
         }
         if (e->isTexture()) {
             ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(e->abs_path);

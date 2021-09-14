@@ -11,6 +11,7 @@ using namespace VSGE;
 VulkanGBufferRenderer::VulkanGBufferRenderer() {
 	_fb_width = 1280;
 	_fb_height = 720;
+	_scene = nullptr;
 
 	_camera_index = 0;
 	_reverseCull = false;
@@ -109,6 +110,10 @@ void VulkanGBufferRenderer::SetEntitiesToRender(tEntityList& entities, tEntityLi
 	_particles_to_render = &particles;
 }
 
+void VulkanGBufferRenderer::SetScene(Scene* scene) {
+	_scene = scene;
+}
+
 void VulkanGBufferRenderer::BindPipeline(VulkanCommandBuffer* cmdbuf, VulkanPipeline* pipeline) {
 	if (pipeline != _boundPipeline) {
 		cmdbuf->BindPipeline(*pipeline);
@@ -134,9 +139,9 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
 
-	Scene* scene = VulkanRenderer::Get()->GetScene();
-	if (scene) {
-		SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
+
+	if (_scene) {
+		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
 		if (env_settings._skybox_material.IsResourceSpecified()) {
 			MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
 			if (resource) {

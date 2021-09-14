@@ -3,6 +3,7 @@
 #include <ImageBtnText.h>
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include "../Misc/Thumbnails.hpp"
+#include "../Misc/VkMaterialsThumbnails.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -36,11 +37,9 @@ void ResourcePickerWindow::OnDrawWindow() {
                 if (reference->GetResourceType() == RESOURCE_TYPE_TEXTURE) {
                     ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
-                    if (resource) {
-                        ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(resource->GetDataDescription().file_path);
-                        if (tex)
-                            texture = tex;
-                    }
+                    ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(resource->GetDataDescription().file_path);
+                    if (tex)
+                        texture = tex;
 
                     if (texture) {
                         unsigned int pix = 0;
@@ -59,7 +58,39 @@ void ResourcePickerWindow::OnDrawWindow() {
                         else
                             drawn_pix = 0;
                     }
-                }else if (ImGui::Button(resource->GetName().c_str())) {
+                }else if (reference->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+                    ImTextureID texture = TextureThumbnails::Get()->GetCheckerboardTexture()->imtexture;
+
+                    if (resource->GetState() != RESOURCE_STATE_READY) {
+                        resource->Load();
+                    }
+
+                    ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(resource->GetName());
+                    if (resource->IsReady())
+                        VkMaterialsThumbnails::Get()->CreateThumbnail(resource->GetName());
+                    if (thumb)
+                        texture = thumb;
+                    
+
+                    if (texture) {
+                        unsigned int pix = 0;
+                        bool hovered = false;
+                        bool clicked = ImageButtonWithText((void*)texture, resource->GetName().c_str(), &pix, &hovered, ImVec2(64, 64));
+                        if (clicked) {
+                            SetResourceToReference(resource);
+                        }
+
+                        //Summarize pixels
+                        drawn_pix += pix;
+                        //If we have enough space
+                        if ((width - drawn_pix) > 256)
+                            //Then draw next in same line
+                            ImGui::SameLine();
+                        else
+                            drawn_pix = 0;
+                    }
+                }
+                else if (ImGui::Button(resource->GetName().c_str())) {
                     SetResourceToReference(resource);
                 }
             }

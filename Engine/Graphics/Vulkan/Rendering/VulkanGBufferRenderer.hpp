@@ -32,6 +32,7 @@ namespace VSGE {
 		bool _reverseCull;
 		tEntityList* _entities_to_render;
 		tEntityList* _particles_to_render;
+		Scene* _scene;
 
 		VulkanPipeline* _boundPipeline;
 		void BindPipeline(VulkanCommandBuffer* cmdbuf, VulkanPipeline* pipeline);
@@ -46,6 +47,7 @@ namespace VSGE {
 		void EnableReverseCull();
 
 		void SetEntitiesToRender(tEntityList& entities, tEntityList& particles);
+		void SetScene(Scene* scene);
 		void SetBuffers(
 			VulkanBuffer* transforms_buffer = nullptr,
 			VulkanBuffer* anims_buffer = nullptr,
