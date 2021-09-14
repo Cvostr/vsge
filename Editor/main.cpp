@@ -11,6 +11,7 @@
 
 #include "Windows/ResourcePickWindow.hpp"
 #include "Windows/StartWindow.hpp"
+#include <Misc/VkMaterialsThumbnails.hpp>
 
 #include <Resources/DefaultResources.hpp>
 
@@ -31,6 +32,8 @@ Application* VSGEMain() {
 	VulkanRAPI* vk = new VulkanRAPI;
 	vk->Create(&app->GetWindow());
 
+	
+
 	VulkanRenderer* renderer = new VulkanRenderer;
 
 	app->AddLayer(new EditorLayer);
@@ -38,6 +41,8 @@ Application* VSGEMain() {
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
 	
+	VkMaterialsThumbnails* thumbs = new VkMaterialsThumbnails;
+	thumbs->Create();
 
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);

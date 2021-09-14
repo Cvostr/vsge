@@ -38,6 +38,7 @@ set(SRC_FILES
 				Graphics/Sampler.cpp
 				Graphics/Shader.cpp
 				Graphics/Texture.cpp
+				Graphics/LightsBuffer.cpp
 				Graphics/D3D12/D3D12Buffer.cpp
 				Graphics/D3D12/D3D12Device.cpp
 				Graphics/D3D12/D3D12Buffer.cpp

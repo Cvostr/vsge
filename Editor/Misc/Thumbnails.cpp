@@ -61,6 +61,5 @@ ImguiVulkanTexture* TextureThumbnails::GetTextureResource(const std::string& fna
         }
     }
 
-
     return ptr->second;
 }

@@ -11,9 +11,11 @@ namespace VSGE {
 	class VulkanCamerasBuffer {
 	private:
 		
+		byte* _cameras_cpu_buffer;
 		VulkanBuffer* _cameras_buffer;
 		Camera** _cameras;
 
+		uint32 GetNeededBufferSize();
 		void WriteCameraToBuffer(uint32 index, const Mat4& projection, const Mat4& view, const Vec3& pos);
 	public:
 		VulkanCamerasBuffer();
@@ -26,5 +28,6 @@ namespace VSGE {
 		uint32 GetCameraId(Camera* camera);
 		Camera* GetCameraByIndex(uint32 index);
 		VulkanBuffer* GetCamerasBuffer();
+		void UpdateGpuBuffer();
 	};
 }

@@ -10,6 +10,7 @@
 #include "../VulkanPipeline.hpp"
 
 #include "VulkanMaterials.hpp"
+#include <Graphics/LightsBuffer.hpp>
 #include "VulkanTerrainRenderer.hpp"
 #include "VulkanDeferredLight.hpp"
 #include "VulkanCamerasBuffer.hpp"
@@ -47,7 +48,7 @@ namespace VSGE {
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
 		VulkanBuffer* mParticlesTransformShaderBuffer;
-		VulkanBuffer* _lightsBuffer;
+		LightsBuffer* _lights_buffer;
 		//--------------------Meshes--------------------
 		VulkanMesh* mSpriteMesh;
 

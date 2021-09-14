@@ -10,9 +10,15 @@ VulkanCamerasBuffer::~VulkanCamerasBuffer() {
 	Destroy();
 }
 
+uint32 VulkanCamerasBuffer::GetNeededBufferSize() {
+	return (MAX_CAMERAS + 6) * CAMERA_ELEM_SIZE;
+}
+
 void VulkanCamerasBuffer::Create() {
+	_cameras_cpu_buffer = new byte[GetNeededBufferSize()];
+
 	_cameras_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	_cameras_buffer->Create((MAX_CAMERAS + 6) * CAMERA_ELEM_SIZE);
+	_cameras_buffer->Create(GetNeededBufferSize());
 
 	_cameras = new Camera* [MAX_CAMERAS + 6];
 
@@ -27,13 +33,16 @@ void VulkanCamerasBuffer::Create() {
 void VulkanCamerasBuffer::Destroy() {
 	SAFE_RELEASE(_cameras_buffer)
 	SAFE_RELEASE_ARR(_cameras)
+	SAFE_RELEASE_ARR(_cameras_cpu_buffer)
+}
+
+void VulkanCamerasBuffer::UpdateGpuBuffer() {
+	_cameras_buffer->WriteData(0, GetNeededBufferSize(), _cameras_cpu_buffer);
 }
 
 void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float far_plane) {
 	Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, far_plane);
 
-	//Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, -1, 0), Vec3(0, 1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
-	//Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, -1), Vec3(0, 0, 1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
 	Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, 1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
 	Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
 
@@ -62,9 +71,10 @@ void VulkanCamerasBuffer::WriteCameraToBuffer(
 	Mat4 skybox_viewproj = RemoveTranslationFromViewMat(view) * projection;
 
 	uint32 offset = index * CAMERA_ELEM_SIZE;
-	_cameras_buffer->WriteData(offset, sizeof(Mat4), &projection_view);
-	_cameras_buffer->WriteData(offset + sizeof(Mat4), sizeof(Mat4), &skybox_viewproj);
-	_cameras_buffer->WriteData(offset + sizeof(Mat4) * 2, sizeof(Vec3), (void*)&pos);
+
+	memcpy(_cameras_cpu_buffer + offset, &projection_view, sizeof(Mat4));
+	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4), &skybox_viewproj, sizeof(Mat4));
+	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4) * 2, (void*)&pos, sizeof(Vec3));
 }
 
 void VulkanCamerasBuffer::SetCamera(uint32 camera_index, Camera* camera) {

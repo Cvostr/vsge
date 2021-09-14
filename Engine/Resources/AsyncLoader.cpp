@@ -14,8 +14,8 @@ AsyncLoader::AsyncLoader() :
 }
 
 AsyncLoader::~AsyncLoader() {
-    delete mMutex;
-    delete[] loadQueue;
+    SAFE_RELEASE(mMutex);
+    SAFE_RELEASE_ARR(loadQueue);
 }
 
 void AsyncLoader::LoadResource(Resource* resource, bool justRead) {

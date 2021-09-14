@@ -30,3 +30,11 @@ Mesh* VSGE::CreateMesh() {
 		return new VulkanMesh;
 	return nullptr;
 }
+
+GpuBuffer* VSGE::CreateGpuBuffer(GpuBufferType type) {
+	GraphicsApi api = Application::Get()->GetGraphicsApi();
+
+	if (api == GRAPHICS_API_VULKAN)
+		return new VulkanBuffer(type);
+	return nullptr;
+}

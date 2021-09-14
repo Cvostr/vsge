@@ -71,8 +71,8 @@ void VulkanRenderer::SetupRenderer() {
 	mParticlesTransformShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	mParticlesTransformShaderBuffer->Create(sizeof(Mat4) * MAX_PARTICLES_MATRICES);
 
-	_lightsBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	_lightsBuffer->Create(200 * 64 + 16);
+	_lights_buffer = new LightsBuffer;
+	_lights_buffer->Create();
 
 	//---------------------Meshes----------------------------------
 	mSpriteMesh = new VulkanMesh;
@@ -149,7 +149,7 @@ void VulkanRenderer::SetupRenderer() {
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
 	_deferred_renderer->SetBRDF_LUT(_brdf_lut);
 	
-	_deferred_renderer->SetLightsBuffer(_lightsBuffer);
+	_deferred_renderer->SetLightsBuffer((VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	_deferred_renderer->SetCameraIndex(0);
 	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
@@ -161,7 +161,7 @@ void VulkanRenderer::SetupRenderer() {
 		mTransformsShaderBuffer,
 		mAnimationTransformsShaderBuffer,
 		mParticlesTransformShaderBuffer,
-		_lightsBuffer);
+		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
 
 
@@ -254,26 +254,12 @@ void VulkanRenderer::StoreWorldObjects() {
 	CreateRenderList();
 
 	//send lights to gpu buffer
-	uint32 lights_count = this->_lightsources.size();
-	_lightsBuffer->WriteData(0, 4, &lights_count);
-	for (uint32 light_i = 0; light_i < lights_count; light_i++) {
+	_lights_buffer->SetLightsCount((uint32)this->_lightsources.size());
+	for (uint32 light_i = 0; light_i < _lightsources.size(); light_i++) {
 		LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
-		int light_type = light->GetLightType();
-		float intensity = light->GetIntensity();
-		float range = light->GetRange();
-		float spot_angle = light->GetSpotAngle();
-		Vec3 pos = _lightsources[light_i]->GetAbsolutePosition();
-		Vec3 dir = light->GetDirection();
-		Color color = light->GetColor();
-		_lightsBuffer->WriteData(16 + light_i * 64, 4, &light_type);
-		_lightsBuffer->WriteData(16 + light_i * 64 + 4, 4, &intensity);
-		_lightsBuffer->WriteData(16 + light_i * 64 + 8, 4, &range);
-		_lightsBuffer->WriteData(16 + light_i * 64 + 12, 4, &spot_angle);
-		_lightsBuffer->WriteData(16 + light_i * 64 + 16, 16, &pos);
-		_lightsBuffer->WriteData(16 + light_i * 64 + 32, 16, &dir);
-		_lightsBuffer->WriteData(16 + light_i * 64 + 48, 16, &color);
+		_lights_buffer->SetLight(light_i, light);
 	}
-
+	_lights_buffer->UpdateGpuBuffer();
 
 	Mat4* transforms = new Mat4[_entitiesToRender.size() * 4];
 	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / 64];
@@ -387,7 +373,6 @@ void VulkanRenderer::StoreWorldObjects() {
 	mLightsCmdbuf->End();
 
 	_ibl_map->RecordCmdBufs();
-	//_env_map->RecordCmdbufs();
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
@@ -405,6 +390,8 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 		_cameras_buffer->SetCamera(camera_i, camera);
 	}
 
+	_cameras_buffer->UpdateGpuBuffer();
+
 	StoreWorldObjects();
 
 	_shadowmapper->ExecuteShadowCasters(mBeginSemaphore, mShadowmappingEndSemaphore);
@@ -421,10 +408,6 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
 
 	_ibl_map->Execute(mEndSemaphore);
-	//_env_map->Execute(_irmap->GetSemaphore());
-	//_irmap->ComputeIrmapTexture(mEndSemaphore);
-
-	//_env_map->Execute(mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {

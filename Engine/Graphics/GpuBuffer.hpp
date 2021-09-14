@@ -65,4 +65,6 @@ namespace VSGE {
 		/// </summary>
 		virtual void Destroy() = 0;
 	};
+
+	GpuBuffer* CreateGpuBuffer(GpuBufferType type);
 }
