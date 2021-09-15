@@ -117,6 +117,8 @@ namespace VSGE {
 
 		VulkanCamerasBuffer* GetCamerasBuffer();
 
+		Vulkan_BRDF_LUT* GetBRDF();
+
 		void StoreWorldObjects();
 
 		void SetupRenderer();

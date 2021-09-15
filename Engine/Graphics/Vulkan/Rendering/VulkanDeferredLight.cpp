@@ -172,6 +172,10 @@ VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {
 	return _deferred_fb;
 }
 
+VulkanRenderPass* VulkanDeferredLight::GetRenderPass() {
+	return _deferred_rp;
+}
+
 TextureFormat VulkanDeferredLight::GetOutputFormat() {
 	return _outputFormat;
 }

@@ -4,6 +4,7 @@
 #include "../Texture.hpp"
 #include <vulkan/vulkan.hpp>
 #include "VulkanCommandBuffer.hpp"
+#include <Math/Color.hpp>
 
 namespace VSGE {
 
@@ -67,6 +68,7 @@ namespace VSGE {
 		void CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer);
 
 		void SetClearSize(uint32 width, uint32 height);
+		void SetClearColor(uint32 attachment_id, const Color& color);
 
 		void PushColorAttachment(VkFormat format, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		void PushColorAttachment(TextureFormat Format = TextureFormat::FORMAT_RGBA, VkImageLayout Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);

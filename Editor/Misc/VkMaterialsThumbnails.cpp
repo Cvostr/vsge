@@ -54,7 +54,8 @@ void VkMaterialsThumbnails::Create() {
     _lights_buffer = new LightsBuffer;
     _lights_buffer->SetMaxLightsCount(1);
     _lights_buffer->Create();
-    _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0, 0, 0), Vec3(0.5, 0.5, 0.5), Color());
+    _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0, 0, 0), Vec3(0.4, 0.3, -0.7), Color());
+    _lights_buffer->SetLightsCount(1);
     _lights_buffer->UpdateGpuBuffer();
 
     _camera = new Camera;
@@ -68,6 +69,16 @@ void VkMaterialsThumbnails::Create() {
     _camera->UpdateMatrices();
     VulkanRenderer::Get()->GetCamerasBuffer()->SetCamera(99, _camera);
 
+    _empty_cube_texture = new VulkanTexture;
+    _empty_cube_texture->SetCubemap(true);
+    _empty_cube_texture->Create(2, 2, FORMAT_RGBA, 6, 1);
+    char* empty_texture_data = new char[2 * 2 * 4];
+    memset(empty_texture_data, 0, 16);
+    for(uint32 i = 0; i < 6; i ++)
+        _empty_cube_texture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
+    _empty_cube_texture->SetReadyToUseInShaders();
+    SAFE_RELEASE_ARR(empty_texture_data)
+
     _gbuffer = new VulkanGBufferRenderer;
     _gbuffer->CreateFramebuffer();
     _gbuffer->CreateDescriptorSets();
@@ -75,6 +86,7 @@ void VkMaterialsThumbnails::Create() {
     _gbuffer->SetCameraIndex(99);
     _gbuffer->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
     _gbuffer->SetBuffers(_transform_buffer, _storage_buffer, _storage_buffer);
+    _gbuffer->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _light = new VulkanDeferredLight;
     _light->CreateFramebuffer();
@@ -84,6 +96,10 @@ void VkMaterialsThumbnails::Create() {
     _light->SetGBuffer(_gbuffer);
     _light->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
     _light->SetCameraIndex(99);
+    _light->SetBRDF_LUT(VulkanRenderer::Get()->GetBRDF());
+    _light->SetTexture(10, _empty_cube_texture);
+    _light->SetTexture(11, _empty_cube_texture);
+    _light->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _cmdpool = new VulkanCommandPool;
     _cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
@@ -91,8 +107,14 @@ void VkMaterialsThumbnails::Create() {
     _cmdbuf = new VulkanCommandBuffer;
     _cmdbuf->Create(_cmdpool);
 
+    _cmdbuf_deferred = new VulkanCommandBuffer;
+    _cmdbuf_deferred->Create(_cmdpool);
+
     _begin_semaphore = new VulkanSemaphore();
     _begin_semaphore->Create();
+
+    _middle_semaphore = new VulkanSemaphore;
+    _middle_semaphore->Create();
 
     _sampler = new VulkanSampler();
     _sampler->Create();
@@ -161,15 +183,19 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
             VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
 
         _gbuffer->RecordCmdBuffer(_cmdbuf);
-        //_light->RecordCmdbuf(_cmdbuf);
+    }
+    _cmdbuf->End();
+
+    _cmdbuf_deferred->Begin();
+    if (_queued.size() > 0) {
+        _light->RecordCmdbuf(_cmdbuf_deferred);
 
         VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
         thumb->material_name = _queued[0];
-        //VulkanTexture* src = (VulkanTexture*)_light->GetFramebuffer()->GetColorAttachments()[0];
-        VulkanTexture* src = (VulkanTexture*)_gbuffer->GetFramebuffer()->GetColorAttachments()[0];
+        VulkanTexture* src = (VulkanTexture*)_light->GetFramebuffer()->GetColorAttachments()[0];
         VulkanTexture* dst = thumb->texture;
 
-        src->CmdCopyTexture(_cmdbuf, dst, 0, 1);
+        src->CmdCopyTexture(_cmdbuf_deferred, dst, 0, 1);
 
         //shrink array to left
         for (uint32 q_i = 1; q_i < _queued.size(); q_i++) {
@@ -177,11 +203,12 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
         }
         _queued.pop_back();
     }
-    _cmdbuf->End();
+    _cmdbuf_deferred->End();
     
 }
 void VkMaterialsThumbnails::CmdExecute(VulkanSemaphore* end) {
-    VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end);
+    VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *_middle_semaphore);
+    VulkanGraphicsSubmit(*_cmdbuf_deferred, *_middle_semaphore, *end);
 }
 VulkanSemaphore* VkMaterialsThumbnails::GetBeginSemaphore() {
     return _begin_semaphore;

@@ -192,7 +192,7 @@ void main() {
     vec4 diffuse = texture(color, UVCoord);
 
     if(depth == 1.0)
-        tColor = vec4(diffuse.rgb, 1);
+        tColor = vec4(diffuse.rgb, diffuse.a);
     else{
         vec3 normal = texture(normal, UVCoord).rgb;
         vec3 pos = texture(pos, UVCoord).rgb;
@@ -221,6 +221,6 @@ void main() {
         color = color / (color + vec3(1.0));
         color = pow(color, vec3(1.0/2.2)); 
 
-        tColor = vec4(color, 1);
+        tColor = vec4(color, diffuse.a);
     }
 }

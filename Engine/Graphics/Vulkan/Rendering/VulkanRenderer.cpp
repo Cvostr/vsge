@@ -454,3 +454,7 @@ VulkanMesh* VulkanRenderer::GetScreenMesh() {
 VulkanCamerasBuffer* VulkanRenderer::GetCamerasBuffer() {
 	return _cameras_buffer;
 }
+
+Vulkan_BRDF_LUT* VulkanRenderer::GetBRDF() {
+	return _brdf_lut;
+}

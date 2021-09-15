@@ -65,6 +65,12 @@ bool VulkanRenderPass::Create() {
     return true;
 }
 
+void VulkanRenderPass::SetClearColor(uint32 attachment_id, const Color& color) {
+    if (mClearValues && mAttachmentReferences.size() > attachment_id) {
+        mClearValues[attachment_id].color = {color.r, color.g, color.b, color.a};
+    }
+}
+
 void VulkanRenderPass::Destroy() {
     if (mCreated) {
         VulkanRAPI* vulkan = VulkanRAPI::Get();
