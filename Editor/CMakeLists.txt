@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR}/Editor)
 
-#file(GLOB_RECURSE SRC_FILES "*.cpp")
 file(GLOB_RECURSE HEADER_FILES "*.hpp")
 
 set(SRC_FILES 

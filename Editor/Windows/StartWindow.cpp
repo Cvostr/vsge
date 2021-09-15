@@ -70,7 +70,7 @@ void StartWindow::OnDrawWindow() {
         }
 
         if (ImGui::Button("Add Internal Test")) {
-            _projects.push_back("D:\\DEV\\VSGE\\EngineTest");
+            _projects.push_back("D:\\DEV\\vsge_test_assets\\res");
             SaveProjectsList();
         }
 
