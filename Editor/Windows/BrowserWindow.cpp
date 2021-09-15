@@ -93,11 +93,8 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
 
     }
     else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
-        if (resource->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
-            MaterialResource* mat = (MaterialResource*)resource;
-            InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
-            insp->SetShowingMaterial(mat);
-        }
+        InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
+        insp->SetShowingResource(resource);
     }
 }
 

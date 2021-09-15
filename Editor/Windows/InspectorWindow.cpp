@@ -23,6 +23,7 @@
 #include <Graphics/Material.hpp>
 
 #include "../InspectorInterfaces/EntityComponents/EntityComponents.hpp"
+#include "../InspectorInterfaces/ResourceTypes/InspectorResourceTypes.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -150,8 +151,14 @@ void InspectorWindow::OnDrawWindow() {
 
 		if (mShowingEntity)
 			DrawEntityContents();
-		if (mShowingMaterial)
-			DrawMaterialEditor(mShowingMaterial);
+		if (mShowingResource) {
+			if(mShowingResource->GetResourceType() == RESOURCE_TYPE_MATERIAL)
+				DrawMaterialEditor((MaterialResource*)mShowingResource);
+			if (mShowingResource->GetResourceType() == RESOURCE_TYPE_TEXTURE)
+				DrawTextureResourceUI(mShowingResource);
+			if (mShowingResource->GetResourceType() == RESOURCE_TYPE_AUDIOCLIP)
+				DrawAudioResourceUI(mShowingResource);
+		}
 
 		ImGui::End();
 	}

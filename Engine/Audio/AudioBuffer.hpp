@@ -55,5 +55,9 @@ namespace VSGE {
 		uint32 GetDuration() {
 			return _duration;
 		}
+
+		uint32 GetBitRate() {
+			return _bitRate;
+		}
 	};
 }

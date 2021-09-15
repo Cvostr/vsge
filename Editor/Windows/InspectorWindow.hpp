@@ -11,16 +11,16 @@ namespace VSGEditor {
 		static InspectorWindow* _this;
 		
 		VSGE::Entity* mShowingEntity;
-		VSGE::MaterialResource* mShowingMaterial;
+		VSGE::Resource* mShowingResource;
 	public:
 		void SetShowingEntity(VSGE::Entity* entity) {
 			mShowingEntity = entity;
-			mShowingMaterial = nullptr;
+			mShowingResource = nullptr;
 		}
 
-		void SetShowingMaterial(VSGE::MaterialResource* mat) {
+		void SetShowingResource(VSGE::Resource* resource) {
 			mShowingEntity = nullptr;
-			mShowingMaterial = mat;
+			mShowingResource = resource;
 		}
 
 		void OnDrawWindow();
@@ -50,7 +50,7 @@ namespace VSGEditor {
 
 		InspectorWindow() :
 			mShowingEntity(nullptr),
-			mShowingMaterial(nullptr)
+			mShowingResource(nullptr)
 		{
 			_this = this;
 		}
