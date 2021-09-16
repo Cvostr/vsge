@@ -69,16 +69,6 @@ void VkMaterialsThumbnails::Create() {
     _camera->UpdateMatrices();
     VulkanRenderer::Get()->GetCamerasBuffer()->SetCamera(99, _camera);
 
-    _empty_cube_texture = new VulkanTexture;
-    _empty_cube_texture->SetCubemap(true);
-    _empty_cube_texture->Create(2, 2, FORMAT_RGBA, 6, 1);
-    char* empty_texture_data = new char[2 * 2 * 4];
-    memset(empty_texture_data, 0, 16);
-    for(uint32 i = 0; i < 6; i ++)
-        _empty_cube_texture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
-    _empty_cube_texture->SetReadyToUseInShaders();
-    SAFE_RELEASE_ARR(empty_texture_data)
-
     _gbuffer = new VulkanGBufferRenderer;
     _gbuffer->CreateFramebuffer();
     _gbuffer->CreateDescriptorSets();
@@ -97,8 +87,8 @@ void VkMaterialsThumbnails::Create() {
     _light->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
     _light->SetCameraIndex(99);
     _light->SetBRDF_LUT(VulkanRenderer::Get()->GetBRDF());
-    _light->SetTexture(10, _empty_cube_texture);
-    _light->SetTexture(11, _empty_cube_texture);
+    _light->SetTexture(10, VulkanRenderer::Get()->GetBlackCubeTexture());
+    _light->SetTexture(11, VulkanRenderer::Get()->GetBlackCubeTexture());
     _light->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _cmdpool = new VulkanCommandPool;

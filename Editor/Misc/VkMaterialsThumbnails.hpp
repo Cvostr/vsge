@@ -37,7 +37,6 @@ private:
 	VSGE::tEntityList _particles_to_render;
 	VSGE::VulkanBuffer* _transform_buffer;
 	VSGE::VulkanBuffer* _storage_buffer;
-	VSGE::VulkanTexture* _empty_cube_texture;
 	VSGE::LightsBuffer* _lights_buffer;
 	VSGE::VulkanSampler* _sampler;
 

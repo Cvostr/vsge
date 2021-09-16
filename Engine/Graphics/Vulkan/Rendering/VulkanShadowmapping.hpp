@@ -87,7 +87,6 @@ namespace VSGE {
 		VulkanSampler* _gbuffer_sampler;
 		VulkanMesh* _screenPlane;
 		VulkanSampler* _shadowmap_sampler;
-		VulkanTexture* _empty_texture;
 
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
@@ -103,8 +102,7 @@ namespace VSGE {
 			VulkanBuffer* cam_buffer,
 			VulkanMesh* screenPlane,
 			VulkanTexture* pos, 
-			VulkanSampler* gbuffer_sampler,
-			VulkanTexture* empty_texture);
+			VulkanSampler* gbuffer_sampler);
 		~VulkanShadowmapping();
 	
 		void SetCamera(Camera* cam) {

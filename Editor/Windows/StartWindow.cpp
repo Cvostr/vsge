@@ -80,6 +80,6 @@ void StartWindow::OnDrawWindow() {
 
 void StartWindow::OpenProject(const std::string& path) {
     VSGE::Application* app = VSGE::Application::Get();
-    app->GetLayer<EditorLayer>()->OpenProjectDirectory(path);
-    Hide();
+    if(!app->GetLayer<EditorLayer>()->OpenProjectDirectory(path))
+        Hide();
 }

@@ -58,7 +58,8 @@ namespace VSGE {
 		//--------------------Empty texture----------
 		VulkanTexture* mEmptyZeroTexture;
 		VulkanTexture* mEmptyOneTexture;
-
+		VulkanTexture* mEmptyZeroCubeTexture;
+		VulkanTexture* mEmptyZero2dArrayTexture;
 
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
@@ -112,6 +113,9 @@ namespace VSGE {
 		VulkanSampler* GetAttachmentSampler();
 
 		VulkanTexture* GetBlackTexture();
+
+		VulkanTexture* GetBlackCubeTexture();
+		VulkanTexture* GetBlack2dArrayTexture();
 
 		VulkanMesh* GetScreenMesh();
 

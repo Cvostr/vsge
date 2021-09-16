@@ -97,6 +97,19 @@ void VulkanRenderer::SetupRenderer() {
 	mEmptyZeroTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
 	mEmptyZeroTexture->SetReadyToUseInShaders();
 
+	mEmptyZeroCubeTexture = new VulkanTexture;
+	mEmptyZeroCubeTexture->SetCubemap(true);
+	mEmptyZeroCubeTexture->Create(2, 2, FORMAT_RGBA, 6, 1);
+	for (uint32 i = 0; i < 6; i++)
+		mEmptyZeroCubeTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
+	mEmptyZeroCubeTexture->SetReadyToUseInShaders();
+
+	mEmptyZero2dArrayTexture = new VulkanTexture;
+	mEmptyZero2dArrayTexture->Create(2, 2, FORMAT_RGBA, 6, 2);
+	for (uint32 i = 0; i < 2; i++)
+		mEmptyZero2dArrayTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
+	mEmptyZero2dArrayTexture->SetReadyToUseInShaders();
+
 	mEmptyOneTexture = new VulkanTexture;
 	mEmptyOneTexture->Create(2, 2);
 	memset(empty_texture_data, 255, 16);
@@ -133,8 +146,7 @@ void VulkanRenderer::SetupRenderer() {
 		_cameras_buffer->GetCamerasBuffer(),
 		mSpriteMesh,
 		_gbuffer_renderer->GetPositionAttachment(),
-		mAttachmentSampler,
-		mEmptyZeroTexture);
+		mAttachmentSampler);
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 	_shadowmapper->SetTerrainsToRender(&_terrains);
 
@@ -251,6 +263,7 @@ void VulkanRenderer::DestroyRenderer() {
 
 	SAFE_RELEASE(_deferred_renderer)
 	SAFE_RELEASE(_gbuffer_renderer)
+	SAFE_RELEASE(_ibl_map)
 }
 
 void VulkanRenderer::StoreWorldObjects() {
@@ -303,7 +316,7 @@ void VulkanRenderer::StoreWorldObjects() {
 		}
 	}
 
-	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * _entitiesToRender.size(), transforms);
+	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * (uint32)_entitiesToRender.size(), transforms);
 	delete[] transforms;
 
 	mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
@@ -389,7 +402,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	//---------------------
 
 	_cameras_buffer->SetCamera(0, cam);
-	
+
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
 		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();
 		_cameras_buffer->SetCamera(camera_i, camera);
@@ -399,10 +412,11 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	StoreWorldObjects();
 
-	_shadowmapper->ExecuteShadowCasters(mBeginSemaphore, mShadowmappingEndSemaphore);
-	VulkanSemaphore* begin = mShadowmappingEndSemaphore;
-	if (_shadowcasters.size() == 0)
-		begin = mBeginSemaphore;
+	VulkanSemaphore* begin = mBeginSemaphore;
+	if (_shadowcasters.size() > 0){
+		_shadowmapper->ExecuteShadowCasters(mBeginSemaphore, mShadowmappingEndSemaphore);
+		begin = mShadowmappingEndSemaphore;
+	}
 
 	_shadowmapper->RenderShadows(begin, mShadowprocessingEndSemaphore);
 
@@ -445,6 +459,14 @@ VulkanSampler* VulkanRenderer::GetAttachmentSampler() {
 
 VulkanTexture* VulkanRenderer::GetBlackTexture() {
 	return mEmptyZeroTexture;
+}
+
+VulkanTexture* VulkanRenderer::GetBlackCubeTexture() {
+	return mEmptyZeroCubeTexture;
+}
+
+VulkanTexture* VulkanRenderer::GetBlack2dArrayTexture() {
+	return mEmptyZero2dArrayTexture;
 }
 
 VulkanMesh* VulkanRenderer::GetScreenMesh() {

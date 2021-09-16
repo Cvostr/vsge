@@ -5,6 +5,7 @@
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Scene.hpp>
+#include "VulkanRenderer.hpp"
 
 using namespace VSGE;
 
@@ -14,8 +15,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	VulkanBuffer* cam_buffer,
 	VulkanMesh* screenPlane,
 	VulkanTexture* pos,
-	VulkanSampler* gbuffer_sampler,
-	VulkanTexture* empty_texture)
+	VulkanSampler* gbuffer_sampler)
 {
 	_added_casters = 0;
 	this->_vertexDescrSets = vertexDescrSets;
@@ -23,7 +23,6 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_gbuffer_pos = pos;
 	_gbuffer_sampler = gbuffer_sampler;
 	_screenPlane = screenPlane;
-	_empty_texture = empty_texture;
 
 	_outputWidth = 1280;
 	_outputHeight = 720;
@@ -96,7 +95,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
-
+	
 	_shadowmap_shader = new VulkanShader;
 	_shadowmap_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
 	_shadowmap_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
@@ -160,6 +159,15 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_sampler->SetBorderColor(BORDER_COLOR_OPAQUE_WHITE);
 	_shadowmap_sampler->Create();
 
+	//write empty textures to shadowmaps
+	for (uint32 i = 0; i < 32; i++) {
+		if (i < 2) {
+			_shadowrenderer_descrSet->WriteDescriptorImage(3, VulkanRenderer::Get()->GetBlack2dArrayTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+		}
+		_shadowrenderer_descrSet->WriteDescriptorImage(4, VulkanRenderer::Get()->GetBlackCubeTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderer::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+	}
+
 	//--------------SHADOW PROCESS CMDBUF
 	_shadowprocess_cmdbuf = new VulkanCommandBuffer();
 	_shadowprocess_cmdbuf->Create(_shadowmapCmdPool);
@@ -174,17 +182,9 @@ VulkanShadowmapping::~VulkanShadowmapping() {
 	SAFE_RELEASE(_shadowprocess_buffer)
 	SAFE_RELEASE(_shadowmapCmdPool)
 
-	/*delete _shadowmapRenderPass;
-
-	delete _shadowmapPipeline;
-	delete _shadowmap_layout;
-	delete _shadowmap_shader;
-
-	delete _shadowprocess_pipeline;
-	delete _shadowprocess_layout;
-	delete _shadowprocess_shader;
-	
-	*/
+	//Destroy renderpasses
+	SAFE_RELEASE(_shadowmapRenderPass)
+	SAFE_RELEASE(_shadowmap_point_RenderPass)
 }
 
 uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 caster_type) {
@@ -270,8 +270,6 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 
 	_shadowcasters_buffer->WriteData(offset_casters, 12, &pos);
 	_shadowcasters_buffer->WriteData(offset_casters + 12, 4, &type);
-
-	
 
 	_added_casters++;
 }
@@ -410,7 +408,6 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 	_shadowrenderer_descrSet->WriteDescriptorImages(5, shadowmaps_spot.data(), _shadowmap_sampler, shadowmaps_spot.size());
 	_shadowprocess_buffer->WriteData(SHADOWPROCESS_SHADOWCOUNT_OFFSET, 4, &_added_casters);
 	RecordShadowProcessingCmdbuf();
-
 
 	if(_scene){
 		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();

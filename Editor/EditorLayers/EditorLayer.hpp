@@ -101,7 +101,7 @@ namespace VSGEditor {
 			_pickedEntity = entity;
 		}
 
-		void OpenProjectDirectory(const std::string& dir_path);
+		bool OpenProjectDirectory(const std::string& dir_path);
 
 		void OnAttach();
 		void OnUpdate();

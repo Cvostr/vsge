@@ -2,7 +2,7 @@
 #include <Core/FileLoader.hpp>
 #include <Engine/Application.hpp>
 #include <Core/Time.hpp>
-
+#include <filesystem>
 #include "ImGuiLayer.hpp"
 
 #include "../Windows/SceneWindow.hpp"
@@ -14,6 +14,7 @@
 #include "../Windows/EditorSettingsWindow.hpp"
 #include "../Windows/EnvironmentSettingsWindow.hpp"
 #include "../Windows/ProjectSettingsWindow.hpp"
+#include <Misc/DialogWindows.hpp>
 
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
 
@@ -30,6 +31,7 @@
 
 using namespace VSGEditor;
 using namespace VSGE;
+namespace fs = std::filesystem;
 
 EditorLayer* EditorLayer::_this = nullptr;
 
@@ -43,7 +45,20 @@ void EditorLayer::OnDetach() {
 
 }
 
-void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
+bool EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
+	if (!fs::is_directory(dir_path)) {
+		MessageDialogDesc desc;
+		desc.dialog_title = "Error opening project";
+		desc.message = "Directory " + dir_path + " doesn't exist!";
+		desc.buttons = MESSAGE_DIALOG_BTN_OK;
+		desc.dialog_type = MESSAGE_DIALOG_TYPE_ERROR;
+		DialogUserAction action;
+		MessageDialog(&desc, action);
+		if (action == DIALOG_USER_ACTION_ACCEPT) {
+			return true;
+		}
+	}
+
 	mResourcesWatcher->WatchDirectory(dir_path);
 	ResourceCache::Get()->AddResourceDir(dir_path);
 	
@@ -72,6 +87,8 @@ void EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
+
+	return false;
 }
 
 void EditorLayer::OnEvent(const VSGE::IEvent& event) {
