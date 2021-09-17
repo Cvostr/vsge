@@ -51,10 +51,6 @@ void VulkanIBL::Create() {
 	_spmap->SetStepsCount(6);
 	_spmap->SetEnvMapInputTexture(_envmap->GetCubeTexture());
 	_spmap->Create();
-
-	_spmap_sampler = new VulkanSampler;
-	_spmap_sampler->SetLodsRanges(-1000, 1000);
-	_spmap_sampler->Create();
 }
 void VulkanIBL::Destroy() {
 	SAFE_RELEASE(_spmap)
@@ -86,7 +82,4 @@ VulkanTexture* VulkanIBL::GetIrradianceMap() {
 }
 VulkanTexture* VulkanIBL::GetSpecularMap() {
 	return _spmap->GetSpecularOutputTexture();
-}
-VulkanSampler* VulkanIBL::GetSpecularSampler() {
-	return _spmap_sampler;
 }

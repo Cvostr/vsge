@@ -45,6 +45,14 @@ void FileBrowserWindow::SetDirectory(std::string Dir) {
     _currentDir = Dir;
     UpdateDirectoryContent();
 }
+
+void FileBrowserWindow::RemoveFile(const std::string& path) {
+    if (fs::is_directory(path)) {
+        fs::remove_all(path);
+    }else
+        fs::remove(path);
+}
+
 void FileBrowserWindow::UpdateDirectoryContent() {
     _files.clear();
 
@@ -183,7 +191,12 @@ void FileBrowserWindow::OnDrawWindow() {
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
-        bool clicked = ImageButtonWithText(icon, e->name.c_str(), &pix, &hovered, ImVec2(_itemsSize, _itemsSize));
+        bool clicked = ImageButtonWithText(icon, e->name.c_str(), &pix, &hovered, ImVec2(_itemsSize, _itemsSize), ImVec2(0, 0),
+            ImVec2(1, 1),
+            -1,
+            ImVec4(0, 0, 0, 0),
+            ImVec4(1, 1, 1, 1),
+            f_i);
         
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
@@ -236,8 +249,7 @@ void FileBrowserWindow::OnDrawWindow() {
                 DialogUserAction action;
                 MessageDialog(&desc, action);
                 if(action == DIALOG_USER_ACTION_ACCEPT){
-                    fs::remove(e->abs_path); 
-                    UpdateDirectoryContent();
+                    RemoveFile(e->abs_path);
                 }
             }
                

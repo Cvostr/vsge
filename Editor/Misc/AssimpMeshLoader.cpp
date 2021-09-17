@@ -1,5 +1,6 @@
 #include "AssimpMeshLoader.h"
 #include <cassert>
+#include <map>
 
 static Assimp::Importer importer;
 static unsigned int loadflags = aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
@@ -113,10 +114,34 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
     }
 }
 
+void ProcessAiMeshes(aiMesh** meshes, uint32 meshes_count) {
+    std::map<std::string, uint32> repeats;
+
+    for (uint32 i = 0; i < meshes_count; i++) {
+        aiMesh* mesh = meshes[i];
+        std::string mesh_name = std::string(mesh->mName.C_Str());
+        uint32 index = 0;
+        if (repeats.count(mesh_name) > 0) {
+            index = repeats.at(mesh->mName.C_Str());
+            repeats.at(mesh->mName.C_Str())++;
+        }
+        else {
+            repeats.insert(std::make_pair(mesh_name, 1));
+            index = 0;
+        }
+
+        if (index > 0) {
+            mesh_name += "_" + std::to_string(index);
+            meshes[i]->mName = mesh_name;
+        }
+    }
+}
 
 void VSGEditor::loadMesh(const std::string& file_path, MeshContainer* mesh_ptr, int index){
     const aiScene* scene = importer.ReadFile(file_path, loadflags);
     std::cout << "Loading mesh " << scene->mMeshes[index]->mName.C_Str() << " from file " << file_path << std::endl;
+
+    ProcessAiMeshes(scene->mMeshes, scene->mNumMeshes);
 
     processMesh(scene->mMeshes[index], mesh_ptr);
     importer.FreeScene();
@@ -184,6 +209,7 @@ void VSGEditor::loadMaterial(std::string file_path, aiMaterial* material, int in
 
 void VSGEditor::loadNodeTree(const std::string& file_path, SceneNode* node){
     const aiScene* scene = importer.ReadFile(file_path, loadflags);
+    ProcessAiMeshes(scene->mMeshes, scene->mNumMeshes);
 
     SceneNode* root_node = new SceneNode;
     processNodeForTree(root_node, scene->mRootNode, scene);

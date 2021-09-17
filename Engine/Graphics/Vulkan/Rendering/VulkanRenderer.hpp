@@ -55,10 +55,12 @@ namespace VSGE {
 		//--------------------Samplers-------------------
 		VulkanSampler* mMaterialMapsSampler;
 		VulkanSampler* mAttachmentSampler;
+		VulkanSampler* mSamplerIBL;
 		//--------------------Empty texture----------
 		VulkanTexture* mEmptyZeroTexture;
 		VulkanTexture* mEmptyOneTexture;
 		VulkanTexture* mEmptyZeroCubeTexture;
+		VulkanTexture* mEmptyOneCubeTexture;
 		VulkanTexture* mEmptyZero2dArrayTexture;
 
 		VulkanShadowmapping* _shadowmapper;
@@ -111,11 +113,14 @@ namespace VSGE {
 		VulkanSemaphore* GetEndSemaphore();
 
 		VulkanSampler* GetAttachmentSampler();
+		VulkanSampler* GetSpecularIBLSampler();
 
 		VulkanTexture* GetBlackTexture();
 
 		VulkanTexture* GetBlackCubeTexture();
 		VulkanTexture* GetBlack2dArrayTexture();
+
+		VulkanTexture* GetWhiteCubeTexture();
 
 		VulkanMesh* GetScreenMesh();
 

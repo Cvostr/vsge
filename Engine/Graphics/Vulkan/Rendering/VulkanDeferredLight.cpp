@@ -59,6 +59,8 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
 	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderer::Get()->GetBlackTexture(), attachment_sampler);
+
+	UnsetIBL();
 }
 
 void VulkanDeferredLight::CreatePipeline() {
@@ -124,6 +126,18 @@ void VulkanDeferredLight::SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut) {
 	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
 
 	_deferred_descriptor->WriteDescriptorImage(9, brdf_lut->GetTextureLut(), attachment_sampler);
+}
+
+void VulkanDeferredLight::UnsetIBL() {
+	SetTexture(10, VulkanRenderer::Get()->GetBlackCubeTexture());
+	SetTexture(11, VulkanRenderer::Get()->GetWhiteCubeTexture());
+}
+
+void VulkanDeferredLight::SetIBL(VulkanTexture* specular, VulkanTexture* irradiance) {
+	UnsetIBL();
+
+	SetTexture(10, specular, VulkanRenderer::Get()->GetSpecularIBLSampler());
+	SetTexture(11, irradiance);
 }
 
 void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler) {

@@ -41,6 +41,8 @@ namespace VSGE {
 		void SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut);
 		void SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler = nullptr);
 		void SetCameraIndex(uint32 camera_index);
+		void UnsetIBL();
+		void SetIBL(VulkanTexture* specular, VulkanTexture* irradiance);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();

@@ -110,11 +110,20 @@ void VulkanRenderer::SetupRenderer() {
 		mEmptyZero2dArrayTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
 	mEmptyZero2dArrayTexture->SetReadyToUseInShaders();
 
+	memset(empty_texture_data, 255, 16);
+
 	mEmptyOneTexture = new VulkanTexture;
 	mEmptyOneTexture->Create(2, 2);
-	memset(empty_texture_data, 255, 16);
 	mEmptyOneTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
 	mEmptyOneTexture->SetReadyToUseInShaders();
+
+	mEmptyOneCubeTexture = new VulkanTexture;
+	mEmptyOneCubeTexture->SetCubemap(true);
+	mEmptyOneCubeTexture->Create(2, 2, FORMAT_RGBA, 6, 1);
+	for (uint32 i = 0; i < 6; i++)
+		mEmptyOneCubeTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
+	mEmptyOneCubeTexture->SetReadyToUseInShaders();
+
 	delete[] empty_texture_data;
 
 	//---------------------Samplers------------------
@@ -124,6 +133,10 @@ void VulkanRenderer::SetupRenderer() {
 
 	mAttachmentSampler = new VulkanSampler;
 	mAttachmentSampler->Create();
+
+	mSamplerIBL = new VulkanSampler;
+	mSamplerIBL->SetLodsRanges(-1000, 1000);
+	mSamplerIBL->Create();
 
 	//----------------------Descriptors--------------------------
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;
@@ -179,9 +192,8 @@ void VulkanRenderer::SetupRenderer() {
 		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
 
-
-	_deferred_renderer->SetTexture(10, _ibl_map->GetSpecularMap(), _ibl_map->GetSpecularSampler());
-	_deferred_renderer->SetTexture(11, _ibl_map->GetIrradianceMap());
+	//_deferred_renderer->SetIBL(_ibl_map->GetSpecularMap(), _ibl_map->GetIrradianceMap());
+	_deferred_renderer->UnsetIBL();
 
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
@@ -424,9 +436,9 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	VulkanSemaphore* end_semaphore = _ibl_map->GetBeginSemaphore();
 
-	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
-
-	_ibl_map->Execute(mEndSemaphore);
+	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
+	//_ibl_map->Execute(mEndSemaphore);
+	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
@@ -457,12 +469,20 @@ VulkanSampler* VulkanRenderer::GetAttachmentSampler() {
 	return mAttachmentSampler;
 }
 
+VulkanSampler* VulkanRenderer::GetSpecularIBLSampler() {
+	return mSamplerIBL;
+}
+
 VulkanTexture* VulkanRenderer::GetBlackTexture() {
 	return mEmptyZeroTexture;
 }
 
 VulkanTexture* VulkanRenderer::GetBlackCubeTexture() {
 	return mEmptyZeroCubeTexture;
+}
+
+VulkanTexture* VulkanRenderer::GetWhiteCubeTexture() {
+	return mEmptyOneCubeTexture;
 }
 
 VulkanTexture* VulkanRenderer::GetBlack2dArrayTexture() {

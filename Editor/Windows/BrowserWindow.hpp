@@ -42,6 +42,7 @@ namespace VSGEditor {
 		int _itemsSize;
 		
 		void CreateResource(VSGE::ResourceType type);
+		void RemoveFile(const std::string& path);
 	public:
 
 		FileBrowserWindow(std::string RootDir);

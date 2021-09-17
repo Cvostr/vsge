@@ -1,22 +1,21 @@
 #include "ImageBtnText.h"
 
-bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _size,
+bool ImageButtonWithText(ImTextureID texId, const std::string& label, unsigned int* _size,
     bool* hovered,
     const ImVec2& imageSize,
     const ImVec2& uv0,
     const ImVec2& uv1,
     int frame_padding,
     const ImVec4& bg_col,
-    const ImVec4& tint_col) {
+    const ImVec4& tint_col,
+    unsigned int index) {
 
-    char* short_text = nullptr;
-    if (strlen(label) > 16) {
-        short_text = new char[19];
-        memset(short_text, 0, 19);
-        strncpy(short_text, label, 15);
-        memset(short_text + 15, '.', 3);
-        label = short_text;
+    std::string l_label = label;
+    while (l_label.size() > 16) {
+        l_label.pop_back();
     }
+
+    l_label += "##" + std::to_string(index);
 
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -33,8 +32,8 @@ bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _si
     ImGuiContext& g = *ImGui::GetCurrentContext();
     const ImGuiStyle& style = g.Style;
 
-    ImGuiID id = window->GetID(label);
-    const ImVec2 textSize = ImGui::CalcTextSize(label, NULL, true);
+    ImGuiID id = window->GetID(l_label.c_str());
+    const ImVec2 textSize = ImGui::CalcTextSize(l_label.c_str(), NULL, true);
     const bool hasText = textSize.x > 0;
 
     const float innerSpacing = hasText ? ((frame_padding >= 0) ? (float)frame_padding : (style.ItemInnerSpacing.x)) : 0.f;
@@ -74,9 +73,7 @@ bool ImageButtonWithText(ImTextureID texId, const char* label, unsigned int* _si
 
     window->DrawList->AddImage(texId, image_bb.Min, image_bb.Max, uv0, uv1, ImGui::GetColorU32(tint_col));
 
-    if (textSize.x > 0) ImGui::RenderText(start, label);
-
-    delete[] short_text;
+    if (textSize.x > 0) ImGui::RenderText(start, l_label.c_str());
 
     return pressed;
 }

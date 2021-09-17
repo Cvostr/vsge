@@ -87,8 +87,6 @@ void VkMaterialsThumbnails::Create() {
     _light->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
     _light->SetCameraIndex(99);
     _light->SetBRDF_LUT(VulkanRenderer::Get()->GetBRDF());
-    _light->SetTexture(10, VulkanRenderer::Get()->GetBlackCubeTexture());
-    _light->SetTexture(11, VulkanRenderer::Get()->GetBlackCubeTexture());
     _light->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _cmdpool = new VulkanCommandPool;
