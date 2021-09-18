@@ -37,9 +37,9 @@ void VSGEditor::DrawMaterialEditor(MaterialResource* material_resource) {
 		if (_template == nullptr)
 			return;
 
-		for (MaterialTexture& texture : material->GetTextures()) {
-			DrawResourcePicker(texture._name.c_str(), texture._resource, true);
-			material->SetTexture(texture._name, texture._resource);
+		for (MaterialTexture* texture : material->GetTextures()) {
+			DrawResourcePicker(texture->_name.c_str(), texture->_resource, true);
+			material->SetTexture(texture->_name, texture->_resource);
 		}
 
 		for (MaterialParameter& param : material->GetParams()) {

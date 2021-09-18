@@ -315,6 +315,13 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 	if (fce.GetActionType() == FCAT_DELETED) {
 		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
 		if (res) {
+			res->Release();
+			for (uint32 subresource_i = 0; subresource_i < res->GetSubresources().size(); subresource_i++) {
+				Resource* subresource = res->GetSubresources()[subresource_i];
+				subresource->Release();
+				ResourceCache::Get()->RemoveResource(subresource);
+				delete subresource;
+			}
 			ResourceCache::Get()->RemoveResource(res);
 			delete res;
 		}

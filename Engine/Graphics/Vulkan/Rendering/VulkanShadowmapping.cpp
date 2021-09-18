@@ -332,6 +332,9 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
 		if (mesh_component) {
 			MeshResource* mesh_resource = mesh_component->GetMeshResource();
+			if (!mesh_resource)
+				continue;
+
 			if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
 				//Mark mesh resource used in this frame
 				mesh_resource->Use();

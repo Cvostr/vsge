@@ -35,7 +35,7 @@ namespace VSGE {
 		}
 	};
 
-	typedef std::vector<MaterialTexture> tMaterialTexturesList;
+	typedef std::vector<MaterialTexture*> tMaterialTexturesList;
 	typedef std::vector<MaterialParameter> tMaterialParamsList;
 
 	struct TextureTypesIds {

@@ -52,9 +52,9 @@ VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
 VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template) {
 	VulkanDescriptorSet* set = new VulkanDescriptorSet;
 	set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-	for (MaterialTexture& texture : mat_template->GetTextures())
+	for (MaterialTexture* texture : mat_template->GetTextures())
 	{
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texture._binding, VK_SHADER_STAGE_FRAGMENT_BIT);
+		set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, texture->_binding, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	set->SetDescriptorPool(mMaterialsDescriptorPool);
@@ -68,8 +68,8 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 
 	VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
 
-	for (MaterialTexture& tex : mat->GetTextures()) {
-		TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
+	for (MaterialTexture* tex : mat->GetTextures()) {
+		TextureResource* texture_res = static_cast<TextureResource*>(tex->_resource.GetResource());
 		if (texture_res == nullptr) {
 			continue;
 		}
@@ -82,11 +82,11 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 	}
 	bool unloaded_texture = false;
 	if (mat->_texturesDirty) {
-		for (MaterialTexture& tex : mat->GetTextures()) {
-			TextureResource* texture_res = static_cast<TextureResource*>(tex._resource.GetResource());
+		for (MaterialTexture* tex : mat->GetTextures()) {
+			TextureResource* texture_res = static_cast<TextureResource*>(tex->_resource.GetResource());
 			if (texture_res == nullptr) {
 				//if no texture bound, then bind default white texture
-				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, mEmptyZeroTexture, this->mMaterialMapsSampler);
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex->_binding, mEmptyZeroTexture, this->mMaterialMapsSampler);
 				continue;
 			}
 
@@ -99,7 +99,7 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 				//Mark texture resource as used in this frame
 				texture_res->Use();
 				//Write texture to descriptor
-				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex._binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex->_binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
 			}else
 				//Not all textures are loaded, 
 				//we have to return to this material in next frame

@@ -5,6 +5,9 @@
 #include <vector>
 
 namespace VSGE {
+
+	class ResourceReference;
+
 	class ResourceCache {
 	private:
 		static ResourceCache* _this;
@@ -13,6 +16,7 @@ namespace VSGE {
 		ResourcesWatchdog* _watchdog;
 
 		std::vector<Resource*> _resources;
+		std::vector<ResourceReference*> _references;
 
 		void CreateResource(DataDescription& descr, ResourceType type);
 
@@ -88,5 +92,8 @@ namespace VSGE {
 		/// <param name="bundle_path">- path to resource bundle file on disk</param>
 		/// <returns></returns>
 		bool AddResourceBundle(const std::string& bundle_path);
+
+		void AddResourceReference(ResourceReference* reference);
+		void RemoveResourceReference(ResourceReference* reference);
 	};
 }

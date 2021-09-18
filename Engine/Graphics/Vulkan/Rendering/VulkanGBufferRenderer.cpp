@@ -197,6 +197,9 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 		MeshResource* mesh_resource = mesh_component->GetMeshResource();
 		MaterialResource* mat_resource = material_component->GetMaterialResource();
 
+		if (!mesh_resource || !mat_resource)
+			continue;
+
 		if (mat_resource->GetState() != RESOURCE_STATE_READY)
 			continue;
 

@@ -103,6 +103,11 @@ namespace VSGE {
 		/// <param name="resource"></param>
 		void SetParent(Resource* resource);
 		/// <summary>
+		/// Get array of child resource
+		/// </summary>
+		/// <returns></returns>
+		std::vector<Resource*>& GetSubresources();
+		/// <summary>
 		/// Set data description
 		/// </summary>
 		/// <param name="desc"> - resource description</param>
@@ -134,7 +139,9 @@ namespace VSGE {
 		/// Mark texture as used in this frame
 		/// </summary>
 		void Use();
-
+		/// <summary>
+		/// Release memory, occupied by resource in cpu or gpu
+		/// </summary>
 		void Release();
 
 		void SetDefault();

@@ -16,6 +16,8 @@ namespace VSGE{
 
 		void SetResourceType(ResourceType type);
 
+		void SetPointerToNull();
+
 		template<class T>
 		T* GetResource() {
 			if (!_resourcePointer)
@@ -42,5 +44,6 @@ namespace VSGE{
 		void operator=(ResourceReference& ref);
         
 		ResourceReference();
+		~ResourceReference();
 	};
 }

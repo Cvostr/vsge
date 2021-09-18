@@ -6,10 +6,20 @@ using namespace VSGE;
 ResourceReference::ResourceReference() {
     _resourcePointer = nullptr;
     _resourceType = RESOURCE_TYPE_NONE;
+
+	ResourceCache::Get()->AddResourceReference(this);
+}
+
+ResourceReference::~ResourceReference() {
+	ResourceCache::Get()->RemoveResourceReference(this);
 }
 
 ResourceType ResourceReference::GetResourceType() {
 	return _resourceType;
+}
+
+void ResourceReference::SetPointerToNull() {
+	_resourcePointer = nullptr;
 }
 
 void ResourceReference::operator=(ResourceReference& ref) {

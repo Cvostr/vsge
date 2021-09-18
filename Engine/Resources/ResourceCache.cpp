@@ -99,8 +99,14 @@ void ResourceCache::AddResourceDir(const std::string& path) {
 }
 
 void ResourceCache::RemoveResource(Resource* resource) {
-    std::remove(_resources.begin(), _resources.end(), resource);
+    auto it = std::remove(_resources.begin(), _resources.end(), resource);
+    _resources.pop_back();
     _watchdog->RemoveResource(resource);
+
+    for (auto reference : _references) {
+        reference->SetPointerToNull();
+        reference->GetResource();
+    }
 }
 
 void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
@@ -189,4 +195,25 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
 void ResourceCache::PushResource(Resource* res) {
     _resources.push_back(res);
     _watchdog->AddResource(res);
+}
+
+void ResourceCache::AddResourceReference(ResourceReference* reference) {
+    for (auto& reference_i : _references) {
+        if (reference_i == reference)
+            return;
+    }
+
+    _references.push_back(reference);
+}
+void ResourceCache::RemoveResourceReference(ResourceReference* reference) {
+    bool exist = false;
+    for (auto& reference_i : _references) {
+        if (reference_i == reference)
+            exist = true;
+    }
+
+    if (exist) {
+        auto it = std::remove(_references.begin(), _references.end(), reference);
+        _references.pop_back();
+    }
 }

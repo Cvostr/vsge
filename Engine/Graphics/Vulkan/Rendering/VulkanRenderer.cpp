@@ -304,6 +304,8 @@ void VulkanRenderer::StoreWorldObjects() {
 			continue;
 
 		MeshResource* mresource = mesh_component->GetMeshResource();
+		if (!mresource)
+			continue;
 
 		for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
 			Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];

@@ -45,13 +45,13 @@ void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& referen
 			if (!resource->IsReady()) {
 				resource->Load();
 			}
+		
+			ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(resource->GetName());
+			if (resource->IsReady())
+				VkMaterialsThumbnails::Get()->CreateThumbnail(resource->GetName());
+			if (thumb)
+				mat_texture = thumb;
 		}
-
-		ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(resource->GetName());
-		if (resource->IsReady())
-			VkMaterialsThumbnails::Get()->CreateThumbnail(resource->GetName());
-		if (thumb)
-			mat_texture = thumb;
 	}
 	else {
 		ImGui::Text(reference.GetResourceName().c_str());

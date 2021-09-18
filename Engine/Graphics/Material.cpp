@@ -113,9 +113,9 @@ void MaterialTemplate::AddParameter(const std::string& name, MultitypeValue base
 }
 
 void MaterialTemplate::AddTexture(const std::string& name, uint32 binding) {
-	MaterialTexture texture;
-	texture._name = name;
-	texture._binding = binding;
+	MaterialTexture* texture = new MaterialTexture;
+	texture->_name = name;
+	texture->_binding = binding;
 	_materialTextures.push_back(texture);
 
 	AddParameter("@has_" + name, false);
@@ -152,7 +152,11 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 	_materialParams.clear();
 
 	for (auto texture : mat_template->GetTextures()) {
-		this->_materialTextures.push_back(texture);
+		MaterialTexture* mat_texture = new MaterialTexture;
+		mat_texture->_binding = texture->_binding;
+		mat_texture->_name = texture->_name;
+
+		this->_materialTextures.push_back(mat_texture);
 	}
 	for (auto param : mat_template->GetParams()) {
 		this->_materialParams.push_back(param);
@@ -164,9 +168,9 @@ void Material::SetTemplate(const std::string& template_name) {
 }
 
 MaterialTexture* Material::GetTextureByName(const std::string& texture_name) {
-	for (MaterialTexture& texture : _materialTextures) {
-		if (texture._name == texture_name)
-			return &texture;
+	for (MaterialTexture* texture : _materialTextures) {
+		if (texture->_name == texture_name)
+			return texture;
 	}
 
 	return nullptr;
@@ -250,8 +254,8 @@ void Material::Serialize(const std::string& fpath) {
 	serializer.Serialize((uint32)_materialParams.size());
 	//Write textures
 	for (auto& _texture : _materialTextures) {
-		serializer.Serialize(_texture._name);
-		serializer.Serialize(_texture._resource.GetResourceName());
+		serializer.Serialize(_texture->_name);
+		serializer.Serialize(_texture->_resource.GetResourceName());
 	}
 
 	for (auto& _param : _materialParams) {

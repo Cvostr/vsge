@@ -20,6 +20,10 @@ const DataDescription& Resource::GetDataDescription() {
 	return _description;
 }
 
+std::vector<Resource*>& Resource::GetSubresources() {
+	return _subresources;
+}
+
 byte* Resource::GetLoadedData() {
 	return _loadedData;
 }
