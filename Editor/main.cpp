@@ -4,6 +4,7 @@
 #include <Physics/PhysicsLayer.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Resources/ResourceLayer.hpp>
+#include <MonoScripting/MonoScriptingLayer.hpp>
 #include <Audio/AudioLayer.hpp>
 #include "EditorLayers/EditorSettingsLayer.hpp"
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
@@ -32,7 +33,9 @@ Application* VSGEMain() {
 	VulkanRAPI* vk = new VulkanRAPI;
 	vk->Create(&app->GetWindow());
 
-	
+	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
+	mono_scripting_layer->CreateDomain();
+	app->AddLayer(mono_scripting_layer);
 
 	VulkanRenderer* renderer = new VulkanRenderer;
 

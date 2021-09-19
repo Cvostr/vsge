@@ -52,6 +52,8 @@ set(SRC_FILES
                 Windows/SceneWindow.cpp
                 Windows/StartWindow.cpp
                 Windows/ToolbarWindow.cpp
+                MonoScripting/MonoScriptStorage.cpp
+                MonoScripting/MonoScriptCompile.cpp
                 main.cpp)
 
 
@@ -112,6 +114,10 @@ target_link_libraries(Editor Winmm.lib)
 target_link_libraries(Editor Setupapi.lib)
 target_link_libraries(Editor Version.lib)
 target_link_libraries(Editor Imm32.lib)
+target_link_libraries(Editor Bcrypt.lib)
+target_link_libraries(Editor ws2_32.lib)
+
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/mono/libmono-static-sgen.lib)
 
 ENDIF()
 

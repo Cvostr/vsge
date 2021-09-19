@@ -1,12 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 project ("Engine")
 
-set(HEADER_DIR "")
-set(SRC_DIR "")
-
 include_directories("../vendor/headers/" REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
-
 include_directories("./" REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -122,8 +118,12 @@ set(SRC_FILES
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
 				Scene/EntityComponents/TerrainComponent.cpp
+				MonoScripting/MonoScriptingLayer.cpp
+				MonoScripting/MonoScript.cpp
+				MonoScripting/MonoScriptBlob.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
+				System/Shell.cpp
 				)
 
 file(GLOB_RECURSE HEADER_FILES "*.hpp")
@@ -131,6 +131,7 @@ file(GLOB_RECURSE HEADER_FILES "*.hpp")
 add_library (Engine ${SRC_FILES} ${HEADER_FILES})
 
 add_dependencies(Engine shaders)
+#add_dependencies(Engine vsge_api)
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)

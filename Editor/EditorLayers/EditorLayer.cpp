@@ -23,6 +23,8 @@
 #include "../Menus/Windows_Menu.hpp"
 
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <MonoScripting/MonoScriptStorage.hpp>
+#include <MonoScripting/MonoScriptCompile.hpp>
 
 #include <Math/Ray.hpp>
 #include <ImGuizmo.h>
@@ -87,6 +89,10 @@ bool EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
+
+	MonoScriptStorage::Get()->ClearScripts();
+	MonoScriptStorage::Get()->BuildScriptList(dir_path);
+	MonoScriptStorage::Get()->Compile();
 
 	return false;
 }
