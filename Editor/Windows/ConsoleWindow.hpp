@@ -20,6 +20,8 @@ namespace VSGEditor {
 
 		void addMsg(VSGE::MessageEvent* msg_event);
 
+		void ClearMessages(VSGE::LogType type);
+
 		void OnDrawWindow();
 	};
 }

@@ -1,7 +1,10 @@
 #include "MonoScriptStorage.hpp"
 #include <filesystem>
 #include <Core/FileLoader.hpp>
+#include <Windows/ConsoleWindow.hpp>
+#include <EditorLayers/ImGuiLayer.hpp>
 
+using namespace VSGEditor;
 using namespace VSGE;
 using namespace std::filesystem;
 
@@ -36,6 +39,14 @@ MonoScriptStorage::MonoScriptStorage() {
 
 std::vector<MonoScript*>& MonoScriptStorage::GetScripts() {
 	return _scripts;
+}
+
+MonoScript* MonoScriptStorage::GetScriptWithFilePath(const std::string& file_path) {
+	for (auto& script : _scripts) {
+		if (script->GetFilePath() == file_path)
+			return script;
+	}
+	return nullptr;
 }
 
 void MonoScriptStorage::AddScript(const std::string& file_path) {
@@ -77,5 +88,7 @@ void MonoScriptStorage::BuildScriptList(const std::string& root_dir) {
 }
 
 void MonoScriptStorage::Compile() {
+	ConsoleWindow* cw = ImGuiLayer::Get()->GetWindow<ConsoleWindow>();
+	cw->ClearMessages(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR);
 	_compiler->QueueCompilation();
 }

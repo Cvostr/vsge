@@ -5,7 +5,7 @@
 #include <Core/VarTypes/Base.hpp>
 #include "MonoScriptCompile.hpp"
 
-namespace VSGE {
+namespace VSGEditor {
 
 	class MonoScript {
 	private:
@@ -26,7 +26,7 @@ namespace VSGE {
 	class MonoScriptStorage {
 	private:
 		std::vector<MonoScript*> _scripts;
-		MonoScriptCompiler* _compiler;
+		VSGE::MonoScriptCompiler* _compiler;
 		static MonoScriptStorage* _this;
 	public:
 
@@ -37,6 +37,7 @@ namespace VSGE {
 		}
 
 		std::vector<MonoScript*>& GetScripts();
+		MonoScript* GetScriptWithFilePath(const std::string& file_path);
 		void AddScript(const std::string& file_path);
 		void RemoveScript(const std::string& file_path);
 		void BuildScriptList(const std::string& root_dir);

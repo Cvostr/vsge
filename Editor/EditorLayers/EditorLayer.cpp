@@ -314,6 +314,10 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 	ImGuiLayer::Get()->GetWindow<FileBrowserWindow>()->UpdateDirectoryContent();
 
+	if (fce.GetActionType() == FCAT_MODIFIED) {
+		if (MonoScriptStorage::Get()->GetScriptWithFilePath(fce.GetAbsFilePath()))
+			MonoScriptStorage::Get()->Compile();
+	}
 	if (fce.GetActionType() == FCAT_ADDED) {
 		//Try to add this file as resource
 		ResourceCache::Get()->AddResourceFile(fce.GetAbsFilePath());

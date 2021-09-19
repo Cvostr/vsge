@@ -13,6 +13,10 @@ float Quat::LengthSquared() const
     return (x * x) + (y * y) + (z * z) + (w * w); 
 }
 
+float Quat::Dot(const Quat& q) const {
+    return (x * q.x + y * q.y + z * q.z + w * q.w);
+}
+
 Quat Quat::GetNormalized() const {
 	float coeff = 1.f / Length();
 	return Quat(x * coeff, y * coeff, z * coeff, w * coeff);

@@ -21,7 +21,7 @@ void ConsoleWindow::OnDrawWindow() {
 		}
 
 		if (ImGui::Button("Clear")) {
-			msg_array->clear();
+			ClearMessages(_type);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("INFO")) {
@@ -51,6 +51,7 @@ void ConsoleWindow::OnDrawWindow() {
 	}
 }
 
+
 void ConsoleWindow::addMsg(VSGE::MessageEvent* msg_event) {
 	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_INFO) {
 		_infoMessages.push_back(msg_event);
@@ -64,4 +65,18 @@ void ConsoleWindow::addMsg(VSGE::MessageEvent* msg_event) {
 	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
 		_scriptErrors.push_back(msg_event);
 	}
+}
+
+void ConsoleWindow::ClearMessages(VSGE::LogType type) {
+	std::vector<VSGE::MessageEvent*>* msg_array = &_infoMessages;
+	if (_type == VSGE::LogType::LOG_TYPE_ERROR) {
+		msg_array = &_errorMessages;
+	}
+	if (_type == VSGE::LogType::LOG_TYPE_WARN) {
+		msg_array = &_warnMessages;
+	}
+	if (_type == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
+		msg_array = &_scriptErrors;
+	}
+	msg_array->clear();
 }

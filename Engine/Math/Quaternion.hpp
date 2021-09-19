@@ -27,6 +27,8 @@ public:
 
 	float LengthSquared() const;
 
+	float Dot(const Quat& q) const;
+
 	Quat GetNormalized() const;
 
 	Quat Inverse() const;

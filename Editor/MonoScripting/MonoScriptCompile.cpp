@@ -4,6 +4,7 @@
 #include <Core/Logger.hpp>
 
 using namespace VSGE;
+using namespace VSGEditor;
 
 MonoScriptCompiler::MonoScriptCompiler() :
 	_mutex(new Mutex),
@@ -36,7 +37,15 @@ void MonoScriptCompiler::THRFunc() {
             //Obtain pointer to LoadRequest
             std::string cmd = GetCompilationCmd();
             _output = ExecuteShellCommand(cmd);
-            Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << _output;
+
+            while (_output.find_first_of('\n') != std::string::npos) {
+                uint32 pos = _output.find_first_of('\n');
+                std::string message = _output.substr(0, pos);
+                _output = _output.substr(pos + 1);
+                Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << message << "\n";
+            }
+            
+            _state = COMPILATION_STATE_DONE;
             //unlock thread
             _mutex->Release();
         }
@@ -46,8 +55,8 @@ void MonoScriptCompiler::THRFunc() {
 
 void MonoScriptCompiler::QueueCompilation() {
 	_mutex->Lock();
-	if (_state == COMPILATION_STATE_DONE)
-		_state = COMPILATION_STATE_QUEUED;
+    if (_state == COMPILATION_STATE_DONE)
+        _state = COMPILATION_STATE_QUEUED;
 	_mutex->Release();
 }
 
