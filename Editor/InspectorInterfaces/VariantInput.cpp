@@ -4,7 +4,7 @@
 using namespace VSGEditor;
 using namespace ImGui;
 
-void VSGEditor::DrawVariantInput(const std::string& label, MultitypeValue& value) {
+void VSGEditor::DrawVariantInput(const std::string& label, Variant& value) {
 	const char* label_s = label.c_str();
 	switch (value.GetType()) {
 	case VALUE_TYPE_INT32:

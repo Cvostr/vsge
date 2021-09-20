@@ -43,6 +43,9 @@ namespace VSGE {
 
 		MonoDomain* GetDomain();
 		bool CreateDomain();
-
+		/// <summary>
+		/// Release domain, but it can't be initialized again
+		/// </summary>
+		void ReleaseDomain();
 	};
 }

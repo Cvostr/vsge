@@ -12,7 +12,7 @@ MonoScriptingLayer::MonoScriptingLayer() :
 	_this = this;
 }
 MonoScriptingLayer::~MonoScriptingLayer() {
-
+    
 }
 
 void MonoScriptingLayer::OnAttach() {
@@ -45,4 +45,11 @@ bool MonoScriptingLayer::CreateDomain() {
     Logger::Log(LogType::LOG_TYPE_INFO) << "Mono Domain initialized\n";
 
     return true;
+}
+
+void MonoScriptingLayer::ReleaseDomain() {
+    if (_domain) {
+        mono_jit_cleanup(_domain);
+        _domain = nullptr;
+    }
 }

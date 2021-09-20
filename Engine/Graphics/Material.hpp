@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Resources/ResourceTypes/TextureResource.hpp>
-#include <Core/VarTypes/MultitypeValue.hpp>
+#include <Core/VarTypes/Variant.hpp>
 #include "Shader.hpp"
 #include <Core/VarTypes/Guid.hpp>
 #include "VertexLayout.hpp"
@@ -16,7 +16,7 @@ namespace VSGE {
 	class MaterialParameter {
 	public:
 		std::string name;
-		MultitypeValue value;
+		Variant value;
 
 		MaterialParameter() {
 
@@ -102,7 +102,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="name">- name of parameter field</param>
 		/// <param name="baseValue"></param>
-		void AddParameter(const std::string& name, MultitypeValue baseValue);
+		void AddParameter(const std::string& name, Variant baseValue);
 		/// <summary>
 		/// Add new template texture description
 		/// </summary>
@@ -232,7 +232,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="parameter_name"></param>
 		/// <param name="value"></param>
-		void SetParameter(const std::string& parameter_name, MultitypeValue value);
+		void SetParameter(const std::string& parameter_name, Variant value);
 		
 		void SetDescriptors(GraphicsApiDependent descriptors) {
 			_descriptors = descriptors;

@@ -1,5 +1,6 @@
 #include "MonoScriptStorage.hpp"
 #include <filesystem>
+#include <algorithm>
 #include <Core/FileLoader.hpp>
 #include <Windows/ConsoleWindow.hpp>
 #include <EditorLayers/ImGuiLayer.hpp>
@@ -63,7 +64,11 @@ void MonoScriptStorage::AddScript(const std::string& file_path) {
 	}
 }
 void MonoScriptStorage::RemoveScript(const std::string& file_path) {
-	
+	MonoScript* script = GetScriptWithFilePath(file_path);
+	if (script) {
+		std::remove(_scripts.begin(), _scripts.end(), script);
+		_scripts.pop_back();
+	}
 }
 
 void MonoScriptStorage::ClearScripts() {

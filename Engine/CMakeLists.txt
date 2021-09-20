@@ -20,7 +20,7 @@ set(SRC_FILES
 				Core/Threading/Mutex.cpp
 				Core/Threading/Thread.cpp
 				Core/VarTypes/Guid.cpp
-				Core/VarTypes/MultitypeValue.cpp
+				Core/VarTypes/Variant.cpp
 				Core/VarTypes/StringHash.cpp
 				Engine/Application.cpp
 				Engine/Window.cpp

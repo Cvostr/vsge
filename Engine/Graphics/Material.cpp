@@ -105,7 +105,7 @@ void MaterialTemplate::SetBlendingAttachmentDesc(uint32 attachment, const BlendA
 	_blendDescs.insert(std::pair(attachment, desc));
 }
 
-void MaterialTemplate::AddParameter(const std::string& name, MultitypeValue baseValue) {
+void MaterialTemplate::AddParameter(const std::string& name, Variant baseValue) {
 	MaterialParameter param;
 	param.name = name;
 	param.value = baseValue;
@@ -190,7 +190,7 @@ void Material::SetTexture(const std::string& texture_name, ResourceReference& te
 	SetParameter("@has_" + texture_name, hasTexture);
 	_texturesDirty = true;
 }
-void Material::SetParameter(const std::string& parameter_name, MultitypeValue value) {
+void Material::SetParameter(const std::string& parameter_name, Variant value) {
 	GetParameterByName(parameter_name)->value = value;
 	_paramsDirty = true;
 }
@@ -302,7 +302,7 @@ void Material::Deserialize(byte* data, uint32 size) {
 		ValueType type = deserializer.GetValue<ValueType>();
 		MultitypeData data = deserializer.GetValue<MultitypeData>();
 		
-		MultitypeValue value;
+		Variant value;
 		value.SetData(type, data);
 
 		SetParameter(name, value);
