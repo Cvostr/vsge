@@ -8,11 +8,11 @@
 
 using namespace VSGE;
 
-void Log(LogType type, MonoString* mono_string) {
+static void Log(MonoString* mono_string) {
 	std::string message = std::string(mono_string_to_utf8(mono_string));
-	Logger::Log(type) << message << "\n";
+	Logger::Log(LogType::LOG_TYPE_INFO) << message << "\n";
 }
 
 void VSGE::BindLoggerApi() {
-	mono_add_internal_call("Logger::Log(MessageType, string)", Log);
+	mono_add_internal_call("Logger::Log(string)", Log);
 }

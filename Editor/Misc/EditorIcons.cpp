@@ -19,6 +19,8 @@ void EditorIcons::LoadIcons() {
     _unknownFile.CreateFromFile("res/icons/unknown.png", _sampler);
     _3DModelIcon.CreateFromFile("res/icons/3dmodel.png", _sampler);
     _sceneIcon.CreateFromFile("res/icons/3d_scene.png", _sampler);
+    _scriptIcon.CreateFromFile("res/icons/script.png", _sampler);
+    _audioIcon.CreateFromFile("res/icons/audio-clip.png", _sampler);
 }
 
 void EditorIcons::FreeIcons() {

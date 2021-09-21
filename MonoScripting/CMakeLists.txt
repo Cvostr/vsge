@@ -10,7 +10,7 @@ set(API_SRC_FILES
     Api/AABB.cs
     Api/Color.cs)
 
-set(COMPILER_CMD "MonoBinaries/roslyn/csc.exe -target:library -nologo -out:api.dll")
+set(COMPILER_CMD "A")
 
 add_custom_target(
     vsge_api

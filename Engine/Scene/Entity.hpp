@@ -320,18 +320,13 @@ namespace VSGE {
 			return nullptr;
 		}
 
-		IEntityComponent** GetComponents() {
-			return _components.data();
-		}
+		IEntityComponent** GetComponents();
 
-		EntityScriptComponent** GetScripts() {
-			return _scripts.data();
-		}
+		EntityScriptComponent** GetScripts();
 
-		void AddScript(EntityScriptComponent* script) {
-			script->SetEntity(this);
-			_scripts.push_back(script);
-		}
+		void AddScript(EntityScriptComponent* script);
+
+		void RemoveScript(EntityScriptComponent* script);
 
 		template<typename T>
 		bool HasComponent() {

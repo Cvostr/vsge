@@ -6,7 +6,8 @@ using namespace VSGE;
 
 MonoScriptInstance::MonoScriptInstance() :
     _mono_class_desc(nullptr),
-    _mono_class_instance(nullptr)
+    _mono_class_instance(nullptr),
+    _update_method(nullptr)
 {
 
 }
@@ -41,6 +42,8 @@ bool MonoScriptInstance::CreateClassByName(const std::string& class_name) {
     _mono_class_desc = blob->GetClassDescription(class_name);
     _mono_class_instance = mono_object_new(MonoScriptingLayer::Get()->GetDomain(), _mono_class_desc);
 
+    _update_method = GetMethod("OnUpdate()");
+
     return true;
 }
 
@@ -48,7 +51,7 @@ void MonoScriptInstance::CallDefaultConstructor() {
     mono_runtime_object_init(_mono_class_instance);
 }
 
-void MonoScriptInstance::SetValueToField(const std::string field, void* value) {
+void MonoScriptInstance::SetValuePtrToField(const std::string field, void* value) {
     MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc, field.c_str());
     if (field_desc) {
         mono_field_set_value(_mono_class_instance, field_desc, value);
@@ -66,6 +69,11 @@ void MonoScriptInstance::CallOnStart() {
     MonoMethod* method = GetMethod("OnStart()");
     if(method)
         CallMethod(method, nullptr);
+}
+
+void MonoScriptInstance::CallOnUpdate() {
+    if (_update_method)
+        CallMethod(_update_method, nullptr);
 }
 
 void MonoScriptInstance::Release() {

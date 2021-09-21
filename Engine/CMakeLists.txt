@@ -122,6 +122,7 @@ set(SRC_FILES
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
 				MonoScripting/Api/ApiLogger.cpp
+				MonoScripting/Api/ApiEntity.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				System/Shell.cpp

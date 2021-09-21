@@ -11,14 +11,24 @@ EntityScriptComponent::~EntityScriptComponent() {
 }
 
 void EntityScriptComponent::SetClassName(const std::string& class_name) {
-	_script_instance->CreateClassByName(class_name);
+	_class_name = class_name;
 }
 
 const std::string& EntityScriptComponent::GetClassName() {
-	return _script_instance->GetClassName();
+	return _class_name;
 }
 
 void EntityScriptComponent::OnStart() {
+	_script_instance->CreateClassByName(_class_name);
 	_script_instance->CallDefaultConstructor();
+	_script_instance->SetValuePtrToField("entity_ptr", &(void*)_entity);
 	_script_instance->CallOnStart();
+}
+
+void EntityScriptComponent::OnStop() {
+	_script_instance->Release();
+}
+
+void EntityScriptComponent::OnUpdate() {
+	_script_instance->CallOnUpdate();
 }

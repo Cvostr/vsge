@@ -349,6 +349,28 @@ Entity* Entity::GetChildEntityWithLabel(const std::string& label) {
 	return nullptr;
 }
 
+IEntityComponent** Entity::GetComponents() {
+	return _components.data();
+}
+
+EntityScriptComponent** Entity::GetScripts() {
+	return _scripts.data();
+}
+
+void Entity::AddScript(EntityScriptComponent* script) {
+	script->SetEntity(this);
+	_scripts.push_back(script);
+}
+
+void Entity::RemoveScript(EntityScriptComponent* script) {
+	if (!script)
+		return;
+
+	auto it = std::remove(_scripts.begin(), _scripts.end(), script);
+	_scripts.pop_back();
+	script->OnDestroy();
+}
+
 Entity* Entity::Dublicate() {
 	Entity* new_entity = _scene->AddNewEntity(GetName());
 
@@ -370,7 +392,6 @@ Entity* Entity::Dublicate() {
 		
 		YAML::Node data = YAML::Load(e.c_str());
 		serializer.DeserializeEntityComponent(new_entity, data);
-
 	}
 
 	for (uint32 child_i = 0; child_i < _children.size(); child_i ++) {

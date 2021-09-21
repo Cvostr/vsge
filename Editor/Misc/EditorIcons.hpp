@@ -10,6 +10,8 @@ namespace VSGEditor {
 		ImguiVulkanTexture _unknownFile;
 		ImguiVulkanTexture _3DModelIcon;
 		ImguiVulkanTexture _sceneIcon;
+		ImguiVulkanTexture _scriptIcon;
+		ImguiVulkanTexture _audioIcon;
 
 		VSGE::VulkanSampler _sampler;
 
@@ -43,6 +45,14 @@ namespace VSGEditor {
 
 		void* Get3DModelIcon() {
 			return _3DModelIcon.imtexture;
+		}
+
+		void* GetScriptIcon() {
+			return _scriptIcon.imtexture;
+		}
+
+		void* GetAudioIcon() {
+			return _audioIcon.imtexture;
 		}
 	};
 }

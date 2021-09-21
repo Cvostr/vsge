@@ -10,5 +10,5 @@ public enum MessageType{
 
 public class Logger{
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern void Log(MessageType type, string message);
+    public static extern void Log(string message);
 }

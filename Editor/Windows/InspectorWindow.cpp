@@ -140,7 +140,7 @@ void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script) {
 	}
 
 	if (removeComponent) {
-		//mShowingEntity->RemoveComponent(component);
+		mShowingEntity->RemoveScript(script);
 		return;
 	}
 

@@ -29,6 +29,12 @@ namespace VSGEditor {
 		bool isPrefab() {
 			return !ext.compare(".prefab");
 		}
+		bool isScript() {
+			return !ext.compare(".cs");
+		}
+		bool isAudio() {
+			return !ext.compare(".wav");
+		}
 	};
 
 	typedef std::vector<FileEntry> tFileEntryList;

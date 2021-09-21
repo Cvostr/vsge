@@ -167,6 +167,8 @@ void FileBrowserWindow::OnDrawWindow() {
         if (e->isDir) icon = EditorIcons::Get()->GetDirIcon();
         if (e->is3dModel()) icon = EditorIcons::Get()->Get3DModelIcon();
         if (e->is3dWorld()) icon = EditorIcons::Get()->GetSceneIcon();
+        if (e->isScript()) icon = EditorIcons::Get()->GetScriptIcon();
+        if (e->isAudio()) icon = EditorIcons::Get()->GetAudioIcon();
 
         if (e->isMaterial()) {
             MaterialResource* mat = (MaterialResource*)ResourceCache::Get()->GetResourceWithFilePath(e->abs_path);

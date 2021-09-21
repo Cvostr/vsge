@@ -144,14 +144,22 @@ void SceneSerializer::SerializeEntity(Entity* ent, Emitter& e) {
 		e << Key << "static" << Value << ent->IsStatic();
 		e << Key << "view_mask" << Value << ent->GetViewMask();
 		e << Key << "parent" << Value << ent->GetParent()->GetGuid();
-
+		//write transform
 		e << Key << "pos" << Value << ent->GetPosition();
 		e << Key << "scale" << Value << ent->GetScale();
 		e << Key << "rot" << Value << ent->GetRotation();
-
+		//write scripts
 		e << YAML::Key << "components" << YAML::Value << YAML::BeginSeq;
 		for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
 			SerializeEntityComponent(ent->GetComponents()[comp_i], e);
+		}
+		e << YAML::EndSeq;
+		//write scripts
+		e << YAML::Key << "script" << YAML::Value << YAML::BeginSeq;
+		for (uint32 script_i = 0; script_i < ent->GetScriptsCount(); script_i++) {
+			e << BeginMap;
+			e << Key << "class" << Value << ent->GetScripts()[script_i]->GetClassName();
+			e << EndMap;
 		}
 		e << YAML::EndSeq;
 
@@ -160,7 +168,6 @@ void SceneSerializer::SerializeEntity(Entity* ent, Emitter& e) {
 	for (uint32 child_i = 0; child_i < ent->GetChildrenCount(); child_i++) {
 		SerializeEntity(ent->GetChildren()[child_i], e);
 	}
-	
 }
 
 void SceneSerializer::Serialize(const std::string& path) {
@@ -191,14 +198,22 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 	ent->SetActive(entity["active"].as<bool>());
 	ent->SetStatic(entity["static"].as<bool>());
 	ent->SetViewMask(entity["view_mask"].as<ViewMask>());
-
+	//read transform
 	ent->SetPosition(entity["pos"].as<Vec3>());
 	ent->SetScale(entity["scale"].as<Vec3>());
 	ent->SetRotation(entity["rot"].as<Quat>());
-
+	//read components
 	YAML::Node components = entity["components"];
 	for(auto component : components) {
 		DeserializeEntityComponent(ent, component);
+	}
+	//read scripts
+	YAML::Node scripts = entity["script"];
+	for (auto script : scripts) {
+
+		EntityScriptComponent* script_ptr = new EntityScriptComponent;
+		script_ptr->SetClassName(script["class"].as<std::string>());
+		ent->AddScript(script_ptr);
 	}
 
 	Guid parent = entity["parent"].as<Guid>();

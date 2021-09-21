@@ -32,12 +32,12 @@ namespace VSGE {
 		const std::string& GetClassName();
 		MonoClass* GetClassDesc();
 		MonoMethod* GetUpdateMethod();
-		void SetValueToField(const std::string field, void* value);
+		void SetValuePtrToField(const std::string field, void* value);
 		void* GetValueOfField(const std::string& field);
 
 		template<typename T>
 		void SetValueToField(const std::string& field, T value) {
-			SetValueToField(field, &value);
+			SetValuePtrToField(field, &value);
 		}
 		template<typename T>
 		T GetValueOfField(const std::string& field) {
@@ -46,6 +46,7 @@ namespace VSGE {
 		}
 
 		void CallOnStart();
+		void CallOnUpdate();
 
 		void Release();
 	};
