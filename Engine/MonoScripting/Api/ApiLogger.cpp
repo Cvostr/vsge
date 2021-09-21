@@ -14,5 +14,5 @@ void Log(LogType type, MonoString* mono_string) {
 }
 
 void VSGE::BindLoggerApi() {
-	mono_add_internal_call("Logger::Log(MessageType, single)", Log);
+	mono_add_internal_call("Logger::Log(MessageType, string)", Log);
 }

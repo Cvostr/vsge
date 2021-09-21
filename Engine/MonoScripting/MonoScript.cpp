@@ -21,7 +21,6 @@ MonoMethodDesc* MonoScriptInstance::GetMethodDesc(const std::string& method) {
 
 MonoMethod* MonoScriptInstance::GetMethod(const std::string& method) {
     MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
-
     //get description of method
     MonoMethodDesc* desc = GetMethodDesc(method);
 
@@ -65,7 +64,8 @@ void* MonoScriptInstance::GetValueOfField(const std::string& field) {
 
 void MonoScriptInstance::CallOnStart() {
     MonoMethod* method = GetMethod("OnStart()");
-    CallMethod(method, nullptr);
+    if(method)
+        CallMethod(method, nullptr);
 }
 
 void MonoScriptInstance::Release() {

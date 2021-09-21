@@ -27,7 +27,7 @@ std::string MonoScriptCompiler::GetCompilationCmd() {
     if(input.size() > 0)
         input.pop_back(); //remove space
 
-    return "..\\MonoScripting\\MonoBinaries\\roslyn\\csc.exe -target:library -nologo -reference:api.dll -out:mono_temp.dll " + input;
+    return "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:api.dll -out:mono_temp.dll " + input;
 }
 
 void MonoScriptCompiler::THRFunc() {
