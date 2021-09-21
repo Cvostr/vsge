@@ -2,13 +2,13 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-enum MessageType{
+public enum MessageType{
     Info = 1,
     Warning = 2,
     Error = 3
 }
 
-class Logger{
+public class Logger{
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern void Log(MessageType type, string message);
 }

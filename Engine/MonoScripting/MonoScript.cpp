@@ -16,19 +16,23 @@ MonoScriptInstance::~MonoScriptInstance() {
 
 MonoMethodDesc* MonoScriptInstance::GetMethodDesc(const std::string& method) {
     std::string method_str = _class_name + ":" + method;
-    return mono_method_desc_new(method.c_str(), NULL);
+    return mono_method_desc_new(method_str.c_str(), NULL);
 }
 
 MonoMethod* MonoScriptInstance::GetMethod(const std::string& method) {
     MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
+
     //get description of method
     MonoMethodDesc* desc = GetMethodDesc(method);
+
+    if (!desc)
+        return nullptr;
     // Search the method in the image
     return blob->GetMethodByDescription(desc);
 }
 
 MonoObject* MonoScriptInstance::CallMethod(MonoMethod* method_desc, void** args){
-    MonoObject* result = mono_runtime_invoke(method_desc, NULL, args, &_mono_class_instance);
+    MonoObject* result = mono_runtime_invoke(method_desc, _mono_class_instance, args, nullptr);
     return result;
 }
 
@@ -59,6 +63,11 @@ void* MonoScriptInstance::GetValueOfField(const std::string& field) {
     return result;
 }
 
+void MonoScriptInstance::CallOnStart() {
+    MonoMethod* method = GetMethod("OnStart()");
+    CallMethod(method, nullptr);
+}
+
 void MonoScriptInstance::Release() {
     if (_mono_class_instance) {
         mono_free(_mono_class_instance);
@@ -72,9 +81,7 @@ const std::string& MonoScriptInstance::GetClassName() {
 MonoClass* MonoScriptInstance::GetClassDesc() {
 	return _mono_class_desc;
 }
-MonoMethod* MonoScriptInstance::GetStartMethod() {
-	return _start_method;
-}
+
 MonoMethod* MonoScriptInstance::GetUpdateMethod() {
 	return _update_method;
 }

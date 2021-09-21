@@ -17,3 +17,8 @@ void EntityScriptComponent::SetClassName(const std::string& class_name) {
 const std::string& EntityScriptComponent::GetClassName() {
 	return _script_instance->GetClassName();
 }
+
+void EntityScriptComponent::OnStart() {
+	_script_instance->CallDefaultConstructor();
+	_script_instance->CallOnStart();
+}

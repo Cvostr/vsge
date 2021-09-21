@@ -18,6 +18,8 @@ namespace VSGE {
 
 		const std::string& GetClassName();
 
+		void OnStart();
+
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_SCRIPT, "Script")
 	};
 

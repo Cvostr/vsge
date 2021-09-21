@@ -1,5 +1,6 @@
 #include "MonoScriptingLayer.hpp"
 #include <Core/Logger.hpp>
+#include "Api/ApiBindings.hpp"
 
 using namespace VSGE;
 
@@ -43,6 +44,9 @@ bool MonoScriptingLayer::CreateDomain() {
     }
     mono_thread_set_main(mono_thread_current());
     Logger::Log(LogType::LOG_TYPE_INFO) << "Mono Domain initialized\n";
+
+    //bind API
+    BindLoggerApi();
 
     return true;
 }

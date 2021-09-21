@@ -17,7 +17,6 @@ namespace VSGE {
 		MonoClass* _mono_class_desc;
 		MonoObject* _mono_class_instance;
 		//base class methods
-		MonoMethod* _start_method;
 		MonoMethod* _update_method;
 
 		MonoMethodDesc* GetMethodDesc(const std::string& method);
@@ -32,7 +31,6 @@ namespace VSGE {
 		void CallDefaultConstructor();
 		const std::string& GetClassName();
 		MonoClass* GetClassDesc();
-		MonoMethod* GetStartMethod();
 		MonoMethod* GetUpdateMethod();
 		void SetValueToField(const std::string field, void* value);
 		void* GetValueOfField(const std::string& field);
@@ -46,6 +44,8 @@ namespace VSGE {
 			T* value = SetValueToField(field, &value);
 			return *value;
 		}
+
+		void CallOnStart();
 
 		void Release();
 	};
