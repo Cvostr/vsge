@@ -1,16 +1,15 @@
-#include "ScriptPicker.hpp"
+#include "ResourcePicker.hpp"
 #include "../Windows/ResourcePickWindow.hpp"
 #include "../EditorLayers/ImGuiLayer.hpp"
 
 using namespace VSGEditor;
-//using namespace VSGE;
 
-void VSGEditor::DrawScriptPicker(std::string label, VSGE::EntityScriptComponent* script) {
+void VSGEditor::DrawScriptPicker(const std::string& label, VSGE::EntityScriptComponent* script) {
 	ImGui::Text(label.c_str());
 
 	ImGui::SameLine();
 
-	ImGui::Text(script->GetScriptName().c_str());
+	ImGui::Text(script->GetClassName().c_str());
 
 	ImGui::SameLine();
 

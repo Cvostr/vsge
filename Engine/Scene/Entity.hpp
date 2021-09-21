@@ -141,14 +141,21 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		uint32 GetChildrenCount() const;
-
+		/// <summary>
+		/// Get amount of children in all relations
+		/// </summary>
+		/// <returns></returns>
 		uint32 GetTotalChildrenCount() const;
 		/// <summary>
 		/// Return child entity by index.
 		/// </summary>
 		/// <returns></returns>
 		Entity** GetChildren() { return _children.data(); }
-
+		/// <summary>
+		/// Get entity's child at specified index
+		/// </summary>
+		/// <param name="child">- index of child</param>
+		/// <returns></returns>
 		Entity* GetChild(uint32 child) { return _children[child]; }
 		/// <summary>
 		/// Does this entity contain child entity with pointer
@@ -250,6 +257,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		const Mat4& GetLocalTransform() { return _localTransform; }
+		/// <summary>
+		/// Set local transform matrix
+		/// </summary>
+		/// <param name="transform">- new transform matrix</param>
 		void SetLocalTransform(const Mat4& transform) { _localTransform = transform; }
 		/// <summary>
 		/// Get world transform matrix
@@ -274,7 +285,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		uint32 GetComponentsCount();
-
+		/// <summary>
+		/// Get amount of scripts, attached to this entity
+		/// </summary>
+		/// <returns></returns>
 		uint32 GetScriptsCount();
 		/// <summary>
 		/// Create and add new component to entity

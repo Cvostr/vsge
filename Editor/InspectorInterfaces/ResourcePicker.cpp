@@ -9,7 +9,7 @@
 using namespace VSGE;
 using namespace VSGEditor;
 
-void VSGEditor::DrawResourcePicker(std::string label, ResourceReference& reference, bool empty_res, uint32 index)
+void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& reference, bool empty_res, uint32 index)
 {
 	ImVec2 win_size = ImGui::GetWindowSize();
 	ImVec2 text_size = ImGui::CalcTextSize(label.c_str());

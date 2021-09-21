@@ -34,6 +34,19 @@ namespace VSGE {
 		MonoClass* GetClassDesc();
 		MonoMethod* GetStartMethod();
 		MonoMethod* GetUpdateMethod();
+		void SetValueToField(const std::string field, void* value);
+		void* GetValueOfField(const std::string& field);
+
+		template<typename T>
+		void SetValueToField(const std::string& field, T value) {
+			SetValueToField(field, &value);
+		}
+		template<typename T>
+		T GetValueOfField(const std::string& field) {
+			T* value = SetValueToField(field, &value);
+			return *value;
+		}
+
 		void Release();
 	};
 }

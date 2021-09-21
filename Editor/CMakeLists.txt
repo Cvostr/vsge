@@ -16,6 +16,7 @@ set(SRC_FILES
                 EditorLayers/ImGuiLayer.cpp
                 InspectorInterfaces/MaterialEditor.cpp
                 InspectorInterfaces/ResourcePicker.cpp
+                InspectorInterfaces/ScriptPicker.cpp
                 InspectorInterfaces/VariantInput.cpp
                 InspectorInterfaces/ViewMaskEdit.cpp
                 InspectorInterfaces/EntityComponents/AnimatorComponent.cpp

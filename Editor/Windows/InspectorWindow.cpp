@@ -144,6 +144,7 @@ void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script) {
 		return;
 	}
 
+	DrawScriptPicker("Class name", script);
 }
 
 void InspectorWindow::OnDrawWindow() {

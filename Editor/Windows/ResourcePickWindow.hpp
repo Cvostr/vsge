@@ -9,12 +9,18 @@ namespace VSGEditor {
 	class ResourcePickerWindow : public EditorWindow {
 	private:
 		VSGE::ResourceReference* reference;
+		VSGE::EntityScriptComponent* script_reference;
 		bool _allow_empty_resource;
+
+		void DrawResourcePicker();
+		void DrawScriptPicker();
 	public:
 
 		ResourcePickerWindow();
 
 		void SetResourceReference(VSGE::ResourceReference* reference);
+
+		void SetScriptReference(VSGE::EntityScriptComponent* script);
 
 		void SetAllowEmptyResource(bool empty_resource);
 

@@ -21,6 +21,8 @@ namespace VSGEditor {
 			return _abs_path;
 		}
 		void SetFilePath(const std::string& file_path);
+
+		const std::string& GetClassName();
 	};
 
 	class MonoScriptStorage {

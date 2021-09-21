@@ -26,9 +26,14 @@ void MonoScript::SetFilePath(const std::string& file_path) {
 		if (file_path[i] == '\\' || file_path[i] == '/')
 			last_slash_pos = i;
 	}
+	last_slash_pos++;
 	while (file_path[last_slash_pos] != '.') {
 		_class_name.push_back(file_path[last_slash_pos++]);
 	}
+}
+
+const std::string& MonoScript::GetClassName() {
+	return _class_name;
 }
 
 MonoScriptStorage::MonoScriptStorage() {

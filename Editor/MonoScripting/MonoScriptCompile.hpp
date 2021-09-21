@@ -3,6 +3,7 @@
 #include <string>
 #include <Core/Threading/Thread.hpp>
 #include <Core/Threading/Mutex.hpp>
+#include <Engine/Event.hpp>
 
 namespace VSGE {
 
@@ -12,11 +13,24 @@ namespace VSGE {
 		COMPILATION_STATE_DONE
 	};
 
+	class ScriptCompilationBeginEvent : public IEvent {
+	public:
+		EVENT_CLASS_TYPE(EventType::EventScriptCompilationBegin)
+		ScriptCompilationBeginEvent() {}
+	};
+
+	class ScriptCompilationDoneEvent : public IEvent {
+	public:
+		EVENT_CLASS_TYPE(EventType::EventScriptCompilationDone)
+		ScriptCompilationDoneEvent() {}
+	};
+
 	class MonoScriptCompiler : public Thread {
 	private:
 		std::string _output;
 		Mutex* _mutex;
 		COMPILATION_STATE _state;
+		bool _compilation_error;
 
 		std::string GetCompilationCmd();
 	public:
@@ -29,5 +43,7 @@ namespace VSGE {
 		void QueueCompilation();
 
 		bool IsCompilationDone();
+
+		bool IsCompilationError();
 	};
 }

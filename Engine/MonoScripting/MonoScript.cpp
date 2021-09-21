@@ -21,9 +21,8 @@ MonoMethodDesc* MonoScriptInstance::GetMethodDesc(const std::string& method) {
 
 MonoMethod* MonoScriptInstance::GetMethod(const std::string& method) {
     MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
-
+    //get description of method
     MonoMethodDesc* desc = GetMethodDesc(method);
-
     // Search the method in the image
     return blob->GetMethodByDescription(desc);
 }
@@ -44,6 +43,20 @@ bool MonoScriptInstance::CreateClassByName(const std::string& class_name) {
 
 void MonoScriptInstance::CallDefaultConstructor() {
     mono_runtime_object_init(_mono_class_instance);
+}
+
+void MonoScriptInstance::SetValueToField(const std::string field, void* value) {
+    MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc, field.c_str());
+    if (field_desc) {
+        mono_field_set_value(_mono_class_instance, field_desc, value);
+    }
+}
+
+void* MonoScriptInstance::GetValueOfField(const std::string& field) {
+    void* result = nullptr;
+    MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc, field.c_str());
+    mono_field_get_value(_mono_class_instance, field_desc, &result);
+    return result;
 }
 
 void MonoScriptInstance::Release() {

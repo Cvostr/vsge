@@ -25,6 +25,7 @@
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
 #include <MonoScripting/MonoScriptCompile.hpp>
+#include <MonoScripting/MonoScriptingLayer.hpp>
 
 #include <Math/Ray.hpp>
 #include <ImGuizmo.h>
@@ -107,6 +108,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventKeyButtonDown>(event, EVENT_FUNC(EditorLayer::OnKeyDown));
 	DispatchEvent<VSGE::FileChageEvent>(event, EVENT_FUNC(EditorLayer::OnFileEvent));
 	DispatchEvent<VSGE::MessageEvent>(event, EVENT_FUNC(EditorLayer::OnMessageEvent));
+	DispatchEvent<VSGE::ScriptCompilationDoneEvent>(event, EVENT_FUNC(EditorLayer::OnScriptCompiledEvent));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
@@ -379,4 +381,8 @@ void EditorLayer::OnMessageEvent(const VSGE::MessageEvent& me) {
 
 	if(cw)
 		cw->addMsg((VSGE::MessageEvent*)&me);
+}
+
+void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde) {
+	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile("mono_temp.dll");
 }

@@ -8,6 +8,7 @@
 #include <Engine/WindowEvent.hpp>
 #include <Core/Logger.hpp>
 #include <System/FileWatcher.hpp>
+#include <MonoScripting/MonoScriptCompile.hpp>
 
 namespace VSGEditor {
 
@@ -117,5 +118,6 @@ namespace VSGEditor {
 		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
 		void OnFileEvent(const VSGE::FileChageEvent& fce);
 		void OnMessageEvent(const VSGE::MessageEvent& me);
+		void OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde);
 	};
 }
