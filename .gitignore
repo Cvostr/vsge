@@ -6,4 +6,4 @@
 /.CMakeSettings.json
 *.map
 *.bundle
-*.dll
+/MonoScripting/api.dll

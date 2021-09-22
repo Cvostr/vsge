@@ -28,13 +28,13 @@ public class Entity : InternalObject {
         return new Entity(i_GetParent(handle));
     }
 
-    //public void AddChild(Entity entity){
+    public void AddChild(Entity entity){
+        i_AddChild(handle, entity.handle);
+    }
 
-    //}
-
-    //public void RemoveChild(Entity entity){
-
-    //}
+    public void RemoveChild(Entity entity){
+        i_RemoveChild(handle, entity.handle);
+    }
 
     public Vec3 GetPosition(){
         return i_GetPosition(handle);
@@ -64,6 +64,12 @@ public class Entity : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetParent(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_AddChild(ulong handle, ulong child_handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_RemoveChild(ulong handle, ulong child_handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_SetActive(ulong handle, bool active);
