@@ -36,6 +36,17 @@ public class Entity : InternalObject {
         i_RemoveChild(handle, entity.handle);
     }
 
+    public Entity[] GetChildren(){
+        ulong[] children_handles = i_GetChildren(handle);
+        Entity[] result = new Entity[children_handles.Length];
+
+        for(uint i = 0; i < result.Length; i ++){
+            result[i] = new Entity(children_handles[i]);
+        }
+
+        return result;
+    }
+
     public Vec3 GetPosition(){
         return i_GetPosition(handle);
     }
@@ -70,6 +81,9 @@ public class Entity : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_RemoveChild(ulong handle, ulong child_handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong[] i_GetChildren(ulong handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_SetActive(ulong handle, bool active);

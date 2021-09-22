@@ -1,10 +1,24 @@
 #include "ApiBindings.hpp"
 #include <Scene/Entity.hpp>
+#include <MonoScripting/MonoScriptingLayer.hpp>
 
 using namespace VSGE;
 
 static void* GetParent(void* ptr) {
 	return ((Entity*)ptr)->GetParent();
+}
+
+static void AddChild(void* ptr, void* child) {
+	((Entity*)ptr)->AddChild((Entity*)child);
+}
+
+static void RemoveChild(void* ptr, void* child) {
+	((Entity*)ptr)->RemoveChild((Entity*)child);
+}
+
+static MonoArray* GetChildren(void* ptr) {
+	//MonoArray* result = mono_array_new()
+	return nullptr;
 }
 
 static void SetActive(void* ptr, bool active) {
@@ -17,6 +31,11 @@ static bool IsActive(void* ptr) {
 
 static void SetName(void* ptr, MonoString* name) {
 	((Entity*)ptr)->SetName(std::string(mono_string_to_utf8(name)));
+}
+
+static MonoString* GetName(void* ptr) {
+	MonoScriptingLayer* layer = MonoScriptingLayer::Get();
+	return mono_string_new(layer->GetDomain(), ((Entity*)ptr)->GetName().c_str());
 }
 
 static void SetPosition(void* ptr, Vec3 position) {
@@ -46,10 +65,14 @@ static Quat GetRotation(void* ptr) {
 
 void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetParent(ulong)", GetParent);
+	mono_add_internal_call("Entity::i_AddChild(ulong,ulong)", AddChild);
+	mono_add_internal_call("Entity::i_RemoveChild(ulong,ulong)", RemoveChild);
+	mono_add_internal_call("Entity::i_GetChildren(ulong)", GetChildren);
 
 	mono_add_internal_call("Entity::i_SetActive(ulong,bool)", SetActive);
 	mono_add_internal_call("Entity::i_IsActive(ulong)", IsActive);
 	mono_add_internal_call("Entity::i_SetName(ulong,string)", SetName);
+	mono_add_internal_call("Entity::i_GetName(ulong)", GetName);
 
 	mono_add_internal_call("Entity::i_SetPosition(ulong,Vec3)", SetPosition);
 	mono_add_internal_call("Entity::i_GetPosition(ulong)", GetPosition);
