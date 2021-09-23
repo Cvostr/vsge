@@ -21,6 +21,14 @@ static MonoArray* GetChildren(void* ptr) {
 	return nullptr;
 }
 
+static AABB GetAABB(void* ptr) {
+	return ((Entity*)ptr)->GetAABB();
+}
+
+static void* GetScene(void* ptr) {
+	return ((Entity*)ptr)->GetScene();
+}
+
 static void SetActive(void* ptr, bool active) {
 	((Entity*)ptr)->SetActive(active);
 }
@@ -68,6 +76,8 @@ void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_AddChild(ulong,ulong)", AddChild);
 	mono_add_internal_call("Entity::i_RemoveChild(ulong,ulong)", RemoveChild);
 	mono_add_internal_call("Entity::i_GetChildren(ulong)", GetChildren);
+	mono_add_internal_call("Entity::i_GetScene(ulong)", GetScene);
+	mono_add_internal_call("Entity::i_GetAABB(ulong)", GetAABB);
 
 	mono_add_internal_call("Entity::i_SetActive(ulong,bool)", SetActive);
 	mono_add_internal_call("Entity::i_IsActive(ulong)", IsActive);

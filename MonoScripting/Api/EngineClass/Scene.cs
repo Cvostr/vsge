@@ -12,8 +12,8 @@ public class Scene : InternalObject {
         return new Entity(i_GetRootNode(handle));
     }
 
-    public void AddEntity(Entity entity){
-
+    public Entity AddNewEntity(string name){
+        return new Entity(i_AddNewEntity(handle, name));
     }
 
     public Entity GetEntityByName(string name){
@@ -29,5 +29,8 @@ public class Scene : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetEntity(ulong handle, string name);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_AddNewEntity(ulong handle, string name);
 
 }

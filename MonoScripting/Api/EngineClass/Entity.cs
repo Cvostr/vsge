@@ -47,6 +47,14 @@ public class Entity : InternalObject {
         return result;
     }
 
+    public AABB GetAABB(){
+        return i_GetAABB(handle);
+    }
+
+    public Scene GetScene(){
+        return new Scene(i_GetScene(handle));
+    }
+
     public Vec3 GetPosition(){
         return i_GetPosition(handle);
     }
@@ -84,6 +92,12 @@ public class Entity : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong[] i_GetChildren(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_GetScene(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern AABB i_GetAABB(ulong handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_SetActive(ulong handle, bool active);
