@@ -13,17 +13,27 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
 
 layout (std140, set = 1, binding = 1) uniform CascadesDir{
     float distances[10];
-    uint cascades_count;
+    int cascades_count;
 };
 
+layout(push_constant) uniform PushConstants
+{
+	int first_cascade;
+	int last_cascade;
+} pushConstants;
 
 void main() { 
-	uint _cascades = cascades_count;
+	int _first_cascade = 0;
+	int _cascades = cascades_count;
 
+	if(type == 0){
+		_first_cascade = pushConstants.first_cascade;
+		_cascades = pushConstants.last_cascade;
+	}else
 	if(type == 1) _cascades = 6;
 	else if(type == 2) _cascades = 1;
 
-	for( int cascade = 0; cascade < _cascades; cascade++){
+	for(int cascade = _first_cascade; cascade < _cascades; cascade++){
 		gl_Layer = cascade;
 		for (int i = 0; i < gl_in.length(); i++)
 		{

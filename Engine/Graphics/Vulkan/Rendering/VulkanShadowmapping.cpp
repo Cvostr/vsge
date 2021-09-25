@@ -109,6 +109,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_layout->PushDescriptorSet(vertexDescrSets->at(0));
 	_shadowmap_layout->PushDescriptorSet(_shadowcaster_descrSet);
 	_shadowmap_layout->PushDescriptorSet(animsDescrSet);
+	_shadowmap_layout->AddPushConstantRange(0, 8, VK_SHADER_STAGE_GEOMETRY_BIT);
 	_shadowmap_layout->Create();
 
 	_shadowmapPipeline = new VulkanPipeline;
@@ -190,7 +191,7 @@ VulkanShadowmapping::~VulkanShadowmapping() {
 uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 caster_type) {
 	uint32 pcaster_index = 0;
 	for (uint32 i = 0; i < caster_index; i++) {
-		if (_casters[i]->_caster_type == caster_type)
+		if (_casters[i]->_lightsource->GetLightType() == caster_type)
 			pcaster_index++;
 	}
 	return pcaster_index;
@@ -219,7 +220,7 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		image_layers_count = 1;
 
 	uint32 layers = caster->_framebuffer->GetLayersCount();
-	if (layers != image_layers_count || caster->_caster_type != caster_type) {
+	if (layers != image_layers_count || caster->_lightsource->GetLightType() != caster_type) {
 		bool is_point = (caster_type == LIGHT_TYPE_POINT);
 		bool is_spot = (caster_type == LIGHT_TYPE_SPOT);
 		caster->_framebuffer->Destroy();
@@ -239,14 +240,12 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		}
 	}
 
-	caster->_caster_type = entity->GetComponent<LightsourceComponent>()->GetLightType();
-	caster->_caster_pos = light->GetEntity()->GetAbsolutePosition();
-	caster->_caster_range = light->GetRange();
+	caster->_lightsource = light;
 
 	Mat4* cascades_projections = light->GetShadowcastMatrices(cam);
 	_shadowcasters_buffer->WriteData(_added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * image_layers_count, cascades_projections);
 	_shadowprocess_buffer->WriteData(_added_casters * SHADOWPROCESS_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * image_layers_count, cascades_projections);
-	delete[] cascades_projections;
+	SAFE_RELEASE_ARR(cascades_projections);
 
 	uint32 offset_casters = _added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * 10;
 	uint32 offset = _added_casters * SHADOWPROCESS_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * 10;
@@ -256,8 +255,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 	uint32 pcf = light->GetShadowPCF();
 	float strength = light->GetShadowStrength();
 	LightType type = light->GetLightType();
-	Vec3 pos = caster->_caster_pos;
-	float range = caster->_caster_range;
+	Vec3 pos = light->GetEntity()->GetAbsolutePosition();
+	float range = light->GetRange();
 
 	_shadowprocess_buffer->WriteData(offset, 4, &bias);
 	_shadowprocess_buffer->WriteData(offset + 4, 4, &pcf);
@@ -310,23 +309,57 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 
+	Frustum* _dir_caster_frustums = nullptr;
+	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
+		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+		_dir_caster_frustums = new Frustum[env_settings.GetShadowCascadesCount()];
+		Mat4* cascades_projections = caster->_lightsource->GetShadowcastMatrices(cam);
+		for (uint32 c_i = 0; c_i < env_settings.GetShadowCascadesCount(); c_i++) {
+			_dir_caster_frustums[c_i].Update(cascades_projections[c_i]);
+		}
+		SAFE_RELEASE_ARR(cascades_projections)
+	}
 	
-	
-	if (caster->_caster_type == LIGHT_TYPE_DIRECTIONAL || caster->_caster_type == LIGHT_TYPE_SPOT) {
+	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL 
+		|| caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
 		_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmapPipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
-	}else if (caster->_caster_type == LIGHT_TYPE_POINT) {
+	}else if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT) {
 		_shadowmap_point_RenderPass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmap_point_Pipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
 	}
 
-
 	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
 		Entity* entity = _entitiesToRender->at(e_i);
+		
+		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
+			AABB bbox = entity->GetAABB();
+			SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+			int first = -1;
+			int last = -1;
+			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) {
+				if (_dir_caster_frustums[i].CheckAABB(bbox) != FRUSTUM_OUTSIDE) {
+					if (first < 0) {
+						first = i;
+						last = i;
+					}
+				}
+				if (first >= 0)
+					last++;
+			}
+
+			if (first < 0)
+				continue;
+
+			int32 pconstants[2];
+			pconstants[0] = first;
+			pconstants[1] = last;
+			cmdbuf->PushConstants(*_shadowmap_layout, VK_SHADER_STAGE_GEOMETRY_BIT, 0, 8, pconstants);
+		}
 		VulkanMesh* mesh = nullptr;
 
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
@@ -370,6 +403,8 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		}
 	}
 
+	SAFE_RELEASE_ARR(_dir_caster_frustums)
+
 	cmdbuf->EndRenderPass();
 	
 }
@@ -397,9 +432,9 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 	std::vector<VulkanTexture*> shadowmaps_point;
 	std::vector<VulkanTexture*> shadowmaps_spot;
 	for (auto caster : _casters) {
-		if (caster->_caster_type == LIGHT_TYPE_POINT)
+		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT)
 			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetColorAttachments()[0]);
-		else if (caster->_caster_type == LIGHT_TYPE_SPOT)
+		else if (caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT)
 			shadowmaps_spot.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 
 		else

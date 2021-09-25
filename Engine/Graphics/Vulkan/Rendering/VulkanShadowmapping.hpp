@@ -24,15 +24,13 @@ namespace VSGE {
 
 	class VulkanShadowCaster {
 	public:
-		LightType _caster_type;
-		Vec3 _caster_pos;
-		float _caster_range;
+		LightsourceComponent* _lightsource;
 		VulkanFramebuffer* _framebuffer;
-		
 
 		VulkanShadowCaster() {
 			_framebuffer = new VulkanFramebuffer;
 			_framebuffer->SetLayersCount(0);
+			_lightsource = nullptr;
 		}
 
 		~VulkanShadowCaster() {
