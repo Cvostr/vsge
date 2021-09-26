@@ -42,6 +42,10 @@ namespace VSGE {
 		void OnDetach();
 
 		MonoDomain* GetDomain();
+		/// <summary>
+		/// Creates Mono AppDomain
+		/// </summary>
+		/// <returns></returns>
 		bool CreateDomain();
 		/// <summary>
 		/// Release domain, but it can't be initialized again

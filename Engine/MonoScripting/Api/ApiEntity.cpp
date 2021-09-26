@@ -21,8 +21,7 @@ static MonoArray* GetChildren(void* ptr) {
 	MonoArray* result = mono_array_new(MonoScriptingLayer::Get()->GetDomain(), mono_get_uint64_class(), ent->GetChildrenCount());
 	for (int32 c_i = 0; c_i < ent->GetChildrenCount(); c_i ++) {
 		uint64 child = (uint64)ent->GetChildren()[c_i];
-		MonoObject* ch_obj = mono_object_new(MonoScriptingLayer::Get()->GetDomain(), mono_get_uint64_class());
-		mono_array_set(result, MonoObject*, c_i, ch_obj);
+		mono_array_set(result, uint64, c_i, child);
 	}
 	return result;
 }
@@ -75,7 +74,6 @@ static void SetRotation(void* ptr, Quat rotation) {
 static Quat GetRotation(void* ptr) {
 	return ((Entity*)ptr)->GetRotation();
 }
-
 
 void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetParent(ulong)", GetParent);

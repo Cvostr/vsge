@@ -4,6 +4,7 @@
 #include <Core/FileLoader.hpp>
 #include <Windows/ConsoleWindow.hpp>
 #include <EditorLayers/ImGuiLayer.hpp>
+#include <MonoScripting/MonoScriptingLayer.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -98,6 +99,7 @@ void MonoScriptStorage::BuildScriptList(const std::string& root_dir) {
 }
 
 void MonoScriptStorage::Compile() {
+	MonoScriptingLayer::Get()->GetScriptsBlob()->Release();
 	ConsoleWindow* cw = ImGuiLayer::Get()->GetWindow<ConsoleWindow>();
 	cw->ClearMessages(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR);
 	_compiler->QueueCompilation();
