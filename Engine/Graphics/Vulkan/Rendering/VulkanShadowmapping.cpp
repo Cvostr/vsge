@@ -380,11 +380,11 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		}
 
 		//Check distance
-		/*if (caster->_caster_type == LIGHT_TYPE_POINT || caster->_caster_type == LIGHT_TYPE_SPOT) {
-			float distance = caster->_caster_pos.DistanceTo(entity->GetAbsolutePosition());
-			if (distance > caster->_caster_range)
+		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
+			float distance = caster->_lightsource->GetEntity()->GetPosition().DistanceTo(entity->GetAbsolutePosition());
+			if (distance > caster->_lightsource->GetRange())
 				continue;
-		}*/
+		}
 
 		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };

@@ -66,7 +66,6 @@ namespace VSGE {
 		virtual void Serialize(ByteSerialize& serializer) {}
 		virtual void Deserialize(ByteSolver& solver) {}
 
-		
 		virtual EntityComponentType GetType() const = 0;
 		virtual std::string GetTypeString() const = 0;
 

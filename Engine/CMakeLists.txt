@@ -125,6 +125,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiEntity.cpp
 				MonoScripting/Api/ApiScene.cpp
 				MonoScripting/Api/ApiResource.cpp
+				MonoScripting/Api/ApiEntityComponentsApi.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				System/Shell.cpp

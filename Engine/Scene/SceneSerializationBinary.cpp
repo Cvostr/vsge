@@ -30,6 +30,7 @@ void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializ
 	serializer.Serialize(ent->GetScale());
 	serializer.Serialize(ent->GetRotation());
 	uint32 components_count = ent->GetComponentsCount();
+	uint32 scripts_count = ent->GetScriptsCount();
 	uint32 children_count = ent->GetChildrenCount();
 	serializer.Serialize(components_count);
 	//Serialize components

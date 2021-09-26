@@ -17,8 +17,14 @@ static void RemoveChild(void* ptr, void* child) {
 }
 
 static MonoArray* GetChildren(void* ptr) {
-	//MonoArray* result = mono_array_new()
-	return nullptr;
+	Entity* ent = ((Entity*)ptr);
+	MonoArray* result = mono_array_new(MonoScriptingLayer::Get()->GetDomain(), mono_get_uint64_class(), ent->GetChildrenCount());
+	for (int32 c_i = 0; c_i < ent->GetChildrenCount(); c_i ++) {
+		uint64 child = (uint64)ent->GetChildren()[c_i];
+		MonoObject* ch_obj = mono_object_new(MonoScriptingLayer::Get()->GetDomain(), mono_get_uint64_class());
+		mono_array_set(result, MonoObject*, c_i, ch_obj);
+	}
+	return result;
 }
 
 static AABB GetAABB(void* ptr) {

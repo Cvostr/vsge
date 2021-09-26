@@ -49,6 +49,8 @@ bool MonoScriptingLayer::CreateDomain() {
     BindLoggerApi();
     BindEntityApi();
     BindSceneApi();
+    BindResourcesApi();
+    BindEntityComponentsApi();
 
     return true;
 }

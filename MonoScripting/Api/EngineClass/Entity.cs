@@ -47,6 +47,8 @@ public class Entity : InternalObject {
         return result;
     }
 
+    
+
     public AABB GetAABB(){
         return i_GetAABB(handle);
     }
