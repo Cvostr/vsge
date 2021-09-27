@@ -301,6 +301,15 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 			cam_pos_offset = mEditorCamera->GetFront() * -MONEMENT_COEFF * time->GetDeltaTime();
 		break;
 
+	case KEY_CODE_Q:
+		if (InputState.isLCrtlHold) {
+			if (_camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA)
+				_camera_mode = EDITOR_CAMERA_MODE_GAME_CAMERA;
+			else if (_camera_mode == EDITOR_CAMERA_MODE_GAME_CAMERA)
+				_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
+		}
+		break;
+
 	case KEY_CODE_A:
 		cam_pos_offset = mEditorCamera->GetRight() * -MONEMENT_COEFF * time->GetDeltaTime();
 		break;

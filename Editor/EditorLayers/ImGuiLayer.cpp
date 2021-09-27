@@ -196,7 +196,13 @@ void ImGuiLayer::OnUpdate() {
     if(recreated){
        return;
     } 
-    renderer->DrawScene(editor_layer->GetCamera());
+
+    VSGE::Camera* cam = nullptr;
+    if (EditorLayer::Get()->GetEditorCameraMode() == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
+        cam = editor_layer->GetCamera();
+    }
+
+    renderer->DrawScene(cam);
 
     VulkanPresent(*renderer->GetEndSemaphore(), 0);
     

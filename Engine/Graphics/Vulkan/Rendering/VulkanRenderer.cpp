@@ -407,19 +407,30 @@ void VulkanRenderer::StoreWorldObjects() {
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	//TEMPORARY
-	this->cam = cam;
-	_shadowmapper->SetCamera(cam);
 	_shadowmapper->SetScene(mScene);
 	_gbuffer_renderer->SetScene(mScene);
 	_ibl_map->SetScene(mScene);
-	_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
 	//---------------------
-
-	_cameras_buffer->SetCamera(0, cam);
 
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
 		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();
 		_cameras_buffer->SetCamera(camera_i, camera);
+	}
+
+	if (cam) {
+		this->cam = cam;
+		_shadowmapper->SetCamera(cam);
+		_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
+		_cameras_buffer->SetCamera(0, cam);
+	}
+	else if(_cameras.size() > 0) {
+		Camera* camera = _cameras[0]->GetComponent<Camera>();
+		if (camera) {
+			this->cam = camera;
+			_shadowmapper->SetCamera(camera);
+			_cameras_buffer->SetEnvmapCameras(camera->GetPosition(), 100.f);
+			_cameras_buffer->SetCamera(0, camera);
+		}
 	}
 
 	_cameras_buffer->UpdateGpuBuffer();

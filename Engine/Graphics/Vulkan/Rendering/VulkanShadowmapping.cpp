@@ -290,7 +290,7 @@ void VulkanShadowmapping::ResetCasters() {
 void VulkanShadowmapping::ProcessShadowCasters() {
 	_shadowrenderer_cmdbuf->Begin();
 
-	for (uint32 caster_i = 0; caster_i < _casters.size(); caster_i++) {
+	for (uint32 caster_i = 0; caster_i < _added_casters; caster_i++) {
 		ProcessShadowCaster(caster_i, _shadowrenderer_cmdbuf);
 	}
 

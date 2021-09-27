@@ -2,9 +2,9 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-class MaterialComponents : IEntityComponent {
+class MaterialComponent : IEntityComponent {
 
-    public MaterialComponents(ulong handle) : base(handle)
+    public MaterialComponent(ulong handle) : base(handle)
     {
     }
 

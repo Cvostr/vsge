@@ -55,7 +55,6 @@ void ToolbarWindow::OnDrawWindow() {
 
         ImGui::End();
     }
-
     
     SetSize(app->GetWindow().GetWindowWidth(), 50);
 }
@@ -66,6 +65,8 @@ void ToolbarWindow::PlayScene() {
 
     if (!MonoScriptStorage::Get()->IsScriptingReady())
         return;
+
+    EditorLayer::Get()->SetEditorCameraMode(EDITOR_CAMERA_MODE_GAME_CAMERA);
 
     if (!scene_layer->IsScenePaused()) {
         //Save scene
@@ -86,6 +87,7 @@ void ToolbarWindow::StopScene() {
     VSGE::Application* app = VSGE::Application::Get();
     VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
 
+    EditorLayer::Get()->SetEditorCameraMode(EDITOR_CAMERA_MODE_EDIT_CAMERA);
     scene_layer->StopScene();
 
     InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();

@@ -12,6 +12,11 @@
 
 namespace VSGEditor {
 
+	enum EditorCameraMode {
+		EDITOR_CAMERA_MODE_EDIT_CAMERA,
+		EDITOR_CAMERA_MODE_GAME_CAMERA
+	};
+
 	class EditorLayer : public VSGE::IApplicationLayer {
 	private:
 		static EditorLayer* _this;
@@ -40,7 +45,7 @@ namespace VSGEditor {
 		std::string _openedSceneFile;
 		VSGE::Entity* _pickedEntity;
 		int _transformMode;
-
+		EditorCameraMode _camera_mode;
 	public:
 
 		EditorLayer() {
@@ -58,6 +63,7 @@ namespace VSGEditor {
 
 			_pickedEntity = nullptr;
 			_transformMode = 7;
+			_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
 		}
 
 		~EditorLayer() {
@@ -100,6 +106,14 @@ namespace VSGEditor {
 
 		void SetPickedEntity(VSGE::Entity* entity) {
 			_pickedEntity = entity;
+		}
+
+		EditorCameraMode GetEditorCameraMode() {
+			return _camera_mode;
+		}
+
+		void SetEditorCameraMode(EditorCameraMode mode) {
+			_camera_mode = mode;
 		}
 
 		bool OpenProjectDirectory(const std::string& dir_path);

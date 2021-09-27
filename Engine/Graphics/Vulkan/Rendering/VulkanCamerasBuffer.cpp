@@ -78,7 +78,7 @@ void VulkanCamerasBuffer::WriteCameraToBuffer(
 }
 
 void VulkanCamerasBuffer::SetCamera(uint32 camera_index, Camera* camera) {
-	if (camera_index >= MAX_CAMERAS)
+	if (camera_index >= MAX_CAMERAS || !camera)
 		return;
 
 	_cameras[camera_index] = camera;

@@ -33,7 +33,7 @@ void SceneViewWindow::OnDrawWindow() {
         Mat4 identity = Mat4(1);
         //ImGuizmo::DrawGrid(&cam->GetViewMatrix().M11, &proj.M11, &identity.M11, 80.f);
 
-        if (editor_layer->GetPickedEntity()) {
+        if (editor_layer->GetPickedEntity() && EditorLayer::Get()->GetEditorCameraMode() == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
             VSGE::Entity* picked_entity = editor_layer->GetPickedEntity();
             Mat4 newmat = picked_entity->GetWorldTransform();
 
