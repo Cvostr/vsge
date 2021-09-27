@@ -13,7 +13,7 @@ using namespace std::filesystem;
 MonoScriptStorage* MonoScriptStorage::_this = new MonoScriptStorage();
 
 MonoScript::MonoScript() {
-
+	
 }
 MonoScript::~MonoScript() {
 
@@ -39,6 +39,7 @@ const std::string& MonoScript::GetClassName() {
 
 MonoScriptStorage::MonoScriptStorage() {
 	_this = this;
+	_is_scripting_ready = false;
 	_compiler = new MonoScriptCompiler;
 	_compiler->SetThreadName("mono-compile");
 	_compiler->Run();
@@ -46,6 +47,14 @@ MonoScriptStorage::MonoScriptStorage() {
 
 std::vector<MonoScript*>& MonoScriptStorage::GetScripts() {
 	return _scripts;
+}
+
+bool MonoScriptStorage::IsScriptingReady() {
+	return _is_scripting_ready;
+}
+
+void MonoScriptStorage::SetScriptingReady() {
+	_is_scripting_ready = true;
 }
 
 MonoScript* MonoScriptStorage::GetScriptWithFilePath(const std::string& file_path) {
@@ -99,8 +108,11 @@ void MonoScriptStorage::BuildScriptList(const std::string& root_dir) {
 }
 
 void MonoScriptStorage::Compile() {
-	MonoScriptingLayer::Get()->GetScriptsBlob()->Release();
+	MonoScriptingLayer::Get()->ReleaseDomain();
+	MonoScriptingLayer::Get()->CreateDomain();
+
 	ConsoleWindow* cw = ImGuiLayer::Get()->GetWindow<ConsoleWindow>();
 	cw->ClearMessages(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR);
 	_compiler->QueueCompilation();
+	_is_scripting_ready = false;
 }

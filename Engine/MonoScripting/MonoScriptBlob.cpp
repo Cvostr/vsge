@@ -15,12 +15,13 @@ MonoScriptBlob::~MonoScriptBlob() {
 
 void MonoScriptBlob::Release() {
 	if (_assembly) {
-		mono_free(_assembly);
+		mono_assembly_close(_assembly);
+		//mono_free(_assembly);
 		_assembly = nullptr;
 	}
 	if (_image) {
-		mono_free(_image);
-		_image = nullptr;
+		//mono_free(_image);
+		//_image = nullptr;
 	}
 }
 
@@ -32,7 +33,6 @@ MonoImage* MonoScriptBlob::GetImage() {
 }
 
 void MonoScriptBlob::LoadFromFile(const std::string& path) {
-	Release();
 	_assembly = mono_domain_assembly_open(MonoScriptingLayer::Get()->GetDomain(), path.c_str());
 	_image = mono_assembly_get_image(_assembly);
 }

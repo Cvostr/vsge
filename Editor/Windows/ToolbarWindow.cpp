@@ -6,6 +6,7 @@
 #include <Engine/Application.hpp>
 #include <ImGuizmo.h>
 #include <Scene/SceneSerialization.hpp>
+#include <MonoScripting/MonoScriptStorage.hpp>
 
 using namespace VSGEditor;
 
@@ -62,6 +63,9 @@ void ToolbarWindow::OnDrawWindow() {
 void ToolbarWindow::PlayScene() {
     VSGE::Application* app = VSGE::Application::Get();
     VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
+
+    if (!MonoScriptStorage::Get()->IsScriptingReady())
+        return;
 
     if (!scene_layer->IsScenePaused()) {
         //Save scene

@@ -34,7 +34,6 @@ Application* VSGEMain() {
 	vk->Create(&app->GetWindow());
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
-	mono_scripting_layer->CreateDomain();
 	app->AddLayer(mono_scripting_layer);
 
 	VulkanRenderer* renderer = new VulkanRenderer;

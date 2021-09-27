@@ -11,7 +11,6 @@ namespace VSGEditor {
 	private:
 		std::string _abs_path;
 		std::string _class_name;
-
 	public:
 
 		MonoScript();
@@ -30,6 +29,7 @@ namespace VSGEditor {
 		std::vector<MonoScript*> _scripts;
 		VSGE::MonoScriptCompiler* _compiler;
 		static MonoScriptStorage* _this;
+		bool _is_scripting_ready;
 	public:
 
 		MonoScriptStorage();
@@ -45,5 +45,7 @@ namespace VSGEditor {
 		void BuildScriptList(const std::string& root_dir);
 		void ClearScripts();
 		void Compile();
+		bool IsScriptingReady();
+		void SetScriptingReady();
 	};
 }

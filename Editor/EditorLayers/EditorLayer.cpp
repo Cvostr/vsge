@@ -384,5 +384,6 @@ void EditorLayer::OnMessageEvent(const VSGE::MessageEvent& me) {
 }
 
 void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde) {
+	MonoScriptStorage::Get()->SetScriptingReady();
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile("mono_temp.dll");
 }

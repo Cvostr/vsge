@@ -17,11 +17,15 @@
 
 #include "MonoScriptBlob.hpp"
 
+#define MONO_ROOT_DOMAIN_NAME "VSGE_MONO_ROOT"
+#define MONO_DOMAIN_NAME "VSGE_MONO"
+
 namespace VSGE {
 	class MonoScriptingLayer : public IApplicationLayer {
 	private:
 		static MonoScriptingLayer* _this;
 		//mono domain object
+		MonoDomain* _root_domain;
 		MonoDomain* _domain;
 		MonoScriptBlob* _scripts_blob;
 	public:
@@ -41,15 +45,19 @@ namespace VSGE {
 		void OnUpdate();
 		void OnDetach();
 
-		MonoDomain* GetDomain();
+		MonoDomain* GetRootDomain();
 		/// <summary>
-		/// Creates Mono AppDomain
+		/// Creates Mono root AppDomain
 		/// </summary>
 		/// <returns></returns>
-		bool CreateDomain();
+		bool CreateRootDomain();
 		/// <summary>
-		/// Release domain, but it can't be initialized again
+		/// Release root domain, but it can't be initialized again
 		/// </summary>
+		void ReleaseRootDomain();
+
+		MonoDomain* GetDomain();
+		void CreateDomain();
 		void ReleaseDomain();
 	};
 }
