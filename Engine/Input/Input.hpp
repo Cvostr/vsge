@@ -53,8 +53,10 @@ namespace VSGE {
 
 		static Input* Get();
 
-		const MouseCursorState& GetMouseCursorState();
-		const MouseButtonState& GetMouseButtonState();
+		const Vec2i& GetMouseCursorPos();
+		const Vec2i& GetMouseCursorDelta();
+		bool IsMouseButtonPressed(MouseButton button);
+		bool IsMouseButtonHold(MouseButton button);
 		bool IsKeyPressed(KeyCode key);
 		bool IsKeyHold(KeyCode key);
 

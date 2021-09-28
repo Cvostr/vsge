@@ -20,7 +20,7 @@ public class IEntityComponent : InternalObject {
         i_SetActive(handle, active);
     }
 
-    int GetType(){
+    int GetComponentType(){
         return i_GetType(handle);
     }
 

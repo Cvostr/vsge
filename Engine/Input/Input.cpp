@@ -20,11 +20,37 @@ Input* Input::Get() {
 	return _this;
 }
 
-const MouseCursorState& Input::GetMouseCursorState() {
-	return _mouse_cursor_state;
+const Vec2i& Input::GetMouseCursorPos() {
+	return _mouse_cursor_state.cursor_pos;
 }
-const MouseButtonState& Input::GetMouseButtonState() {
-	return _mouse_btn_state;
+const Vec2i& Input::GetMouseCursorDelta() {
+	return _mouse_cursor_state.cursor_delta;
+}
+bool Input::IsMouseButtonPressed(MouseButton button) {
+	switch (button) {
+	case MOUSE_BUTTON_LEFT:
+		return _mouse_btn_state.leftbtn_pressed;
+		break;
+	case MOUSE_BUTTON_MIDDLE:
+		return _mouse_btn_state.midbtn_pressed;
+		break;
+	case MOUSE_BUTTON_RIGHT:
+		return _mouse_btn_state.rightbtn_pressed;
+		break;
+	}
+}
+bool Input::IsMouseButtonHold(MouseButton button) {
+	switch (button) {
+	case MOUSE_BUTTON_LEFT:
+		return _mouse_btn_state.leftbtn_hold;
+		break;
+	case MOUSE_BUTTON_MIDDLE:
+		return _mouse_btn_state.midbtn_hold;
+		break;
+	case MOUSE_BUTTON_RIGHT:
+		return _mouse_btn_state.rightbtn_hold;
+		break;
+	}
 }
 bool Input::IsKeyPressed(KeyCode key) {
 	for (uint32 i = 0; i < _pressed_key_count; i++) {
@@ -57,6 +83,7 @@ void Input::SetMouseBtnPressed(MouseButton btn) {
 		break;
 	case MOUSE_BUTTON_RIGHT:
 		_mouse_btn_state.rightbtn_pressed = true;
+		break;
 	}
 }
 void Input::UnsetPressedMouseButtons() {
@@ -74,6 +101,7 @@ void Input::SetMouseBtnHold(MouseButton btn) {
 		break;
 	case MOUSE_BUTTON_RIGHT:
 		_mouse_btn_state.rightbtn_hold = true;
+		break;
 	}
 }
 void Input::UnsetMouseBtnHold(MouseButton btn) {
@@ -86,6 +114,7 @@ void Input::UnsetMouseBtnHold(MouseButton btn) {
 		break;
 	case MOUSE_BUTTON_RIGHT:
 		_mouse_btn_state.rightbtn_hold = false;
+		break;
 	}
 }
 
