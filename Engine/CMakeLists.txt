@@ -73,6 +73,8 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/PBR/VulkanIrradianceMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanSpecularMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanIBL.cpp
+				Input/Input.cpp
+				Input/InputLayer.cpp
 				Math/AABB.cpp
 				Math/Frustum.cpp
 				Math/Mat4.cpp
@@ -125,6 +127,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiEntity.cpp
 				MonoScripting/Api/ApiScene.cpp
 				MonoScripting/Api/ApiResource.cpp
+				MonoScripting/Api/ApiInput.cpp
 				MonoScripting/Api/ApiEntityComponentsApi.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
