@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 public class Entity : InternalObject {
 
@@ -45,9 +46,7 @@ public class Entity : InternalObject {
         }
 
         return result;
-    }
-
-    
+    }    
 
     public AABB GetAABB(){
         return i_GetAABB(handle);
@@ -79,6 +78,24 @@ public class Entity : InternalObject {
 
     public void SetRotation(Quat rotation){
         i_SetRotation(handle, rotation);
+    }
+
+    int GetComponentID<T>(){
+        if(typeof(T).Equals(typeof(MaterialComponent)))
+            return 2;
+        if(typeof(T).Equals(typeof(MeshComponent)))
+            return 3;
+        return -1;
+    }
+
+    public void AddComponent<T>() {
+        int component_type = GetComponentID<T>();
+        WComponent(handle, component_type, 1);
+    }
+
+    public void RemoveComponent<T>() {
+        int component_type = GetComponentID<T>();
+        WComponent(handle, component_type, 2);
     }
 
     //INTERNALS
@@ -130,4 +147,7 @@ public class Entity : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern Quat i_SetRotation(ulong handle, Quat rotation);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void WComponent(ulong handle, int type, int action);
 }

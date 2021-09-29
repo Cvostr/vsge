@@ -1,6 +1,8 @@
 #include "ApiBindings.hpp"
-#include <Scene/Entity.hpp>
+#include "ApiEntity.hpp"
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
 
 using namespace VSGE;
 
@@ -75,6 +77,18 @@ static Quat GetRotation(void* ptr) {
 	return ((Entity*)ptr)->GetRotation();
 }
 
+void WComponent(void* ptr, int type, int action) {
+	Entity* ent = (Entity*)ptr;
+	switch (type) {
+	case ENTITY_COMPONENT_MATERIAL:
+		_WComponent<MaterialComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_MESH:
+		_WComponent<MeshComponent>(ent, action);
+		break;
+	}
+}
+
 void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetParent(ulong)", GetParent);
 	mono_add_internal_call("Entity::i_AddChild(ulong,ulong)", AddChild);
@@ -94,4 +108,7 @@ void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetScale(ulong)", GetScale);
 	mono_add_internal_call("Entity::i_SetRotation(ulong,Quat)", SetRotation);
 	mono_add_internal_call("Entity::i_GetRotation(ulong)", GetRotation);
+
+
+	mono_add_internal_call("Entity::WComponent(ulong,int,int)", WComponent);
 }
