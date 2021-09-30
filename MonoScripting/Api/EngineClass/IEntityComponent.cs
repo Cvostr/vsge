@@ -8,6 +8,10 @@ public class IEntityComponent : InternalObject {
     {
     }
 
+    public IEntityComponent()
+    {
+    }
+
     Entity GetEntity(){
         return new Entity(i_GetEntity(handle));
     }

@@ -14,19 +14,23 @@ public class LightSourceComponent : IEntityComponent {
     {
     }
 
+    public LightSourceComponent()
+    {
+    }
+
     public LightType GetLightType(){
         return i_GetType(handle);
     }
 
-    void SetLightType(LightType type){
+    public void SetLightType(LightType type){
         i_SetType(handle, type);
     }
 
-    Color GetColor(){
+    public Color GetColor(){
         return i_GetColor(handle);
     }
 
-    void SetColor(Color color){
+    public void SetColor(Color color){
         i_SetColor(handle, color);
     }
 

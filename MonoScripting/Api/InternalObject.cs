@@ -8,6 +8,10 @@ public class InternalObject{
         this.handle = handle;
     }
 
+    public InternalObject(){
+        this.handle = 0;
+    }
+
     public void SetHandle(ulong handle){
         this.handle = handle;
     }

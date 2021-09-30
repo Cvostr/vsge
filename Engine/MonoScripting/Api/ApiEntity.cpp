@@ -85,22 +85,22 @@ static void* WComponent(void* ptr, int type, int action) {
 	Entity* ent = (Entity*)ptr;
 	switch (type) {
 	case ENTITY_COMPONENT_MATERIAL:
-		_WComponent<MaterialComponent>(ent, action);
+		return _WComponent<MaterialComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_MESH:
-		_WComponent<MeshComponent>(ent, action);
+		return _WComponent<MeshComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_LIGHTSOURCE:
-		_WComponent<LightsourceComponent>(ent, action);
+		return _WComponent<LightsourceComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_AUDIO_SOURCE:
-		_WComponent<AudioSourceComponent>(ent, action);
+		return _WComponent<AudioSourceComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_RIGIDBODY:
-		_WComponent<RigidBodyComponent>(ent, action);
+		return _WComponent<RigidBodyComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_COLLIDER:
-		_WComponent<ColliderComponent>(ent, action);
+		return _WComponent<ColliderComponent>(ent, action);
 		break;
 	}
 	return nullptr;
