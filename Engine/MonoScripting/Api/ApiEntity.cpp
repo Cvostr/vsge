@@ -3,6 +3,10 @@
 #include <MonoScripting/MonoScriptingLayer.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
+#include <Scene/EntityComponents/LightComponent.hpp>
+#include <Scene/EntityComponents/AudioSourceComponent.hpp>
+#include <Scene/EntityComponents/RigidBodyComponent.hpp>
+#include <Scene/EntityComponents/ColliderComponent.hpp>
 
 using namespace VSGE;
 
@@ -77,7 +81,7 @@ static Quat GetRotation(void* ptr) {
 	return ((Entity*)ptr)->GetRotation();
 }
 
-void WComponent(void* ptr, int type, int action) {
+static void* WComponent(void* ptr, int type, int action) {
 	Entity* ent = (Entity*)ptr;
 	switch (type) {
 	case ENTITY_COMPONENT_MATERIAL:
@@ -86,7 +90,20 @@ void WComponent(void* ptr, int type, int action) {
 	case ENTITY_COMPONENT_MESH:
 		_WComponent<MeshComponent>(ent, action);
 		break;
+	case ENTITY_COMPONENT_LIGHTSOURCE:
+		_WComponent<LightsourceComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_AUDIO_SOURCE:
+		_WComponent<AudioSourceComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_RIGIDBODY:
+		_WComponent<RigidBodyComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_COLLIDER:
+		_WComponent<ColliderComponent>(ent, action);
+		break;
 	}
+	return nullptr;
 }
 
 void VSGE::BindEntityApi() {
@@ -108,7 +125,6 @@ void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetScale(ulong)", GetScale);
 	mono_add_internal_call("Entity::i_SetRotation(ulong,Quat)", SetRotation);
 	mono_add_internal_call("Entity::i_GetRotation(ulong)", GetRotation);
-
 
 	mono_add_internal_call("Entity::WComponent(ulong,int,int)", WComponent);
 }

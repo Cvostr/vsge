@@ -51,9 +51,6 @@ namespace VSGE {
 		float GetShadowsBias();
 		void SetShadowsBias(float bias);
 
-		void SetShadowCascadesCount(uint32 cascades);
-		uint32 GetShadowCascadesCount();
-
 		uint32 GetShadowPCF();
 		void SetShadowPCF(uint32 pcf);
 

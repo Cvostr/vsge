@@ -26,4 +26,6 @@ void VSGE::BindEntityComponentsApi() {
 	mono_add_internal_call("IEntityComponent::i_IsActive(ulong)", IsActive);
 	mono_add_internal_call("IEntityComponent::i_GetEntity(ulong)", GetEntity);
 	mono_add_internal_call("IEntityComponent::i_GetType(ulong)", GetType);
+
+	BindLightsource();
 }

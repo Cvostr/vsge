@@ -8,5 +8,9 @@ public class InternalObject{
         this.handle = handle;
     }
 
+    public void SetHandle(ulong handle){
+        this.handle = handle;
+    }
+
     protected ulong handle;
 }

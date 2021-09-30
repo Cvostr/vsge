@@ -80,22 +80,22 @@ public class Entity : InternalObject {
         i_SetRotation(handle, rotation);
     }
 
-    int GetComponentID<T>(){
-        if(typeof(T).Equals(typeof(MaterialComponent)))
-            return 2;
-        if(typeof(T).Equals(typeof(MeshComponent)))
-            return 3;
-        return -1;
-    }
-
     public void AddComponent<T>() {
-        int component_type = GetComponentID<T>();
+        int component_type = IEntityComponent.GetComponentID<T>();
         WComponent(handle, component_type, 1);
     }
 
     public void RemoveComponent<T>() {
-        int component_type = GetComponentID<T>();
+        int component_type = IEntityComponent.GetComponentID<T>();
         WComponent(handle, component_type, 2);
+    }
+
+    public T GetComponent<T>() where T : new() {
+        int component_type = IEntityComponent.GetComponentID<T>();
+        ulong ptr = WComponent(handle, component_type, 3);
+        T result = new T();
+        ((InternalObject)(object)result).SetHandle(ptr);
+        return result;
     }
 
     //INTERNALS
@@ -149,5 +149,5 @@ public class Entity : InternalObject {
     private static extern Quat i_SetRotation(ulong handle, Quat rotation);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    private static extern void WComponent(ulong handle, int type, int action);
+    private static extern ulong WComponent(ulong handle, int type, int action);
 }

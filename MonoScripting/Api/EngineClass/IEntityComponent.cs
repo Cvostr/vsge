@@ -24,6 +24,18 @@ public class IEntityComponent : InternalObject {
         return i_GetType(handle);
     }
 
+    public static int GetComponentID<T>(){
+        if(typeof(T).Equals(typeof(LightSourceComponent)))
+            return 1;
+        if(typeof(T).Equals(typeof(MaterialComponent)))
+            return 2;
+        if(typeof(T).Equals(typeof(MeshComponent)))
+            return 3;
+        if(typeof(T).Equals(typeof(AudioSourceComponent)))
+            return 6;
+        return -1;
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetEntity(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]

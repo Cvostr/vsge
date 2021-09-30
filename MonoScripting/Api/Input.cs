@@ -69,9 +69,9 @@ public enum KeyCode {
 
 public class Input{
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern Vec2 GetMouseCursorPos();
+    public static extern Vec2i GetMouseCursorPos();
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern Vec2 GetMouseCursorDelta();
+    public static extern Vec2i GetMouseCursorDelta();
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern bool IsMouseButtonPressed(MouseButton button);

@@ -7,4 +7,7 @@ namespace VSGE {
 	void BindResourcesApi();
 	void BindInputApi();
 	void BindEntityComponentsApi();
+
+
+	void BindLightsource();
 }

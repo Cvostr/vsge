@@ -3,11 +3,14 @@
 #include <Scene/Entity.hpp>
 
 template<typename T>
-void _WComponent(VSGE::Entity* ent, int action) {
+T* _WComponent(VSGE::Entity* ent, int action) {
 	if (action == 1) {
-		ent->AddComponent<T>();
+		return ent->AddComponent<T>();
 	}
 	else if (action == 2) {
 		ent->RemoveComponent<T>();
 	}
+	else if (action == 3)
+		return ent->GetComponent<T>();
+	return nullptr;
 }
