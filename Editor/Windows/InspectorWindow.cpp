@@ -104,7 +104,7 @@ void InspectorWindow::DrawComponent() {
 	}
 }
 
-void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script) {
+void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script, uint32 index) {
 
 	if (!script->IsActive()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
@@ -144,7 +144,7 @@ void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script) {
 		return;
 	}
 
-	DrawScriptPicker("Class name", script);
+	DrawScriptPicker("Class name", script, index);
 }
 
 void InspectorWindow::OnDrawWindow() {
@@ -221,7 +221,7 @@ void InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::TerrainComponent>();
 
 	for (uint32 script_i = 0; script_i < mShowingEntity->GetScriptsCount(); script_i++) {
-		DrawScript(mShowingEntity->GetScripts()[script_i]);
+		DrawScript(mShowingEntity->GetScripts()[script_i], script_i);
 	}
 
 

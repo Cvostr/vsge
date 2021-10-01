@@ -98,6 +98,10 @@ public class Entity : InternalObject {
         return result;
     }
 
+    public T GetScript<T>(){
+        return (T)((object)i_GetScript(handle, typeof(T).Name));
+    }
+
     //INTERNALS
 
     [MethodImpl(MethodImplOptions.InternalCall)]
@@ -150,4 +154,7 @@ public class Entity : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong WComponent(ulong handle, int type, int action);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern EntityScript i_GetScript(ulong handle, string type);
 }

@@ -28,4 +28,5 @@ void VSGE::BindEntityComponentsApi() {
 	mono_add_internal_call("IEntityComponent::i_GetType(ulong)", GetType);
 
 	BindLightsource();
+	BindAudiosource();
 }

@@ -10,4 +10,5 @@ namespace VSGE {
 
 
 	void BindLightsource();
+	void BindAudiosource();
 }

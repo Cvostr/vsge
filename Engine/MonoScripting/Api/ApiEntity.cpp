@@ -106,6 +106,17 @@ static void* WComponent(void* ptr, int type, int action) {
 	return nullptr;
 }
 
+MonoObject* GetScript(Entity* ptr, MonoString* script_class_name) {
+	std::string name = std::string(mono_string_to_utf8(script_class_name));
+	for (uint32 i = 0; i < ptr->GetScriptsCount(); i++) {
+		EntityScriptComponent* script = ptr->GetScripts()[i];
+		if (script->GetClassName() == name) {
+			return script->GetInstance()->GetObject();
+		}
+	}
+	return nullptr;
+}
+
 void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetParent(ulong)", GetParent);
 	mono_add_internal_call("Entity::i_AddChild(ulong,ulong)", AddChild);
@@ -127,4 +138,5 @@ void VSGE::BindEntityApi() {
 	mono_add_internal_call("Entity::i_GetRotation(ulong)", GetRotation);
 
 	mono_add_internal_call("Entity::WComponent(ulong,int,int)", WComponent);
+	mono_add_internal_call("Entity::i_GetScript(ulong,string)", GetScript);
 }

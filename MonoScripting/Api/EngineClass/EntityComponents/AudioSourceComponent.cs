@@ -17,6 +17,10 @@ public class AudioSourceComponent : IEntityComponent {
         i_Pause(handle);
     }
 
+    public bool IsPlaying(){
+        return i_IsPlaying(handle);
+    }
+
     public float GetVolume(){
         return i_GetVolume(handle);
     }
@@ -47,6 +51,8 @@ public class AudioSourceComponent : IEntityComponent {
     private static extern void i_Stop(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_Pause(ulong handle);
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern bool i_IsPlaying(ulong handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern float i_GetVolume(ulong handle);

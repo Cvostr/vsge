@@ -32,6 +32,7 @@ namespace VSGE {
 		const std::string& GetClassName();
 		MonoClass* GetClassDesc();
 		MonoMethod* GetUpdateMethod();
+		MonoObject* GetObject();
 		void SetValuePtrToField(const std::string field, void* value);
 		void* GetValueOfField(const std::string& field);
 

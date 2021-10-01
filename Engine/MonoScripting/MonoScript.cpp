@@ -89,7 +89,9 @@ const std::string& MonoScriptInstance::GetClassName() {
 MonoClass* MonoScriptInstance::GetClassDesc() {
 	return _mono_class_desc;
 }
-
+MonoObject* MonoScriptInstance::GetObject() {
+    return _mono_class_instance;
+}
 MonoMethod* MonoScriptInstance::GetUpdateMethod() {
 	return _update_method;
 }

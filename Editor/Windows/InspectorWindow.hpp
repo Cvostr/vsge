@@ -46,7 +46,7 @@ namespace VSGEditor {
 		template<class T>
 		void DrawComponent();
 
-		void DrawScript(VSGE::EntityScriptComponent* script);
+		void DrawScript(VSGE::EntityScriptComponent* script, uint32 index);
 
 		InspectorWindow() :
 			mShowingEntity(nullptr),

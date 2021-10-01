@@ -267,6 +267,11 @@ void Entity::CallOnStart() {
 
 	for (auto script : _scripts) {
 		if (script->IsActive())
+			script->Init();
+	}
+
+	for (auto script : _scripts) {
+		if (script->IsActive())
 			script->OnStart();
 	}
 }

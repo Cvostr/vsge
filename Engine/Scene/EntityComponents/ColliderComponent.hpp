@@ -22,6 +22,9 @@ namespace VSGE {
 
 		Vec3 _center;
 		Vec3 _size;
+
+		btTransform GetEntityTransform();
+		btCollisionShape* GetBtShape();
 	public:
 		ColliderComponent();
 
@@ -36,10 +39,8 @@ namespace VSGE {
 		const Vec3& GetCenter();
 
 		void SetCenter(const Vec3& center);
-
-		btTransform GetEntityTransform();
+		
 		void AddToWorld();
-		btCollisionShape* GetBtShape();
 
 		void OnUpdate();
 		void OnDestroy();

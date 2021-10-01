@@ -18,10 +18,17 @@ const std::string& EntityScriptComponent::GetClassName() {
 	return _class_name;
 }
 
-void EntityScriptComponent::OnStart() {
+MonoScriptInstance* EntityScriptComponent::GetInstance() {
+	return _script_instance;
+}
+
+void EntityScriptComponent::Init() {
 	_script_instance->CreateClassByName(_class_name);
 	_script_instance->CallDefaultConstructor();
 	_script_instance->SetValuePtrToField("entity_ptr", &(void*)_entity);
+}
+
+void EntityScriptComponent::OnStart() {
 	_script_instance->CallOnStart();
 }
 
