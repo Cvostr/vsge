@@ -131,6 +131,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiEntityComponentsApi.cpp
 				MonoScripting/Api/EntityComponents/LightsourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AudioSourceComponent.cpp
+				MonoScripting/Api/EntityComponents/RigidBodyComponent.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				System/Shell.cpp

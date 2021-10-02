@@ -31,6 +31,10 @@ public class Resource : InternalObject {
     {
     }
 
+    Resource(string name){
+        handle = i_GetPointerByName(name);
+    }
+
     public ResourceState GetState(){
         return i_GetState(handle);
     }
@@ -42,6 +46,9 @@ public class Resource : InternalObject {
     public string GetName(){
         return i_GetName(handle);
     }
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_GetPointerByName(string name);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern string i_GetName(ulong handle);
