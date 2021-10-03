@@ -22,7 +22,7 @@ public class AudioSourceComponent : IEntityComponent {
     }
 
     void SetAudioClip(Resource resource){
-        i_SetAudioClip(handle, resource.handle);
+        i_SetAudioClip(handle, resource.GetHandle());
     }
 
     public float GetVolume(){

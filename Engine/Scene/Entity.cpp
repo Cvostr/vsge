@@ -298,8 +298,20 @@ void Entity::CallOnPreRender() {
 			component->OnPreRender();
 	}
 }
-void Entity::CallOnTrigger(Entity* entity) {
-
+void Entity::CallOnTriggerStay(Entity* entity) {
+	for (auto script : _scripts) {
+		script->OnTriggerStay(entity);
+	}
+}
+void Entity::CallOnTriggerEnter(Entity* entity) {
+	for (auto script : _scripts) {
+		script->OnTriggerEnter(entity);
+	}
+}
+void Entity::CallOnTriggerExit(Entity* entity) {
+	for (auto script : _scripts) {
+		script->OnTriggerExit(entity);
+	}
 }
 
 Vec3 Entity::GetAbsolutePosition() const {

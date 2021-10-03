@@ -39,3 +39,18 @@ void EntityScriptComponent::OnStop() {
 void EntityScriptComponent::OnUpdate() {
 	_script_instance->CallOnUpdate();
 }
+
+void EntityScriptComponent::OnTriggerStay(Entity* entity) {
+	if(IsActive())
+		_script_instance->CallOnTriggerStay(entity);
+}
+
+void EntityScriptComponent::OnTriggerEnter(Entity* entity) {
+	if (IsActive())
+		_script_instance->CallOnTriggerEnter(entity);
+}
+
+void EntityScriptComponent::OnTriggerExit(Entity* entity) {
+	if (IsActive())
+		_script_instance->CallOnTriggerExit(entity);
+}

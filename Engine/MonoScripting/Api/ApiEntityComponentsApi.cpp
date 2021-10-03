@@ -30,4 +30,5 @@ void VSGE::BindEntityComponentsApi() {
 	BindLightsource();
 	BindAudiosource();
 	BindRigidbody();
+	BindCollider();
 }

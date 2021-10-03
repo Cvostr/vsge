@@ -16,5 +16,9 @@ public class InternalObject{
         this.handle = handle;
     }
 
+    public ulong GetHandle(){
+        return handle;
+    }
+
     protected ulong handle;
 }

@@ -18,7 +18,10 @@ namespace VSGE {
 		void SetClassName(const std::string& class_name);
 
 		const std::string& GetClassName();
-
+		/// <summary>
+		/// Get instance of mono script
+		/// </summary>
+		/// <returns></returns>
 		MonoScriptInstance* GetInstance();
 		/// <summary>
 		/// Creates mono object and call constructor
@@ -36,6 +39,12 @@ namespace VSGE {
 		/// Calls OnUpdate() on script class
 		/// </summary>
 		void OnUpdate();
+
+		void OnTriggerStay(Entity* entity);
+
+		void OnTriggerEnter(Entity* entity);
+
+		void OnTriggerExit(Entity* entity);
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_SCRIPT, "Script")
 	};

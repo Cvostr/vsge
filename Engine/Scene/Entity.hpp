@@ -350,7 +350,9 @@ namespace VSGE {
 		void CallOnUpdate();
 		void CallOnStop();
 		void CallOnPreRender();
-		void CallOnTrigger(Entity* entity);
+		void CallOnTriggerStay(Entity* entity);
+		void CallOnTriggerEnter(Entity* entity);
+		void CallOnTriggerExit(Entity* entity);
 
 		//-----SKINNING----
 		Entity* GetRootSkinningEntity();

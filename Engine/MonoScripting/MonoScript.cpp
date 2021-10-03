@@ -76,6 +76,16 @@ void MonoScriptInstance::CallOnUpdate() {
         CallMethod(_update_method, nullptr);
 }
 
+void MonoScriptInstance::CallOnTriggerStay(void* entity) {
+
+}
+void MonoScriptInstance::CallOnTriggerEnter(void* entity) {
+
+}
+void MonoScriptInstance::CallOnTriggerExit(void* entity) {
+
+}
+
 void MonoScriptInstance::Release() {
     if (_mono_class_instance) {
         mono_free(_mono_class_instance);

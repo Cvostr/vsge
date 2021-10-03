@@ -138,7 +138,7 @@ void ColliderComponent::OnUpdate() {
 		for (uint32 i = 0; i < overlaping; i++) {
 			btCollisionObject* coll_obj = _trigger->getOverlappingObject(i);
 			Entity* entity = (Entity*)coll_obj->getUserPointer();
-			_entity->CallOnTrigger(entity);
+			_entity->CallOnTriggerStay(entity);
 		}
 	}
 }
@@ -159,11 +159,17 @@ void ColliderComponent::OnActivate() {
 	if (_rigidBody) {
 		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
 	}
+	if (_trigger) {
+		PhysicsLayer::Get()->AddCollisionObject(_trigger);
+	}
 }
 
 void ColliderComponent::OnDeactivate() {
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	}
+	if (_trigger) {
+		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
 	}
 }
 
@@ -179,6 +185,7 @@ bool ColliderComponent::IsTrigger() {
 }
 
 void ColliderComponent::Serialize(YAML::Emitter& e) {
+	e << Key << "trigger" << Value << _is_trigger;
 	e << Key << "shape" << Value << _shape;
 	e << Key << "center" << Value << _center;
 	e << Key << "size" << Value << _size;
@@ -210,6 +217,7 @@ struct YAML::convert<Vec3>
 };
 
 void ColliderComponent::Deserialize(YAML::Node& entity) {
+	_is_trigger = entity["trigger"].as<bool>();
 	_shape = (ColliderShape)entity["shape"].as<int>();
 	_center = entity["center"].as<Vec3>();
 	_size = entity["size"].as<Vec3>();

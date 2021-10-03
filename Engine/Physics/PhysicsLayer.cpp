@@ -6,6 +6,7 @@
 
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+#include <bullet/BulletCollision/NarrowPhaseCollision/btRaycastCallback.h>
 
 using namespace VSGE;
 
@@ -95,4 +96,25 @@ void PhysicsLayer::RemoveCollisionObject(btCollisionObject* object) {
         return;
 
     _world->removeCollisionObject(object);
+}
+
+Entity* PhysicsLayer::RayTestFirstEntity(const Vec3& position, const Vec3& direction, float far) {
+    Vec3 dir = direction.GetNormalized();
+    btVector3 from = btVector3(position.x, position.y, position.z);
+    btVector3 to = btVector3(dir.x * far, dir.y * far, dir.z * far) + from;
+
+    btCollisionWorld::ClosestRayResultCallback  allResults(from, to);
+    allResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
+
+    _world->rayTest(from, to, allResults);
+    if (allResults.hasHit())
+        return (Entity*)(allResults.m_collisionObject->getUserPointer());
+    else
+        return nullptr;
+}
+
+void PhysicsLayer::RayTest(const Vec3& position, const Vec3& direction, btCollisionWorld::RayResultCallback& callback) {
+    btVector3 bvpos = btVector3(position.x, position.y, position.z);
+    btVector3 bvdir = btVector3(direction.x, direction.y, direction.z);
+    _world->rayTest(bvpos, bvdir, callback);
 }

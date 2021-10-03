@@ -7,6 +7,14 @@ public class ColliderComponent : IEntityComponent {
     {
     }
 
+    bool IsTrigger(){
+        return i_IsTrigger(handle);
+    }
+
+    void SetTrigger(bool trigger){
+        i_SetTrigger(handle, trigger);
+    }
+
     Vec3 GetSize(){
         return i_GetSize(handle);
     }
@@ -23,6 +31,10 @@ public class ColliderComponent : IEntityComponent {
         i_SetCenter(handle, center);
     }
 
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern bool i_IsTrigger(ulong handle);
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetTrigger(ulong handle, bool trigger);
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern Vec3 i_GetSize(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
