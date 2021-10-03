@@ -12,8 +12,10 @@ using namespace VSGE;
 ColliderComponent::ColliderComponent() :
 	_shape(COLLIDER_SHAPE_CUBE),
 	_rigidBody(nullptr),
+	_trigger(nullptr),
 	_collision_shape(nullptr),
-	_size(1, 1, 1)
+	_size(1, 1, 1),
+	_is_trigger(false)
 {
 }
 
@@ -48,6 +50,8 @@ void ColliderComponent::AddToWorld() {
 	SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
+	//release old ghost
+	SAFE_RELEASE(_trigger);
 	//Create new collision shape
 	_collision_shape = GetBtShape();
 	//check new shape
@@ -56,18 +60,26 @@ void ColliderComponent::AddToWorld() {
 		return;
 
 	btTransform startTransform = GetEntityTransform();
-	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
-
-	// Info
-	btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, motionState, _collision_shape, local_intertia);
-
-	_rigidBody = new btRigidBody(constructionInfo);
-	_rigidBody->setUserPointer(_entity);
-	//apply gravity
-	_rigidBody->setGravity(btVector3(0, 0, 0));
-	//add rigidbody to world
-	PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+	if (!_is_trigger) {
+		//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+		btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
+		//rigidbody info
+		btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, motionState, _collision_shape, local_intertia);
+		_rigidBody = new btRigidBody(constructionInfo);
+		_rigidBody->setUserPointer(_entity);
+		//apply gravity
+		_rigidBody->setGravity(btVector3(0, 0, 0));
+		//add rigidbody to world
+		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+	}
+	else {
+		_trigger = new btGhostObject();
+		_trigger->setCollisionFlags(_trigger->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+		_trigger->setCollisionShape(_collision_shape);
+		_trigger->setUserPointer(_entity);
+		_trigger->setWorldTransform(startTransform);
+		PhysicsLayer::Get()->AddCollisionObject(_trigger);
+	}
 }
 
 btCollisionShape* ColliderComponent::GetBtShape() {
@@ -110,12 +122,24 @@ btTransform ColliderComponent::GetEntityTransform() {
 }
 
 void ColliderComponent::OnUpdate() {
-	if (!_rigidBody)
+	if (!_rigidBody && !_trigger)
 		AddToWorld();
 
 	if (_rigidBody) {
 		btTransform transform = GetEntityTransform();
 		_rigidBody->setWorldTransform(transform);
+	}
+
+	if (_trigger) {
+		btTransform transform = GetEntityTransform();
+		_trigger->setWorldTransform(transform);
+
+		uint32 overlaping = _trigger->getNumOverlappingObjects();
+		for (uint32 i = 0; i < overlaping; i++) {
+			btCollisionObject* coll_obj = _trigger->getOverlappingObject(i);
+			Entity* entity = (Entity*)coll_obj->getUserPointer();
+			_entity->CallOnTrigger(entity);
+		}
 	}
 }
 
@@ -123,6 +147,10 @@ void ColliderComponent::OnDestroy() {
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
 		SAFE_RELEASE(_rigidBody)
+	}
+	if (_trigger) {
+		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
+		SAFE_RELEASE(_trigger)
 	}
 	SAFE_RELEASE(_collision_shape)
 }
@@ -137,6 +165,17 @@ void ColliderComponent::OnDeactivate() {
 	if (_rigidBody) {
 		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
 	}
+}
+
+void ColliderComponent::SetTrigger(bool trigger) {
+	if (_is_trigger != trigger) {
+		_is_trigger = trigger;
+		AddToWorld();
+	}
+}
+
+bool ColliderComponent::IsTrigger() {
+	return _is_trigger;
 }
 
 void ColliderComponent::Serialize(YAML::Emitter& e) {
@@ -177,11 +216,13 @@ void ColliderComponent::Deserialize(YAML::Node& entity) {
 }
 
 void ColliderComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(_is_trigger);
 	serializer.Serialize(_shape);
 	serializer.Serialize(_center);
 	serializer.Serialize(_size);
 }
 void ColliderComponent::Deserialize(ByteSolver& solver) {
+	_is_trigger = solver.GetValue<bool>();
 	_shape = solver.GetValue<ColliderShape>();
 	_center = solver.GetValue<Vec3>();
 	_size = solver.GetValue<Vec3>();

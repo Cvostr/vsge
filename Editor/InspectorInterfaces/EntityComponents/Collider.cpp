@@ -23,6 +23,10 @@ void VSGEditor::DrawColliderComponent(VSGE::ColliderComponent* clc) {
 		ImGui::EndCombo();
 	}
 
+	bool is_trigger = clc->IsTrigger();
+	ImGui::Checkbox("Is trigger", &is_trigger);
+	clc->SetTrigger(is_trigger);
+
 	Vec3 center = clc->GetCenter();
 	Vec3 size = clc->GetSize();
 

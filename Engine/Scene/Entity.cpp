@@ -298,6 +298,9 @@ void Entity::CallOnPreRender() {
 			component->OnPreRender();
 	}
 }
+void Entity::CallOnTrigger(Entity* entity) {
+
+}
 
 Vec3 Entity::GetAbsolutePosition() const {
 	return _worldTransform.GetPosition();

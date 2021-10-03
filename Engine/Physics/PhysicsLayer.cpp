@@ -32,6 +32,9 @@ PhysicsLayer::PhysicsLayer() {
     _world_info->water_normal = btVector3(0, 0, 0);
     _world_info->m_gravity = btVector3(_gravity.x, _gravity.y, _gravity.z);
 
+    _ghost_callback = new btGhostPairCallback();
+    _world->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(_ghost_callback);
+
     Logger::Log() << "Physics initialized\n";
 }
 
@@ -58,26 +61,38 @@ void PhysicsLayer::OnDetach() {
 }
 
 void PhysicsLayer::AddRigidbody(btRigidBody* rigidbody) {
-    if (!_world && rigidbody)
+    if (!_world || !rigidbody)
         return;
 
     _world->addRigidBody(rigidbody);
 }
 void PhysicsLayer::RemoveRigidbody(btRigidBody* rigidbody) {
-    if (!_world && rigidbody)
+    if (!_world || !rigidbody)
         return;
 
     _world->removeRigidBody(rigidbody);
 }
 void PhysicsLayer::AddSoftBody(btSoftBody* softbody) {
-    if (!_world && softbody)
+    if (!_world || !softbody)
         return;
 
     _world->addSoftBody(softbody);
 }
 void PhysicsLayer::RemoveSoftBody(btSoftBody* softbody) {
-    if (!_world && softbody)
+    if (!_world || !softbody)
         return;
 
     _world->removeSoftBody(softbody);
+}
+void PhysicsLayer::AddCollisionObject(btCollisionObject* object) {
+    if (!_world || !object)
+        return;
+
+    _world->addCollisionObject(object);
+}
+void PhysicsLayer::RemoveCollisionObject(btCollisionObject* object) {
+    if (!_world || !object)
+        return;
+
+    _world->removeCollisionObject(object);
 }

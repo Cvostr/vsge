@@ -141,6 +141,10 @@ void AudioSourceComponent::Stop() {
 	_paused = false;
 }
 
+void AudioSourceComponent::SetAudioClip(AudioClipResource* resource) {
+	_audioResource.SetResource(resource);
+}
+
 void AudioSourceComponent::OnPreRender() {
 	if (_playing_queued) {
 		//playing queued

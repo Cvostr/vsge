@@ -34,6 +34,17 @@ static void SetPitch(AudioSourceComponent* ptr, float pitch) {
 	ptr->SetPitch(pitch);
 }
 
+static bool IsLooping(AudioSourceComponent* ptr) {
+	return ptr->IsLoop();
+}
+static void SetLooping(AudioSourceComponent* ptr, bool loop) {
+	ptr->SetLoop(loop);
+}
+
+static void SetAudioClip(AudioSourceComponent* ptr, Resource* res) {
+	ptr->SetAudioClip((AudioClipResource*)res);
+}
+
 void VSGE::BindAudiosource() {
 	mono_add_internal_call("AudioSourceComponent::i_Play(ulong)", Play);
 	mono_add_internal_call("AudioSourceComponent::i_Pause(ulong)", Pause);
@@ -45,4 +56,9 @@ void VSGE::BindAudiosource() {
 
 	mono_add_internal_call("AudioSourceComponent::i_GetPitch(ulong)", GetPitch);
 	mono_add_internal_call("AudioSourceComponent::i_SetPitch(ulong,float)", SetPitch);
+
+	mono_add_internal_call("AudioSourceComponent::i_IsLooping(ulong)", IsLooping);
+	mono_add_internal_call("AudioSourceComponent::i_SetLooping(ulong,bool)", SetLooping);
+
+	mono_add_internal_call("AudioSourceComponent::i_SetAudioClip(ulong,ulong)", SetLooping);
 }

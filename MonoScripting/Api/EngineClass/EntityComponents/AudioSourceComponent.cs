@@ -21,6 +21,10 @@ public class AudioSourceComponent : IEntityComponent {
         return i_IsPlaying(handle);
     }
 
+    void SetAudioClip(Resource resource){
+        i_SetAudioClip(handle, resource.handle);
+    }
+
     public float GetVolume(){
         return i_GetVolume(handle);
     }
@@ -53,6 +57,9 @@ public class AudioSourceComponent : IEntityComponent {
     private static extern void i_Pause(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern bool i_IsPlaying(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetAudioClip(ulong handle, ulong res_handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern float i_GetVolume(ulong handle);

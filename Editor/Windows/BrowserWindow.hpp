@@ -46,9 +46,16 @@ namespace VSGEditor {
 		std::string _rootDir;
 
 		int _itemsSize;
-		
-		void CreateResource(VSGE::ResourceType type);
+
+		FileEntry* renaming_entry;
+		std::string rename_file_name;
+		bool openRenameDialog;
+
+		VSGE::ResourceType new_resource_type;
+
 		void RemoveFile(const std::string& path);
+		void RenameFileDialog(FileEntry* Entry);
+		void CreateResourceDialog();
 	public:
 
 		FileBrowserWindow(std::string RootDir);

@@ -3,6 +3,7 @@
 #include "../IEntityComponent.hpp"
 #include <Math/Vec3.hpp>
 #include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
+#include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 
 namespace VSGE {
 
@@ -18,10 +19,12 @@ namespace VSGE {
 		ColliderShape _shape;
 
 		btRigidBody* _rigidBody;
+		btGhostObject* _trigger;
 		btCollisionShape* _collision_shape;
 
 		Vec3 _center;
 		Vec3 _size;
+		bool _is_trigger;
 
 		btTransform GetEntityTransform();
 		btCollisionShape* GetBtShape();
@@ -39,6 +42,10 @@ namespace VSGE {
 		const Vec3& GetCenter();
 
 		void SetCenter(const Vec3& center);
+
+		void SetTrigger(bool trigger);
+
+		bool IsTrigger();
 		
 		void AddToWorld();
 

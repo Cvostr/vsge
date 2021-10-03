@@ -7,6 +7,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletSoftBody/btSoftBodyInternals.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+#include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 
 namespace VSGE {
 	class PhysicsLayer : public IApplicationLayer {
@@ -17,6 +18,7 @@ namespace VSGE {
 		btDefaultCollisionConfiguration* _collision_configuration;
 		btSoftRigidDynamicsWorld* _world;
 		btSoftBodyWorldInfo* _world_info;
+		btGhostPairCallback* _ghost_callback;
 
 		Vec3 _gravity;
 
@@ -45,5 +47,8 @@ namespace VSGE {
 
 		void AddSoftBody(btSoftBody* softbody);
 		void RemoveSoftBody(btSoftBody* softbody);
+
+		void AddCollisionObject(btCollisionObject* object);
+		void RemoveCollisionObject(btCollisionObject* object);
 	};
 }
