@@ -133,6 +133,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/AudioSourceComponent.cpp
 				MonoScripting/Api/EntityComponents/RigidBodyComponent.cpp
 				MonoScripting/Api/EntityComponents/ColliderComponent.cpp
+				MonoScripting/Api/EntityComponents/CameraComponent.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				System/Shell.cpp

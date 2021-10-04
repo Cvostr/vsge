@@ -13,4 +13,5 @@ namespace VSGE {
 	void BindAudiosource();
 	void BindRigidbody();
 	void BindCollider();
+	void BindCamera();
 }
