@@ -91,6 +91,8 @@ void OpenFileDialog(FileDialogDesc* desc, std::string& result){
     ofn.hwndOwner = (HWND)win->GetHWND();
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrTitle = dialog_title.c_str();
+    //ofn.lpstrFile = (char*)desc->base_file_name.c_str();
 
     std::string filter;
     WIN32_CreateFileExtensions(desc, filter);

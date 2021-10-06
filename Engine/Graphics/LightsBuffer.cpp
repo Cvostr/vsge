@@ -33,7 +33,11 @@ void LightsBuffer::UpdateGpuBuffer() {
 }
 
 void LightsBuffer::SetLightsCount(uint32 lights_count) {
-	memcpy(_cpu_buffer, &lights_count, sizeof(uint32));
+	memcpy(_cpu_buffer + 12, &lights_count, sizeof(uint32));
+}
+
+void LightsBuffer::SetAmbientColor(const Color& color) {
+	memcpy(_cpu_buffer, &color.r, 12);
 }
 
 void LightsBuffer::SetLight(uint32 light_index, LightsourceComponent* light) {

@@ -11,6 +11,7 @@ file(GLOB_RECURSE HEADER_FILES "*.hpp")
 set(SRC_FILES 
                 Base/ImguiHelper.cpp
                 Base/ImGuiWindow.cpp
+                Base/Project.cpp
                 EditorLayers/EditorLayer.cpp
                 EditorLayers/EditorSettingsLayer.cpp
                 EditorLayers/ImGuiLayer.cpp
@@ -47,6 +48,7 @@ set(SRC_FILES
                 Windows/EditorSettingsWindow.cpp
                 Windows/InspectorWindow.cpp
                 Windows/ProjectSettingsWindow.cpp
+                Windows/CreateProjectWindow.cpp
                 Windows/EnvironmentSettingsWindow.cpp
                 Windows/ResourcePickWindow.cpp
                 Windows/SceneViewWindow.cpp

@@ -32,7 +32,7 @@ namespace VSGEditor {
 
 		void UpdateWindowData();
 
-		bool Draw(const std::string& title, ImGuiWindowFlags_ flags = ImGuiWindowFlags_::ImGuiWindowFlags_None);
+		bool Draw(const std::string& title, ImGuiWindowFlags flags = ImGuiWindowFlags_::ImGuiWindowFlags_None);
 
 		bool IsHidden();
 

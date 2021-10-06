@@ -9,6 +9,7 @@
 #include <Core/Logger.hpp>
 #include <System/FileWatcher.hpp>
 #include <MonoScripting/MonoScriptCompile.hpp>
+#include <Base/Project.hpp>
 
 namespace VSGEditor {
 
@@ -46,6 +47,7 @@ namespace VSGEditor {
 		VSGE::Entity* _pickedEntity;
 		int _transformMode;
 		EditorCameraMode _camera_mode;
+		Project _project;
 	public:
 
 		EditorLayer() {
@@ -116,7 +118,7 @@ namespace VSGEditor {
 			_camera_mode = mode;
 		}
 
-		bool OpenProjectDirectory(const std::string& dir_path);
+		bool OpenProject(const Project& project);
 
 		void OnAttach();
 		void OnUpdate();

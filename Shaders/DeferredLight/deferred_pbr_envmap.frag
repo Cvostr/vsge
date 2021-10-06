@@ -34,6 +34,7 @@ layout (std140, binding = 1) uniform CamMatrices{
 };
 
 layout (std140, binding = 2) uniform Lights{
+    vec3 ambient_light;
     int lights_count;
     Light lights[200];
 };

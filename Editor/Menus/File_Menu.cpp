@@ -45,7 +45,7 @@ void File_Menu::OnDrawMenu() {
 		}
 		if (ImGui::MenuItem("Import", NULL)) {
 			FileDialogDesc desc;
-			desc.dialog_title = "test";
+			desc.dialog_title = "Import resource";
 			desc.extensions = {{"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}};
 			std::string path;
 			OpenFileDialog(&desc, path);

@@ -56,6 +56,7 @@ void VkMaterialsThumbnails::Create() {
     _lights_buffer->Create();
     _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0, 0, 0), Vec3(0.4, 0.3, -0.7), Color());
     _lights_buffer->SetLightsCount(1);
+    _lights_buffer->SetAmbientColor(Color());
     _lights_buffer->UpdateGpuBuffer();
 
     _camera = new Camera;

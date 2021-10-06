@@ -281,13 +281,17 @@ void VulkanRenderer::DestroyRenderer() {
 void VulkanRenderer::StoreWorldObjects() {
 	CreateRenderList();
 
-	//send lights to gpu buffer
-	_lights_buffer->SetLightsCount((uint32)this->_lightsources.size());
-	for (uint32 light_i = 0; light_i < _lightsources.size(); light_i++) {
-		LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
-		_lights_buffer->SetLight(light_i, light);
+	if (mScene) {
+		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
+		//send lights to gpu buffer
+		_lights_buffer->SetLightsCount((uint32)this->_lightsources.size());
+		_lights_buffer->SetAmbientColor(env_settings.GetAmbientColor());
+		for (uint32 light_i = 0; light_i < _lightsources.size(); light_i++) {
+			LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
+			_lights_buffer->SetLight(light_i, light);
+		}
+		_lights_buffer->UpdateGpuBuffer();
 	}
-	_lights_buffer->UpdateGpuBuffer();
 
 	Mat4* transforms = new Mat4[_entitiesToRender.size() * 4];
 	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / 64];

@@ -16,7 +16,7 @@ void EditorWindow::UpdateWindowData() {
 	_inFocus = ImGui::IsWindowFocused();
 }
 
-bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags_ flags) {
+bool EditorWindow::Draw(const std::string& title, ImGuiWindowFlags flags) {
 	if (_showing) {
 
 		if (_queuedResize) {

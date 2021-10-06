@@ -63,6 +63,7 @@ Application* VSGEMain() {
 	ResourcePickerWindow* rpw = new ResourcePickerWindow;
 	rpw->Hide();
 	app->GetLayer<ImGuiLayer>()->AddWindow(rpw);
+
 	app->GetLayer<ImGuiLayer>()->AddWindow(new StartWindow);
 
 	app->GetLayer<SceneLayer>()->SetWorkingScene(app->GetLayer<EditorLayer>()->GetScene());

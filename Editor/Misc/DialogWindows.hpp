@@ -16,6 +16,7 @@ struct FileExtensionDesc{
 struct FileDialogDesc{
     std::string dialog_title;
     std::vector<FileExtensionDesc> extensions;
+    std::string base_file_name;
 
     std::string accept_btn_text;
     std::string cancel_btn_text;

@@ -37,6 +37,7 @@ layout (std140, binding = 1) uniform CamMatrices{
 };
 
 layout (std140, binding = 2) uniform Lights{
+    vec3 ambient_light;
     int lights_count;
     Light lights[200];
 };
@@ -216,7 +217,7 @@ void main() {
         
         float cosLo = max(0.0, dot(normal, Lo));
         vec3 ambient = CalculateIBL(normal, F0, Lo, cosLo, roughness, metallic, albedo);
-        color += ambient;
+        color += ambient * ambient_light;
 
         color = color / (color + vec3(1.0));
         color = pow(color, vec3(1.0/2.2)); 

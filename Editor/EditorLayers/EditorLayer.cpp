@@ -48,28 +48,15 @@ void EditorLayer::OnDetach() {
 
 }
 
-bool EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
-	if (!fs::is_directory(dir_path)) {
-		MessageDialogDesc desc;
-		desc.dialog_title = "Error opening project";
-		desc.message = "Directory " + dir_path + " doesn't exist!";
-		desc.buttons = MESSAGE_DIALOG_BTN_OK;
-		desc.dialog_type = MESSAGE_DIALOG_TYPE_ERROR;
-		DialogUserAction action;
-		MessageDialog(&desc, action);
-		if (action == DIALOG_USER_ACTION_ACCEPT) {
-			return true;
-		}
-	}
+bool EditorLayer::OpenProject(const Project& project) {
 
-	mResourcesWatcher->WatchDirectory(dir_path);
-	ResourceCache::Get()->AddResourceDir(dir_path);
-	
+	mResourcesWatcher->WatchDirectory(project.GetAssetsDirectory());
+	ResourceCache::Get()->AddResourceDir(project.GetAssetsDirectory());
 
 	ImGuiLayer::Get()->AddWindow(new SceneWindow);
 	ImGuiLayer::Get()->AddWindow(new InspectorWindow);
 	ImGuiLayer::Get()->AddWindow(new ConsoleWindow);
-	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(dir_path));
+	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(project.GetAssetsDirectory()));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
 
@@ -92,7 +79,7 @@ bool EditorLayer::OpenProjectDirectory(const std::string& dir_path) {
 	VulkanRenderer::Get()->SetScene(this->mScene);
 
 	MonoScriptStorage::Get()->ClearScripts();
-	MonoScriptStorage::Get()->BuildScriptList(dir_path);
+	MonoScriptStorage::Get()->BuildScriptList(project.GetAssetsDirectory());
 	MonoScriptStorage::Get()->Compile();
 
 	return false;
