@@ -191,7 +191,6 @@ void RigidBodyComponent::AddToWorld() {
 
 	_rigidBody = new btRigidBody(constructionInfo);
 	_rigidBody->setUserPointer(_entity);
-
 	_rigidBody->setGravity(btVector3(_gravity.x, _gravity.y, _gravity.z));
 
 	PhysicsLayer::Get()->AddRigidbody(_rigidBody);

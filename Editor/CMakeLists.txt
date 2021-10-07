@@ -30,6 +30,7 @@ set(SRC_FILES
                 InspectorInterfaces/EntityComponents/ParticleEmitter.cpp
                 InspectorInterfaces/EntityComponents/RigidBody.cpp
                 InspectorInterfaces/EntityComponents/Terrain.cpp
+                InspectorInterfaces/EntityComponents/CharacterController.cpp
                 InspectorInterfaces/ResourceTypes/AudioResource.cpp
                 InspectorInterfaces/ResourceTypes/TextureResource.cpp
                 Menus/File_Menu.cpp

@@ -16,6 +16,7 @@
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/Camera.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
+#include <Scene/EntityComponents/CharacterControllerComponent.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
@@ -100,6 +101,9 @@ void InspectorWindow::DrawComponent() {
 		}
 		if (typeid(T) == typeid(TerrainComponent)) {
 			DrawTerrainComponent((TerrainComponent*)component);
+		}
+		if (typeid(T) == typeid(CharacterControllerComponent)) {
+			DrawCharControllerComponent((CharacterControllerComponent*)component);
 		}
 	}
 }
@@ -219,6 +223,7 @@ void InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::Camera>();
 	DrawComponent<VSGE::AudioListenerComponent>();
 	DrawComponent<VSGE::TerrainComponent>();
+	DrawComponent<VSGE::CharacterControllerComponent>();
 
 	for (uint32 script_i = 0; script_i < mShowingEntity->GetScriptsCount(); script_i++) {
 		DrawScript(mShowingEntity->GetScripts()[script_i], script_i);
@@ -246,6 +251,7 @@ void InspectorWindow::DrawEntityContents() {
 		AddComponentButton<VSGE::RigidBodyComponent>();
 		AddComponentButton<VSGE::Camera>();
 		AddComponentButton<VSGE::TerrainComponent>();
+		AddComponentButton<VSGE::CharacterControllerComponent>();
 
 		AddScriptButton();
 

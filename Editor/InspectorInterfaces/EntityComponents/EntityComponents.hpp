@@ -11,6 +11,7 @@
 #include <Scene/EntityComponents/EntityScriptComponent.hpp>
 #include <Scene/Camera.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
+#include <Scene/EntityComponents/CharacterControllerComponent.hpp>
 
 #define TERRAIN_EDITOR_EDIT_MODE_HEIGHT 1
 #define TERRAIN_EDITOR_EDIT_MODE_TEXTURES 2
@@ -27,6 +28,7 @@ namespace VSGEditor {
 	void DrawColliderComponent(VSGE::ColliderComponent* clc);
 	void DrawScriptComponent(VSGE::EntityScriptComponent* esc);
 	void DrawCameraComponent(VSGE::Camera* cac);
+	void DrawCharControllerComponent(VSGE::CharacterControllerComponent* ccc);
 
 	void DrawTerrainComponent(VSGE::TerrainComponent* tc);
 	int GetTerrainEditorMode();

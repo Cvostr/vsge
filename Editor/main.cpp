@@ -13,6 +13,7 @@
 
 #include "Windows/ResourcePickWindow.hpp"
 #include "Windows/StartWindow.hpp"
+#include <Windows/CreateProjectWindow.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
 
 #include <Resources/DefaultResources.hpp>
@@ -43,12 +44,8 @@ Application* VSGEMain() {
 	app->AddLayer(new ImGuiLayer);
 	app->AddLayer(new PhysicsLayer);
 	app->AddLayer(new SceneLayer);
-	
-	
-
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
-
 	app->AddLayer(new InputLayer);
 
 	AddDefaultMaterial();
@@ -65,6 +62,10 @@ Application* VSGEMain() {
 	app->GetLayer<ImGuiLayer>()->AddWindow(rpw);
 
 	app->GetLayer<ImGuiLayer>()->AddWindow(new StartWindow);
+
+	CreateProjectWindow* cpw = new CreateProjectWindow;
+	cpw->Hide();
+	app->GetLayer<ImGuiLayer>()->AddWindow(cpw);
 
 	app->GetLayer<SceneLayer>()->SetWorkingScene(app->GetLayer<EditorLayer>()->GetScene());
 

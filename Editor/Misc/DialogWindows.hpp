@@ -54,4 +54,5 @@ struct MessageDialogDesc {
 
 void OpenFileDialog(FileDialogDesc* desc, std::string& result);
 void SaveFileDialog(FileDialogDesc* desc, std::string& result);
+void OpenFolderDialog(std::string& result);
 void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action);

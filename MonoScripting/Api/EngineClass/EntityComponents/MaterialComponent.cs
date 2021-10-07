@@ -12,7 +12,14 @@ public class MaterialComponent : IEntityComponent {
         i_SetMaterial(handle, resource_name);
     }
 
+    void SetMaterial(Resource resource){
+        i_SetMaterial(handle, resource.GetHandle());
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern string i_SetMaterial(ulong handle, string material_name);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern string i_SetMaterial(ulong handle, ulong resource_handle);
 
 }

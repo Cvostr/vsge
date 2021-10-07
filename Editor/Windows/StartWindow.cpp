@@ -1,10 +1,8 @@
 #include "StartWindow.hpp"
-#include "SceneWindow.hpp"
-#include "InspectorWindow.hpp"
-#include "SceneViewWindow.hpp"
-#include "BrowserWindow.hpp"
+#include "CreateProjectWindow.hpp"
 #include <Engine/Application.hpp>
-#include "../EditorLayers/EditorLayer.hpp"
+#include <EditorLayers/EditorLayer.hpp>
+#include <EditorLayers/ImGuiLayer.hpp>
 #include <fstream>
 #include <filesystem>
 #include <Misc/DialogWindows.hpp>
@@ -74,7 +72,7 @@ void StartWindow::OnDrawWindow() {
         }
 
         if (ImGui::Button("Create new project", ImVec2(_size.x / 2, 0))) {
-
+            ImGuiLayer::Get()->GetWindow<CreateProjectWindow>()->Show();
         }
         ImGui::SameLine();
         if (ImGui::Button("Add existing project", ImVec2(_size.x / 2, 0))) {

@@ -7,6 +7,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <shlobj.h>
 #undef CreateWindow
 #include <Engine/Window.hpp>
 #endif
@@ -159,6 +160,12 @@ void SaveFileDialog(FileDialogDesc* desc, std::string& result){
 
     if (GetSaveFileNameA(&ofn) == TRUE)
         result = ofn.lpstrFile;
+#endif
+}
+
+void OpenFolderDialog(std::string& result) {
+#ifdef _WIN32
+
 #endif
 }
 

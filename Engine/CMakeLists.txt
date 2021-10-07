@@ -120,6 +120,7 @@ set(SRC_FILES
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
 				Scene/EntityComponents/TerrainComponent.cpp
+				Scene/EntityComponents/CharacterControllerComponent.cpp
 				MonoScripting/MonoScriptingLayer.cpp
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
