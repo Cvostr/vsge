@@ -23,7 +23,15 @@ void CreateProjectWindow::OnDrawWindow() {
         }
 
         if (ImGui::Button("Create", ImVec2(_size.x, 0))) {
-           
+            std::string root_dir = project_directory + "/" + project_name;
+
+            if (std::filesystem::is_directory(root_dir)) {
+                return; //error
+            }
+
+            std::filesystem::create_directory(root_dir);
+            std::filesystem::create_directory(root_dir + "/assets");
+            std::filesystem::create_directory(root_dir + "/cache");
         }
 
         ImGui::End();

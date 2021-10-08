@@ -135,6 +135,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/RigidBodyComponent.cpp
 				MonoScripting/Api/EntityComponents/ColliderComponent.cpp
 				MonoScripting/Api/EntityComponents/CameraComponent.cpp
+				UI/View.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				System/Shell.cpp

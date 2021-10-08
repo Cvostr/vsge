@@ -7,6 +7,7 @@
 using namespace VSGE;
 
 #define MASS 1.f
+#define GRAVITY btVector3(0, -9.8f, 0)
 
 CharacterControllerComponent::CharacterControllerComponent() :
 	_character(nullptr),
@@ -33,6 +34,11 @@ void CharacterControllerComponent::SetCenter(const Vec3& center) {
 
 bool CharacterControllerComponent::IsOnGround() {
 	return _is_on_ground;
+}
+
+void CharacterControllerComponent::Move(const Vec2& direction) {
+	btVector3 current_vel_l = _character->getLinearVelocity();
+	_character->setLinearVelocity(btVector3(direction.x, current_vel_l.y(), direction.y));
 }
 
 btTransform CharacterControllerComponent::GetEntityTransform() {
@@ -82,19 +88,27 @@ void CharacterControllerComponent::OnUpdate() {
 
 	_character = new btRigidBody(constructionInfo);
 	_character->setUserPointer(_entity);
-	//_character->setGravity(btVector3(_gravity.x, _gravity.y, _gravity.z));
+	_character->setGravity(GRAVITY);
 
 	PhysicsLayer::Get()->AddRigidbody(_character);
 }
 void CharacterControllerComponent::OnDestroy() {
-
+	if (_character) {
+		PhysicsLayer::Get()->RemoveRigidbody(_character);
+		SAFE_RELEASE(_character)
+	}
+	SAFE_RELEASE(_character_collision)
 }
 
 void CharacterControllerComponent::OnActivate() {
-
+	if (_character) {
+		PhysicsLayer::Get()->AddRigidbody(_character);
+	}
 }
 void CharacterControllerComponent::OnDeactivate() {
-
+	if (_character) {
+		PhysicsLayer::Get()->RemoveRigidbody(_character);
+	}
 }
 
 void CharacterControllerComponent::Serialize(YAML::Emitter& e) {
@@ -105,8 +119,10 @@ void CharacterControllerComponent::Deserialize(YAML::Node& entity) {
 }
 
 void CharacterControllerComponent::Serialize(ByteSerialize& serializer) {
-
+	serializer.Serialize(_size);
+	serializer.Serialize(_center);
 }
 void CharacterControllerComponent::Deserialize(ByteSolver& solver) {
-
+	_size = solver.GetValue<Vec2>();
+	_center = solver.GetValue<Vec3>();
 }

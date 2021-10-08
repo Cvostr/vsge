@@ -8,6 +8,7 @@ namespace VSGE {
 	class MaterialComponent : public IEntityComponent {
 	private:
 		ResourceReference _materialResource;
+		bool _cast_shadows;
 	public:
 		MaterialComponent();
 
@@ -16,6 +17,9 @@ namespace VSGE {
 		ResourceReference& GetResourceReference();
 
 		void SetMaterialName(const std::string& mesh);
+
+		bool IsCastShadows();
+		void SetCastShadows(bool cast_shadows);
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

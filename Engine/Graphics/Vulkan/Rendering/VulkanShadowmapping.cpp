@@ -3,6 +3,7 @@
 #include "../VulkanPipeline.hpp"
 #include <Resources/ResourceTypes/MeshResource.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Scene.hpp>
 #include "VulkanRenderer.hpp"
@@ -336,6 +337,12 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
 		Entity* entity = _entitiesToRender->at(e_i);
 		
+		MaterialComponent* material_comp = entity->GetComponent<MaterialComponent>();
+		if (material_comp) {
+			if (!material_comp->IsCastShadows())
+				continue;
+		}
+
 		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
 			AABB bbox = entity->GetAABB();
 			SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();

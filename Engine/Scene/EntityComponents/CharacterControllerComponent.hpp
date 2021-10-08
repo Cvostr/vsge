@@ -28,6 +28,8 @@ namespace VSGE {
 
 		bool IsOnGround();
 
+		void Move(const Vec2& direction);
+
 		void OnUpdate();
 		void OnDestroy();
 

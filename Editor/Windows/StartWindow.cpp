@@ -111,7 +111,7 @@ void StartWindow::OpenProject(const std::string& path) {
         DialogUserAction action;
         MessageDialog(&desc, action);
         if (action == DIALOG_USER_ACTION_ACCEPT) {
-            return ;
+            return;
         }
     }
 
