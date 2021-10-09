@@ -1,6 +1,7 @@
 #include "CreateProjectWindow.hpp"
 #include <imgui_stdlib.h>
 #include <filesystem>
+#include <Misc/DialogWindows.hpp>
 
 using namespace VSGEditor;
 
@@ -26,7 +27,16 @@ void CreateProjectWindow::OnDrawWindow() {
             std::string root_dir = project_directory + "/" + project_name;
 
             if (std::filesystem::is_directory(root_dir)) {
-                return; //error
+                MessageDialogDesc desc;
+                desc.dialog_title = "Error creating project";
+                desc.message = "Directory " + root_dir + " already exist!";
+                desc.buttons = MESSAGE_DIALOG_BTN_OK;
+                desc.dialog_type = MESSAGE_DIALOG_TYPE_ERROR;
+                DialogUserAction action;
+                MessageDialog(&desc, action);
+                if (action == DIALOG_USER_ACTION_ACCEPT) {
+                    return;
+                }
             }
 
             std::filesystem::create_directory(root_dir);

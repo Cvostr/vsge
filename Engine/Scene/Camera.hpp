@@ -81,11 +81,16 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		float GetAspectRatio();
-
+		/// <summary>
+		/// Get view mask value
+		/// </summary>
+		/// <returns></returns>
 		ViewMask GetViewMask();
-
+		/// <summary>
+		/// Set view mask to camera
+		/// </summary>
+		/// <param name="mask"></param>
 		void SetViewMask(ViewMask mask);
-
 		/// <summary>
 		/// Move camera to new position
 		/// </summary>
@@ -140,9 +145,7 @@ namespace VSGE {
 		/// Get frustum, attached to this camera
 		/// </summary>
 		/// <returns></returns>
-		const Frustum& GetFrustum() {
-			return _frustum;
-		}
+		const Frustum& GetFrustum();
 		/// <summary>
 		/// Is bounding box visible in camera's frustum
 		/// </summary>
@@ -161,7 +164,13 @@ namespace VSGE {
 		/// <param name="world_point">- point in world</param>
 		/// <returns>Position on screen</returns>
 		Vec2 WorldPointToScreenpoint(const Vec3& world_point);
-
+		/// <summary>
+		/// compute view-projection matrix of this camera with specified near & far occlusion planes
+		/// useful in shadowmap cascades calculation
+		/// </summary>
+		/// <param name=""></param>
+		/// <param name=""></param>
+		/// <returns></returns>
 		Mat4 ComputeOrthoProjectionMatrix(float near, float far);
 
 		void OnPreRender();

@@ -71,7 +71,8 @@ bool ImageButtonWithText(ImTextureID texId, const std::string& label, unsigned i
     if (bg_col.w > 0.0f)
         window->DrawList->AddRectFilled(image_bb.Min, image_bb.Max, ImGui::GetColorU32(bg_col));
 
-    window->DrawList->AddImage(texId, image_bb.Min, image_bb.Max, uv0, uv1, ImGui::GetColorU32(tint_col));
+    if(texId)
+        window->DrawList->AddImage(texId, image_bb.Min, image_bb.Max, uv0, uv1, ImGui::GetColorU32(tint_col));
 
     if (textSize.x > 0) ImGui::RenderText(start, l_label.c_str());
 

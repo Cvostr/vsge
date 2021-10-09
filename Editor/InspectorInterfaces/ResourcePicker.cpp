@@ -77,7 +77,7 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 			rpw->Show();
 		}
 	}
-	else if (reference.GetResourceType() == RESOURCE_TYPE_MATERIAL && mat_texture) {
+	else if (reference.GetResourceType() == RESOURCE_TYPE_MATERIAL) {
 		if (ImageButtonWithText((void*)mat_texture, btn_text.c_str(), nullptr, nullptr, ImVec2(64, 64))) {
 			ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 			rpw->SetAllowEmptyResource(empty_res);

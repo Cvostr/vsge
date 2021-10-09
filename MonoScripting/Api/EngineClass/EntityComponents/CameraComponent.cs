@@ -28,6 +28,13 @@ public class CameraComponent : IEntityComponent {
         i_SetFov(handle, fov);
     }
 
+    public ulong GetViewMask(){
+        return i_GetViewMask(handle);
+    }
+    public void SetViewMask(ulong viewmask){
+        i_SetViewMask(handle, viewmask);
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern float i_GetNearPlane(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
@@ -42,4 +49,9 @@ public class CameraComponent : IEntityComponent {
     private static extern float i_GetFov(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_SetFov(ulong handle, float fov);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_GetViewMask(ulong handle);
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetViewMask(ulong handle, ulong viewmask);
 }

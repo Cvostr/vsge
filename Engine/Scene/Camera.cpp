@@ -87,6 +87,10 @@ const Mat4& Camera::GetProjectionViewMatrix() {
 	return _projectionViewMatrix;
 }
 
+const Frustum& Camera::GetFrustum() {
+	return _frustum;
+}
+
 void Camera::UpdateMatrices() {
 	GraphicsApi api = Application::Get()->GetGraphicsApi();
 
