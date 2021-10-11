@@ -21,6 +21,10 @@ public:
 		return sqrtf(x * x + y * y);
 	}
 
+	float Dot(const tVec2& v) {
+		return x * v.x + y * v.y;
+	}
+
 	tVec2 operator+(const tVec2& r) const {
 		return tVec2(x + r.x, y + r.y);
 	}
@@ -40,6 +44,11 @@ public:
 
 	bool operator ==(const tVec2& r) const {
 		return x == r.x && y == r.y;
+	}
+
+	void operator+=(const tVec2& v) {
+		x += v.x;
+		y += v.y;
 	}
 
 };

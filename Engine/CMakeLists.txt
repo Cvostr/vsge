@@ -69,6 +69,7 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/VulkanEnvMap.cpp
 				Graphics/Vulkan/Rendering/VulkanTerrainRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanCamerasBuffer.cpp
+				Graphics/Vulkan/Rendering/VulkanUiRenderer.cpp
 				Graphics/Vulkan/Rendering/PBR/Vulkan_BRDF_LUT.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanIrradianceMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanSpecularMap.cpp
@@ -137,6 +138,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/ColliderComponent.cpp
 				MonoScripting/Api/EntityComponents/CameraComponent.cpp
 				MonoScripting/Api/EntityComponents/MaterialComponent.cpp
+				UI/UiLayer.cpp
 				UI/View.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp

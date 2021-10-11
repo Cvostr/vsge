@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Vec2.hpp"
 #include <cmath>
 
 	template<typename T>
@@ -12,6 +13,7 @@
 		tVec3() : x(0), y(0), z(0) {}
 		tVec3(T v) : x(v), y(v), z(v) {}
 		tVec3(T x, T y, T z) : x(x), y(y), z(z) {}
+		tVec3(const tVec2<T> xy, float z) : x(xy.x), y(xy.y), z(z) {}
 
 		tVec3 GetNormalized() const {
 			float coeff = 1.f / Length();
