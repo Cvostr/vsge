@@ -31,7 +31,7 @@ public class Resource : InternalObject {
     {
     }
 
-    Resource(string name){
+    public Resource(string name){
         handle = i_GetPointerByName(name);
     }
 

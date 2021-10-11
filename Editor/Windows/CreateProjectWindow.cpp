@@ -2,6 +2,8 @@
 #include <imgui_stdlib.h>
 #include <filesystem>
 #include <Misc/DialogWindows.hpp>
+#include <Core/YamlHelper.hpp>
+#include <fstream>
 
 using namespace VSGEditor;
 
@@ -42,6 +44,20 @@ void CreateProjectWindow::OnDrawWindow() {
             std::filesystem::create_directory(root_dir);
             std::filesystem::create_directory(root_dir + "/assets");
             std::filesystem::create_directory(root_dir + "/cache");
+
+            //Write manifest files
+            YAML::Emitter out;
+            out << YAML::BeginMap;
+            out << YAML::Key << "project_name" << YAML::Value << project_name;
+            out << YAML::EndMap;
+
+            std::ofstream fout(root_dir + "/project.manifest");
+            fout << out.c_str();
+            fout.close();
+
+            fout.open(root_dir + "/application.manifest");
+            fout << out.c_str();
+            fout.close();
         }
 
         ImGui::End();

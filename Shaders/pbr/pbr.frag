@@ -99,7 +99,7 @@ void main() {
     }
 
     if(hasAlbedo)
-        tColor *= texture(albedo, uv_coords);
+        tColor *= vec4(texture(albedo, uv_coords).rgb, 1);
 
     if(hasNormal){
         normal = texture(normal_map, uv_coords).rgb;

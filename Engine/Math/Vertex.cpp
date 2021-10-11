@@ -17,7 +17,7 @@ void CalculateNormals(Vertex* vert_array, uint32* indices_array, uint32 indices_
 }
 
 void ProcessTangentSpace(Vertex* vert_array, uint32* indices_array, uint32 indices_num) {
-    for (int ind_i = 0; ind_i < indices_num; ind_i += 3) {
+    for (uint32 ind_i = 0; ind_i < indices_num; ind_i += 3) {
         Vertex v1 = vert_array[indices_array[ind_i]];
         Vertex v2 = vert_array[indices_array[ind_i + 1]];
         Vertex v3 = vert_array[indices_array[ind_i + 2]];
@@ -47,7 +47,7 @@ void ProcessTangentSpace(Vertex* vert_array, uint32* indices_array, uint32 indic
 }
 
 void ProcessTangentSpace(Vertex* vert_array, uint32 vertices_num) {
-    for (int v_i = 0; v_i < vertices_num; v_i += 3) {
+    for (uint32 v_i = 0; v_i < vertices_num; v_i += 3) {
         Vertex v1 = vert_array[v_i];
         Vertex v2 = vert_array[v_i + 1];
         Vertex v3 = vert_array[v_i + 2];

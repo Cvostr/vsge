@@ -16,6 +16,10 @@
 #include <Misc/DialogWindows.hpp>
 #include <Misc/EditorIcons.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
+#ifdef _WIN32
+#include <windows.h>
+#include <shellapi.h>
+#endif
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -105,6 +109,11 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
         insp->SetShowingResource(resource);
+    }
+    else {
+#ifdef _WIN32
+        ShellExecute(0, 0, Entry.abs_path.c_str(), 0, 0, SW_SHOW);
+#endif
     }
 }
 

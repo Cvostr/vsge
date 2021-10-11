@@ -7,6 +7,10 @@ public class AnimatorComponent : IEntityComponent {
     {
     }
 
+    public AnimatorComponent() : base(0)
+    {
+    }
+
     public void Play(){
         i_Play(handle);
     }
@@ -16,6 +20,10 @@ public class AnimatorComponent : IEntityComponent {
 
     bool IsPlaying(){
         return i_IsPlaying(handle);
+    }
+
+    void SetAnimationFactor(uint anim_index, float factor){
+
     }
 
     [MethodImpl(MethodImplOptions.InternalCall)]

@@ -28,6 +28,13 @@ public class CameraComponent : IEntityComponent {
         i_SetFov(handle, fov);
     }
 
+    public float GetAspectRatio(){
+        return i_GetAspectRatio(handle);
+    }
+    public void SetAspectRatio(float aspect){
+        i_SetAspectRatio(handle, aspect);
+    }
+
     public ulong GetViewMask(){
         return i_GetViewMask(handle);
     }
@@ -49,6 +56,11 @@ public class CameraComponent : IEntityComponent {
     private static extern float i_GetFov(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_SetFov(ulong handle, float fov);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern float i_GetAspectRatio(ulong handle);
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetAspectRatio(ulong handle, float aspect);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetViewMask(ulong handle);

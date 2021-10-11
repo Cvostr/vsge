@@ -60,5 +60,5 @@ void VSGE::BindAudiosource() {
 	mono_add_internal_call("AudioSourceComponent::i_IsLooping(ulong)", IsLooping);
 	mono_add_internal_call("AudioSourceComponent::i_SetLooping(ulong,bool)", SetLooping);
 
-	mono_add_internal_call("AudioSourceComponent::i_SetAudioClip(ulong,ulong)", SetLooping);
+	mono_add_internal_call("AudioSourceComponent::i_SetAudioClip(ulong,ulong)", SetAudioClip);
 }

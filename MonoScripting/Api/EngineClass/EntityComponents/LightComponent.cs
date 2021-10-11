@@ -14,7 +14,7 @@ public class LightSourceComponent : IEntityComponent {
     {
     }
 
-    public LightSourceComponent()
+    public LightSourceComponent() : base(0)
     {
     }
 
@@ -62,6 +62,14 @@ public class LightSourceComponent : IEntityComponent {
         return i_GetDirection(handle);
     }
 
+    bool IsCastShadows(){
+        return i_IsCastShadows(handle);
+    }
+
+    void SetCastShadows(bool cast){
+        i_SetCastShadows(handle, cast);
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern LightType i_GetType(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
@@ -89,4 +97,9 @@ public class LightSourceComponent : IEntityComponent {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern Vec3 i_GetDirection(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern bool i_IsCastShadows(ulong handle);
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetCastShadows(ulong handle, bool cast);
 }

@@ -7,6 +7,10 @@ public class AudioSourceComponent : IEntityComponent {
     {
     }
 
+    public AudioSourceComponent() : base(0)
+    {
+    }
+
     public void Play(){
         i_Play(handle);
     }
@@ -21,7 +25,7 @@ public class AudioSourceComponent : IEntityComponent {
         return i_IsPlaying(handle);
     }
 
-    void SetAudioClip(Resource resource){
+    public void SetAudioClip(Resource resource){
         i_SetAudioClip(handle, resource.GetHandle());
     }
 

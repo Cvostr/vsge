@@ -13,8 +13,8 @@ void SetColor(void* ptr, Color color) {
 	((LightsourceComponent*)ptr)->GetColor() = color;
 }
 
-float GetIntensity(void* ptr) {
-	return ((LightsourceComponent*)ptr)->GetIntensity();
+float GetIntensity(LightsourceComponent* ptr) {
+	return (ptr)->GetIntensity();
 }
 void SetIntensity(void* ptr, float intensity) {
 	((LightsourceComponent*)ptr)->GetIntensity() = intensity;
@@ -34,6 +34,17 @@ void SetSpotAngle(void* ptr, float spot_angle) {
 	((LightsourceComponent*)ptr)->GetSpotAngle() = spot_angle;
 }
 
+Vec3 GetDirection(LightsourceComponent* ptr) {
+	return ptr->GetDirection();
+}
+
+float IsCastShadows(LightsourceComponent* ptr) {
+	return ptr->GetCastShadows();
+}
+void SetCastShadows(LightsourceComponent* ptr, bool cast) {
+	ptr->SetCastShadows(cast);
+}
+
 void VSGE::BindLightsource() {
 	mono_add_internal_call("LightSourceComponent::i_GetIntensity(ulong)", GetIntensity);
 	mono_add_internal_call("LightSourceComponent::i_SetIntensity(ulong,float)", SetIntensity);
@@ -46,4 +57,9 @@ void VSGE::BindLightsource() {
 
 	mono_add_internal_call("LightSourceComponent::i_SetColor(ulong,Color)", SetColor);
 	mono_add_internal_call("LightSourceComponent::i_GetColor(ulong)", GetColor);
+
+	mono_add_internal_call("LightSourceComponent::i_GetDirection(ulong)", GetDirection);
+
+	mono_add_internal_call("LightSourceComponent::i_IsCastShadows(ulong)", IsCastShadows);
+	mono_add_internal_call("LightSourceComponent::i_SetCastShadows(ulong,bool)", SetCastShadows);
 }

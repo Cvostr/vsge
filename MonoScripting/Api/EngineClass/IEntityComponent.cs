@@ -35,12 +35,17 @@ public class IEntityComponent : InternalObject {
             return 2;
         if(typeof(T).Equals(typeof(MeshComponent)))
             return 3;
+        if(typeof(T).Equals(typeof(AnimatorComponent)))
+            return 4;
         if(typeof(T).Equals(typeof(AudioSourceComponent)))
             return 6;
+        if(typeof(T).Equals(typeof(CameraComponent)))
+            return 7;
         if(typeof(T).Equals(typeof(RigidBodyComponent)))
             return 8;
         if(typeof(T).Equals(typeof(ColliderComponent)))
             return 9;
+        
         return -1;
     }
 

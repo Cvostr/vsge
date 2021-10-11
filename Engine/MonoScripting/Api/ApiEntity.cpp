@@ -7,6 +7,7 @@
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/EntityComponents/ColliderComponent.hpp>
+#include <Scene/EntityComponents/AnimatorComponent.hpp>
 
 using namespace VSGE;
 
@@ -90,6 +91,9 @@ static void* WComponent(void* ptr, int type, int action) {
 	case ENTITY_COMPONENT_MESH:
 		return _WComponent<MeshComponent>(ent, action);
 		break;
+	case ENTITY_COMPONENT_ANIMATOR:
+		return _WComponent<AnimatorComponent>(ent, action);
+		break;
 	case ENTITY_COMPONENT_LIGHTSOURCE:
 		return _WComponent<LightsourceComponent>(ent, action);
 		break;
@@ -101,6 +105,9 @@ static void* WComponent(void* ptr, int type, int action) {
 		break;
 	case ENTITY_COMPONENT_COLLIDER:
 		return _WComponent<ColliderComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_CAMERA:
+		return _WComponent<Camera>(ent, action);
 		break;
 	}
 	return nullptr;

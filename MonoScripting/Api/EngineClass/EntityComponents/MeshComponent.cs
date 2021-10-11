@@ -7,7 +7,14 @@ public class MeshComponent : IEntityComponent {
     {
     }
 
-    void SetMesh(Resource resource){
-        //i_SetAudioClip(handle, resource.GetHandle());
+    public MeshComponent() : base(0)
+    {
     }
+
+    void SetMesh(Resource resource){
+        i_SetMesh(handle, resource.GetHandle());
+    }
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetMesh(ulong handle, ulong res_handle);
 }

@@ -85,6 +85,7 @@ set(SRC_FILES
 				Math/Quaternion.cpp
 				Math/Ray.cpp
 				Math/Vertex.cpp
+				Math/Rect.cpp
 				Physics/PhysicsLayer.cpp
 				Resources/AnimationParser.cpp
 				Resources/TextureProcessor.cpp
@@ -135,6 +136,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/RigidBodyComponent.cpp
 				MonoScripting/Api/EntityComponents/ColliderComponent.cpp
 				MonoScripting/Api/EntityComponents/CameraComponent.cpp
+				MonoScripting/Api/EntityComponents/MaterialComponent.cpp
 				UI/View.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
