@@ -6,6 +6,7 @@
 #include <Resources/DefaultResources.hpp>
 #include <Audio/AudioLayer.hpp>
 #include <Input/InputLayer.hpp>
+#include <UI/UiLayer.hpp>
 
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
@@ -32,6 +33,7 @@ Application* VSGEMain() {
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
 	app->AddLayer(new InputLayer);
+	app->AddLayer(new UiLayer);
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();
