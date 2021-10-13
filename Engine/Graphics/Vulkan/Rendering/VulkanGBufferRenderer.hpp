@@ -7,7 +7,7 @@
 #define MAX_OBJECTS_RENDER 40000
 #define MAX_ANIMATION_MATRICES 20000
 #define MAX_PARTICLES_MATRICES 20000
-#define VERTEX_DESCR_SETS 40
+#define VERTEX_DESCR_SETS 160
 
 namespace VSGE {
 	class VulkanGBufferRenderer {

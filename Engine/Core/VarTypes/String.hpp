@@ -25,7 +25,7 @@ public:
 
 	const Char* c_str() const;
 
-	Char& operator[](uint32 i);
+	Char& operator[](uint32 i) const;
 
 	void operator=(const String& str);
 

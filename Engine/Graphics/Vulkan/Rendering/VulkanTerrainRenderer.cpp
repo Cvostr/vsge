@@ -251,6 +251,7 @@ void VulkanTerrainRenderer::Create(
 	//terrains descriptor pool
 	_terrains_descr_pool = new VulkanDescriptorPool;
 	_terrains_descr_pool->SetDescriptorSetsCount(1000);
+	_terrains_descr_pool->SetCreateFreeDescrSets(true);
 	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
 	_terrains_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6000);
 	_terrains_descr_pool->Create();
@@ -258,6 +259,7 @@ void VulkanTerrainRenderer::Create(
 	//vegetables descriptor pool
 	_vegetables_descr_pool = new VulkanDescriptorPool;
 	_vegetables_descr_pool->SetDescriptorSetsCount(1000);
+	_vegetables_descr_pool->SetCreateFreeDescrSets(true);
 	_vegetables_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000);
 	_vegetables_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000);
 	_vegetables_descr_pool->Create();
@@ -287,7 +289,6 @@ void VulkanTerrainRenderer::Create(
 	_terrain_pipeline_layout->Create();
 
 	delete sample_terrain;
-
 
 	VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(_vegetables_descr_pool);
 	grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);

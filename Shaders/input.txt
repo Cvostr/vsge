@@ -29,3 +29,6 @@ shader shadowmap/shadowmap_process.frag
 
 shader grass/grass.vert
 shader grass/grass.frag
+
+shader ui/ui.vert
+shader ui/ui.frag

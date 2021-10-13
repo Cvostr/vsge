@@ -277,7 +277,12 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
 	_outputWidth = width;
 	_outputHeight = height;
-	_shadowprocess_framebuffer->SetSize(width, height);
+	_shadowprocessRenderPass->SetClearSize(width, height);
+	_shadowprocess_framebuffer->Resize(width, height);
+}
+
+void VulkanShadowmapping::SetGbufferPositionsAttachment(VulkanTexture* gpos) {
+	_shadowrenderer_descrSet->WriteDescriptorImage(1, gpos, _gbuffer_sampler);
 }
 
 VulkanTexture* VulkanShadowmapping::GetOutputTexture() {

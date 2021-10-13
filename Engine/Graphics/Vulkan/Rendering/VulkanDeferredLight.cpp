@@ -168,8 +168,8 @@ void VulkanDeferredLight::Resize(uint32 width, uint32 height) {
 	_fb_width = width;
 	_fb_height = height;
 
-	_deferred_fb->Resize(width, height);
 	_deferred_rp->SetClearSize(width, height);
+	_deferred_fb->Resize(width, height);
 }
 
 void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {

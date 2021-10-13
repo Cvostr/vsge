@@ -167,6 +167,10 @@ void VulkanRenderer::SetupRenderer() {
 	_terrain_renderer->Create(_gbuffer_renderer->GetRenderPass(), _gbuffer_renderer->GetVertexDescriptorSets(), mEmptyZeroTexture, mEmptyOneTexture);
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
+	_ui_renderer = new VulkanUiRenderer;
+	_ui_renderer->Create();
+	_ui_renderer->ResizeOutput(mOutputWidth, mOutputHeight);
+
 	_brdf_lut = new Vulkan_BRDF_LUT;
 	_brdf_lut->Create();
 
@@ -406,7 +410,7 @@ void VulkanRenderer::StoreWorldObjects() {
 	_deferred_renderer->RecordCmdbuf(mLightsCmdbuf);
 	mLightsCmdbuf->End();
 
-	_ibl_map->RecordCmdBufs();
+	//_ibl_map->RecordCmdBufs();
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
@@ -464,10 +468,16 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 
 	_gbuffer_renderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
+	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
 	_terrain_renderer->SetOutputSizes(width, height);
+	
 	_shadowmapper->ResizeOutput(width, height);
+	_shadowmapper->SetGbufferPositionsAttachment(_gbuffer_renderer->GetPositionAttachment());
+	_deferred_renderer->SetShadowmapper(_shadowmapper);
+
+	_ui_renderer->ResizeOutput(width, height);
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {

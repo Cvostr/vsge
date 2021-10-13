@@ -12,10 +12,10 @@ VkDescriptorPoolSize getVkDescrPoolSize(VkDescriptorType type, unsigned int desc
 }
 
 void VulkanDescriptorPool::SetPoolSizes(VkDescriptorPoolSize* poolSizes, uint32 poolSizesCount) {
-    this->mSizes.clear();
+    this->_sizes.clear();
 
     for (uint32 size_i = 0; size_i < poolSizesCount; size_i++) {
-        mSizes.push_back(poolSizes[size_i]);
+        _sizes.push_back(poolSizes[size_i]);
     }
 }
 
@@ -23,11 +23,15 @@ void VulkanDescriptorPool::AddPoolSize(VkDescriptorType type, uint32 size) {
     VkDescriptorPoolSize _size = {};
     _size.descriptorCount = size;
     _size.type = type;
-    mSizes.push_back(_size);
+    _sizes.push_back(_size);
 }
 
 void VulkanDescriptorPool::SetDescriptorSetsCount(uint32 descriptorSets) {
     mDescriptorSetsCount = descriptorSets;
+}
+
+void VulkanDescriptorPool::SetCreateFreeDescrSets(bool create_free) {
+    _create_free = create_free;
 }
 
 bool VulkanDescriptorPool::Create() {
@@ -36,8 +40,10 @@ bool VulkanDescriptorPool::Create() {
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = static_cast<uint32>(mSizes.size());
-    poolInfo.pPoolSizes = mSizes.data();
+    poolInfo.pNext = nullptr;
+    poolInfo.flags = _create_free ? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : 0;
+    poolInfo.poolSizeCount = static_cast<uint32>(_sizes.size());
+    poolInfo.pPoolSizes = _sizes.data();
     poolInfo.maxSets = mDescriptorSetsCount;
 
     if (vkCreateDescriptorPool(device->getVkDevice(), &poolInfo, nullptr, &mDescriptorPool) != VK_SUCCESS) {
@@ -61,7 +67,7 @@ void VulkanDescriptorPool::Destroy() {
 
 void VulkanDescriptorPool::AddLayoutBinding(VkDescriptorType type) {
     VkDescriptorPoolSize poolSize = getVkDescrPoolSize(type, 1);
-    mSizes.push_back(poolSize);
+    _sizes.push_back(poolSize);
 }
 
 void VulkanDescriptorSet::SetDescriptorPool(VulkanDescriptorPool* pool) {

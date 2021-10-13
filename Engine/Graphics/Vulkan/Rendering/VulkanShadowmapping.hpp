@@ -115,6 +115,7 @@ namespace VSGE {
 		void SetTerrainsToRender(tEntityList* terrains) {
 			_terrainsToRender = terrains;
 		}
+		void SetGbufferPositionsAttachment(VulkanTexture* gpos);
 
 		void ResizeOutput(uint32 width, uint32 height);
 		VulkanTexture* GetOutputTexture();

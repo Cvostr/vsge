@@ -14,13 +14,15 @@ namespace VSGE {
 	class VulkanDescriptorPool : public IGpuObject {
 	private:
 		VkDescriptorPool mDescriptorPool;
-		std::vector<VkDescriptorPoolSize> mSizes;
+		std::vector<VkDescriptorPoolSize> _sizes;
 		uint32 mDescriptorSetsCount;
+		bool _create_free;
 	public:
 
 		VulkanDescriptorPool() : 
 			mDescriptorSetsCount(0),
-			mDescriptorPool(VK_NULL_HANDLE)
+			mDescriptorPool(VK_NULL_HANDLE),
+			_create_free(false)
 		{}
 
 		~VulkanDescriptorPool() {
@@ -34,6 +36,7 @@ namespace VSGE {
 
 		void SetPoolSizes(VkDescriptorPoolSize* poolSizes, uint32 poolSizesCount);
 		void AddPoolSize(VkDescriptorType type, uint32 size);
+		void SetCreateFreeDescrSets(bool create_free);
 
 		void SetDescriptorSetsCount(uint32 descriptorSets);
 

@@ -52,7 +52,7 @@ const Char* String::c_str() const {
 	return _data;
 }
 
-Char& String::operator[](uint32 i) {
+Char& String::operator[](uint32 i) const {
 	return _data[i];
 }
 

@@ -90,7 +90,12 @@ void VulkanGBufferRenderer::CreateDescriptorSets() {
 void VulkanGBufferRenderer::SetBuffers(VulkanBuffer* transforms_buffer, VulkanBuffer* anims_buffer, VulkanBuffer* particles_buffer) {
 	if (transforms_buffer) {
 		_transforms_buffer = transforms_buffer;
-		for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
+
+		uint32 descriptors_count = transforms_buffer->GetSize() / 65535;
+		if (transforms_buffer->GetSize() % 65535 > 0)
+			descriptors_count++;
+
+		for (uint32 desc_i = 0; desc_i < descriptors_count; desc_i++) {
 			VulkanDescriptorSet* set = _vertex_descriptor_sets[desc_i];
 			set->WriteDescriptorBuffer(1, transforms_buffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
 		}
