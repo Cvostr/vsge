@@ -8,14 +8,8 @@ namespace VSGE {
 		VulkanDescriptorSet* _fragmentDescriptorSet;
 		VulkanBuffer* _paramsBuffer;
 
-		VulkanMaterial() {
-			_fragmentDescriptorSet = nullptr;
-			_paramsBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
-		}
+		VulkanMaterial();
 
-		~VulkanMaterial() {
-			delete _fragmentDescriptorSet;
-			delete _paramsBuffer;
-		}
+		~VulkanMaterial();
 	};
 }

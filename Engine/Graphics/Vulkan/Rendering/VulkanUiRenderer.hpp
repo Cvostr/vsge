@@ -7,6 +7,7 @@
 #include <Graphics/Vulkan/VulkanShader.hpp>
 #include <Graphics/Vulkan/VulkanPipeline.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
+#include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
 #define MAX_UI_ELEMENTS 400
 #define MAX_UI_TEXT_ELEMENTS 200
@@ -14,10 +15,11 @@
 namespace VSGE {
 	class VulkanUiRenderer {
 	private:
-		VulkanBuffer* _ui_buffer;
-		VulkanBuffer* _text_uv_buffer;
+		VulkanBuffer* _transforms_buffer;
+		VulkanBuffer* _frag_buffer;
 		VulkanDescriptorPool* _descr_pool;
 		std::vector<VulkanDescriptorSet*> _descr_sets;
+		VulkanSampler* _ui_sampler;
 
 		VulkanFramebuffer* _ui_framebuffer;
 		VulkanRenderPass* _ui_rp;
@@ -28,9 +30,18 @@ namespace VSGE {
 
 		VulkanCommandPool* _ui_cmdpool;
 		VulkanCommandBuffer* _ui_cmdbuf;
+		VulkanSemaphore* _begin_semaphore;
 
+		VulkanMesh* _ui_sprite_mesh;
+
+		uint32 written_elements;
+		Mat4 _camera_transform;
 		uint32 _fb_width;
 		uint32 _fb_height;
+
+		void WriteTransform(uint32 elem_id, const Mat4& transform);
+		void WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color);
+		void WriteTexture(uint32 elem_id, VulkanTexture* texture);
 	public:
 
 		VulkanUiRenderer();
@@ -39,5 +50,11 @@ namespace VSGE {
 		void Create();
 		void Destroy();
 		void ResizeOutput(uint32 width, uint32 height);
+		VulkanTexture* GetOutputTexture();
+		VulkanSemaphore* GetBeginSemaphore();
+
+		void FillBuffers();
+		void FillCommandBuffer();
+		void Execute(VulkanSemaphore* end_semaphore);
 	};
 }

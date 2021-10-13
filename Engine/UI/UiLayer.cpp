@@ -19,10 +19,22 @@ void UiLayer::OnAttach() {
 
 }
 void UiLayer::OnUpdate() {
-	_render_list->ClearTasks();
+	DrawAll();
 }
 void UiLayer::OnDetach() {
 
+}
+
+void UiLayer::DrawAll() {
+	_render_list->ClearTasks();
+	DrawView(_root);
+}
+
+void UiLayer::DrawView(View* view) {
+	view->Draw();
+	for (auto& child : view->GetChildren()) {
+		DrawView(child);
+	}
 }
 
 UiRenderList* UiLayer::GetRenderList() {

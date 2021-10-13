@@ -9,6 +9,9 @@ namespace VSGE {
 		static UiLayer* _this;
 		View* _root;
 		UiRenderList* _render_list;
+
+		void DrawAll();
+		void DrawView(View* view);
 	public:
 
 		UiLayer();

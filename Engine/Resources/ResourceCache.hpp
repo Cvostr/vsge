@@ -3,6 +3,7 @@
 #include "AsyncLoader.hpp"
 #include "ResourcesWatchdog.hpp"
 #include <vector>
+#include <typeinfo>
 
 namespace VSGE {
 

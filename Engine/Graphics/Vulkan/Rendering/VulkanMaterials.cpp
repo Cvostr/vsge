@@ -4,6 +4,16 @@
 
 using namespace VSGE;
 
+VulkanMaterial::VulkanMaterial() {
+	_fragmentDescriptorSet = nullptr;
+	_paramsBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
+}
+
+VulkanMaterial::~VulkanMaterial() {
+	SAFE_RELEASE(_fragmentDescriptorSet);
+	SAFE_RELEASE(_paramsBuffer);
+}
+
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
 	//Add common vertex descriptor
