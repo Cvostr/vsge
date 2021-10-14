@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Scene/Scene.hpp>
+#include <Math/Vec2.hpp>
 #include "Texture.hpp"
 
 namespace VSGE {
@@ -38,6 +39,7 @@ namespace VSGE {
 		Scene* GetScene();
 
 		Texture* GetOutputTexture();
+		Vec2i GetOutputSizes();
 
 		virtual void ResizeOutput(uint32 width, uint32 height) = 0;
 

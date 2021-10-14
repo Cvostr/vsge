@@ -142,6 +142,7 @@ set(SRC_FILES
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp
+				UI/Widgets/Button.cpp
 				UI/Widgets/ImageView.cpp
 				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp

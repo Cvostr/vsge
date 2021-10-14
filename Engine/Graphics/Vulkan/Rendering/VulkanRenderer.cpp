@@ -410,6 +410,8 @@ void VulkanRenderer::StoreWorldObjects() {
 	_deferred_renderer->RecordCmdbuf(mLightsCmdbuf);
 	mLightsCmdbuf->End();
 
+	_ui_renderer->FillBuffers();
+	_ui_renderer->FillCommandBuffer();
 	//_ibl_map->RecordCmdBufs();
 }
 
@@ -459,7 +461,9 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
 	//_ibl_map->Execute(mEndSemaphore);
-	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *mEndSemaphore);
+	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ui_renderer->GetBeginSemaphore());
+
+	_ui_renderer->Execute(mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {

@@ -7,6 +7,8 @@
 
 namespace VSGE {
 
+	class IRenderer;
+
 	enum GraphicsApi {
 		GRAPHICS_API_VULKAN,
 		GRAPHICS_API_D3D12
@@ -38,6 +40,7 @@ namespace VSGE {
 		Mutex* _queuedEventsMutex;
 
 		Window* _window;
+		IRenderer* _renderer;
 
 		bool _running;
 	public:
@@ -75,6 +78,9 @@ namespace VSGE {
 		/// Calls OnUpdate on all registered application layers
 		/// </summary>
 		void OnUpdate();
+
+		void SetRenderer(IRenderer* renderer);
+		IRenderer* GetRenderer();
 
 		void OnSDL2Event(void* event);
 		void OnEvent(const IEvent& event);

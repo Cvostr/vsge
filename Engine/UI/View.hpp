@@ -36,7 +36,7 @@ namespace VSGE {
 		float _rotation;
 
 		bool IsChildExist(View* view);
-		void UpdateBounds();
+		
 	public:
 
 		View();
@@ -51,6 +51,8 @@ namespace VSGE {
 		void SetVisible(bool visible);
 		bool IsVisible();
 		const Rect& GetBounds();
+		//DO NOT USE MANUAL
+		void SetBounds(const Rect& bounds);
 
 		void SetMargin(float left, float right, float top, float bottom);
 		const Margin& GetMargin();
@@ -66,6 +68,7 @@ namespace VSGE {
 		const float GetRotation();
 		void SetRotation(float rotation);
 
+		void UpdateBounds();
 		Mat4 GetViewTransform();
 
 		virtual void Draw(){}

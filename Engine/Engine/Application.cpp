@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include <algorithm>
 #include <Core/Time.hpp>
+#include <Graphics/Renderer.hpp>
 
 using namespace VSGE;
 
@@ -11,6 +12,7 @@ extern Application* VSGEMain();
 Application::Application(ApplicationCreateInfo descr) :
 	_running(false),
 	_window(new Window()),
+	_renderer(nullptr),
 	_description(descr),
 	_queuedEventsMutex(new Mutex())
 {
@@ -94,6 +96,14 @@ void Application::RemoveLayer(IApplicationLayer* layer) {
 void Application::RemoveAllLayers() {
 	while (_layers.size() > 0)
 		RemoveLayer(_layers[0]);
+}
+
+void Application::SetRenderer(IRenderer* renderer) {
+	_renderer = renderer;
+}
+
+IRenderer* Application::GetRenderer() {
+	return _renderer;
 }
 
 int main(int argc, char* argv[]) {

@@ -40,6 +40,7 @@ Application* VSGEMain() {
 	app->AddLayer(mono_scripting_layer);
 
 	VulkanRenderer* renderer = new VulkanRenderer;
+	app->SetRenderer(renderer);
 
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);

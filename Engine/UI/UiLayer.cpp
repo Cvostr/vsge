@@ -1,5 +1,10 @@
 #include "UiLayer.hpp"
 
+#include <Engine/Application.hpp>
+#include <Graphics/Renderer.hpp>
+//TEMPORARY
+#include "Widgets/ImageView.hpp"
+
 using namespace VSGE;
 
 UiLayer* UiLayer::_this = nullptr;
@@ -16,10 +21,20 @@ UiLayer::~UiLayer() {
 }
 
 void UiLayer::OnAttach() {
+	SpriteView* img = new SpriteView;
+	img->SetSprite("test_bc");
+	img->SetAnchorMin(Vec2(0.25f));
+	img->SetAnchorMax(Vec2(0.75f));
+	_root->AddChild(img);
 
 }
 void UiLayer::OnUpdate() {
-	DrawAll();
+	IRenderer* renderer = Application::Get()->GetRenderer();
+	if (renderer) {
+		Vec2i sizes = renderer->GetOutputSizes();
+		_root->SetBounds(Rect(Vec2(0, 0), Vec2(sizes.x, sizes.y)));
+		DrawAll();
+	}
 }
 void UiLayer::OnDetach() {
 

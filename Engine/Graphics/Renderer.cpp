@@ -101,3 +101,6 @@ Scene* IRenderer::GetScene() {
 Texture* IRenderer::GetOutputTexture() {
 	return mOutput;
 }
+Vec2i IRenderer::GetOutputSizes() {
+	return Vec2i(mOutputWidth, mOutputHeight);
+}

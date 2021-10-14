@@ -9,7 +9,7 @@ layout (std140, binding = 1) uniform Ui{
     vec2 uvSize;
 };
 
-layout(binding = 0) uniform sampler2D font_map;
+layout(binding = 2) uniform sampler2D font_map;
 
 void main(){
 

@@ -79,6 +79,8 @@ void VulkanUiRenderer::Create() {
 	_ui_pll->Create();
 
 	_ui_pipeline = new VulkanPipeline;
+	_ui_pipeline->SetCullMode(CULL_MODE_NONE);
+	_ui_pipeline->SetDepthTest(false);
 	_ui_pipeline->Create(_ui_shader, _ui_rp, _vertexLayout, _ui_pll);
 
 	_ui_cmdpool = new VulkanCommandPool;
@@ -110,6 +112,7 @@ void VulkanUiRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_ui_framebuffer->Resize(_fb_width, _fb_height);
 
 	_camera_transform = GetOrthoRH_ZeroOne(0, _fb_width, 0, _fb_height, 0, 1);
+	_camera_transform[1][1] *= -1;
 }
 
 VulkanTexture* VulkanUiRenderer::GetOutputTexture() {
@@ -124,8 +127,8 @@ void VulkanUiRenderer::WriteTransform(uint32 elem_id, const Mat4& transform) {
 }
 void VulkanUiRenderer::WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color) {
 	_frag_buffer->WriteData(256 * elem_id, sizeof(Vec3), (void*)(&color));
-	_frag_buffer->WriteData(256 * elem_id + 16, sizeof(Vec3), (void*)(&uv_min));
-	_frag_buffer->WriteData(256 * elem_id + 32, sizeof(Vec3), (void*)(&uv_max));
+	_frag_buffer->WriteData(256 * elem_id + 16, sizeof(Vec2), (void*)(&uv_min));
+	_frag_buffer->WriteData(256 * elem_id + 24, sizeof(Vec2), (void*)(&uv_max));
 }
 void VulkanUiRenderer::WriteTexture(uint32 elem_id, VulkanTexture* texture) {
 	VulkanDescriptorSet* set = _descr_sets[elem_id];
@@ -137,7 +140,7 @@ void VulkanUiRenderer::FillBuffers() {
 	written_elements = 0;
 
 	for (auto& task : ui_layer->GetRenderList()->GetTasks()) {
-		if (task._type == UI_RENDER_TASK_TYPE_SPRITE) {
+		if (task._type == UI_RENDER_TASK_TYPE_SPRITE && task._sprite) {
 			if (!task._sprite->IsReady()) {
 				task._sprite->Load();
 				continue;
@@ -156,6 +159,7 @@ void VulkanUiRenderer::FillBuffers() {
 
 }
 void VulkanUiRenderer::FillCommandBuffer() {
+	_ui_cmdbuf->Begin();
 	_ui_rp->CmdBegin(*_ui_cmdbuf, *_ui_framebuffer);
 	_ui_cmdbuf->BindPipeline(*_ui_pipeline);
 	_ui_cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
@@ -167,7 +171,8 @@ void VulkanUiRenderer::FillCommandBuffer() {
 	}
 
 	_ui_cmdbuf->EndRenderPass();
+	_ui_cmdbuf->End();
 }
 void VulkanUiRenderer::Execute(VulkanSemaphore* end_semaphore) {
-
+	VulkanGraphicsSubmit(*_ui_cmdbuf, *_begin_semaphore, *end_semaphore);
 }

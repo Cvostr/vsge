@@ -33,7 +33,7 @@ void View::AddChild(View* view) {
 		view->GetParent()->RemoveChild(view);
 	}
 
-	view->SetParent(view);
+	view->SetParent(this);
 	_children.push_back(view);
 }
 void View::RemoveChild(View* view) {
@@ -66,6 +66,9 @@ bool View::IsVisible() {
 }
 const Rect& View::GetBounds() {
 	return _bounds;
+}
+void View::SetBounds(const Rect& bounds) {
+	_bounds = bounds;
 }
 void View::SetMargin(float left, float right, float top, float bottom) {
 	_margin.Left = left;
@@ -108,7 +111,7 @@ void View::UpdateBounds() {
 	Margin anchors;
 	Vec2 offset;
 	if (HasParent()) {
-		Rect parentBounds;
+		Rect parentBounds = _parent->GetBounds();
 
 		anchors = Margin
 		(
@@ -144,16 +147,11 @@ void View::UpdateBounds() {
 }
 
 Mat4 View::GetViewTransform() {
-	Vec2 v1 = Vec2(_pivot.x * _bounds.Size.x, _pivot.y * _bounds.Size.y);
-	Vec2 v2 = v1 * -1;
-	v1 += _bounds.Pos;
+	UpdateBounds();
 
-	Mat4 scale = GetScaleMatrix(Vec3(_scale, 1.f));
-	
-	Mat4 translation_v2 = GetTranslationMatrix(Vec3(v2, 0));
-	Mat4 trans_v2_scale = translation_v2 * scale;
-	Mat4 translation_v1 = GetTranslationMatrix(Vec3(v1, 0));
-	Mat4 result = trans_v2_scale * translation_v1;
+	Mat4 translation = GetTranslationMatrix(Vec3(_bounds.Pos, 0));
+	Mat4 scale = GetScaleMatrix(Vec3(_bounds.Size, 1));
 
+	Mat4 result = scale * translation;
 	return result;
 }
