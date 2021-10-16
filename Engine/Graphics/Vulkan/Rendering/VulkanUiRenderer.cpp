@@ -3,6 +3,8 @@
 #include <Graphics/Vulkan/VulkanRAPI.hpp>
 #include <UI/UiLayer.hpp>
 #include <Math/MatrixCamera.hpp>
+#include <Math/MatrixTransform.hpp>
+#include <Graphics/Fonts.hpp>
 
 using namespace VSGE;
 
@@ -136,6 +138,7 @@ void VulkanUiRenderer::WriteTexture(uint32 elem_id, VulkanTexture* texture) {
 }
 
 void VulkanUiRenderer::FillBuffers() {
+	GlyphManager* glyph_manager = GlyphManager::Get();
 	UiLayer* ui_layer = UiLayer::Get();
 	written_elements = 0;
 
@@ -145,14 +148,47 @@ void VulkanUiRenderer::FillBuffers() {
 				task._sprite->Load();
 				continue;
 			}
-			WriteTransform(written_elements, task._transform);
+			Mat4 transform = GetTransform(task.bounds, task.transform.pivot, task.transform.rotation);
+			WriteTransform(written_elements, transform);
 			WriteElement(written_elements, Vec2(0, 0), Vec2(1, 1), Color(1, 1, 1, 1));
 			WriteTexture(written_elements, (VulkanTexture*)task._sprite->GetTexture());
 			written_elements++;
 		}
 		else if (task._type == UI_RENDER_TASK_TYPE_TEXT) {
+			GlyphFontContainer* font = glyph_manager->GetFontByName(task.font);
+			Vec2 average = Vec2(0);
 			for (uint32 i = 0; i < task._text.Length(); i++) {
+				Char sym = task._text[i];
+				CharacterGlyph* glyph = font->GetGlyph(sym);
+				average += glyph->mGlyphSize;
+			}
+			average /= task._text.Length();
 
+			Vec2 drawn = Vec2(0);
+
+			for (uint32 i = 0; i < task._text.Length(); i++) {
+				Char sym = task._text[i];
+				CharacterGlyph* glyph = font->GetGlyph(sym);
+
+				Rect bounds = task.bounds;
+				//float y_offset = glyph->mGlyphSize.y - glyph->mGlyphBearing.y;
+				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, -glyph->mGlyphBearing.y);
+				bounds.Size = glyph->mGlyphSize;
+				//calculate uvs from size
+				Vec2 uv_start = glyph->mGlyphTextureStart / 2048;
+				Vec2 uv_size = glyph->mGlyphSize / 2048;
+				//rotate uvs
+				uv_start.y += uv_size.y;
+				uv_size.y *= -1;
+
+				Mat4 transform = GetTransform(bounds, task.transform.pivot, task.transform.rotation);
+				WriteTransform(written_elements, transform);
+				WriteElement(written_elements, uv_start, uv_size, task._color);
+				WriteTexture(written_elements, (VulkanTexture*)font->GetTexture());
+				written_elements++;
+
+				
+				drawn += Vec2(glyph->mGlyphSize.x + glyph->mGlyphBearing.x, 0);
 			}
 		}
 	}

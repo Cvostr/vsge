@@ -9,8 +9,8 @@
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
-#define MAX_UI_ELEMENTS 400
-#define MAX_UI_TEXT_ELEMENTS 200
+#define MAX_UI_ELEMENTS 500
+#define MAX_UI_TEXT_ELEMENTS 300
 
 namespace VSGE {
 	class VulkanUiRenderer {

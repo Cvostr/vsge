@@ -143,7 +143,19 @@ Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Quat& rotation) {
         ;
     return Result;
 }
+Mat4 GetTransform(const Rect& rect, const Vec2& pivot, const float rotation) {
+    Mat4 translation = GetTranslationMatrix(Vec3(rect.Pos, 0));
+    Mat4 scale = GetScaleMatrix(Vec3(rect.Size, 1));
 
+    Vec2 rotation_pos = rect.Size * pivot;
+    Mat4 _rotation = GetRotationZMatrixEuler(rotation);
+    Mat4 pre_rotation = GetTranslationMatrix(Vec3(rotation_pos * -1, 0));
+    Mat4 post_rotation = GetTranslationMatrix(Vec3(rotation_pos, 0));
+    _rotation = pre_rotation * _rotation * post_rotation;
+
+    Mat4 result = scale * _rotation * translation;
+    return result;
+}
 Mat4 Translate(Mat4& origin, const Vec3& translation) {
     Mat4 result = origin;
 

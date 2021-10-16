@@ -13,8 +13,10 @@ public:
 
 	String();
 	String(char* str, uint32 len = 0);
+	String(wchar_t* str, uint32 len = 0);
 	String(Char* str, uint32 len = 0);
 	String(const std::string& str);
+	String(const String& str);
 	~String();
 	
 	void Clear();

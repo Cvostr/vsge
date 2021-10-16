@@ -4,6 +4,7 @@
 #include <Graphics/Renderer.hpp>
 //TEMPORARY
 #include "Widgets/ImageView.hpp"
+#include "Widgets/TextView.hpp"
 
 using namespace VSGE;
 
@@ -23,9 +24,16 @@ UiLayer::~UiLayer() {
 void UiLayer::OnAttach() {
 	SpriteView* img = new SpriteView;
 	img->SetSprite("test_bc");
-	img->SetAnchorMin(Vec2(0.25f));
+	img->SetAnchorMin(Vec2(0.35f));
 	img->SetAnchorMax(Vec2(0.75f));
+	img->SetRotation(45);
 	_root->AddChild(img);
+
+	TextView* tv = new TextView;
+	tv->SetAnchorMin(Vec2(0.1f, 0.1f));
+	tv->SetAnchorMax(Vec2(0.2f, 0.2f));
+	tv->SetText(L"говно залупа пенис хер давалка хуй блядина");
+	_root->AddChild(tv);
 
 }
 void UiLayer::OnUpdate() {
@@ -48,6 +56,7 @@ void UiLayer::DrawAll() {
 void UiLayer::DrawView(View* view) {
 	view->Draw();
 	for (auto& child : view->GetChildren()) {
+		child->UpdateBounds();
 		DrawView(child);
 	}
 }

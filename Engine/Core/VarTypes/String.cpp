@@ -4,35 +4,52 @@
 String::String() : _data(nullptr), _length(0) {}
 
 String::String(char* str, uint32 len) {
-	_data = nullptr;
-	_length = 0;
+	if (len == 0) {
+		while (str[len] != 0) {
+			len++;
+		}
+	}
+	_length = len;
+	_data = new Char[_length];
+	for (uint32 i = 0; i < _length; i++) {
+		_data[i] = str[i];
+	}
 }
-String::String(Char* str, uint32 len) {
-	_data = nullptr;
-	_length = 0;
-	if (len > 0) {
-		_length = len;
-		_data = new Char[_length];
-		memcpy(_data, str, len);
-	}else if (len == 0) {
-		//find length of input string
-		uint32 length = 0;
-		while (str[length] != 0) {
-			length++;
-		}
-		//allocate memory for string
-		_data = new Char[length];
 
-		for (uint32 i = 0; i < length; i++) {
-			_data[i] = str[i];
+String::String(wchar_t* str, uint32 len) {
+	if (len == 0) {
+		while (str[len] != 0) {
+			len++;
 		}
+	}
+	_length = len;
+	_data = new Char[_length];
+	for (uint32 i = 0; i < _length; i++) {
+		_data[i] = str[i];
+	}
+}
+
+String::String(Char* str, uint32 len) {
+	if (len == 0) {
+		while (str[len] != 0) {
+			len++;
+		}
+	}
+	_length = len;
+	_data = new Char[_length];
+	for (uint32 i = 0; i < _length; i++) {
+		_data[i] = str[i];
 	}
 }
 String::String(const std::string& str) {
 	FromStdString(str);
 }
+String::String(const String& str) {
+	_data = nullptr;
+	Set(str);
+}
 String::~String() {
-	SAFE_RELEASE_ARR(_data)
+	Clear();
 }
 
 void String::Clear() {
@@ -98,8 +115,8 @@ void String::Resize(uint32 new_length) {
 		new_data[i] = _data[i];
 	}
 	
-	_length = new_length;
 	SAFE_RELEASE_ARR(_data);
+	_length = new_length;
 	_data = new_data;
 }
 
@@ -113,7 +130,8 @@ void String::PopBack() {
 }
 
 void String::Set(const String& str) {
-	Resize(str.Length());
+	_length = str.Length();
+	_data = new Char[_length];
 	for (uint32 i = 0; i < str.Length(); i++) {
 		_data[i] = str.c_str()[i];
 	}

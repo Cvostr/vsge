@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Math/Mat4.hpp>
+#include <Math/RectTransform.hpp>
+#include <Math/Rect.hpp>
+#include <Math/Color.hpp>
 #include <vector>
 #include <Core/VarTypes/String.hpp>
 #include <Resources/ResourceTypes/TextureResource.hpp>
@@ -15,10 +17,13 @@ namespace VSGE {
 	class UiRenderTask {
 	public:
 		UiRenderTaskType _type;
-		Mat4 _transform;
+		RectTransform transform;
+		Rect bounds;
 
 		TextureResource* _sprite;
 		String _text;
+		Color _color;
+		std::string font;
 	};
 
 	class UiRenderList {
@@ -28,7 +33,7 @@ namespace VSGE {
 		std::vector<UiRenderTask>& GetTasks();
 		void ClearTasks();
 
-		void DrawSprite(const Mat4& transform, TextureResource* sprite);
-		void DrawText(const Mat4& transform, const String& text);
+		void DrawSprite(const RectTransform& transform, const Rect& bounds, TextureResource* sprite);
+		void DrawText(const RectTransform& transform, const Rect& bounds, const String& text, const std::string& font, const Color& text_color);
 	};
 }

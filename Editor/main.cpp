@@ -18,6 +18,7 @@
 #include <Misc/VkMaterialsThumbnails.hpp>
 
 #include <Resources/DefaultResources.hpp>
+#include <Graphics/Fonts.hpp>
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -51,14 +52,15 @@ Application* VSGEMain() {
 	app->AddLayer(new InputLayer);
 	app->AddLayer(new UiLayer);
 
+	GlyphManager* glyph_manager = new GlyphManager;
+	glyph_manager->AddFontContainer("c:\\Windows\\Fonts\\Arial.ttf", "arial");
+
 	AddDefaultMaterial();
 	AddDefaultMeshes();
 	VkMaterialsThumbnails* thumbs = new VkMaterialsThumbnails;
 	thumbs->Create();
 
 	app->GetWindow().SetPosition(settings->_windowPosX, settings->_windowPosY);
-
-
 
 	ResourcePickerWindow* rpw = new ResourcePickerWindow;
 	rpw->Hide();

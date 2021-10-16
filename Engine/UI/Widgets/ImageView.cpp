@@ -11,7 +11,7 @@ SpriteView::~SpriteView() {
 
 }
 void SpriteView::Draw() {
-	UiLayer::Get()->GetRenderList()->DrawSprite(GetViewTransform(), _texture_reference.GetResource<TextureResource>());
+	UiLayer::Get()->GetRenderList()->DrawSprite(_transform, _bounds, _texture_reference.GetResource<TextureResource>());
 }
 
 void SpriteView::SetSprite(const std::string& sprite) {

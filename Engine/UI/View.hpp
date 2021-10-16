@@ -1,39 +1,19 @@
 #pragma once
 
 #include <vector>
-#include <Math/Rect.hpp>
-#include <Math/Vec2.hpp>
+#include <Math/RectTransform.hpp>
 #include <Math/Mat4.hpp>
 
 namespace VSGE {
 
-	class Margin {
-	public:
-		float Left;
-		float Right;
-		float Top;
-		float Bottom;
-
-		Margin() :
-			Left(0), Right(0), Top(0), Bottom(0) {}
-
-		Margin(float left, float right, float top, float bottom) : 
-			Left(left), Right(right), Top(top), Bottom(bottom) {}
-	};
-
 	class View {
-	private:
+	protected:
 		std::vector<View*> _children;
 		View* _parent;
 
 		bool _visible;
 		Rect _bounds;
-		Margin _margin;
-		Vec2 _anchorMin;
-		Vec2 _anchorMax;
-		Vec2 _scale;
-		Vec2 _pivot;
-		float _rotation;
+		RectTransform _transform;
 
 		bool IsChildExist(View* view);
 		

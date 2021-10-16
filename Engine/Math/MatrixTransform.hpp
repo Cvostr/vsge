@@ -3,6 +3,8 @@
 #include "Mat4.hpp"
 #include "Vec3.hpp"
 #include "Quaternion.hpp"
+#include "Vec2.hpp"
+#include "Rect.hpp"
 
 Mat4 GetTranslationMatrix(const Vec3& pos);
 Mat4 GetScaleMatrix(const Vec3& scale);
@@ -19,6 +21,7 @@ Mat4 GetRotationMatrix(const Quat Rotation);
 
 Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Vec3& rotation);
 Mat4 GetTransform(const Vec3& pos, const Vec3& scale, const Quat& rotation);
+Mat4 GetTransform(const Rect& rect, const Vec2& pivot, const float rotation);
 
 Mat4 Translate(Mat4& origin, const Vec3& translation);
 Mat4 Scale(Mat4& origin, const Vec3& scale);

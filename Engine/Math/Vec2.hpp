@@ -37,9 +37,27 @@ public:
 		return tVec2(x * d, y * d);
 	}
 
+	tVec2 operator/(float d) const {
+		return tVec2(x / d, y / d);
+	}
+
+	tVec2 operator*(const tVec2& v) const {
+		return tVec2(x * v.x, y * v.y);
+	}
+
+	void operator*=(const tVec2& v) {
+		x *= v.x;
+		y *= v.y;
+	}
+
 	void operator*=(float v) {
 		x *= v;
 		y *= v;
+	}
+
+	void operator/=(float v) {
+		x /= v;
+		y /= v;
 	}
 
 	bool operator ==(const tVec2& r) const {

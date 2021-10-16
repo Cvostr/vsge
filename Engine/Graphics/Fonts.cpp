@@ -1,6 +1,7 @@
 #include "Fonts.hpp"
 #include <iostream>
 #include <algorithm>
+#include <Core/FileLoader.hpp>
 
 using namespace VSGE;
 
@@ -8,6 +9,7 @@ GlyphManager glyphs;
 GlyphManager* GlyphManager::_this = nullptr;
 
 GlyphManager::GlyphManager() {
+    _this = this;
     if (FT_Init_FreeType(&this->mFtlib))
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 }
@@ -16,18 +18,36 @@ FT_Library GlyphManager::getFreetypeLibraryInstance() {
     return this->mFtlib;
 }
 
-void GlyphManager::addFontContainer(GlyphFontContainer* ptr) {
-    this->mFonts.push_back(ptr);
+void GlyphManager::AddFontContainer(GlyphFontContainer* ptr) {
+    this->_fonts.push_back(ptr);
+}
+
+void GlyphManager::AddFontContainer(const std::string& file_path, const std::string& name) {
+    byte* data = nullptr;
+    uint32 size = 0;
+    LoadFile(file_path, (char**)&data, &size);
+    GlyphFontContainer* container = new GlyphFontContainer(data, size, 64);
+    container->SetName(name);
+    AddFontContainer(container);
+}
+
+GlyphFontContainer* GlyphManager::GetFontByName(const std::string& name) {
+    for (auto font : _fonts) {
+        if (font->GetName() == name)
+            return font;
+    }
+    return nullptr;
 }
 
 GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     //Load font by freetype
-    FT_New_Memory_Face(GlyphManager::Get()->getFreetypeLibraryInstance(), data, bsize, 0, &this->font);
-    FT_Set_Pixel_Sizes(this->font, 0, size);
-    mGlyphTexture = CreateTexture();
+    FT_New_Memory_Face(GlyphManager::Get()->getFreetypeLibraryInstance(), data, bsize, 0, &_ft_font);
+    FT_Set_Pixel_Sizes(_ft_font, 0, size);
+    _glyph_texture = CreateTexture();
+    _font_size = size;
     //Allocate temporary buffer
-    mGlyphTextureBuffer = new byte[texSize * texSize];
-    memset(mGlyphTextureBuffer, 0, texSize * texSize);
+    _glyph_texture_buffer = new byte[texSize * texSize];
+    memset(_glyph_texture_buffer, 0, texSize * texSize);
 
     uint32 WorkX = 0;
     uint32 WorkY = 0;
@@ -35,16 +55,17 @@ GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     //Fill arrays and texture buffer
     loadGlyphs(WorkX, WorkY, MaxY);
     //Create texture from buffer
-    mGlyphTexture->Create(texSize, texSize, TextureFormat::FORMAT_R);
-    mGlyphTexture->AddMipLevel(mGlyphTextureBuffer, texSize * texSize, texSize, texSize, 0, 0);
+    _glyph_texture->Create(texSize, texSize, TextureFormat::FORMAT_R);
+    _glyph_texture->AddMipLevel(_glyph_texture_buffer, texSize * texSize, texSize, texSize, 0, 0);
+    _glyph_texture->SetReadyToUseInShaders();
     //Delete temporary buffer
-    delete[] mGlyphTextureBuffer;
+    delete[] _glyph_texture_buffer;
 }
 
 GlyphFontContainer::~GlyphFontContainer() {
-    FT_Done_Face(this->font);
+    FT_Done_Face(this->_ft_font);
 
-    std::for_each(characters.begin(), characters.end(),
+    std::for_each(_characters.begin(), _characters.end(),
         [](std::pair<uint32, CharacterGlyph*> element) {
             // Accessing VALUE from element.
             delete element.second;
@@ -58,8 +79,9 @@ void GlyphFontContainer::loadGlyphs(uint32& WorkX,
     for (uint32 i = 0; i < 255; i++) {
         loadGlyph(i, WorkX, WorkY, MaxY);
     }
+    _characters[32]->mGlyphSize.x = 20;
     //Cyrillic Russian letters
-    for (uint32 i = 1040; i < 1103; i++) {
+    for (uint32 i = 1040; i < 1106; i++) {
         loadGlyph(i, WorkX, WorkY, MaxY);
     }
     //Additional Cyrillic Ukrainian letters
@@ -78,17 +100,17 @@ void GlyphFontContainer::loadGlyph(uint32 index,
     uint32& WorkY,
     uint32& MaxY) {
     //use freetype to load char
-    FT_Load_Char(this->font, static_cast<FT_ULong>(index), FT_LOAD_RENDER);
+    FT_Load_Char(this->_ft_font, static_cast<FT_ULong>(index), FT_LOAD_RENDER);
     //Allocating new Character Glyph
     CharacterGlyph* character = new CharacterGlyph;
-    character->mGlyphSize.x = static_cast<float>(font->glyph->bitmap.width);
-    character->mGlyphSize.y = static_cast<float>(font->glyph->bitmap.rows);
+    character->mGlyphSize.x = static_cast<float>(_ft_font->glyph->bitmap.width);
+    character->mGlyphSize.y = static_cast<float>(_ft_font->glyph->bitmap.rows);
 
-    character->mGlyphAdvance.x = static_cast<float>(font->glyph->advance.x);
-    character->mGlyphAdvance.y = static_cast<float>(font->glyph->advance.y);
+    character->mGlyphAdvance.x = static_cast<float>(_ft_font->glyph->advance.x);
+    character->mGlyphAdvance.y = static_cast<float>(_ft_font->glyph->advance.y);
 
-    character->mGlyphBearing.x = static_cast<float>(font->glyph->bitmap_left);
-    character->mGlyphBearing.y = static_cast<float>(font->glyph->bitmap_top);
+    character->mGlyphBearing.x = static_cast<float>(_ft_font->glyph->bitmap_left);
+    character->mGlyphBearing.y = static_cast<float>(_ft_font->glyph->bitmap_top);
     //This code adds glyph to general font texture
     if (((texSize - WorkX) < character->mGlyphSize.x)) {
         WorkX = 0;
@@ -104,16 +126,28 @@ void GlyphFontContainer::loadGlyph(uint32 index,
         uint32 Ycoord = (WorkY + _y) * texSize;
         for (uint32 _x = 0; _x < character->mGlyphSize.x; _x++) {
             uint32 Xcoord = Ycoord + WorkX + _x;
-            mGlyphTextureBuffer[Xcoord] = font->glyph->bitmap.buffer[(int)(_y * character->mGlyphSize.x + _x)];
+            _glyph_texture_buffer[Xcoord] = _ft_font->glyph->bitmap.buffer[(int)(_y * character->mGlyphSize.x + _x)];
         }
     }
-    WorkX += static_cast<uint32>(character->mGlyphSize.x);
+    WorkX += static_cast<uint32>(character->mGlyphSize.x) + 1;
 
-    this->characters.insert(std::pair<uint32, CharacterGlyph*>(index, character));
+    _characters.insert(std::pair<uint32, CharacterGlyph*>(index, character));
 }
 
+void GlyphFontContainer::SetName(const std::string& name) {
+    _name = name;
+}
+const std::string& GlyphFontContainer::GetName() {
+    return _name;
+}
+Texture* GlyphFontContainer::GetTexture() {
+    return _glyph_texture;
+}
+CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character) {
+    return _characters.at(static_cast<uint32>(character));
+}
 void GlyphFontContainer::DrawChar(int _char, Vec2 pos, uint32* char_length, Color color) {
-    CharacterGlyph* glyph = this->characters.at(static_cast<uint32>(_char));
+    CharacterGlyph* glyph = _characters.at(static_cast<uint32>(_char));
     *char_length = static_cast<uint32>(glyph->mGlyphBearing.x + glyph->mGlyphSize.x);
 
     //game_data->pipeline->renderGlyph(glyph, static_cast<int>(pos.x), static_cast<int>(pos.Y - (glyph->mGlyphSize.Y - glyph->mGlyphBearing.Y)), static_cast<int>(glyph->mGlyphSize.X), static_cast<int>(glyph->mGlyphSize.Y), color);

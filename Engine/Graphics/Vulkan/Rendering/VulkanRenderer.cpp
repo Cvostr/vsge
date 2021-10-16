@@ -482,6 +482,8 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
 
 	_ui_renderer->ResizeOutput(width, height);
+
+	mOutput = _ui_renderer->GetOutputTexture();
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
