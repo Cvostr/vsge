@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <Math/RectTransform.hpp>
 #include <Math/Mat4.hpp>
+#include <Math/Rect.hpp>
 
 namespace VSGE {
 
@@ -13,7 +13,7 @@ namespace VSGE {
 
 		bool _visible;
 		Rect _bounds;
-		RectTransform _transform;
+		float _rotation;
 
 		bool IsChildExist(View* view);
 		
@@ -31,25 +31,10 @@ namespace VSGE {
 		void SetVisible(bool visible);
 		bool IsVisible();
 		const Rect& GetBounds();
-		//DO NOT USE MANUAL
 		void SetBounds(const Rect& bounds);
-
-		void SetMargin(float left, float right, float top, float bottom);
-		const Margin& GetMargin();
-
-		const Vec2& GetAnchorMin();
-		const Vec2& GetAnchorMax();
-		void SetAnchorMin(const Vec2& anchor);
-		void SetAnchorMax(const Vec2& anchor);
-		
-		const Vec2& GetScale();
-		void SetScale(const Vec2& scale);
 
 		const float GetRotation();
 		void SetRotation(float rotation);
-
-		void UpdateBounds();
-		Mat4 GetViewTransform();
 
 		virtual void Draw(){}
 	};

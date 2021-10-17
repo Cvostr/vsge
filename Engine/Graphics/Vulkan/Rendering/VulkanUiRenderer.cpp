@@ -112,6 +112,8 @@ void VulkanUiRenderer::Create() {
 }
 void VulkanUiRenderer::Destroy() {
 	SAFE_RELEASE(_ui_sprite_mesh)
+	SAFE_RELEASE(_ui_pipeline)
+	SAFE_RELEASE(_ui_pll)
 }
 void VulkanUiRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_fb_width = width;
@@ -156,7 +158,7 @@ void VulkanUiRenderer::FillBuffers() {
 				task._sprite->Load();
 				continue;
 			}
-			Mat4 transform = GetTransform(task.bounds, task.transform.pivot, task.transform.rotation);
+			Mat4 transform = GetTransform(task.bounds, Vec2(0.5f), task.rotation);
 			WriteTransform(written_elements, transform);
 			WriteElement(written_elements, Vec2(0, 0), Vec2(1, 1), Color(1, 1, 1, 1));
 			WriteTexture(written_elements, (VulkanTexture*)task._sprite->GetTexture());
@@ -188,7 +190,7 @@ void VulkanUiRenderer::FillBuffers() {
 				uv_start.y += uv_size.y;
 				uv_size.y *= -1;
 
-				Mat4 transform = GetTransform(bounds, task.transform.pivot, task.transform.rotation);
+				Mat4 transform = GetTransform(bounds, Vec2(0.5f), task.rotation);
 				WriteTransform(written_elements, transform);
 				WriteElement(written_elements, uv_start, uv_size, task._color, 1);
 				WriteTexture(written_elements, (VulkanTexture*)font->GetTexture());

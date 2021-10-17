@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Math/RectTransform.hpp>
 #include <Math/Rect.hpp>
 #include <Math/Color.hpp>
 #include <vector>
@@ -17,8 +16,8 @@ namespace VSGE {
 	class UiRenderTask {
 	public:
 		UiRenderTaskType _type;
-		RectTransform transform;
 		Rect bounds;
+		float rotation;
 
 		TextureResource* _sprite;
 		String _text;
@@ -33,7 +32,7 @@ namespace VSGE {
 		std::vector<UiRenderTask>& GetTasks();
 		void ClearTasks();
 
-		void DrawSprite(const RectTransform& transform, const Rect& bounds, TextureResource* sprite);
-		void DrawText(const RectTransform& transform, const Rect& bounds, const String& text, const std::string& font, const Color& text_color);
+		void DrawSprite(const Rect& bounds, float rotation, TextureResource* sprite);
+		void DrawText(const Rect& bounds, float rotation, const String& text, const std::string& font, const Color& text_color);
 	};
 }

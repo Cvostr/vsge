@@ -193,3 +193,7 @@ VulkanRenderPass* VulkanDeferredLight::GetRenderPass() {
 TextureFormat VulkanDeferredLight::GetOutputFormat() {
 	return _outputFormat;
 }
+
+VulkanTexture* VulkanDeferredLight::GetOutputTexture() {
+	return (VulkanTexture*)_deferred_fb->GetColorAttachments()[0];
+}

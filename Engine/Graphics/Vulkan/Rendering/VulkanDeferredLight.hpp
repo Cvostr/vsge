@@ -46,6 +46,7 @@ namespace VSGE {
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
+		VulkanTexture* GetOutputTexture();
 		void RecordCmdbuf(VulkanCommandBuffer* cmdbuf);
 		void Resize(uint32 width, uint32 height);
 		void SetEnvmap(bool envmap);

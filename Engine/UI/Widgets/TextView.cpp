@@ -24,5 +24,5 @@ void TextView::SetTextColor(const Color& color) {
 }
 
 void TextView::Draw() {
-	UiLayer::Get()->GetRenderList()->DrawText(_transform, _bounds, _text, _font_name, _text_color);
+	UiLayer::Get()->GetRenderList()->DrawText(_bounds, _rotation, _text, _font_name, _text_color);
 }

@@ -13,6 +13,7 @@
 #include <Graphics/LightsBuffer.hpp>
 #include "VulkanTerrainRenderer.hpp"
 #include "VulkanUiRenderer.hpp"
+#include "Postprocess/VulkanPostprocessing.hpp"
 #include "VulkanDeferredLight.hpp"
 #include "VulkanCamerasBuffer.hpp"
 #include "VulkanGBufferRenderer.hpp"
@@ -67,6 +68,7 @@ namespace VSGE {
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
 		VulkanUiRenderer* _ui_renderer;
+		VulkanPostprocessing* _postprocessing;
 		Vulkan_BRDF_LUT* _brdf_lut;
 		//VulkanIrradianceMap* _irmap;
 		VulkanCamerasBuffer* _cameras_buffer;

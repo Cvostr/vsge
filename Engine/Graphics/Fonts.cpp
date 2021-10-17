@@ -146,19 +146,10 @@ Texture* GlyphFontContainer::GetTexture() {
 CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character) {
     return _characters.at(static_cast<uint32>(character));
 }
-void GlyphFontContainer::DrawChar(int _char, Vec2 pos, uint32* char_length, Color color) {
-    CharacterGlyph* glyph = _characters.at(static_cast<uint32>(_char));
-    *char_length = static_cast<uint32>(glyph->mGlyphBearing.x + glyph->mGlyphSize.x);
-
-    //game_data->pipeline->renderGlyph(glyph, static_cast<int>(pos.x), static_cast<int>(pos.Y - (glyph->mGlyphSize.Y - glyph->mGlyphBearing.Y)), static_cast<int>(glyph->mGlyphSize.X), static_cast<int>(glyph->mGlyphSize.Y), color);
-}
-/*
-void GlyphFontContainer::DrawString(const char32_t* string, unsigned int len, Vec2 pos, Color color) {
-    mGlyphTexture->Use(0);
-    unsigned int xpos_offset = static_cast<unsigned int>(pos.x);
-    for (unsigned int i = 0; i < len; i++) {
-        unsigned int char_len = 0;
-        DrawChar(string[i], Vec2(static_cast<float>(xpos_offset), pos.y), &char_len, color);
-        xpos_offset += char_len;
+uint32 GlyphFontContainer::GetWidthOfString(uint32* str, uint32 strlen) { 
+    uint32 result = 0;
+    for (uint32 i = 0; i < strlen; i++) {
+        result += GetGlyph(str[i])->mGlyphSize.x;
     }
-}*/
+    return result;
+}

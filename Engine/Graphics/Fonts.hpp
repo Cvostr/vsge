@@ -51,11 +51,29 @@ namespace VSGE {
                 uint32& WorkY,
                 uint32& MaxY);
 
-        void DrawChar(int _char, Vec2 pos, uint32* char_length, Color color);
+        /// <summary>
+        /// Set font name
+        /// </summary>
+        /// <param name="name"></param>
         void SetName(const std::string& name);
+        /// <summary>
+        /// Get font name
+        /// </summary>
+        /// <returns></returns>
         const std::string& GetName();
+        /// <summary>
+        /// Get font texture
+        /// </summary>
+        /// <returns></returns>
         Texture* GetTexture();
+        /// <summary>
+        /// Get glyph by its id
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
         CharacterGlyph* GetGlyph(uint32 character);
+        
+        uint32 GetWidthOfString(uint32* str, uint32 strlen);
     };
     
     class GlyphManager {

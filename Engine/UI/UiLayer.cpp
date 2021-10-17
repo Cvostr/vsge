@@ -24,14 +24,12 @@ UiLayer::~UiLayer() {
 void UiLayer::OnAttach() {
 	SpriteView* img = new SpriteView;
 	img->SetSprite("test_bc");
-	img->SetAnchorMin(Vec2(0.35f));
-	img->SetAnchorMax(Vec2(0.75f));
+	img->SetBounds(Rect(Vec2(100, 100), Vec2(100, 50)));
 	img->SetRotation(45);
 	_root->AddChild(img);
 
 	TextView* tv = new TextView;
-	tv->SetAnchorMin(Vec2(0.1f, 0.1f));
-	tv->SetAnchorMax(Vec2(0.2f, 0.2f));
+	tv->SetBounds(Rect(Vec2(300, 100), Vec2(100, 50)));
 	tv->SetText(L"русский english");
 	tv->SetTextColor(Color(0.3f, 0.4f, 0.6f, 0.5f));
 	_root->AddChild(tv);
@@ -57,7 +55,6 @@ void UiLayer::DrawAll() {
 void UiLayer::DrawView(View* view) {
 	view->Draw();
 	for (auto& child : view->GetChildren()) {
-		child->UpdateBounds();
 		DrawView(child);
 	}
 }

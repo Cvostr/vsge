@@ -32,3 +32,5 @@ shader grass/grass.frag
 
 shader ui/ui.vert
 shader ui/ui.frag
+
+shader postprocess/gamma_correction/gamma_correction.comp

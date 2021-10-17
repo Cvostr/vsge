@@ -75,6 +75,10 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/PBR/VulkanIrradianceMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanSpecularMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanIBL.cpp
+				Graphics/Vulkan/Rendering/Postprocess/VulkanPostprocessing.cpp
+				Graphics/Vulkan/Rendering/Postprocess/VulkanGammaCorrection.cpp
+				Graphics/Vulkan/Rendering/Postprocess/VulkanBloom.cpp
+				Graphics/Vulkan/Rendering/Postprocess/VulkanSSAO.cpp
 				Input/Input.cpp
 				Input/InputLayer.cpp
 				Math/AABB.cpp

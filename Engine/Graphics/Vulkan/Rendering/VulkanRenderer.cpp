@@ -199,6 +199,15 @@ void VulkanRenderer::SetupRenderer() {
 	//_deferred_renderer->SetIBL(_ibl_map->GetSpecularMap(), _ibl_map->GetIrradianceMap());
 	_deferred_renderer->UnsetIBL();
 
+	_postprocessing = new VulkanPostprocessing;
+	_postprocessing->SetInputTextures(
+		_deferred_renderer->GetOutputTexture(),
+		_gbuffer_renderer->GetDepthAttachment(),
+		_gbuffer_renderer->GetNormalAttachment(),
+		_gbuffer_renderer->GetPositionAttachment());
+	_postprocessing->Create();
+	_postprocessing->ResizeOutput(GetOutputSizes());
+
 	//---------------------Command buffers------------------------
 	mCmdPool = new VulkanCommandPool;
 	mCmdPool->Create(device->GetGraphicsQueueFamilyIndex());
@@ -280,6 +289,8 @@ void VulkanRenderer::DestroyRenderer() {
 	SAFE_RELEASE(_deferred_renderer)
 	SAFE_RELEASE(_gbuffer_renderer)
 	SAFE_RELEASE(_ibl_map)
+	SAFE_RELEASE(_ui_renderer)
+	SAFE_RELEASE(_postprocessing)
 }
 
 void VulkanRenderer::StoreWorldObjects() {
@@ -473,7 +484,7 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_gbuffer_renderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
-	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
+	mOutput = _deferred_renderer->GetOutputTexture();
 
 	_terrain_renderer->SetOutputSizes(width, height);
 	
@@ -482,8 +493,9 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
 
 	_ui_renderer->ResizeOutput(width, height);
+	_postprocessing->ResizeOutput(GetOutputSizes());
 
-	mOutput = _ui_renderer->GetOutputTexture();
+	//mOutput = _ui_renderer->GetOutputTexture();
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {

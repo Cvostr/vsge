@@ -9,18 +9,18 @@ void UiRenderList::ClearTasks() {
 	_tasks.clear();
 }
 
-void UiRenderList::DrawSprite(const RectTransform& transform, const Rect& bounds, TextureResource* sprite) {
+void UiRenderList::DrawSprite(const Rect& bounds, float rotation, TextureResource* sprite) {
 	UiRenderTask task;
 	task._type = UI_RENDER_TASK_TYPE_SPRITE;
-	task.transform = transform;
+	task.rotation = rotation;
 	task.bounds = bounds;
 	task._sprite = sprite;
 	_tasks.push_back(task);
 }
-void UiRenderList::DrawText(const RectTransform& transform, const Rect& bounds, const String& text, const std::string& font, const Color& color) {
+void UiRenderList::DrawText(const Rect& bounds, float rotation, const String& text, const std::string& font, const Color& color) {
 	UiRenderTask task;
 	task._type = UI_RENDER_TASK_TYPE_TEXT;
-	task.transform = transform;
+	task.rotation = rotation;
 	task.bounds = bounds;
 	task._text = text;
 	task.font = font;
