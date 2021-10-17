@@ -32,7 +32,8 @@ void UiLayer::OnAttach() {
 	TextView* tv = new TextView;
 	tv->SetAnchorMin(Vec2(0.1f, 0.1f));
 	tv->SetAnchorMax(Vec2(0.2f, 0.2f));
-	tv->SetText(L"говно залупа пенис хер давалка хуй блядина");
+	tv->SetText(L"русский english");
+	tv->SetTextColor(Color(0.3f, 0.4f, 0.6f, 0.5f));
 	_root->AddChild(tv);
 
 }

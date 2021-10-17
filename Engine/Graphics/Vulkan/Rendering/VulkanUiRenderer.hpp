@@ -40,7 +40,7 @@ namespace VSGE {
 		uint32 _fb_height;
 
 		void WriteTransform(uint32 elem_id, const Mat4& transform);
-		void WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color);
+		void WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color, int text = 0);
 		void WriteTexture(uint32 elem_id, VulkanTexture* texture);
 	public:
 

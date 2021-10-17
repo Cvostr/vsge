@@ -60,6 +60,7 @@ void VulkanUiRenderer::Create() {
 	_ui_rp->SetClearSize(_fb_width, _fb_height);
 	_ui_rp->PushColorAttachment(FORMAT_RGBA);
 	_ui_rp->Create();
+	_ui_rp->SetClearColor(0, Color(0, 0, 0, 0));
 
 	_ui_framebuffer = new VulkanFramebuffer;
 	_ui_framebuffer->SetSize(_fb_width, _fb_height);
@@ -80,9 +81,15 @@ void VulkanUiRenderer::Create() {
 	_ui_pll->PushDescriptorSet(_descr_sets[0]);
 	_ui_pll->Create();
 
+	BlendAttachmentDesc ui_blend_desc;
+	ui_blend_desc._blending = true;
+	ui_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
+	ui_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+
 	_ui_pipeline = new VulkanPipeline;
 	_ui_pipeline->SetCullMode(CULL_MODE_NONE);
 	_ui_pipeline->SetDepthTest(false);
+	_ui_pipeline->SetBlendingAttachmentDesc(0, ui_blend_desc);
 	_ui_pipeline->Create(_ui_shader, _ui_rp, _vertexLayout, _ui_pll);
 
 	_ui_cmdpool = new VulkanCommandPool;
@@ -127,10 +134,11 @@ void VulkanUiRenderer::WriteTransform(uint32 elem_id, const Mat4& transform) {
 	Mat4 total_transform = transform * _camera_transform;
 	_transforms_buffer->WriteData(256 * elem_id, sizeof(Mat4), &total_transform);
 }
-void VulkanUiRenderer::WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color) {
-	_frag_buffer->WriteData(256 * elem_id, sizeof(Vec3), (void*)(&color));
+void VulkanUiRenderer::WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color, int text) {
+	_frag_buffer->WriteData(256 * elem_id, sizeof(Color), (void*)(&color));
 	_frag_buffer->WriteData(256 * elem_id + 16, sizeof(Vec2), (void*)(&uv_min));
 	_frag_buffer->WriteData(256 * elem_id + 24, sizeof(Vec2), (void*)(&uv_max));
+	_frag_buffer->WriteData(256 * elem_id + 32, 4, &text);
 }
 void VulkanUiRenderer::WriteTexture(uint32 elem_id, VulkanTexture* texture) {
 	VulkanDescriptorSet* set = _descr_sets[elem_id];
@@ -171,7 +179,6 @@ void VulkanUiRenderer::FillBuffers() {
 				CharacterGlyph* glyph = font->GetGlyph(sym);
 
 				Rect bounds = task.bounds;
-				//float y_offset = glyph->mGlyphSize.y - glyph->mGlyphBearing.y;
 				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, -glyph->mGlyphBearing.y);
 				bounds.Size = glyph->mGlyphSize;
 				//calculate uvs from size
@@ -183,16 +190,14 @@ void VulkanUiRenderer::FillBuffers() {
 
 				Mat4 transform = GetTransform(bounds, task.transform.pivot, task.transform.rotation);
 				WriteTransform(written_elements, transform);
-				WriteElement(written_elements, uv_start, uv_size, task._color);
+				WriteElement(written_elements, uv_start, uv_size, task._color, 1);
 				WriteTexture(written_elements, (VulkanTexture*)font->GetTexture());
 				written_elements++;
-
 				
 				drawn += Vec2(glyph->mGlyphSize.x + glyph->mGlyphBearing.x, 0);
 			}
 		}
 	}
-
 }
 void VulkanUiRenderer::FillCommandBuffer() {
 	_ui_cmdbuf->Begin();

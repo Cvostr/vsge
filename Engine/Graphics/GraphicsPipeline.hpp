@@ -149,6 +149,10 @@ namespace VSGE {
 			_blendDescs = map;
 		}
 
+		void SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc) {
+			_blendDescs.insert(std::pair(attachment, desc));
+		}
+
 		GraphicsPipeline() 
 			: IGpuObject(),
 			_primitiveTopology(PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),

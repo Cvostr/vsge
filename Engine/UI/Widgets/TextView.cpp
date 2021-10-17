@@ -5,7 +5,7 @@ using namespace VSGE;
 
 TextView::TextView() {
 	_font_name = "arial";
-	_text = "test";
+	_text = "";
 }
 TextView::~TextView() {
 
