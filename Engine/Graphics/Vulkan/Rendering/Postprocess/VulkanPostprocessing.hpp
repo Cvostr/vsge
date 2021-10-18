@@ -2,7 +2,9 @@
 
 #include "VulkanGammaCorrection.hpp"
 #include "VulkanBloom.hpp"
+#include "VulkanSSAO.hpp"
 #include "../../VulkanCommandBuffer.hpp"
+#include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
 namespace VSGE {
 
@@ -27,9 +29,12 @@ namespace VSGE {
 		VulkanTexture* _output_texture;
 
 		VulkanGammaCorrection* _gamma_correction;
+		VulkanBloom* _bloom;
+		VulkanSSAO* _ssao;
 
 		VulkanCommandPool* _cmdpool;
 		VulkanCommandBuffer* _cmdbuf;
+		VulkanSemaphore* _begin_semaphore;
 
 		Vec2i _output_sizes;
 	public:
@@ -45,6 +50,9 @@ namespace VSGE {
 
 		void FillCommandBuffer();
 		void ResizeOutput(const Vec2i& new_size);
+		VulkanTexture* GetOutputTexture();
+		VulkanSemaphore* GetBeginSemaphore();
+		void Execute(VulkanSemaphore* end_semaphore);
 
 		void Create();
 		void Destroy();

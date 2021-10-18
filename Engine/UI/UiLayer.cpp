@@ -30,7 +30,7 @@ void UiLayer::OnAttach() {
 
 	TextView* tv = new TextView;
 	tv->SetBounds(Rect(Vec2(300, 100), Vec2(100, 50)));
-	tv->SetText(L"русский english");
+	tv->SetText(L"русский english,.&*#@!()=-_<;:^%$№");
 	tv->SetTextColor(Color(0.3f, 0.4f, 0.6f, 0.5f));
 	_root->AddChild(tv);
 

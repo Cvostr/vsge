@@ -219,9 +219,6 @@ void main() {
         vec3 ambient = CalculateIBL(normal, F0, Lo, cosLo, roughness, metallic, albedo);
         color += ambient * ambient_light;
 
-        color = color / (color + vec3(1.0));
-        color = pow(color, vec3(1.0/2.2)); 
-
         tColor = vec4(color, diffuse.a);
     }
 }

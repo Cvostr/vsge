@@ -29,13 +29,23 @@ void VulkanPostprocessing::Create() {
 	_gamma_correction = new VulkanGammaCorrection;
 	_gamma_correction->Create();
 
+	_bloom = new VulkanBloom;
+	_bloom->Create();
+
+	_ssao = new VulkanSSAO;
+	_ssao->Create();
+
 	_cmdpool = new VulkanCommandPool;
 	_cmdpool->Create(VulkanRAPI::Get()->GetDevice()->GetComputeQueueFamilyIndex());
 
 	_cmdbuf = new VulkanCommandBuffer;
 	_cmdbuf->Create(_cmdpool);
+
+	_begin_semaphore = new VulkanSemaphore;
+	_begin_semaphore->Create();
 }
 void VulkanPostprocessing::Destroy() {
+	SAFE_RELEASE(_begin_semaphore)
 	SAFE_RELEASE(_cmdbuf);
 	SAFE_RELEASE(_cmdpool);
 
@@ -43,11 +53,22 @@ void VulkanPostprocessing::Destroy() {
 }
 
 void VulkanPostprocessing::FillCommandBuffer() {
+	_gamma_correction->SetInputTexture(_input_texture);
+
 	_cmdbuf->Begin();
 	_gamma_correction->FillCommandBuffer(_cmdbuf);
 	_cmdbuf->End();
 }
 
+VulkanTexture* VulkanPostprocessing::GetOutputTexture() {
+	return (VulkanTexture*)_gamma_correction->GetOutputTexture();
+}
+VulkanSemaphore* VulkanPostprocessing::GetBeginSemaphore() {
+	return _begin_semaphore;
+}
+void VulkanPostprocessing::Execute(VulkanSemaphore* end_semaphore) {
+	VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end_semaphore);
+}
 void VulkanPostprocessing::ResizeOutput(const Vec2i& new_size) {
 	if (_output_sizes == new_size)
 		return;

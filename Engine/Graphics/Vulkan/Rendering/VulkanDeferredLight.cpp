@@ -8,7 +8,7 @@ VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_height = 720;
 	_camera_index = 0;
 	_is_envmap = false;
-	_outputFormat = FORMAT_RGBA;
+	_outputFormat = FORMAT_RGBA16F;
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
@@ -178,8 +178,10 @@ void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {
 
 void VulkanDeferredLight::SetEnvmap(bool envmap) {
 	_is_envmap = envmap;
-	if (envmap)
-		_outputFormat = FORMAT_RGBA16F;
+}
+
+void VulkanDeferredLight::SetOutputFormat8() {
+	_outputFormat = FORMAT_RGBA;
 }
 
 VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {

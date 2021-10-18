@@ -46,7 +46,8 @@ void VulkanGammaCorrection::Create() {
 	_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_output, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 }
 void VulkanGammaCorrection::Destroy() {
-
+	SAFE_RELEASE(_pipeline)
+	
 }
 
 void VulkanGammaCorrection::SetInputTexture(Texture* input) {
@@ -63,7 +64,7 @@ void VulkanGammaCorrection::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	
 	cmdbuf->BindComputePipeline(*_pipeline);
 	cmdbuf->BindDescriptorSets(*_pp_layout, 0, 1, _descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
-	cmdbuf->Dispatch(_output_sizes.x / 32, _output_sizes.y / 32, 1);
+	cmdbuf->Dispatch(_output_sizes.x / 32 + 1, _output_sizes.y / 32	+ 1, 1);
 
 	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_arrier });
 }
@@ -75,4 +76,6 @@ void VulkanGammaCorrection::ResizeOutput(const Vec2i& new_size) {
 	_output_sizes = new_size;
 	_output->Resize(new_size.x, new_size.y);
 	SetInputTexture(_output);
+
+	_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_output, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 }

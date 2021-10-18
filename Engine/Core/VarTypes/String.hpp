@@ -21,7 +21,7 @@ public:
 	
 	void Clear();
 
-	uint32 Length() const ;
+	uint32 Length() const;
 
 	bool IsEmpty() const;
 

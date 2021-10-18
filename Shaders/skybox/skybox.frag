@@ -170,11 +170,13 @@ vec3 sample_sky(int index, vec2 uv){
 
 void main()
 {   
-	int index = convert_xyz_to_cube_index(_pos.x, _pos.y, _pos.z);
-  vec2 uv = convert_xyz_to_cube_uv(vec3(_pos.x, _pos.y, _pos.z));
-	vec3 color = sample_sky(index, uv);
-	color *= tint_color.rgb;
-	color *= Exposure;
+    int index = convert_xyz_to_cube_index(_pos.x, _pos.y, _pos.z);
+    vec2 uv = convert_xyz_to_cube_uv(vec3(_pos.x, _pos.y, _pos.z));
+    vec3 color = sample_sky(index, uv);
+    color *= tint_color.rgb;
+    color *= Exposure;
 
-	tDiffuse = vec4(color, 1);
+    color = pow(color, vec3(2.2));
+
+    tDiffuse = vec4(color, 1);
 }

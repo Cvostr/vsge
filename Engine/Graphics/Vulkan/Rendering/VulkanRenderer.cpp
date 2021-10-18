@@ -132,6 +132,7 @@ void VulkanRenderer::SetupRenderer() {
 	mMaterialMapsSampler->Create();
 
 	mAttachmentSampler = new VulkanSampler;
+	mAttachmentSampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
 	mAttachmentSampler->Create();
 
 	mSamplerIBL = new VulkanSampler;
@@ -196,8 +197,8 @@ void VulkanRenderer::SetupRenderer() {
 		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
 
-	//_deferred_renderer->SetIBL(_ibl_map->GetSpecularMap(), _ibl_map->GetIrradianceMap());
-	_deferred_renderer->UnsetIBL();
+	_deferred_renderer->SetIBL(_ibl_map->GetSpecularMap(), _ibl_map->GetIrradianceMap());
+	//_deferred_renderer->UnsetIBL();
 
 	_postprocessing = new VulkanPostprocessing;
 	_postprocessing->SetInputTextures(
@@ -423,7 +424,9 @@ void VulkanRenderer::StoreWorldObjects() {
 
 	_ui_renderer->FillBuffers();
 	_ui_renderer->FillCommandBuffer();
-	//_ibl_map->RecordCmdBufs();
+
+	_postprocessing->FillCommandBuffer();
+	_ibl_map->RecordCmdBufs();
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
@@ -468,11 +471,11 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
 
-	VulkanSemaphore* end_semaphore = _ibl_map->GetBeginSemaphore();
+	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ibl_map->GetBeginSemaphore());
+	_ibl_map->Execute(_postprocessing->GetBeginSemaphore());
+	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_postprocessing->GetBeginSemaphore());
 
-	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *end_semaphore);
-	//_ibl_map->Execute(mEndSemaphore);
-	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ui_renderer->GetBeginSemaphore());
+	_postprocessing->Execute(_ui_renderer->GetBeginSemaphore());
 
 	_ui_renderer->Execute(mEndSemaphore);
 }
@@ -484,7 +487,6 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_gbuffer_renderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
-	mOutput = _deferred_renderer->GetOutputTexture();
 
 	_terrain_renderer->SetOutputSizes(width, height);
 	
@@ -493,9 +495,15 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_deferred_renderer->SetShadowmapper(_shadowmapper);
 
 	_ui_renderer->ResizeOutput(width, height);
-	_postprocessing->ResizeOutput(GetOutputSizes());
 
-	//mOutput = _ui_renderer->GetOutputTexture();
+	_postprocessing->ResizeOutput(GetOutputSizes());
+	_postprocessing->SetInputTextures(
+		_deferred_renderer->GetOutputTexture(),
+		_gbuffer_renderer->GetDepthAttachment(),
+		_gbuffer_renderer->GetNormalAttachment(),
+		_gbuffer_renderer->GetPositionAttachment());
+
+	mOutput = _postprocessing->GetOutputTexture();
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {

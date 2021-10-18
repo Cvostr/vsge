@@ -6,11 +6,15 @@ layout(set=0, binding=1, rgba8) restrict writeonly uniform image2D outputTexture
 layout(local_size_x=32, local_size_y=32, local_size_z=1) in;
 void main(void)
 {
-	ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
-    vec4 hdr = texture(inputHDR, pixel);
+    vec2 size = imageSize(outputTexture);
+	vec2 pixel = gl_GlobalInvocationID.xy;
 
-    hdr = hdr / (hdr + vec4(1.0));
-    hdr = pow(hdr, vec4(1.0/2.2));
+    if(pixel.x <= size.x && pixel.y <= size.y){
+        vec4 hdr = texture(inputHDR, pixel / size);
 
-	imageStore(outputTexture, pixel, hdr);
+        hdr = hdr / (hdr + vec4(1.0));
+        hdr = pow(hdr, vec4(1.0/2.2));
+
+        imageStore(outputTexture, ivec2(pixel), hdr);
+    }
 }

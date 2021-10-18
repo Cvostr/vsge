@@ -92,7 +92,7 @@ bool String::operator==(const String& str) const {
 void String::FromStdString(const std::string& str) {
 	Clear();
 	_data = new Char[str.size()];
-	_length = str.size();
+	_length = (uint32)str.size();
 
 	for (uint32 i = 0; i < _length; i++) {
 		_data[i] = (Char)str.at(i);

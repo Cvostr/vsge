@@ -80,6 +80,7 @@ void VkMaterialsThumbnails::Create() {
     _gbuffer->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _light = new VulkanDeferredLight;
+    _light->SetOutputFormat8();
     _light->CreateFramebuffer();
     _light->CreateDescriptorSet();
     _light->CreatePipeline();
