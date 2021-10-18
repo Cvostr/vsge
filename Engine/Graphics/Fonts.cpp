@@ -93,6 +93,8 @@ void GlyphFontContainer::loadGlyphs(uint32& WorkX,
     loadGlyph(1108, WorkX, WorkY, MaxY);
     loadGlyph(1110, WorkX, WorkY, MaxY);
     loadGlyph(1030, WorkX, WorkY, MaxY);
+    //symbol ¹
+    loadGlyph(8470, WorkX, WorkY, MaxY);
 }
 
 void GlyphFontContainer::loadGlyph(uint32 index,

@@ -205,7 +205,8 @@ void VulkanRenderer::SetupRenderer() {
 		_deferred_renderer->GetOutputTexture(),
 		_gbuffer_renderer->GetDepthAttachment(),
 		_gbuffer_renderer->GetNormalAttachment(),
-		_gbuffer_renderer->GetPositionAttachment());
+		_gbuffer_renderer->GetPositionAttachment(),
+		_ui_renderer->GetOutputTexture());
 	_postprocessing->Create();
 	_postprocessing->ResizeOutput(GetOutputSizes());
 
@@ -472,12 +473,12 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
 
 	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ibl_map->GetBeginSemaphore());
-	_ibl_map->Execute(_postprocessing->GetBeginSemaphore());
-	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_postprocessing->GetBeginSemaphore());
+	_ibl_map->Execute(_ui_renderer->GetBeginSemaphore());
+	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ui_renderer->GetBeginSemaphore());
 
-	_postprocessing->Execute(_ui_renderer->GetBeginSemaphore());
+	_ui_renderer->Execute(_postprocessing->GetBeginSemaphore());
 
-	_ui_renderer->Execute(mEndSemaphore);
+	_postprocessing->Execute(mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
@@ -501,7 +502,8 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 		_deferred_renderer->GetOutputTexture(),
 		_gbuffer_renderer->GetDepthAttachment(),
 		_gbuffer_renderer->GetNormalAttachment(),
-		_gbuffer_renderer->GetPositionAttachment());
+		_gbuffer_renderer->GetPositionAttachment(),
+		_ui_renderer->GetOutputTexture());
 
 	mOutput = _postprocessing->GetOutputTexture();
 }

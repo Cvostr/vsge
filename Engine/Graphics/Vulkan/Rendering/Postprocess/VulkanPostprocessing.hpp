@@ -25,6 +25,7 @@ namespace VSGE {
 		Texture* _input_depth;
 		Texture* _input_normals;
 		Texture* _input_positions;
+		Texture* _input_ui;
 		PostprocessSettings _settings;
 		VulkanTexture* _output_texture;
 
@@ -36,6 +37,12 @@ namespace VSGE {
 		VulkanCommandBuffer* _cmdbuf;
 		VulkanSemaphore* _begin_semaphore;
 
+		VulkanShader* _ui_add_shader;
+		VulkanDescriptorPool* _ui_descr_pool;
+		VulkanDescriptorSet* _ui_descr_set;
+		VulkanPipelineLayout* _ui_add_pl_layout;
+		VulkanComputePipeline* _ui_add_pipeline;
+
 		Vec2i _output_sizes;
 	public:
 
@@ -46,7 +53,8 @@ namespace VSGE {
 			Texture* input,
 			Texture* depth,
 			Texture* normals,
-			Texture* positions);
+			Texture* positions,
+			Texture* ui);
 
 		void FillCommandBuffer();
 		void ResizeOutput(const Vec2i& new_size);

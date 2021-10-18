@@ -147,9 +147,6 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	{
 		_usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 	}
-	//if (!IsRenderTarget()) {
-	//	_usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-	//}
 	if(IsStorage()){
 		_usage = VK_IMAGE_USAGE_STORAGE_BIT;
 	}

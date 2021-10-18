@@ -9,6 +9,7 @@ namespace VSGE {
 	private:
 		VkFramebuffer _framebuffer;
 		uint32 _layers;
+		bool _storage;
 		VulkanRenderPass* _renderpass;
 
 		std::vector<VkImageView> _views;
@@ -49,6 +50,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="layers">- amount of layers</param>
 		void SetLayersCount(uint32 layers);
+		void SetStorage(bool storage);
 		/// <summary>
 		/// Get count of layers in framebuffer
 		/// </summary>

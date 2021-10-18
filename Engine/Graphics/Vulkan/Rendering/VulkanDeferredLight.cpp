@@ -25,6 +25,7 @@ void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_rp->Create();
 
 	_deferred_fb = new VulkanFramebuffer;
+	_deferred_fb->SetStorage(true);
 	_deferred_fb->SetSize(_fb_width, _fb_height);
 	_deferred_fb->AddAttachment(_outputFormat);
 	_deferred_fb->Create(_deferred_rp);
