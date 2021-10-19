@@ -161,7 +161,7 @@ void VulkanUiRenderer::FillBuffers() {
 			}
 			Mat4 transform = GetTransform(task.bounds, Vec2(0.5f), task.rotation);
 			WriteTransform(written_elements, transform);
-			WriteElement(written_elements, Vec2(0, 0), Vec2(1, 1), Color(1, 1, 1, 1));
+			WriteElement(written_elements, task.uv_min, task.uv_max, Color(1, 1, 1, 1));
 			WriteTexture(written_elements, (VulkanTexture*)task._sprite->GetTexture());
 			written_elements++;
 		}

@@ -27,12 +27,26 @@ static void* CallThreadFuncton(void* data)
 }
 #endif
 
+void Thread::THRFunc() {
+	while (_running) {
+
+		ThreadedFunction();
+		
+		//thread destroyed on function time
+		if (!_running) {
+
+		}
+
+		SleepThread(_sleep_time);
+	}
+}
+
 bool Thread::Run() {
-	mShouldRun = true;
-	if (mThreadHandle != nullptr)
+	_running = true;
+	if (_handle != nullptr)
 		return false;
 #ifdef _WIN32
-	mThreadHandle = CreateThread(nullptr, 0, CallThreadFuncton, this, 0, nullptr);
+	_handle = CreateThread(nullptr, 0, CallThreadFuncton, this, 0, nullptr);
 #elif __linux__
 	mThreadHandle = new pthread_t;
 	pthread_attr_t type;
@@ -44,19 +58,19 @@ bool Thread::Run() {
 	return true;
 }
 void Thread::Stop() {
-	mShouldRun = false;
+	_running = false;
 #ifdef _WIN32
-	WaitForSingleObject((HANDLE)mThreadHandle, INFINITE);
-	CloseHandle((HANDLE)mThreadHandle);
+	WaitForSingleObject((HANDLE)_handle, INFINITE);
+	CloseHandle((HANDLE)_handle);
 #else
-	auto* thread = (pthread_t*)mThreadHandle;
+	auto* thread = (pthread_t*)_handle;
 	if (thread)
 		pthread_join(*thread, nullptr);
 #endif
-	mThreadHandle = nullptr;
+	_handle = nullptr;
 }
 bool Thread::IsRunning() {
-	return mThreadHandle != nullptr;
+	return _handle != nullptr;
 }
 
 void Thread::SleepThread(uint32 ms) {
@@ -71,7 +85,7 @@ void Thread::SetThreadPriority_(int priority) {
 	if (!IsRunning())
 		return;
 #ifdef _WIN32
-	SetThreadPriority((HANDLE)mThreadHandle, priority);
+	SetThreadPriority((HANDLE)_handle, priority);
 #elif __linux__
 	pthread_t* thread = (pthread_t*)mThreadHandle;
 	if (thread)
@@ -84,7 +98,7 @@ void Thread::SetThreadName(const std::string& name) {
 	WCHAR* thr_name = new WCHAR[name.size() + 1];
 	thr_name[name.size()] = L'\0';
 	mbstowcs(thr_name, name.c_str(), name.size());
-	SetThreadDescription((HANDLE)mThreadHandle, thr_name);
+	SetThreadDescription((HANDLE)_handle, thr_name);
 	delete[] thr_name;
 #endif
 #ifdef __linux__

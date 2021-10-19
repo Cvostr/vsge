@@ -33,7 +33,7 @@ void ResourcesWatchdog::RemoveResource(Resource* resource) {
 }
 
 void ResourcesWatchdog::THRFunc(){
-    while (mShouldRun) {
+    while (_running) {
         for(uint32 resource_i = 0; resource_i < _resources.size(); resource_i ++){
             _mutex->Lock();
             Resource* resource = _resources.at(resource_i);

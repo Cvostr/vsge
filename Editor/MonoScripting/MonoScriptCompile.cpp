@@ -31,7 +31,7 @@ std::string MonoScriptCompiler::GetCompilationCmd() {
 }
 
 void MonoScriptCompiler::THRFunc() {
-    while (mShouldRun) {
+    while (_running) {
 
         if (_state == COMPILATION_STATE_QUEUED) {
             _state = COMPILATION_STATE_ON_PROCESS;

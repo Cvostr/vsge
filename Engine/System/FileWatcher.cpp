@@ -38,8 +38,9 @@ void FileWatcher::WatchDirectory(const std::string& directory) {
 }
 
 void FileWatcher::THRFunc() {
-    while (mShouldRun) {
+    while (_running) {
         WatchWin32();
+        SleepThread(100);
     }
 }
 

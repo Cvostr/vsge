@@ -5,12 +5,17 @@
 
 namespace VSGE {
 	class Thread {
+	private:
+		void* _handle;
 	protected:
-		bool mShouldRun;
+		bool _running;
+		uint32 _sleep_time;
 	public:
-		Thread() : mThreadHandle(nullptr),
-			mShouldRun(false){
-		}
+		Thread() : 
+			_handle(nullptr),
+			_running(false),
+			_sleep_time(5)
+		{}
 
 		~Thread() {
 			Stop();
@@ -22,8 +27,7 @@ namespace VSGE {
 		bool IsRunning();
 		void SetThreadPriority_(int priority);
 		void SetThreadName(const std::string& name);
-		virtual void THRFunc() = 0;
-	private:
-		void* mThreadHandle;
+		virtual void THRFunc();
+		virtual void ThreadedFunction() {}
 	};
 }

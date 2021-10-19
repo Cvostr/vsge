@@ -18,6 +18,8 @@ namespace VSGE {
 		UiRenderTaskType _type;
 		Rect bounds;
 		float rotation;
+		Vec2 uv_min;
+		Vec2 uv_max;
 
 		TextureResource* _sprite;
 		String _text;
@@ -32,7 +34,11 @@ namespace VSGE {
 		std::vector<UiRenderTask>& GetTasks();
 		void ClearTasks();
 
-		void DrawSprite(const Rect& bounds, float rotation, TextureResource* sprite);
+		void DrawSprite(const Rect& bounds, 
+						float rotation, 
+						TextureResource* sprite,
+						const Vec2& uv_min = Vec2(0,0),
+						const Vec2& uv_max = Vec2(1, 1));
 		void DrawText(const Rect& bounds, float rotation, const String& text, const std::string& font, const Color& text_color);
 	};
 }

@@ -143,6 +143,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/ColliderComponent.cpp
 				MonoScripting/Api/EntityComponents/CameraComponent.cpp
 				MonoScripting/Api/EntityComponents/MaterialComponent.cpp
+				MonoScripting/Api/EntityComponents/MeshComponent.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp

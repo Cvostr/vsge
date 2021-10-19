@@ -16,4 +16,5 @@ namespace VSGE {
 	void BindCamera();
 	void BindAnimator();
 	void BindMaterial();
+	void BindMesh();
 }

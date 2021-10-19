@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace VSGE {
 	class Mutex {
 	public:

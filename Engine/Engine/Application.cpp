@@ -30,7 +30,7 @@ void Application::OnUpdate() {
 	for (uint32 event_i = 0; event_i < _queuedEvents.size(); event_i ++) {
 		IEvent* event_ptr = _queuedEvents[0];
 		OnEvent(*(event_ptr));
-		std::remove(_queuedEvents.begin(), _queuedEvents.end(), event_ptr);
+		auto iterator = std::remove(_queuedEvents.begin(), _queuedEvents.end(), event_ptr);
 		_queuedEvents.pop_back();
 		delete event_ptr;
 	}

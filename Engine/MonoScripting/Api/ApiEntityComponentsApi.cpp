@@ -33,4 +33,5 @@ void VSGE::BindEntityComponentsApi() {
 	BindCollider();
 	BindCamera();
 	BindMaterial();
+	BindMesh();
 }
