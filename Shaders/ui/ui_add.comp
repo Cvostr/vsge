@@ -1,21 +1,21 @@
 #version 450
 
 layout(set=0, binding=0, rgba8) readonly uniform image2D world;
-layout(set=0, binding=1) uniform sampler2D ui;
+layout(set=0, binding=1, rgba8) readonly uniform image2D ui;
 layout(set=0, binding=2, rgba8) restrict writeonly uniform image2D outputTexture;
 
 layout(local_size_x=32, local_size_y=32, local_size_z=1) in;
 void main(void)
 {
-    vec2 size = imageSize(outputTexture);
-	vec2 pixel = gl_GlobalInvocationID.xy;
+    ivec2 size = ivec2(imageSize(outputTexture));
+	ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
 
     if(pixel.x <= size.x && pixel.y <= size.y){
-        vec4 _world = imageLoad(world, ivec2(pixel));
-        vec4 _ui = texture(ui, pixel / size);
+        vec4 _world = imageLoad(world, pixel);
+        vec4 _ui = imageLoad(ui, pixel);
 
         vec3 result = mix(_world.rgb, _ui.rgb, _ui.a);
 
-        imageStore(outputTexture, ivec2(pixel), vec4(result, 1));
+        imageStore(outputTexture, pixel, vec4(result, 1));
     }
 }

@@ -62,19 +62,14 @@ void VulkanGammaCorrection::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	VkImageMemoryBarrier pre_barrier_in = GetImageBarrier((VulkanTexture*)_input, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
 	VkImageMemoryBarrier post_barrier_in = GetImageBarrier((VulkanTexture*)_input, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-
 	VkImageMemoryBarrier pre_barrier = GetImageBarrier((VulkanTexture*)_output, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 	VkImageMemoryBarrier post_barrier = GetImageBarrier((VulkanTexture*)_output, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_barrier_in });
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_barrier });
-	
+	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_barrier_in, pre_barrier });
 	cmdbuf->BindComputePipeline(*_pipeline);
 	cmdbuf->BindDescriptorSets(*_pp_layout, 0, 1, _descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
 	cmdbuf->Dispatch(_output_sizes.x / 32 + 1, _output_sizes.y / 32	+ 1, 1);
-
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_barrier });
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_barrier_in });
+	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_barrier, post_barrier_in });
 }
 
 void VulkanGammaCorrection::ResizeOutput(const Vec2i& new_size) {

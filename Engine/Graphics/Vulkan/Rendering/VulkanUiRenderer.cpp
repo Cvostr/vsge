@@ -63,6 +63,7 @@ void VulkanUiRenderer::Create() {
 	_ui_rp->SetClearColor(0, Color(0, 0, 0, 0));
 
 	_ui_framebuffer = new VulkanFramebuffer;
+	_ui_framebuffer->SetStorage(true);
 	_ui_framebuffer->SetSize(_fb_width, _fb_height);
 	_ui_framebuffer->AddAttachment(FORMAT_RGBA); //Color
 	_ui_framebuffer->Create(_ui_rp);
