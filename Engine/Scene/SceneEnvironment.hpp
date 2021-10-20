@@ -3,6 +3,8 @@
 #include <Core/VarTypes/Base.hpp>
 #include <Resources/ResourceReference.hpp>
 #include <Math/Color.hpp>
+#include <Math/Vec3.hpp>
+#include <Math/Mat4.hpp>
 #include <vector>
 
 namespace VSGE{
@@ -32,6 +34,8 @@ namespace VSGE{
 		float* GetCascadeDists();
 
 		float* GetCascadeDepths();
+
+		int GetCascadeByDistance(Vec3 pos, const Mat4& cam_view_proj);
 
 		void SetShadowCascadesCount(uint32 cascades);
         

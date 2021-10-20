@@ -7,6 +7,7 @@ namespace VSGE {
 	void BindResourcesApi();
 	void BindInputApi();
 	void BindEntityComponentsApi();
+	void BindUI();
 
 
 	void BindLightsource();
@@ -17,4 +18,6 @@ namespace VSGE {
 	void BindAnimator();
 	void BindMaterial();
 	void BindMesh();
+	void BindParticleEmitter();
+	void BindCharacterController();
 }

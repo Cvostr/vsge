@@ -151,7 +151,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 		ImGuiLayer* imgui = ImGuiLayer::Get();
 		SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
-		if (win) {
+		if (win && _camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
 			if (!win->IsTransformGizmoUsed() && 
 				win->IsInFocus() && 
 				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {

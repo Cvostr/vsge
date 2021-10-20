@@ -46,6 +46,11 @@ void ColliderComponent::SetCenter(const Vec3& center) {
 void ColliderComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
+	if(_rigidBody)
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	if (_trigger)
+		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
+
 	//release old collider shape
 	SAFE_RELEASE(_collision_shape);
 	//release old rigidbody

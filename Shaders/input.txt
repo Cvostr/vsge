@@ -21,6 +21,7 @@ shader skybox/skybox.vert
 shader skybox/skybox.frag
 
 shader shadowmap/shadowmap.vert
+shader shadowmap/shadowmap_terrain.vert
 shader shadowmap/shadowmap.frag
 shader shadowmap/shadowmap.geom
 

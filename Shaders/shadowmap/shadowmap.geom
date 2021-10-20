@@ -24,16 +24,16 @@ layout(push_constant) uniform PushConstants
 
 void main() { 
 	int _first_cascade = 0;
-	int _cascades = cascades_count;
+	int _last_cascade = cascades_count;
 
 	if(type == 0){
 		_first_cascade = pushConstants.first_cascade;
-		_cascades = pushConstants.last_cascade;
+		_last_cascade = pushConstants.last_cascade;
 	}else
-	if(type == 1) _cascades = 6;
-	else if(type == 2) _cascades = 1;
+	if(type == 1) _last_cascade = 5;
+	else if(type == 2) _last_cascade = 0;
 
-	for(int cascade = _first_cascade; cascade < _cascades; cascade++){
+	for(int cascade = _first_cascade; cascade <= _last_cascade; cascade++){
 		gl_Layer = cascade;
 		for (int i = 0; i < gl_in.length(); i++)
 		{

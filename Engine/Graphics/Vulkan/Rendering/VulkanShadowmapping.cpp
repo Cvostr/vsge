@@ -369,7 +369,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 			int32 pconstants[2];
 			pconstants[0] = first;
-			pconstants[1] = last;
+			pconstants[1] = last - 1;
 			cmdbuf->PushConstants(*_shadowmap_layout, VK_SHADER_STAGE_GEOMETRY_BIT, 0, 8, pconstants);
 		}
 		VulkanMesh* mesh = nullptr;

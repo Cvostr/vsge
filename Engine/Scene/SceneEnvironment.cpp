@@ -32,9 +32,8 @@ void SceneEnvironmentSettings::UpdateShadows(){
 		float uniform = minZ + range * p;
 		float d = cascadeSplitLambda * (log - uniform) + uniform;
 		_cascade_dists[i] = (d - nearClip) / clipRange;
-		_cascade_depths[i] = (nearClip + _cascade_dists[i] * clipRange);
+		_cascade_depths[i] = d;
 	}
-
 }
 
 const Color& SceneEnvironmentSettings::GetAmbientColor(){
@@ -63,6 +62,18 @@ float* SceneEnvironmentSettings::GetCascadeDepths(){
 
 float* SceneEnvironmentSettings::GetCascadeDists(){
 	return _cascade_dists.data();
+}
+
+int SceneEnvironmentSettings::GetCascadeByDistance(Vec3 pos, const Mat4& cam_view_proj) {
+
+	float dist = (cam_view_proj * Vec4(pos, 1)).z;
+
+	for (uint32 i = 0; i < _shadow_cascades_count; i++) {
+		if (dist < _cascade_depths[i]) {
+			return i;
+		}
+	}
+	return 0;
 }
 
 void SceneEnvironmentSettings::SetShadowCascadesCount(uint32 cascades){

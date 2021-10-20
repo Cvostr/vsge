@@ -154,13 +154,12 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 
 
 Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
-	float cascadeSplitLambda = 0.95f;
-	int sizes[] = { 20, 50, 80, 130, 160, 190, 230, 270 };
 	Vec3 direction = GetDirection();
 	Vec3 cam_pos = cam->GetPosition();
 	Mat4* result = nullptr;
 	if (_castShadows) {
 		if (_lightType == LIGHT_TYPE_DIRECTIONAL) {
+			float nearClip = 1.0f;
 			Scene* scene = GetEntity()->GetScene();
 			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 
@@ -213,7 +212,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 				Vec3 lightDir = (GetDirection() * -1).GetNormalized();
 				Vec3 pos = frustumCenter - lightDir * -minExtents.z;
 				Mat4 view = GetViewRH(pos, frustumCenter, Vec3(0.0f, 1.0f, 0.0f));
-				Mat4 projection = GetOrthoRH_ZeroOne(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0, maxExtents.z - minExtents.z);
+				Mat4 projection = GetOrthoRH_ZeroOne(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, nearClip, maxExtents.z - minExtents.z);
 				result[i] = view * projection;
 			}
 		}

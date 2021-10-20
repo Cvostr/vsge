@@ -40,16 +40,16 @@ layout(binding = 6) uniform dir_shadow_cascades{
     uint shadowmap_size;
 };
 
-uint GetCascadeByDistance(float dist){
-	for(uint i = 0; i < cascades_count; ++i) {
+int GetCascadeByDistance(float dist){
+	for(int i = 0; i < int(cascades_count); ++i) {
 		if(dist < distances[i]) {	
 			return i;
 		}
 	}
-    return 0;
+    return -1;
 }
 
-uint GetCascade(vec3 position){
+int GetCascade(vec3 position){
     float dist = (cam_view_projection * vec4(position, 1)).z;
     return GetCascadeByDistance(dist);
 }
@@ -75,6 +75,8 @@ void main(){
     for(uint caster_i = 0; caster_i < casters_count; caster_i ++){
         if(casters[caster_i].caster_type == 0){
             uint cascade = GetCascade(FragPos);
+            if(cascade < 0)
+                continue;
             
             vec4 objPosLightSpace = casters[caster_i].projections[cascade] * vec4(FragPos, 1);
             vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
