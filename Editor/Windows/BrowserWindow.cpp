@@ -103,8 +103,6 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         VSGE::SceneSerializer ss;
         ss.SetScene(el->GetScene());
         ss.Deserialize(Entry.abs_path);
-
-
     }
     else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
@@ -137,9 +135,13 @@ void FileBrowserWindow::OnDrawWindow() {
                 new_resource_type = RESOURCE_TYPE_MATERIAL;
                 create_new_resource = true;
             }
+            if (ImGui::MenuItem("Texture")) {
+                new_resource_type = RESOURCE_TYPE_TEXTURE;
+                create_new_resource = true;
+            }
             if (ImGui::MenuItem("Script")) {
                 create_new_resource = true;
-            //    CreateResource(RESOURCE_TYPE_SCENE);
+                new_resource_type = RESOURCE_TYPE_SCRIPT;
             }
             ImGui::EndMenu();
         }
@@ -338,6 +340,14 @@ void FileBrowserWindow::CreateResourceDialog() {
         file_extension = "vsmt";
         resource_type_string = "Material";
         break;
+    case RESOURCE_TYPE_TEXTURE:
+        file_extension = "vstx";
+        resource_type_string = "Texture";
+        break;
+    case RESOURCE_TYPE_SCRIPT:
+        file_extension = "cs";
+        resource_type_string = "C# Script";
+        break;
     }
 
     if (ImGui::BeginPopupModal("Resource creation", NULL, ImGuiWindowFlags_AlwaysAutoResize))
@@ -348,8 +358,10 @@ void FileBrowserWindow::CreateResourceDialog() {
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0))) {
+            std::string content = GetBaseContentToWrite(new_resource_type, rename_file_name);
             rename_file_name += "." + file_extension;
             std::ofstream stream(_currentDir + "/" + rename_file_name, std::ios::binary);
+            stream.write(content.c_str(), content.size());
             stream.close();
 
             ImGui::CloseCurrentPopup();
@@ -362,5 +374,18 @@ void FileBrowserWindow::CreateResourceDialog() {
         }
         ImGui::SetItemDefaultFocus();
         ImGui::EndPopup();
+    }
+}
+
+std::string FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType res_type, const std::string& res_name) {
+    if (res_type == RESOURCE_TYPE_SCRIPT) {
+        std::string result =
+            "using System; \n\tclass " + res_name + " : EntityScript{\n\t\tpublic void OnStart() {\n\t\t}\n\t\tpublic void OnUpdate() {\n\t\t}\n}";
+        return result;
+    }
+    if (res_type == RESOURCE_TYPE_TEXTURE) {
+        std::string result =
+            "VSTX";
+        return result;
     }
 }

@@ -56,6 +56,7 @@ namespace VSGEditor {
 		void RemoveFile(const std::string& path);
 		void RenameFileDialog(FileEntry* Entry);
 		void CreateResourceDialog();
+		std::string GetBaseContentToWrite(VSGE::ResourceType res_type, const std::string& res_name);
 	public:
 
 		FileBrowserWindow(std::string RootDir);

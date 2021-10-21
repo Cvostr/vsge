@@ -432,6 +432,8 @@ void VulkanRenderer::StoreWorldObjects() {
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	//TEMPORARY
+	//if(mScene)
+	//	mScene->UpdateSceneTree();
 	_shadowmapper->SetScene(mScene);
 	_gbuffer_renderer->SetScene(mScene);
 	_ibl_map->SetScene(mScene);

@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 #include "EntityComponents/AudioListenerComponent.hpp"
 #include "SceneEnvironment.hpp"
+#include <map>
 
 namespace VSGE {
 
@@ -12,6 +13,7 @@ namespace VSGE {
 	private:
 		Entity* _rootEntity;
 		SceneEnvironmentSettings _environment_settings;
+		std::map<AABB, std::vector<Entity*>> _scene_tree;
 	public:
 		/// <summary>
 		/// Clear all objects and setup new empty scene
@@ -51,6 +53,12 @@ namespace VSGE {
 		AudioListenerComponent* GetAudioListener(Entity* ent = nullptr);
 		
 		SceneEnvironmentSettings& GetEnvironmentSettings();
+
+		AABB GetSceneBoundingBox();
+
+		void GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, Entity* first = nullptr);
+
+		void UpdateSceneTree(const Vec3& size = Vec3(100, 50, 100));
 
 		Scene();
 	};

@@ -97,7 +97,50 @@ AudioListenerComponent* Scene::GetAudioListener(Entity* ent) {
 	return listener;
 }
 
-float cascadeSplitLambda = 0.95f;
+AABB Scene::GetSceneBoundingBox() {
+	if(_rootEntity)
+		return _rootEntity->GetAABB();
+	return AABB();
+}
+
+void Scene::UpdateSceneTree(const Vec3& size) {
+	AABB scene_bb = GetSceneBoundingBox();
+
+	Vec3 delta = scene_bb.GetMax() - scene_bb.GetMin();
+	//amount of bounding boxes in all three dimensions
+	Vec3i counts = Vec3i(
+		(int)ceil(delta.x / size.x),
+		(int)ceil(delta.y / size.y),
+		(int)ceil(delta.z / size.z)
+	);
+	//fill scene tree with bounding boxes
+	for (uint32 x = 0; x < counts.x; x++) {
+		for (uint32 y = 0; y < counts.y; y++) {
+			for (uint32 z = 0; z < counts.z; z++) {
+				Vec3 min = scene_bb.GetMin() + Vec3(x, y, z) * size;
+				Vec3 max = min + size;
+				AABB bb = AABB(min, max);
+				//_scene_tree.insert(std::make_pair(bb, std::vector<Entity*>()));
+			}
+		}
+	}
+
+	for (uint32 i = 0; i < _scene_tree.size(); i++) {
+		//GetEntitiesIntersects(_scene_tree.at());
+	}
+}
+
+void Scene::GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, Entity* first) {
+	if (first == nullptr)
+		first = _rootEntity;
+	else
+		if (bb.IsIntersects(first->GetAABB()))
+			array.push_back(first);
+
+	for (uint32 c_i = 0; c_i < first->GetChildrenCount(); c_i++) {
+		GetEntitiesIntersects(bb, array, first->GetChildren()[c_i]);
+	}
+}
 
 SceneEnvironmentSettings& Scene::GetEnvironmentSettings(){
 	return _environment_settings;

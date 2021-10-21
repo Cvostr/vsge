@@ -224,10 +224,7 @@ void Entity::SetRotation(const Quat& rotation) {
 }
 
 const AABB& Entity::GetAABB(bool extendChildren) {
-	if (!GetParent())
-		return _boundingBox;
 	MeshComponent* mesh = GetComponent<MeshComponent>();
-	Entity* parent = GetParent();
 
 	if (mesh) {
 		if (mesh->GetMeshResource()) {

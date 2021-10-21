@@ -46,7 +46,7 @@ void AABB::CreateFromVertexArray(Vertex* array, unsigned int vertexCount) {
 	}
 }
 
-bool AABB::IsIntersects(const AABB& box) {
+bool AABB::IsIntersects(const AABB& box) const {
 	if ((this->_max.x < box._min.x) || (this->_min.x > box._max.x) ||
 		(this->_max.y < box._min.y) || (this->_min.y > box._max.y) ||
 		(this->_max.z < box._min.z) || (this->_min.z > box._max.z))

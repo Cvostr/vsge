@@ -42,6 +42,7 @@ String::String(Char* str, uint32 len) {
 	}
 }
 String::String(const std::string& str) {
+	_data = nullptr;
 	FromStdString(str);
 }
 String::String(const String& str) {
@@ -135,4 +136,13 @@ void String::Set(const String& str) {
 	for (uint32 i = 0; i < str.Length(); i++) {
 		_data[i] = str.c_str()[i];
 	}
+}
+
+bool String::EndsWith(const String& end) {
+	uint32 start = _length - end.Length();
+	for (uint32 i = 0; i < end.Length(); i++) {
+		if (_data[start + i] != end[i])
+			return false;
+	}
+	return true;
 }

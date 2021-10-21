@@ -4,6 +4,7 @@
 #include <Core/Time.hpp>
 #include <filesystem>
 #include "ImGuiLayer.hpp"
+#include <Core/VarTypes/String.hpp>
 
 #include "../Windows/SceneWindow.hpp"
 #include "../Windows/InspectorWindow.hpp"
@@ -156,8 +157,8 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				win->IsInFocus() && 
 				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
 
-				int relx = InputState.cursorx - win->GetPos().x;
-				int rely = -InputState.cursory + win->GetPos().y + win->GetSize().y;
+				int relx = InputState.cursorx - (int)win->GetPos().x;
+				int rely = -InputState.cursory + (int)win->GetPos().y + (int)win->GetSize().y;
 
 				bool picking_allowed = true;
 				if (_pickedEntity) {
@@ -196,14 +197,14 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 						}
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
 							terrain->ModifyTexture(Vec2i(coord.y, coord.x),
-								GetTerrainEditorOpacity(),
-								GetTerrainEditorBrushSize(),
+								(uint32)GetTerrainEditorOpacity(),
+								(uint32)GetTerrainEditorBrushSize(),
 								GetTerrainEditorTextureIndex());
 							terrain->UpdateTextureMasks();
 						}
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_GRASS && coord.x >= 0) {
 							terrain->ModifyGrass(Vec2i(coord.x, coord.y),
-								GetTerrainEditorOpacity(),
+								(uint32)GetTerrainEditorOpacity(),
 								GetTerrainEditorVegetableIndex());
 							terrain->UpdateVegetables();
 						}
@@ -319,6 +320,10 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 	if (fce.GetActionType() == FCAT_ADDED) {
 		//Try to add this file as resource
 		ResourceCache::Get()->AddResourceFile(fce.GetAbsFilePath());
+		String str = String(fce.GetAbsFilePath());
+		if (str.EndsWith(".cs")) {
+			MonoScriptStorage::Get()->AddScript(fce.GetAbsFilePath());
+		}
 	}
 	if (fce.GetActionType() == FCAT_DELETED) {
 		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
@@ -332,6 +337,12 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 			}
 			ResourceCache::Get()->RemoveResource(res);
 			delete res;
+		}
+		else {
+			String str = String(fce.GetAbsFilePath());
+			if (str.EndsWith(".cs")) {
+				MonoScriptStorage::Get()->RemoveScript(fce.GetAbsFilePath());
+			}
 		}
 	}
 	if (fce.GetActionType() == FCAT_RENAMED) {

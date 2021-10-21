@@ -85,7 +85,7 @@ void StartWindow::OnDrawWindow() {
 
             if (!path.empty()) {
 
-                uint32 size = path.size() - 1;
+                uint32 size = static_cast<uint32>(path.size()) - 1;
                 while (path[size] != '\\' && path[size] != '/') {
                     path.pop_back();
                     size--;

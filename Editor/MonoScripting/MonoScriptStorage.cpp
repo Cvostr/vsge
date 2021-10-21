@@ -81,7 +81,7 @@ void MonoScriptStorage::AddScript(const std::string& file_path) {
 void MonoScriptStorage::RemoveScript(const std::string& file_path) {
 	MonoScript* script = GetScriptWithFilePath(file_path);
 	if (script) {
-		std::remove(_scripts.begin(), _scripts.end(), script);
+		auto iter = std::remove(_scripts.begin(), _scripts.end(), script);
 		_scripts.pop_back();
 	}
 }

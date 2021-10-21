@@ -15,7 +15,7 @@ public:
 	void Extend(const AABB& box);
 	void Extend(const Vec3& vec);
 	void PrepareForExtend();
-	bool IsIntersects(const AABB& box);
+	bool IsIntersects(const AABB& box) const;
 	bool IsInside(const Vec3& point) const;
 	void CreateFromVertexArray(Vertex* array, unsigned int vertexCount);
 	void ApplyTransform(const Mat4& transform);

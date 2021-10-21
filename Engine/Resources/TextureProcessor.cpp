@@ -44,8 +44,21 @@ void VSGE::ProcessTexture(byte* data, uint32 size, ProcessedTexture& out) {
     bool is_png = data[1] == 'P' && data[2] == 'N' && data[3] == 'G';
     bool is_jpg = data[0] == 0xFF && data[1] == 0xD8;
     bool is_dds = data[0] == 'D' && data[1] == 'D' && data[2] == 'S';
+    bool is_vstx = data[0] == 'V' && data[1] == 'S' && data[2] == 'T' && data[3] == 'X';
 
-    if (is_png || is_jpg) {
+    if (is_vstx) {
+
+        out._format = TextureFormat::FORMAT_RGBA;
+        out._width = 512;
+        out._height = 512;
+
+        TextureMipLevel main_level;
+        main_level._mip_width = 512;
+        main_level._mip_height = 512;
+        //main_level.SetMipLevelData(image_data, width * height * 4);
+        out._mip_levels.push_back(main_level);
+    }
+    else if (is_png || is_jpg) {
         int width = 0;
         int height = 0;
 

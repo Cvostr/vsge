@@ -44,4 +44,6 @@ public:
 	void PopBack();
 
 	void Set(const String& str);
+
+	bool EndsWith(const String& end);
 };

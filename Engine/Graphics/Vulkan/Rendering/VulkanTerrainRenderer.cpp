@@ -137,7 +137,7 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanTerrainRenderer*
 	}
 
 	//Create vegetables descriptors
-	uint32 grass_count = terrain->GetTerrainVegetables().size();
+	uint32 grass_count = static_cast<uint32>(terrain->GetTerrainVegetables().size());
 	while (_grass_descriptor_sets.size() < grass_count) {
 		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(terrain_renderer->GetGrassDescriptorPool());
 		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
@@ -157,7 +157,7 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanTerrainRenderer*
 		SetDescriptorGrassTexture(grass._texture_reference.GetResource(), veg_i);
 		
 		uint32& grass_offset = terrain_renderer->GetWrittenGrassTransforms();
-		uint32 transforms_count = grass_transforms.GetTransforms().size();
+		uint32 transforms_count = static_cast<uint32>(grass_transforms.GetTransforms().size());
 		const Mat4* transforms = grass_transforms.GetTransforms().data();
 		terrain_renderer->GetGrassTransformsBuffer()->WriteData(grass_offset * sizeof(Mat4), transforms_count * sizeof(Mat4), (void*)transforms);
 		

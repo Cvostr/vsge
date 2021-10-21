@@ -62,6 +62,14 @@
 			return tVec3(x * v.x, y * v.y, z * v.z);
 		}
 
+		tVec3 operator/(float d) const {
+			return tVec3(x / d, y / d, z / d);
+		}
+
+		tVec3 operator/(const tVec3& v) const {
+			return tVec3(x / v.x, y / v.y, z / v.z);
+		}
+
 		void operator=(const tVec3& v) {
 			x = v.x;
 			y = v.y;
@@ -90,10 +98,6 @@
 			x /= v;
 			y /= v;
 			z /= v;
-		}
-
-		tVec3 operator/(float d) const {
-			return tVec3(x / d, y / d, z / d);
 		}
 
 		bool operator ==(const tVec3& r) const {
