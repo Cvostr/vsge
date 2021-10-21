@@ -358,11 +358,12 @@ void FileBrowserWindow::CreateResourceDialog() {
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0))) {
-            std::string content = GetBaseContentToWrite(new_resource_type, rename_file_name);
+            ByteSerialize* content = GetBaseContentToWrite(new_resource_type, rename_file_name);
             rename_file_name += "." + file_extension;
             std::ofstream stream(_currentDir + "/" + rename_file_name, std::ios::binary);
-            stream.write(content.c_str(), content.size());
+            stream.write((const char*)content->GetBytes(), content->GetSerializedSize());
             stream.close();
+            SAFE_RELEASE(content)
 
             ImGui::CloseCurrentPopup();
             UpdateDirectoryContent();
@@ -377,15 +378,24 @@ void FileBrowserWindow::CreateResourceDialog() {
     }
 }
 
-std::string FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType res_type, const std::string& res_name) {
+VSGE::ByteSerialize* FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType res_type, const std::string& res_name) {
+    ByteSerialize* serializer = new ByteSerialize;
     if (res_type == RESOURCE_TYPE_SCRIPT) {
         std::string result =
-            "using System; \n\tclass " + res_name + " : EntityScript{\n\t\tpublic void OnStart() {\n\t\t}\n\t\tpublic void OnUpdate() {\n\t\t}\n}";
-        return result;
+            "using System; \nclass " + res_name + " : EntityScript{\n\tpublic void OnStart() {\n\t}\n\tpublic void OnUpdate() {\n\t}\n}";
+        serializer->Serialize(result);
+        serializer->PopBack();
     }
     if (res_type == RESOURCE_TYPE_TEXTURE) {
-        std::string result =
-            "VSTX";
-        return result;
+        int size = 256;
+        int layers = 1;
+        TextureFormat fmt = FORMAT_RGBA;
+
+        serializer->WriteBytes("VSTX", 4);
+        serializer->Serialize(size);
+        serializer->Serialize(size);
+        serializer->Serialize(fmt);
+        serializer->Serialize(layers);
     }
+    return serializer;
 }

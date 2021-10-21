@@ -123,7 +123,7 @@ void VulkanUiRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_ui_rp->SetClearSize(width, height);
 	_ui_framebuffer->Resize(_fb_width, _fb_height);
 
-	_camera_transform = GetOrthoRH_ZeroOne(0, _fb_width, 0, _fb_height, 0, 1);
+	_camera_transform = GetOrthoRH_ZeroOne(0, (float)_fb_width, 0, (float)_fb_height, 0, 1);
 	_camera_transform[1][1] *= -1;
 }
 

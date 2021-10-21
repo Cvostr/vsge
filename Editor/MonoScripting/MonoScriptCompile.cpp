@@ -15,7 +15,7 @@ MonoScriptCompiler::MonoScriptCompiler() :
 
 }
 MonoScriptCompiler::~MonoScriptCompiler() {
-
+    SAFE_RELEASE(_mutex)
 }
 
 std::string MonoScriptCompiler::GetCompilationCmd() {
@@ -35,7 +35,7 @@ void MonoScriptCompiler::THRFunc() {
 
         if (_state == COMPILATION_STATE_QUEUED) {
             _state = COMPILATION_STATE_ON_PROCESS;
-            _mutex->Lock();
+            //_mutex->Lock();
             //Obtain pointer to LoadRequest
             std::string cmd = GetCompilationCmd();
             _output = ExecuteShellCommand(cmd);
@@ -45,16 +45,15 @@ void MonoScriptCompiler::THRFunc() {
                 std::string message = _output.substr(0, pos);
                 if (message.find("error"))
                     _compilation_error = true;
-                _output = _output.substr(pos + 1);
+                _output = _output.substr((uint64)pos + 1);
                 Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << message << "\n";
             }
             _state = COMPILATION_STATE_DONE;
+            //unlock thread
+            //_mutex->Release();
 
             ScriptCompilationDoneEvent* app_event = new ScriptCompilationDoneEvent;
             Application::Get()->QueueEvent(app_event);
-
-            //unlock thread
-            _mutex->Release();
         }
         SleepThread(100);
     }

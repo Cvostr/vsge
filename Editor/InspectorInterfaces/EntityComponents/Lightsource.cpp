@@ -50,8 +50,8 @@ void VSGEditor::DrawLightsourceComponent(VSGE::LightsourceComponent* light) {
 		ImGui::InputFloat("Shadows Bias", &shadowsBias);
 		light->SetShadowsBias(shadowsBias);
 
-		float shadowsPcf = light->GetShadowPCF();
-		ImGui::InputFloat("Shadows PCF", &shadowsPcf);
+		int32 shadowsPcf = light->GetShadowPCF();
+		ImGui::InputInt("Shadows PCF", &shadowsPcf);
 		light->SetShadowPCF(shadowsPcf);
 	}
 }

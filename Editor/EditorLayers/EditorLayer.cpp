@@ -323,6 +323,7 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 		String str = String(fce.GetAbsFilePath());
 		if (str.EndsWith(".cs")) {
 			MonoScriptStorage::Get()->AddScript(fce.GetAbsFilePath());
+			MonoScriptStorage::Get()->Compile();
 		}
 	}
 	if (fce.GetActionType() == FCAT_DELETED) {
@@ -342,6 +343,7 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 			String str = String(fce.GetAbsFilePath());
 			if (str.EndsWith(".cs")) {
 				MonoScriptStorage::Get()->RemoveScript(fce.GetAbsFilePath());
+				MonoScriptStorage::Get()->Compile();
 			}
 		}
 	}

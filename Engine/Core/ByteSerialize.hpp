@@ -16,9 +16,7 @@ namespace VSGE {
 
 		ByteSerialize();
 
-		~ByteSerialize() {
-			delete[] mOutputBytes;
-		}
+		~ByteSerialize();
 		/// <summary>
 		/// Write data
 		/// </summary>
@@ -33,7 +31,7 @@ namespace VSGE {
 		/// Write string
 		/// </summary>
 		/// <param name="str">- string to write</param>
-		void Serialize(std::string str);
+		void Serialize(const std::string& str);
 
 		template<typename T>
 		void Serialize(T* data) {
@@ -44,6 +42,10 @@ namespace VSGE {
 		void Serialize(const T& data) {
 			WriteBytes((void*)&data, sizeof(T));
 		}
+
+		void PopBack();
+
+		byte& at(uint32 index);
 		/// <summary>
 		/// Created bytes to write
 		/// </summary>
@@ -54,6 +56,5 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		uint32 GetSerializedSize();
-
 	};
 }

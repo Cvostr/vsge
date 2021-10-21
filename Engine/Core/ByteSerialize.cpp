@@ -12,6 +12,10 @@ ByteSerialize::ByteSerialize() :
 	Reallocate(1000);
 }
 
+ByteSerialize::~ByteSerialize() {
+	SAFE_RELEASE_ARR(mOutputBytes);
+}
+
 void ByteSerialize::Reallocate(uint32 newSize) {
 	byte* new_alloc = new byte[newSize];
 	if (mOutputBytes != nullptr) {
@@ -30,12 +34,20 @@ void ByteSerialize::WriteBytes(void* data, uint32 size) {
 	mSerializedSize += size;
 }
 
-void ByteSerialize::Serialize(std::string str) {
+void ByteSerialize::Serialize(const std::string& str) {
 	for (uint32 s = 0; s < str.size(); s++) {
 		Serialize(str[s]);
 	}
 	char zero = '\0';
 	WriteBytes(&zero, 1);
+}
+
+void ByteSerialize::PopBack() {
+	mSerializedSize--;
+}
+
+byte& ByteSerialize::at(uint32 index) {
+	return mOutputBytes[index];
 }
 
 byte* ByteSerialize::GetBytes() {

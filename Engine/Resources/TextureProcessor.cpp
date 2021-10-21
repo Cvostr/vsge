@@ -48,9 +48,9 @@ void VSGE::ProcessTexture(byte* data, uint32 size, ProcessedTexture& out) {
 
     if (is_vstx) {
 
-        out._format = TextureFormat::FORMAT_RGBA;
-        out._width = 512;
-        out._height = 512;
+        out._format = *(reinterpret_cast<TextureFormat*>(&(data[12])));
+        out._width = *(reinterpret_cast<int*>(&(data[4])));
+        out._height = *(reinterpret_cast<int*>(&(data[8])));
 
         TextureMipLevel main_level;
         main_level._mip_width = 512;
