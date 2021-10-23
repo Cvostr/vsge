@@ -25,5 +25,7 @@ namespace VSGE {
 		void SetMeshName(const std::string& mesh);
 		MeshResource* GetMeshResource();
 		ResourceReference& GetResourceReference();
+
+		Mesh* GetMesh();
 	};
 }

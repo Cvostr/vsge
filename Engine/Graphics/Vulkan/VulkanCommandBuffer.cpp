@@ -184,7 +184,11 @@ void VulkanCommandBuffer::SetCullMode(VkCullModeFlags cull_mode) {
 }
 
 void VulkanCommandBuffer::ImagePipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, const std::vector<VkImageMemoryBarrier>& barriers){
-    vkCmdPipelineBarrier(mCommandBuffer, srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, barriers.size(), barriers.data());
+    vkCmdPipelineBarrier(
+        mCommandBuffer,
+        srcStageMask,
+        dstStageMask,
+        0, 0, nullptr, 0, nullptr, (uint32)barriers.size(), barriers.data());
 }
 
 void VulkanCommandBuffer::EndRenderPass() {

@@ -26,7 +26,7 @@ static void RemoveChild(void* ptr, void* child) {
 static MonoArray* GetChildren(void* ptr) {
 	Entity* ent = ((Entity*)ptr);
 	MonoArray* result = mono_array_new(MonoScriptingLayer::Get()->GetDomain(), mono_get_uint64_class(), ent->GetChildrenCount());
-	for (int32 c_i = 0; c_i < ent->GetChildrenCount(); c_i ++) {
+	for (int32 c_i = 0; c_i < (int32)ent->GetChildrenCount(); c_i ++) {
 		uint64 child = (uint64)ent->GetChildren()[c_i];
 		mono_array_set(result, uint64, c_i, child);
 	}

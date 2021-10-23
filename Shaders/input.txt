@@ -37,3 +37,5 @@ shader ui/ui_add.comp
 
 shader postprocess/gamma_correction/gamma_correction.comp
 shader postprocess/hdr_bloom/bloom_bright.comp
+
+shader editor/mark_gizmo_object.frag

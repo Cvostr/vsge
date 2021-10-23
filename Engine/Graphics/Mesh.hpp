@@ -82,6 +82,10 @@ namespace VSGE {
 		/// <returns></returns>
 		const AABB& GetBoundingBox() { return _meshBoundingBox; }
 
+		uint32 GetTrianglesCount();
+
+		void GetTriangle(uint32 triangle_index, Vec3& v0, Vec3& v1, Vec3& v2);
+
 		tBonesList& GetBones() {
 			return _bones;
 		}

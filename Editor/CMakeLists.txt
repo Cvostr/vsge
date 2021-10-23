@@ -41,6 +41,7 @@ set(SRC_FILES
                 Misc/SceneExt.cpp
                 Misc/Thumbnails.cpp
                 Misc/VkMaterialsThumbnails.cpp
+                Misc/VkGizmos.cpp
                 Misc/EditorIcons.cpp
                 Misc/DialogWindows.cpp
                 ProjectBuild/ResourcePacker.cpp

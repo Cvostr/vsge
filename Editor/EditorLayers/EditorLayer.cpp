@@ -18,6 +18,7 @@
 #include <Misc/DialogWindows.hpp>
 
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
+#include <Scene/EntityComponents/MeshComponent.hpp>
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Edit_Menu.hpp"
@@ -191,13 +192,13 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 					if (terrain) {
 						Vec2i coord = terrain->GetRayIntersectionTraingle(ray);
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
-							terrain->ModifyHeight(coord, GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
+							terrain->ModifyHeight(coord, (float)GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
 							terrain->UpdateMesh();
 							terrain->UpdateVegetables();
 						}
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
 							terrain->ModifyTexture(Vec2i(coord.y, coord.x),
-								(uint32)GetTerrainEditorOpacity(),
+								GetTerrainEditorOpacity(),
 								(uint32)GetTerrainEditorBrushSize(),
 								GetTerrainEditorTextureIndex());
 							terrain->UpdateTextureMasks();
@@ -225,11 +226,40 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 				}
 
 				std::sort(hits.begin(), hits.end(), [](const RayHit& a, const RayHit& b) { return a.GetDistance() < b.GetDistance(); });
-
-			
-				if (hits.size() > 0) {
+				//triangle intersection
+				float min_distance = MAX_FLOAT;
+				if (hits.size() == 1) {
 					SetPickedEntity((Entity*)hits[0].GetHitObject());
 					insp->SetShowingEntity((Entity*)hits[0].GetHitObject());
+				}
+				else
+				{
+					for (auto& hit : hits) {
+						Entity* ent = (Entity*)hit.GetHitObject();
+						Mat4 transform = ent->GetWorldTransform();
+						Mesh* entity_mesh = ent->GetComponent<MeshComponent>()->GetMesh();
+
+						if (!entity_mesh)
+							continue;
+
+						for (uint32 v_i = 0; v_i < entity_mesh->GetTrianglesCount(); v_i ++) {
+							Vec3 v0, v1, v2;
+							entity_mesh->GetTriangle(v_i, v0, v1, v2);
+
+							Vec4 v01 = transform * Vec4(v0, 1);
+							Vec4 v11 = transform * Vec4(v1, 1);
+							Vec4 v21 = transform * Vec4(v2, 1);
+
+							float current_distance;
+							Vec2 current_pos;
+							bool intersects = ray.IntersectTriangle(v01.Vec3(), v11.Vec3(), v21.Vec3(), current_distance, current_pos);
+							if(intersects && current_distance < min_distance){
+								min_distance = current_distance;
+								SetPickedEntity(ent);
+								insp->SetShowingEntity(ent);
+							}
+						}
+					}
 				}
 			}
 		}

@@ -12,6 +12,14 @@ MeshResource* MeshComponent::GetMeshResource() {
 	return _meshResource.GetResource<MeshResource>(); 
 }
 
+Mesh* MeshComponent::GetMesh() {
+	MeshResource* resource = GetMeshResource();
+	if (resource) {
+		return resource->GetMesh();
+	}
+	return nullptr;
+}
+
 ResourceReference& MeshComponent::GetResourceReference() {
 	return _meshResource;
 }
