@@ -327,6 +327,10 @@ void TerrainComponent::Serialize(YAML::Emitter& e) {
 		e << Key << "metallic" << Value << texture._metallic_reference.GetResourceName();
 		e << Key << "ao" << Value << texture._ao_reference.GetResourceName();
 		e << Key << "height" << Value << texture._height_reference.GetResourceName();
+		//write factors
+		e << Key << "roughness_factor" << Value << texture._roughness_factor;
+		e << Key << "metallic_factor" << Value << texture._metallic_factor;
+		e << Key << "height_factor" << Value << texture._height_factor;
 		e << YAML::EndMap; // Anim resource
 	}
 	e << YAML::EndSeq;
@@ -345,15 +349,15 @@ void TerrainComponent::Serialize(YAML::Emitter& e) {
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
 		e << Value << _heightmap[v];
 	}
-	e << YAML::EndSeq;
-
-	/*e << YAML::Key << "textures_factors" << YAML::Value << YAML::BeginSeq;
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
 			e << Value << (int)_texture_factors[v]._textures_factors[texture_i];
 		}
 	}
-	e << YAML::EndSeq;*/
+	for (uint32 v = 0; v < GetVerticesCount(); v++) {
+		e << Value << (int)_vegetables_data[v];
+	}
+	e << YAML::EndSeq;
 }
 void TerrainComponent::Deserialize(YAML::Node& entity) {
 	_width = entity["width"].as<uint32>();
@@ -369,6 +373,9 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 		std::string metallic = texture["metallic"].as<std::string>();
 		std::string ao = texture["ao"].as<std::string>();
 		std::string height = texture["height"].as<std::string>();
+		float roughness_factor = texture["roughness_factor"].as<float>();
+		float metallic_factor = texture["metallic_factor"].as<float>();
+		float height_factor = texture["height_factor"].as<float>();
 
 		TerrainTexture texture;
 		texture._albedo_reference.SetResource(albedo);
@@ -377,6 +384,10 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 		texture._metallic_reference.SetResource(metallic);
 		texture._ao_reference.SetResource(ao);
 		texture._height_reference.SetResource(height);
+		texture._roughness_factor = roughness_factor;
+		texture._metallic_factor = metallic_factor;
+		texture._height_factor = height_factor;
+
 		_terrain_textures.push_back(texture);
 	}
 
@@ -394,21 +405,24 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 	}
 
 	YAML::Node heightmap = entity["heightmap"];
-	uint32 v = 0;
-	for (const auto& height : heightmap) {
-		_heightmap[v++] = height.as<float>();
+	
+	for (uint32 v = 0; v < GetVerticesCount(); v++) {
+		_heightmap[v] = heightmap[v].as<float>();
 	}
-
-	/*v = 0;
-	YAML::Node textures_factors = entity["textures_factors"];
-	for (const auto& factor : textures_factors) {
+	for (uint32 v = 0; v < GetVerticesCount(); v++) {
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			//_texture_factors[v++]._textures_factors[texture_i] = (uint8)factor.as<int>();
+			_texture_factors[v]._textures_factors[texture_i] = 
+				(uint8)heightmap[GetVerticesCount() + _terrain_textures.size() * v + texture_i].as<int>();
 		}
-	}*/
+	}
+	for (uint32 v = 0; v < GetVerticesCount(); v++) {
+		_vegetables_data[v] = 
+			(GRASS_ID)heightmap[GetVerticesCount() + _terrain_textures.size() * GetVerticesCount() + v].as<int>();
+	}
 	
 	UpdateMesh();
 	UpdateTextureMasks();
+	UpdateVegetables();
 }
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_width);

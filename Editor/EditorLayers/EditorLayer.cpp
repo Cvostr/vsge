@@ -237,7 +237,11 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 					for (auto& hit : hits) {
 						Entity* ent = (Entity*)hit.GetHitObject();
 						Mat4 transform = ent->GetWorldTransform();
-						Mesh* entity_mesh = ent->GetComponent<MeshComponent>()->GetMesh();
+						MeshComponent* mesh_comp = ent->GetComponent<MeshComponent>();
+						if (!mesh_comp)
+							continue;
+
+						Mesh* entity_mesh = mesh_comp->GetMesh();
 
 						if (!entity_mesh)
 							continue;
