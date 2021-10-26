@@ -8,6 +8,10 @@ void MeshComponent::SetMeshName(const std::string& mesh) {
 	_meshResource.SetResource(mesh);
 }
 
+void MeshComponent::SetMeshResource(MeshResource* resource) {
+	_meshResource.SetResource(resource);
+}
+
 MeshResource* MeshComponent::GetMeshResource() {
 	return _meshResource.GetResource<MeshResource>(); 
 }

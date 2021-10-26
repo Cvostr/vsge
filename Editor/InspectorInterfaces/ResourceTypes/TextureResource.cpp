@@ -35,5 +35,6 @@ void VSGEditor::DrawTextureResourceUI(VSGE::Resource* resource) {
 	ImGui::Text(format_text.c_str());
 
 	ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(resource->GetDataDescription().file_path);
-	ImGui::Image(tex->imtexture, ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowWidth()));
+	if(tex)
+		ImGui::Image(tex->imtexture, ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowWidth()));
 }

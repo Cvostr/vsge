@@ -29,54 +29,6 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 	_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 }
 
-template<>
-struct YAML::convert<Vec3>
-{
-	static Node encode(const Vec3& rhs)
-	{
-		Node node;
-		node.push_back(rhs.x);
-		node.push_back(rhs.y);
-		node.push_back(rhs.z);
-		node.SetStyle(EmitterStyle::Flow);
-		return node;
-	}
-
-	static bool decode(const Node& node, Vec3& rhs)
-	{
-		if (!node.IsSequence() || node.size() != 3)
-			return false;
-
-		rhs.x = node[0].as<float>();
-		rhs.y = node[1].as<float>();
-		rhs.z = node[2].as<float>();
-		return true;
-	}
-};
-
-template<>
-struct YAML::convert<Vec2>
-{
-	static Node encode(const Vec2& rhs)
-	{
-		Node node;
-		node.push_back(rhs.x);
-		node.push_back(rhs.y);
-		node.SetStyle(EmitterStyle::Flow);
-		return node;
-	}
-
-	static bool decode(const Node& node, Vec2& rhs)
-	{
-		if (!node.IsSequence() || node.size() != 2)
-			return false;
-
-		rhs.x = node[0].as<float>();
-		rhs.y = node[1].as<float>();
-		return true;
-	}
-};
-
 void ParticleEmitterComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "shape" << Value << _shape;
 	e << Key << "duration" << Value << _duration;

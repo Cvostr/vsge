@@ -23,6 +23,8 @@ namespace VSGE {
 		void Deserialize(ByteSolver& solver);
 
 		void SetMeshName(const std::string& mesh);
+		void SetMeshResource(MeshResource* resource);
+
 		MeshResource* GetMeshResource();
 		ResourceReference& GetResourceReference();
 

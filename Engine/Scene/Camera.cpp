@@ -17,8 +17,13 @@ Camera::Camera() :
 			_front(1.f, 0.f, 0.f),
 			_up(0.f, 1.f, 0.f)
 		{
-
+	_target_texture.SetResourceType(RESOURCE_TYPE_TEXTURE);
 		}
+
+ResourceReference& Camera::GetTargetReference() {
+	return _target_texture;
+}
+
 void Camera::SetNearPlane(float nearPlane) { 
 	_nearPlane = nearPlane; 
 }

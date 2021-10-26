@@ -3,7 +3,9 @@
 #include <bullet/BulletCollision/CollisionShapes/btCapsuleShape.h>
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <Physics/PhysicsLayer.hpp>
+#include <Core/YamlHelper.hpp>
 
+using namespace YAML;
 using namespace VSGE;
 
 #define MASS 1.f
@@ -112,10 +114,12 @@ void CharacterControllerComponent::OnDeactivate() {
 }
 
 void CharacterControllerComponent::Serialize(YAML::Emitter& e) {
-
+	e << Key << "center" << Value << _center;
+	e << Key << "size" << Value << _size;
 }
 void CharacterControllerComponent::Deserialize(YAML::Node& entity) {
-
+	_center = entity["center"].as<Vec3>();
+	_size = entity["size"].as<Vec2>();
 }
 
 void CharacterControllerComponent::Serialize(ByteSerialize& serializer) {

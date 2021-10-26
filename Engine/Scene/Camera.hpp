@@ -5,6 +5,8 @@
 #include <Math/Frustum.hpp>
 #include "IEntityComponent.hpp"
 
+#include <Resources/ResourceReference.hpp>
+
 namespace VSGE {
 
 	typedef unsigned long long ViewMask;
@@ -32,11 +34,15 @@ namespace VSGE {
 		Mat4 _projectionViewMatrix;
 		
 		Frustum _frustum;
+
+		ResourceReference _target_texture;
 	public:
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_CAMERA, "Camera")
 
-		Camera() ;
+		Camera();
+
+		ResourceReference& GetTargetReference();
 		/// <summary>
 		/// Recalculate projection, view matrices and update frustum
 		/// </summary>

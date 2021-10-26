@@ -51,6 +51,7 @@ void VSGE::ProcessTexture(byte* data, uint32 size, ProcessedTexture& out) {
         out._format = *(reinterpret_cast<TextureFormat*>(&(data[12])));
         out._width = *(reinterpret_cast<int*>(&(data[4])));
         out._height = *(reinterpret_cast<int*>(&(data[8])));
+        uint32 layers = *(reinterpret_cast<uint32*>(&(data[16])));
 
         TextureMipLevel main_level;
         main_level._mip_width = 512;

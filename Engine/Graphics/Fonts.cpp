@@ -25,10 +25,13 @@ void GlyphManager::AddFontContainer(GlyphFontContainer* ptr) {
 void GlyphManager::AddFontContainer(const std::string& file_path, const std::string& name) {
     byte* data = nullptr;
     uint32 size = 0;
-    LoadFile(file_path, (char**)&data, &size);
-    GlyphFontContainer* container = new GlyphFontContainer(data, size, 64);
-    container->SetName(name);
-    AddFontContainer(container);
+    bool result = LoadFile(file_path, (char**)&data, &size);
+    if (result) 
+    {
+        GlyphFontContainer* container = new GlyphFontContainer(data, size, 64);
+        container->SetName(name);
+        AddFontContainer(container);
+    }
 }
 
 GlyphFontContainer* GlyphManager::GetFontByName(const std::string& name) {
@@ -151,7 +154,7 @@ CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character) {
 uint32 GlyphFontContainer::GetWidthOfString(uint32* str, uint32 strlen) { 
     uint32 result = 0;
     for (uint32 i = 0; i < strlen; i++) {
-        result += GetGlyph(str[i])->mGlyphSize.x;
+        result += static_cast<uint32>(GetGlyph(str[i])->mGlyphSize.x);
     }
     return result;
 }

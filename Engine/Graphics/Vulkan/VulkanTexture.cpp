@@ -199,9 +199,10 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 }
 
 void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 height, uint32 level, uint32 layer) {
+	if (data == nullptr || size == 0)
+		return;
 
-	//if (_layout == VK_IMAGE_LAYOUT_UNDEFINED)
-		ChangeLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	ChangeLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanMA* ma = rapi->GetAllocator();

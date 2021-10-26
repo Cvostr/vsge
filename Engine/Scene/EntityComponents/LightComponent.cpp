@@ -8,33 +8,6 @@
 using namespace VSGE;
 using namespace YAML;
 
-template<>
-struct YAML::convert<VSGE::Color>
-{
-	static Node encode(const Color& rhs)
-	{
-		Node node;
-		node.push_back(rhs.r);
-		node.push_back(rhs.g);
-		node.push_back(rhs.b);
-		node.push_back(rhs.a);
-		node.SetStyle(EmitterStyle::Flow);
-		return node;
-	}
-
-	static bool decode(const Node& node, Color& rhs)
-	{
-		if (!node.IsSequence() || node.size() != 4)
-			return false;
-
-		rhs.r = node[0].as<float>();
-		rhs.g = node[1].as<float>();
-		rhs.b = node[2].as<float>();
-		rhs.a = node[3].as<float>();
-		return true;
-	}
-};
-
 LightsourceComponent::LightsourceComponent() :
 	_intensity(1.f),
 	_range(5.5f),

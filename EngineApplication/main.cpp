@@ -7,6 +7,7 @@
 #include <Audio/AudioLayer.hpp>
 #include <Input/InputLayer.hpp>
 #include <UI/UiLayer.hpp>
+#include <Graphics/Fonts.hpp>
 
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
@@ -34,6 +35,9 @@ Application* VSGEMain() {
 	app->AddLayer(new AudioLayer);
 	app->AddLayer(new InputLayer);
 	app->AddLayer(new UiLayer);
+
+	GlyphManager* glyph_manager = new GlyphManager;
+	glyph_manager->AddFontContainer("c:\\Windows\\Fonts\\Arial.ttf", "arial");
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();

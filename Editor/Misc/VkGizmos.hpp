@@ -9,6 +9,9 @@ namespace VSGEditor {
 		static VkGizmos* _this;
 
 		VSGE::VulkanShader* _object_shader;
+
+		VSGE::VulkanPipeline* _object_pipeline;
+		VSGE::VulkanPipelineLayout* _object_pipeline_layout;
 	public:
 
 		static VkGizmos* Get() {
@@ -17,5 +20,8 @@ namespace VSGEditor {
 
 		VkGizmos();
 		~VkGizmos();
+
+		void Create();
+		void Destroy();
 	};
 }
