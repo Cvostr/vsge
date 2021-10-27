@@ -6,6 +6,7 @@
 #include "IEntityComponent.hpp"
 
 #include <Resources/ResourceReference.hpp>
+#include <Resources/ResourceTypes/TextureResource.hpp>
 
 namespace VSGE {
 
@@ -43,6 +44,8 @@ namespace VSGE {
 		Camera();
 
 		ResourceReference& GetTargetReference();
+
+		TextureResource* GetTargetResource();
 		/// <summary>
 		/// Recalculate projection, view matrices and update frustum
 		/// </summary>

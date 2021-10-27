@@ -348,7 +348,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 
 	float uv_x = (float)terrain_component->GetWidth() / 64;
 	float uv_y = (float)terrain_component->GetHeight() / 64;
-	uint32 textures_count = terrain_component->GetTerrainTextures().size();
+	uint32 textures_count = (uint32)terrain_component->GetTerrainTextures().size();
 
 	_terrains_buffer->WriteData(offset, 4, &uv_x);
 	_terrains_buffer->WriteData(offset + 4, 4, &uv_y);
@@ -422,7 +422,7 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 	VulkanMesh* terrain_mesh = (VulkanMesh*)terrain->GetTerrainMesh();
 	if (terrain_mesh) {
 		cmdbuffer->BindPipeline(*_terrain_pipeline);
-		cmdbuffer->SetViewport(0, 0, _outputWidth, _outputHeight);
+		cmdbuffer->SetViewport(0, 0, (float)_outputWidth, (float)_outputHeight);
 		uint32 terrain_data_offset = terrain_index * TERRAIN_DATA_ELEM_SIZE;
 
 		cmdbuffer->BindDescriptorSets(*_terrain_pipeline_layout, 0, 1, _entity_descr_set->at(vertexDescriptorID), 2, offsets);
@@ -433,7 +433,7 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 	}
 
 	cmdbuffer->BindPipeline(*_grass_pipeline);
-	cmdbuffer->SetViewport(0, 0, _outputWidth, _outputHeight);
+	cmdbuffer->SetViewport(0, 0, (float)_outputWidth, (float)_outputHeight);
 	cmdbuffer->BindDescriptorSets(*_grass_pipeline_layout, 0, 1, _entity_descr_set->at(vertexDescriptorID), 2, offsets);
 
 	for (uint32 grass_i = 0; grass_i < vk_terrain->GetVegetables().size(); grass_i ++) {

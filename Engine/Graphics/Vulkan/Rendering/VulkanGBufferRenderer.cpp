@@ -27,7 +27,7 @@ void VulkanGBufferRenderer::CreateFramebuffer() {
 
 	_gbuffer_renderpass = new VulkanRenderPass;
 	_gbuffer_renderpass->SetClearSize(_fb_width, _fb_height);
-	_gbuffer_renderpass->PushColorAttachment(FORMAT_RGBA);
+	_gbuffer_renderpass->PushColorAttachment(FORMAT_RGBA16F);
 	_gbuffer_renderpass->PushColorAttachment(FORMAT_RGBA16F);
 	_gbuffer_renderpass->PushColorAttachment(FORMAT_RGBA16F);
 	_gbuffer_renderpass->PushColorAttachment(FORMAT_RGBA);
@@ -36,7 +36,7 @@ void VulkanGBufferRenderer::CreateFramebuffer() {
 
 	_gbuffer_fb = new VulkanFramebuffer;
 	_gbuffer_fb->SetSize(_fb_width, _fb_height);
-	_gbuffer_fb->AddAttachment(FORMAT_RGBA); //Color
+	_gbuffer_fb->AddAttachment(FORMAT_RGBA16F); //Color
 	_gbuffer_fb->AddAttachment(FORMAT_RGBA16F); //Normal
 	_gbuffer_fb->AddAttachment(FORMAT_RGBA16F); //Position
 	_gbuffer_fb->AddAttachment(FORMAT_RGBA); //Material

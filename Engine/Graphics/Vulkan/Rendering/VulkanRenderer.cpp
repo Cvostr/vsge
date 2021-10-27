@@ -145,28 +145,6 @@ void VulkanRenderer::SetupRenderer() {
 	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2000);
 	mMaterialsDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 16000);
 	mMaterialsDescriptorPool->Create();
-	//----------------------GBUFFER-----------------------------
-	_gbuffer_renderer = new VulkanGBufferRenderer;
-	_gbuffer_renderer->CreateFramebuffer();
-	_gbuffer_renderer->CreateDescriptorSets();
-	_gbuffer_renderer->SetEntitiesToRender(_entitiesToRender, _particleEmitters);
-	_gbuffer_renderer->SetBuffers(mTransformsShaderBuffer, mAnimationTransformsShaderBuffer, mParticlesTransformShaderBuffer);
-	_gbuffer_renderer->SetScene(GetScene());
-	_gbuffer_renderer->SetCameraIndex(0);
-
-	_shadowmapper = new VulkanShadowmapping(
-		&_gbuffer_renderer->GetVertexDescriptorSets(),
-		_gbuffer_renderer->GetAnimationsDescriptorSet(),
-		_cameras_buffer->GetCamerasBuffer(),
-		mSpriteMesh,
-		_gbuffer_renderer->GetPositionAttachment(),
-		mAttachmentSampler);
-	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
-	_shadowmapper->SetTerrainsToRender(&_terrains);
-
-	_terrain_renderer = new VulkanTerrainRenderer;
-	_terrain_renderer->Create(_gbuffer_renderer->GetRenderPass(), _gbuffer_renderer->GetVertexDescriptorSets(), mEmptyZeroTexture, mEmptyOneTexture);
-	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_ui_renderer = new VulkanUiRenderer;
 	_ui_renderer->Create();
@@ -174,18 +152,6 @@ void VulkanRenderer::SetupRenderer() {
 
 	_brdf_lut = new Vulkan_BRDF_LUT;
 	_brdf_lut->Create();
-
-	_deferred_renderer = new VulkanDeferredLight;
-	_deferred_renderer->CreateFramebuffer();
-	_deferred_renderer->CreateDescriptorSet();
-	_deferred_renderer->CreatePipeline();
-	_deferred_renderer->SetShadowmapper(_shadowmapper);
-	_deferred_renderer->SetBRDF_LUT(_brdf_lut);
-	
-	_deferred_renderer->SetLightsBuffer((VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
-	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
-	_deferred_renderer->SetCameraIndex(0);
-	mOutput = _deferred_renderer->GetFramebuffer()->GetColorAttachments()[0];
 
 	_ibl_map = new VulkanIBL;
 	_ibl_map->SetInputData(
@@ -197,8 +163,30 @@ void VulkanRenderer::SetupRenderer() {
 		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
 
-	_deferred_renderer->SetIBL(_ibl_map->GetSpecularMap(), _ibl_map->GetIrradianceMap());
-	//_deferred_renderer->UnsetIBL();
+	//---------------------Command buffers------------------------
+	mCmdPool = new VulkanCommandPool;
+	mCmdPool->Create(device->GetGraphicsQueueFamilyIndex());
+
+	_main_render_target = new VulkanRenderTarget;
+	_main_render_target->SetCameraIndex(0);
+	_main_render_target->SetEntitiesToRender(_entitiesToRender, _particleEmitters);
+	_main_render_target->SetBuffers(
+		mTransformsShaderBuffer,
+		mAnimationTransformsShaderBuffer,
+		mParticlesTransformShaderBuffer);
+	
+	_main_render_target->SetIBL(_ibl_map);
+	mOutput = _main_render_target->GetDeferredOutput();
+
+	_render_targets.resize(1);
+	_render_targets[0] = _main_render_target;
+
+	_gbuffer_renderer = _main_render_target->GetGBufferRenderer();
+	_deferred_renderer = _main_render_target->GetDeferredLightRenderer();
+
+	_terrain_renderer = new VulkanTerrainRenderer;
+	_terrain_renderer->Create(_gbuffer_renderer->GetRenderPass(), _gbuffer_renderer->GetVertexDescriptorSets(), mEmptyZeroTexture, mEmptyOneTexture);
+	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_postprocessing = new VulkanPostprocessing;
 	_postprocessing->SetInputTextures(
@@ -210,9 +198,17 @@ void VulkanRenderer::SetupRenderer() {
 	_postprocessing->Create();
 	_postprocessing->ResizeOutput(GetOutputSizes());
 
-	//---------------------Command buffers------------------------
-	mCmdPool = new VulkanCommandPool;
-	mCmdPool->Create(device->GetGraphicsQueueFamilyIndex());
+	_shadowmapper = new VulkanShadowmapping(
+		&_gbuffer_renderer->GetVertexDescriptorSets(),
+		_gbuffer_renderer->GetAnimationsDescriptorSet(),
+		_cameras_buffer->GetCamerasBuffer(),
+		mSpriteMesh,
+		_gbuffer_renderer->GetPositionAttachment(),
+		mAttachmentSampler);
+	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
+	_shadowmapper->SetTerrainsToRender(&_terrains);
+
+	_main_render_target->SetShadowmapper(_shadowmapper);
 
 	mGBufferCmdbuf = new VulkanCommandBuffer;
 	mGBufferCmdbuf->Create(mCmdPool);
@@ -415,13 +411,9 @@ void VulkanRenderer::StoreWorldObjects() {
 	}
 	//-----------------------------
 
-	mGBufferCmdbuf->Begin();
-	_gbuffer_renderer->RecordCmdBuffer(mGBufferCmdbuf);
-	mGBufferCmdbuf->End();
-
-	mLightsCmdbuf->Begin();
-	_deferred_renderer->RecordCmdbuf(mLightsCmdbuf);
-	mLightsCmdbuf->End();
+	for (auto& render_target : _render_targets) {
+		render_target->RecordCommandBuffers();
+	}
 
 	_ui_renderer->FillBuffers();
 	_ui_renderer->FillCommandBuffer();
@@ -456,11 +448,31 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 			this->cam = camera;
 			_shadowmapper->SetCamera(camera);
 			_cameras_buffer->SetEnvmapCameras(camera->GetPosition(), 100.f);
-			_cameras_buffer->SetCamera(0, camera);
 		}
 	}
 
 	_cameras_buffer->UpdateGpuBuffer();
+
+	while (_render_targets.size() < _cameras.size()) {
+		VulkanRenderTarget* render_target = new VulkanRenderTarget;
+		_render_targets.push_back(render_target);
+	}
+
+	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
+		Camera* camera = _cameras_buffer->GetCameraByIndex(0);
+		VulkanRenderTarget* render_target = _render_targets[camera_i];
+		render_target->SetCameraIndex(camera_i);
+		render_target->SetEntitiesToRender(_entitiesToRender, _particleEmitters);
+		render_target->SetBuffers(
+			mTransformsShaderBuffer,
+			mAnimationTransformsShaderBuffer,
+			mParticlesTransformShaderBuffer);
+		TextureResource* resource = camera->GetTargetResource();
+		if (resource) {
+			VulkanTexture* target_texture = (VulkanTexture*)resource->GetTexture();
+			render_target->ResizeOutput(target_texture->GetWidth(), target_texture->GetHeight());
+		}
+	}
 
 	StoreWorldObjects();
 
@@ -472,9 +484,30 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	_shadowmapper->RenderShadows(begin, mShadowprocessingEndSemaphore);
 
-	VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
+	//VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
+	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ibl_map->GetBeginSemaphore());
+	begin = mShadowprocessingEndSemaphore;
+	VulkanSemaphore* end = nullptr;
+	for (uint32 rt_i = 0; rt_i < _render_targets.size(); rt_i ++) {
+		VulkanRenderTarget* render_target = _render_targets[rt_i];
+		VulkanGraphicsSubmit(
+			*render_target->GetGBufferCommandBuffer(),
+			*begin,
+			*render_target->GetGbufferEndSemaphore());
 
-	VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ibl_map->GetBeginSemaphore());
+		if (rt_i == _render_targets.size() - 1)
+			end = _ibl_map->GetBeginSemaphore();
+		else
+			end = render_target->GetDeferredEndSemaphore();
+
+		VulkanGraphicsSubmit(
+			*render_target->GetDeferredCommandBuffer(),
+			*render_target->GetGbufferEndSemaphore(),
+			*end);
+
+		begin = render_target->GetDeferredEndSemaphore();
+	}
+
 	_ibl_map->Execute(_ui_renderer->GetBeginSemaphore());
 	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ui_renderer->GetBeginSemaphore());
 
@@ -487,9 +520,10 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputWidth = width;
 	mOutputHeight = height;
 
-	_gbuffer_renderer->Resize(width, height);
-	_deferred_renderer->Resize(width, height);
-	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
+	_main_render_target->ResizeOutput(width, height);
+	//_gbuffer_renderer->Resize(width, height);
+	//_deferred_renderer->Resize(width, height);
+	//_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 
 	_terrain_renderer->SetOutputSizes(width, height);
 	
@@ -556,4 +590,12 @@ VulkanCamerasBuffer* VulkanRenderer::GetCamerasBuffer() {
 
 Vulkan_BRDF_LUT* VulkanRenderer::GetBRDF() {
 	return _brdf_lut;
+}
+
+LightsBuffer* VulkanRenderer::GetLightsBuffer() {
+	return _lights_buffer;
+}
+
+VulkanCommandPool* VulkanRenderer::GetCommandPool() {
+	return mCmdPool;
 }

@@ -16,7 +16,7 @@ namespace VSGE {
         VkImageView _imageView;
         VkImageLayout _layout;
 
-        VkImageUsageFlagBits _usage;
+        VkImageUsageFlags _usage;
 
         // NOT FULLY IMPLEMENTED
         void Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 layer, uint32 Width, uint32 Height);

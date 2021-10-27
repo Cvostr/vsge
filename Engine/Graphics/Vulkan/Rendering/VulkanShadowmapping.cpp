@@ -401,7 +401,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };
 			uint32 anim_offset = _writtenBones * 64;
-			_writtenBones += mesh->GetBones().size();
+			_writtenBones += (uint32)mesh->GetBones().size();
 
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
 

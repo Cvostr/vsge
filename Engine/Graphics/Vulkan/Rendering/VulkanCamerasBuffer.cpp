@@ -90,7 +90,7 @@ void VulkanCamerasBuffer::SetCamera(uint32 camera_index, Camera* camera) {
 		camera->GetProjectionMatrix(),
 		camera->GetViewMatrix(), 
 		camera->GetPosition());
-	}
+}
 uint32 VulkanCamerasBuffer::GetCameraId(Camera* camera) {
 	for (uint32 i = 0; i < MAX_CAMERAS; i++) {
 		if (_cameras[i] == camera)
@@ -100,6 +100,9 @@ uint32 VulkanCamerasBuffer::GetCameraId(Camera* camera) {
 }
 Camera* VulkanCamerasBuffer::GetCameraByIndex(uint32 index) {
 	return _cameras[index];
+}
+uint32 VulkanCamerasBuffer::GetCamerasCount() {
+	return MAX_CAMERAS;
 }
 VulkanBuffer* VulkanCamerasBuffer::GetCamerasBuffer() {
 	return _cameras_buffer;

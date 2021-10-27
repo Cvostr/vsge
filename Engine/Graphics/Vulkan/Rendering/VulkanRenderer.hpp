@@ -17,8 +17,8 @@
 #include "VulkanDeferredLight.hpp"
 #include "VulkanCamerasBuffer.hpp"
 #include "VulkanGBufferRenderer.hpp"
-#include "VulkanEnvMap.hpp"
 #include "PBR/VulkanIrradianceMap.hpp"
+#include "VulkanRenderTarget.hpp"
 
 #include "PBR/VulkanIBL.hpp"
 
@@ -70,12 +70,12 @@ namespace VSGE {
 		VulkanUiRenderer* _ui_renderer;
 		VulkanPostprocessing* _postprocessing;
 		Vulkan_BRDF_LUT* _brdf_lut;
-		//VulkanIrradianceMap* _irmap;
 		VulkanCamerasBuffer* _cameras_buffer;
 		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanDeferredLight* _deferred_renderer;
-		//VulkanEnvMap* _env_map;
 		VulkanIBL* _ibl_map;
+		std::vector<VulkanRenderTarget*> _render_targets;
+		VulkanRenderTarget* _main_render_target;
 
 		MaterialTemplate* pbr_template;
 		MaterialTemplate* particle_template;
@@ -112,6 +112,8 @@ namespace VSGE {
 			return _this;
 		}
 
+		VulkanCommandPool* GetCommandPool();
+
 		VulkanSemaphore* GetBeginSemaphore();
 
 		VulkanSemaphore* GetEndSemaphore();
@@ -131,6 +133,8 @@ namespace VSGE {
 		VulkanCamerasBuffer* GetCamerasBuffer();
 
 		Vulkan_BRDF_LUT* GetBRDF();
+
+		LightsBuffer* GetLightsBuffer();
 
 		void StoreWorldObjects();
 
