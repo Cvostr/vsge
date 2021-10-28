@@ -95,6 +95,15 @@ VulkanCommandBuffer* VulkanRenderTarget::GetDeferredCommandBuffer() {
 VulkanTexture* VulkanRenderTarget::GetDeferredOutput() {
 	return _deferred_renderer->GetOutputTexture();
 }
+VulkanTexture* VulkanRenderTarget::GetGBufferNormalsAttachment() {
+	return _gbuffer_renderer->GetNormalAttachment();
+}
+VulkanTexture* VulkanRenderTarget::GetGBufferPositionsAttachment() {
+	return _gbuffer_renderer->GetPositionAttachment();
+}
+VulkanTexture* VulkanRenderTarget::GetGBufferDepthAttachment() {
+	return _gbuffer_renderer->GetDepthAttachment();
+}
 VulkanSemaphore* VulkanRenderTarget::GetGbufferEndSemaphore() {
 	return _gbuffer_end_semaphore;
 }
@@ -108,6 +117,12 @@ VulkanDeferredLight* VulkanRenderTarget::GetDeferredLightRenderer() {
 	return _deferred_renderer;
 }
 void VulkanRenderTarget::RecordCommandBuffers() {
+	//if () {
+		VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
+		_gbuffer_renderer->SetScene(vk_renderer->GetScene());
+	//}
+
+
 	_gbuffer_cmdbuf->Begin();
 	_gbuffer_renderer->RecordCmdBuffer(_gbuffer_cmdbuf);
 	_gbuffer_cmdbuf->End();

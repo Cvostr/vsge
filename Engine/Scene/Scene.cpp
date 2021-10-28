@@ -72,8 +72,10 @@ void Scene::AddFromPrefab(byte* data, uint32 size) {
 				new_parent_id = alias.second;
 			}
 		}
-
-		GetEntityWithGuid(new_parent_id)->AddChild(ent);
+		Entity* parent = GetEntityWithGuid(new_parent_id);
+		if (!parent)
+			parent = _rootEntity;
+		parent->AddChild(ent);
 	}
 }
 

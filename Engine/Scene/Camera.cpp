@@ -197,5 +197,4 @@ void Camera::Deserialize(ByteSolver& solver) {
 	_farPlane = solver.GetValue<float>();
 	_viewMask = solver.GetValue<ViewMask>();
 	_target_texture.SetResource(solver.ReadNextString());
-
 }

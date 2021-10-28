@@ -41,6 +41,9 @@ namespace VSGE {
 		void RecordCommandBuffers();
 
 		VulkanTexture* GetDeferredOutput();
+		VulkanTexture* GetGBufferNormalsAttachment();
+		VulkanTexture* GetGBufferPositionsAttachment();
+		VulkanTexture* GetGBufferDepthAttachment();
 
 		VulkanCommandBuffer* GetGBufferCommandBuffer();
 		VulkanCommandBuffer* GetDeferredCommandBuffer();

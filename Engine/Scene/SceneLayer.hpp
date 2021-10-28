@@ -15,6 +15,9 @@ namespace VSGE {
 		void CallOnUpdate(Entity* entity);
 		void CallOnStop(Entity* entity);
 
+		byte* _scene_backup_data;
+		uint32 _scene_backup_size;
+
 		static SceneLayer* _this;
 	public:
 		SceneLayer();
@@ -45,5 +48,10 @@ namespace VSGE {
 		void OnAttach();
 		void OnDetach();
 		void OnUpdate();
+
+		void BackupScene();
+		void BackupScene(byte** data, uint32& size);
+		void RestoreScene();
+		void RestoreScene(byte* data, uint32 size);
 	};
 }

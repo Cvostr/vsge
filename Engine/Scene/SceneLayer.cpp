@@ -1,4 +1,5 @@
 #include "SceneLayer.hpp"
+#include "SceneSerialization.hpp"
 
 using namespace VSGE;
 
@@ -8,6 +9,8 @@ SceneLayer::SceneLayer() {
 	_scene = nullptr;
 	_scene_running = false;
 	_scene_paused = false;
+	_scene_backup_data = nullptr;
+	_scene_backup_size = 0;
 
 	_this = this;
 }
@@ -96,4 +99,22 @@ void SceneLayer::OnUpdate() {
 	if (_scene_running && _scene) {
 		CallOnUpdate(_scene->GetRootEntity());
 	}
+}
+
+void SceneLayer::BackupScene() {
+	BackupScene(&_scene_backup_data, _scene_backup_size);
+}
+void SceneLayer::BackupScene(byte** data, uint32& size) {
+	VSGE::SceneSerializer sc;
+	sc.SetScene(_scene);
+	sc.SerializeBinary(data, size);
+}
+void SceneLayer::RestoreScene() {
+	RestoreScene(_scene_backup_data, _scene_backup_size);
+	SAFE_RELEASE_ARR(_scene_backup_data)
+}
+void SceneLayer::RestoreScene(byte* data, uint32 size) {
+	VSGE::SceneSerializer sc;
+	sc.SetScene(_scene);
+	sc.DeserializeBinary(data, size);
 }

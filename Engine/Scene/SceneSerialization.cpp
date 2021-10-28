@@ -103,7 +103,6 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 	//read scripts
 	YAML::Node scripts = entity["script"];
 	for (auto script : scripts) {
-
 		EntityScriptComponent* script_ptr = new EntityScriptComponent;
 		script_ptr->SetClassName(script["class"].as<std::string>());
 		ent->AddScript(script_ptr);

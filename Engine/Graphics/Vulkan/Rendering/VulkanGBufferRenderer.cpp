@@ -227,7 +227,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
 			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
-			_drawn_bones += mesh->GetBones().size();
+			_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
 
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[vertexDescriptorID], 2, offsets);

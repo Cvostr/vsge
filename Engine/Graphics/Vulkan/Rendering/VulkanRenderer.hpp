@@ -14,9 +14,7 @@
 #include "VulkanTerrainRenderer.hpp"
 #include "VulkanUiRenderer.hpp"
 #include "Postprocess/VulkanPostprocessing.hpp"
-#include "VulkanDeferredLight.hpp"
 #include "VulkanCamerasBuffer.hpp"
-#include "VulkanGBufferRenderer.hpp"
 #include "PBR/VulkanIrradianceMap.hpp"
 #include "VulkanRenderTarget.hpp"
 
@@ -68,7 +66,6 @@ namespace VSGE {
 		VulkanPostprocessing* _postprocessing;
 		Vulkan_BRDF_LUT* _brdf_lut;
 		VulkanCamerasBuffer* _cameras_buffer;
-		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanIBL* _ibl_map;
 		std::vector<VulkanRenderTarget*> _render_targets;
 		VulkanRenderTarget* _main_render_target;
@@ -82,9 +79,6 @@ namespace VSGE {
 		VulkanMaterial* CreateVulkanMaterial(Material* material);
 
 		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
-
-		
-		void BindMaterial(Material* mat);
 	
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;

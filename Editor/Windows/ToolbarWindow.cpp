@@ -5,7 +5,6 @@
 #include <Scene/SceneLayer.hpp>
 #include <Engine/Application.hpp>
 #include <ImGuizmo.h>
-#include <Scene/SceneSerialization.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
 
 using namespace VSGEditor;
@@ -70,9 +69,7 @@ void ToolbarWindow::PlayScene() {
 
     if (!scene_layer->IsScenePaused()) {
         //Save scene
-        VSGE::SceneSerializer sc;
-        sc.SetScene(scene_layer->GetWorkingScene());
-        sc.Serialize("temp_scene.scn");
+        scene_layer->BackupScene();
     }
     //Start scene execution
     scene_layer->StartScene();
@@ -96,9 +93,7 @@ void ToolbarWindow::StopScene() {
     //Clear scene
     scene_layer->GetWorkingScene()->NewScene();
     //Deserialize temp scene
-    VSGE::SceneSerializer ss;
-    ss.SetScene(scene_layer->GetWorkingScene());
-    ss.Deserialize("temp_scene.scn");
+    scene_layer->RestoreScene();
 }
 
 ToolbarWindow::ToolbarWindow() {

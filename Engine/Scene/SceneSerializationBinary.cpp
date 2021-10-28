@@ -4,14 +4,25 @@
 using namespace VSGE;
 
 void SceneSerializer::SerializeBinary(const std::string& path) {
+	byte* data = nullptr;
+	uint32 size = 0;
+
+	SerializeBinary(&data, size);
+}
+
+void SceneSerializer::SerializeBinary(byte** data, uint32& size) {
 	ByteSerialize serializer;
 
 	serializer.WriteBytes("vsgebscene", 11);
 
-	uint32 entities_count = _scene->GetEntitiesCount();
+	uint32 entities_count = _scene->GetEntitiesCount() + 1;
 	serializer.Serialize(entities_count);
-	
+
 	SerializeEntityBinary(_scene->GetRootEntity(), serializer);
+
+	size = serializer.GetSerializedSize();
+	*data = new byte[size];
+	memcpy(*data, serializer.GetBytes(), size);
 }
 
 void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializer) {
@@ -33,9 +44,14 @@ void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializ
 	uint32 scripts_count = ent->GetScriptsCount();
 	uint32 children_count = ent->GetChildrenCount();
 	serializer.Serialize(components_count);
+	serializer.Serialize(scripts_count);
 	//Serialize components
 	for (uint32 comp_i = 0; comp_i < ent->GetComponentsCount(); comp_i++) {
 		SerializeEntityComponentBinary(ent->GetComponents()[comp_i], serializer);
+	}
+	//serialize scripts
+	for (uint32 script_i = 0; script_i < scripts_count; script_i++) {
+		serializer.Serialize(ent->GetScripts()[script_i]->GetClassName());
 	}
 	//Serialize children
 	for (uint32 child_i = 0; child_i < ent->GetChildrenCount(); child_i++) {
@@ -64,12 +80,17 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size) {
 	for (uint32 entity_i = 0; entity_i < entity_count; entity_i++) {
 		Entity* ent = new Entity;
 		DeserializeEntityBinary(ent, solver);
+		if (entity_i == 0) {
+			_scene->GetRootEntity()->RemoveChild(ent);
+			delete ent;
+		}
 	}
 
 	return true;
 }
 
 void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) {
+	ent->SetScene(_scene);
 	ent->SetName(solver.ReadNextString());
 	ent->SetGuid(solver.GetValue<Guid>());
 	ent->SetActive(solver.GetValue<bool>());
@@ -81,11 +102,17 @@ void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, G
 	ent->SetRotation(solver.GetValue<Quat>());
 
 	uint32 components_count = solver.GetValue<uint32>();
+	uint32 scripts_count = solver.GetValue<uint32>();
 	//Deserialize components
 	for (uint32 comp_i = 0; comp_i < components_count; comp_i++) {
 		DeserializeEntityComponentBinary(ent, solver);
 	}
-	
+	for (uint32 script_i = 0; script_i < scripts_count; script_i++) {
+		EntityScriptComponent* script_ptr = new EntityScriptComponent;
+		script_ptr->SetClassName(solver.ReadNextString());
+		ent->AddScript(script_ptr);
+	}
+
 	if (parent_id != nullptr) {
 		*parent_id = parent;
 	}

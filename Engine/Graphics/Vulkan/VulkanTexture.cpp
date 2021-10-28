@@ -401,8 +401,7 @@ void VulkanTexture::Resize(uint32 width, uint32 height) {
 }
 
 void VulkanTexture::SetReadyToUseInShaders() {
-	//if (_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-		ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	ChangeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 VkImageLayout VulkanTexture::GetImageLayout(){

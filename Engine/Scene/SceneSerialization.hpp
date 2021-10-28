@@ -15,6 +15,7 @@ namespace VSGE {
 			_scene = scn;
 		}
 
+		void SerializeBinary(byte** data, uint32& size);
 		void SerializeBinary(const std::string& path);
 		void Serialize(const std::string& path);
 
