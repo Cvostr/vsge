@@ -1,6 +1,8 @@
 #include "EntityComponents.hpp"
 #include "../ViewMaskEdit.hpp"
 #include <imgui.h>
+#include <Resources/Resource.hpp>
+#include "../ResourcePicker.hpp"
 
 using namespace VSGE;
 
@@ -20,4 +22,6 @@ void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	ViewMask current_view_mask = cac->GetViewMask();
 	DrawViewMaskEditor(current_view_mask);
 	cac->SetViewMask(current_view_mask);
+
+	DrawResourcePicker(std::string("Render Target"), cac->GetTargetReference(), true);
 }

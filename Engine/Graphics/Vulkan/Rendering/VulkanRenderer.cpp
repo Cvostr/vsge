@@ -47,9 +47,6 @@ void VulkanRenderer::SetupRenderer() {
 	mBeginSemaphore = new VulkanSemaphore;
 	mBeginSemaphore->Create();
 
-	mGBufferSemaphore = new VulkanSemaphore;
-	mGBufferSemaphore->Create();
-
 	mEndSemaphore = new VulkanSemaphore;
 	mEndSemaphore->Create();
 
@@ -182,7 +179,6 @@ void VulkanRenderer::SetupRenderer() {
 	_render_targets[0] = _main_render_target;
 
 	_gbuffer_renderer = _main_render_target->GetGBufferRenderer();
-	_deferred_renderer = _main_render_target->GetDeferredLightRenderer();
 
 	_terrain_renderer = new VulkanTerrainRenderer;
 	_terrain_renderer->Create(_gbuffer_renderer->GetRenderPass(), _gbuffer_renderer->GetVertexDescriptorSets(), mEmptyZeroTexture, mEmptyOneTexture);
@@ -190,7 +186,7 @@ void VulkanRenderer::SetupRenderer() {
 
 	_postprocessing = new VulkanPostprocessing;
 	_postprocessing->SetInputTextures(
-		_deferred_renderer->GetOutputTexture(),
+		_main_render_target->GetDeferredOutput(),
 		_gbuffer_renderer->GetDepthAttachment(),
 		_gbuffer_renderer->GetNormalAttachment(),
 		_gbuffer_renderer->GetPositionAttachment(),
@@ -209,12 +205,6 @@ void VulkanRenderer::SetupRenderer() {
 	_shadowmapper->SetTerrainsToRender(&_terrains);
 
 	_main_render_target->SetShadowmapper(_shadowmapper);
-
-	mGBufferCmdbuf = new VulkanCommandBuffer;
-	mGBufferCmdbuf->Create(mCmdPool);
-
-	mLightsCmdbuf = new VulkanCommandBuffer;
-	mLightsCmdbuf->Create(mCmdPool);
 
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
@@ -284,7 +274,6 @@ void VulkanRenderer::DestroyRenderer() {
 	delete _terrain_renderer;
 	delete _shadowmapper;
 
-	SAFE_RELEASE(_deferred_renderer)
 	SAFE_RELEASE(_gbuffer_renderer)
 	SAFE_RELEASE(_ibl_map)
 	SAFE_RELEASE(_ui_renderer)
@@ -459,7 +448,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	}
 
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
-		Camera* camera = _cameras_buffer->GetCameraByIndex(0);
+		Camera* camera = _cameras_buffer->GetCameraByIndex(camera_i);
 		VulkanRenderTarget* render_target = _render_targets[camera_i];
 		render_target->SetCameraIndex(camera_i);
 		render_target->SetEntitiesToRender(_entitiesToRender, _particleEmitters);
@@ -470,7 +459,11 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 		TextureResource* resource = camera->GetTargetResource();
 		if (resource) {
 			VulkanTexture* target_texture = (VulkanTexture*)resource->GetTexture();
+			render_target->SetOutput(target_texture);
 			render_target->ResizeOutput(target_texture->GetWidth(), target_texture->GetHeight());
+		}
+		else {
+			render_target->SetOutput(nullptr);
 		}
 	}
 
@@ -484,8 +477,6 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	_shadowmapper->RenderShadows(begin, mShadowprocessingEndSemaphore);
 
-	//VulkanGraphicsSubmit(*mGBufferCmdbuf, *mShadowprocessingEndSemaphore, *mGBufferSemaphore);
-	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ibl_map->GetBeginSemaphore());
 	begin = mShadowprocessingEndSemaphore;
 	VulkanSemaphore* end = nullptr;
 	for (uint32 rt_i = 0; rt_i < _render_targets.size(); rt_i ++) {
@@ -521,21 +512,18 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputHeight = height;
 
 	_main_render_target->ResizeOutput(width, height);
-	//_gbuffer_renderer->Resize(width, height);
-	//_deferred_renderer->Resize(width, height);
-	//_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 
 	_terrain_renderer->SetOutputSizes(width, height);
 	
 	_shadowmapper->ResizeOutput(width, height);
 	_shadowmapper->SetGbufferPositionsAttachment(_gbuffer_renderer->GetPositionAttachment());
-	_deferred_renderer->SetShadowmapper(_shadowmapper);
+	_main_render_target->SetShadowmapper(_shadowmapper);
 
 	_ui_renderer->ResizeOutput(width, height);
 
 	_postprocessing->ResizeOutput(GetOutputSizes());
 	_postprocessing->SetInputTextures(
-		_deferred_renderer->GetOutputTexture(),
+		_main_render_target->GetDeferredOutput(),
 		_gbuffer_renderer->GetDepthAttachment(),
 		_gbuffer_renderer->GetNormalAttachment(),
 		_gbuffer_renderer->GetPositionAttachment(),

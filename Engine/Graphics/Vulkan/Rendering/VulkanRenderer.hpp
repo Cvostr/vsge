@@ -36,13 +36,10 @@ namespace VSGE {
 		VulkanSemaphore* mBeginSemaphore;
 		VulkanSemaphore* mShadowmappingEndSemaphore;
 		VulkanSemaphore* mShadowprocessingEndSemaphore;
-		VulkanSemaphore* mGBufferSemaphore;
 		VulkanSemaphore* mEndSemaphore;
 
 		//--------------------Command buffers------------
 		VulkanCommandPool* mCmdPool;
-		VulkanCommandBuffer* mGBufferCmdbuf;
-		VulkanCommandBuffer* mLightsCmdbuf;
 		//--------------------Descriptors----------------
 		VulkanDescriptorPool* mMaterialsDescriptorPool;
 
@@ -72,7 +69,6 @@ namespace VSGE {
 		Vulkan_BRDF_LUT* _brdf_lut;
 		VulkanCamerasBuffer* _cameras_buffer;
 		VulkanGBufferRenderer* _gbuffer_renderer;
-		VulkanDeferredLight* _deferred_renderer;
 		VulkanIBL* _ibl_map;
 		std::vector<VulkanRenderTarget*> _render_targets;
 		VulkanRenderTarget* _main_render_target;

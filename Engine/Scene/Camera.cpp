@@ -172,6 +172,7 @@ void Camera::Serialize(YAML::Emitter& e) {
 	e << Key << "znear" << Value << _nearPlane;
 	e << Key << "zfar" << Value << _farPlane;
 	e << Key << "view_mask" << Value << _viewMask;
+	e << Key << "target_texture" << Value << _target_texture.GetResourceName();
 }
 
 void Camera::Deserialize(YAML::Node& entity) {
@@ -179,6 +180,7 @@ void Camera::Deserialize(YAML::Node& entity) {
 	_nearPlane = entity["znear"].as<float>();
 	_farPlane = entity["zfar"].as<float>();
 	_viewMask = entity["view_mask"].as<ViewMask>();
+	_target_texture.SetResource(entity["target_texture"].as<std::string>());
 }
 
 void Camera::Serialize(ByteSerialize& serializer) {
@@ -186,6 +188,7 @@ void Camera::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_nearPlane);
 	serializer.Serialize(_farPlane);
 	serializer.Serialize(_viewMask);
+	serializer.Serialize(_target_texture.GetResourceName());
 }
 
 void Camera::Deserialize(ByteSolver& solver) {
@@ -193,4 +196,6 @@ void Camera::Deserialize(ByteSolver& solver) {
 	_nearPlane = solver.GetValue<float>();
 	_farPlane = solver.GetValue<float>();
 	_viewMask = solver.GetValue<ViewMask>();
+	_target_texture.SetResource(solver.ReadNextString());
+
 }

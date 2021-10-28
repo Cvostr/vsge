@@ -20,6 +20,9 @@ void VSGEditor::DrawTextureResourceUI(VSGE::Resource* resource) {
 	case FORMAT_RGBA:
 		format_str = "R8G8B8A8";
 		break;
+	case FORMAT_RGBA16F:
+		format_str = "R16FG16FB16FA16F";
+		break;
 	case FORMAT_BC1_UNORM:
 		format_str = "BC1 UNORM";
 		break;

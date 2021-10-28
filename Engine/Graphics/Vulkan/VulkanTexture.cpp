@@ -323,6 +323,9 @@ void VulkanTexture::CmdChangeLayout(VulkanCommandBuffer* cmdbuf, VkImageLayout o
 }
 
 void VulkanTexture::CmdChangeLayout(VkCommandBuffer cmdbuf, VkImageLayout oldLayout, VkImageLayout newLayout) {
+	if (!_image.Image)
+		return;
+	
 	VkImageMemoryBarrier imgMemBarrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
 	imgMemBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	imgMemBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;

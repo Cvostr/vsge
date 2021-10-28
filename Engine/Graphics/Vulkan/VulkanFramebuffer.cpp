@@ -56,7 +56,7 @@ void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 }
 
 void VulkanFramebuffer::Resize(uint32 width, uint32 height) {
-	if (_width != width || _height != height) {
+	if ((_width != width || _height != height) && width > 0 && height > 0) {
 		SetSize(width, height);
 
 		if (IsCreated()) {

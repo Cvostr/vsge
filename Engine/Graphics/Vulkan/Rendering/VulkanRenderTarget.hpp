@@ -16,6 +16,8 @@ namespace VSGE {
 		VulkanSemaphore* _gbuffer_end_semaphore;
 		VulkanSemaphore* _deferred_end_semaphore;
 
+		VulkanTexture* _output;
+
 		uint32 _width;
 		uint32 _height;
 	public:
@@ -34,6 +36,7 @@ namespace VSGE {
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
 		void SetIBL(VulkanIBL* ibl);
 		void ResizeOutput(uint32 width, uint32 height);
+		void SetOutput(VulkanTexture* output_texture);
 
 		void RecordCommandBuffers();
 

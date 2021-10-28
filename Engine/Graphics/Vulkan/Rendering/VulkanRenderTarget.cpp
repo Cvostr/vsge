@@ -3,7 +3,9 @@
 
 using namespace VSGE;
 
-VulkanRenderTarget::VulkanRenderTarget() {
+VulkanRenderTarget::VulkanRenderTarget():
+	_output(nullptr)
+{
 	Create();
 }
 VulkanRenderTarget::~VulkanRenderTarget() {
@@ -81,6 +83,9 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 }
+void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
+	_output = output_texture;
+}
 VulkanCommandBuffer* VulkanRenderTarget::GetGBufferCommandBuffer() {
 	return _gbuffer_cmdbuf;
 }
@@ -109,5 +114,50 @@ void VulkanRenderTarget::RecordCommandBuffers() {
 
 	_deferred_cmdbuf->Begin();
 	_deferred_renderer->RecordCmdbuf(_deferred_cmdbuf);
+	if (_output) {
+		if (_output->IsCreated()) {
+			VkImageLayout old = _output->GetImageLayout();
+			_output->CmdChangeLayout(_deferred_cmdbuf, old, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+			VkImageCopy copy = {};
+			VkImageSubresourceLayers src = {};
+			src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			src.mipLevel = 0;
+			src.baseArrayLayer = 0;
+			src.layerCount = 1;
+
+			VkImageSubresourceLayers dst = src;
+			dst.baseArrayLayer = 0;
+
+			copy.srcSubresource = src;
+			copy.dstSubresource = dst;
+
+			VkOffset3D offset;
+			offset.x = 0;
+			offset.y = 0;
+			offset.z = 0;
+
+			copy.srcOffset = offset;
+			copy.dstOffset = offset;
+			copy.extent = { _output->GetWidth(), _output->GetHeight(), 1 };
+
+			GetDeferredOutput()->CmdChangeLayout(_deferred_cmdbuf, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+			VkImage image = GetDeferredOutput()->GetImage();
+			vkCmdCopyImage(
+				_deferred_cmdbuf->GetCommandBuffer(),
+				image,
+				VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+				_output->GetImage(),
+				VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				1,
+				&copy);
+
+			GetDeferredOutput()->CmdChangeLayout(_deferred_cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+			_output->CmdChangeLayout(_deferred_cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
+	}
+
 	_deferred_cmdbuf->End();
 }
