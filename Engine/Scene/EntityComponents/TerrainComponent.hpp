@@ -6,6 +6,10 @@
 #include <Math/Ray.hpp>
 #include <Resources/ResourceReference.hpp>
 
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include <BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+
 #define MAX_TEXTURES_PER_TERRAIN 16
 #define MAX_GRASSES_PER_TERRAIN 200
 
@@ -92,6 +96,7 @@ namespace VSGE{
 		private:
 			uint32 _width;
 			uint32 _height;
+			float _max_terrain_height;
 	
 			float* _heightmap;
 			TerrainTexturesFactors* _texture_factors;
@@ -106,6 +111,9 @@ namespace VSGE{
 			Vertex* heightmap;
 			uint32* indices;
 			std::vector<GrassIdTransforms> _grass_transforms;
+			//physics
+			btBvhTriangleMeshShape* _physical_shape;
+			btRigidBody* _rigidbody;
 		public:
 			TerrainComponent();
 			~TerrainComponent();
@@ -118,6 +126,7 @@ namespace VSGE{
 
 			uint32 GetVerticesCount();
 			uint32 GetIndicesCount();
+			float GetMaxTerrainHeight();
 
 			void Flat(float height);
 			void ModifyHeight(const Vec2i& position, float height, uint32 range);

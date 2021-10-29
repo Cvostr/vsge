@@ -27,6 +27,7 @@ void TerrainTexturesFactors::reduce(uint32 texture_id, uint32 val) {
 TerrainComponent::TerrainComponent() {
 	_width = 500;
 	_height = 500;
+	_max_terrain_height = 0;
 
 	_heightmap = nullptr;
 	_texture_factors = nullptr;
@@ -36,6 +37,9 @@ TerrainComponent::TerrainComponent() {
 
 	heightmap = nullptr;
 	indices = nullptr;
+
+	_physical_shape = nullptr;
+	_rigidbody = nullptr;
 
 	Flat(0);
 	UpdateMesh();
@@ -70,6 +74,10 @@ uint32 TerrainComponent::GetVerticesCount() {
 
 uint32 TerrainComponent::GetIndicesCount() {
 	return (_width - 1) * (_height - 1) * 2 * 3;
+}
+
+float TerrainComponent::GetMaxTerrainHeight() {
+	return _max_terrain_height;
 }
 
 Mesh* TerrainComponent::GetTerrainMesh() {
@@ -217,8 +225,11 @@ void TerrainComponent::UpdateMesh() {
 		}
 	}
 
+	_max_terrain_height = -10000;
 	for (uint32 y = 0; y < _height; y++) {
 		for (uint32 x = 0; x < _width; x++) {
+			if (_max_terrain_height < _heightmap[x * _height + y])
+				_max_terrain_height = _heightmap[x * _height + y];
 			//Set vertex height
 			heightmap[x * _height + y].pos = Vec3(static_cast<float>(x), _heightmap[x * _height + y], static_cast<float>(y));
 			//Calculate vertex texture UV

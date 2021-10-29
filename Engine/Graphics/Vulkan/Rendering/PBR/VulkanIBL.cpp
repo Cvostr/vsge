@@ -39,7 +39,7 @@ void VulkanIBL::Create() {
 		_animations_buffer,
 		_particles_buffer,
 		_lights_buffer);
-	_envmap->SetStepsCount(3);
+	_envmap->SetStepsCount(6);
 	_envmap->Create();
 
 	_irmap = new VulkanIrradianceMap;

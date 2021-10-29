@@ -185,16 +185,17 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 		AABB bounding_box = entity->GetAABB();
 
-		if (!camera->IsVisibleInFrustum(bounding_box))
-			continue;
-
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
 		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
 
 		if (!mesh_component && !material_component) {
 			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
 			if (terrain) {
-				terrain_renderer->DrawTerrain(cmdbuf, drawn_terrains++, e_i);
+				Vec3 bb_max = bounding_box.GetMax();
+				bb_max.y = terrain->GetMaxTerrainHeight();
+				bounding_box.Extend(bb_max);
+				if (camera->IsVisibleInFrustum(bounding_box))
+					terrain_renderer->DrawTerrain(cmdbuf, drawn_terrains++, e_i);
 			}
 			continue;
 		}
@@ -214,12 +215,9 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 		Material* mat = mat_resource->GetMaterial();
 		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
 
-		BindPipeline(cmdbuf, pipl);
-		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
-		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
-
 		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			
 			//Mark mesh resource used in this frame
 			mesh_resource->Use();
 			//Mark material resource used in this frame
@@ -228,8 +226,15 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
 			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
 			_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
+
+			if (!camera->IsVisibleInFrustum(bounding_box))
+				continue;
+			
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
 
+			BindPipeline(cmdbuf, pipl);
+			VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+			cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[vertexDescriptorID], 2, offsets);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _animations_descriptor_set, 1, &anim_offset);
 			cmdbuf->BindMesh(*mesh);

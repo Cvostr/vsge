@@ -3,6 +3,15 @@
 #include <Core/VarTypes/Base.hpp>
 #include "Math/MatrixTransform.hpp"
 
+AABB::AABB(const Vec3& min, const Vec3& max) {
+	_min = min;
+	_max = max;
+}
+
+AABB::AABB() {
+	PrepareForExtend(); 
+}
+
 void AABB::SetZero() {
 	_min = Vec3(0);
 	_max = Vec3(0);

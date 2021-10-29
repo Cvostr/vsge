@@ -171,6 +171,5 @@ void main(void)
 	ivec3 pixel = ivec3(gl_GlobalInvocationID);
 	pixel.z += PARAM_STEP;
 
-
 	imageStore(outputTexture[PARAM_LEVEL], pixel, vec4(color, 1.0));
 }

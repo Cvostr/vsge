@@ -32,9 +32,6 @@ public:
 	Vec3 GetSize() const;
 	Mat4 GetMatrix() const;
 
-	AABB(const Vec3& min, const Vec3& max) {
-		_min = min;
-		_max = max;
-	}
-	AABB() { PrepareForExtend(); }
+	AABB(const Vec3& min, const Vec3& max);
+	AABB();
 };
