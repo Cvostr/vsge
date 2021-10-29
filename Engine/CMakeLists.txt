@@ -145,6 +145,9 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/CameraComponent.cpp
 				MonoScripting/Api/EntityComponents/MaterialComponent.cpp
 				MonoScripting/Api/EntityComponents/MeshComponent.cpp
+				MonoScripting/Api/EntityComponents/CharacterControllerComponent.cpp
+				MonoScripting/Api/EntityComponents/ParticleEmitterComponent.cpp
+				MonoScripting/Api/UI/UiRenderList.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp

@@ -192,7 +192,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 					if (terrain) {
 						Vec2i coord = terrain->GetRayIntersectionTraingle(ray);
 						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
-							terrain->ModifyHeight(coord, (float)GetTerrainEditorOpacity(), GetTerrainEditorBrushSize());
+							terrain->ModifyHeight(coord, (float)GetTerrainEditorOpacity(), (uint32)GetTerrainEditorBrushSize());
 							terrain->UpdateMesh();
 							terrain->UpdateVegetables();
 						}

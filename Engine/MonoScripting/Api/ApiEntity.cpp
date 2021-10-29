@@ -8,19 +8,21 @@
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/EntityComponents/ColliderComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
+#include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+#include <Scene/EntityComponents/CharacterControllerComponent.hpp>
 
 using namespace VSGE;
 
-static void* GetParent(void* ptr) {
-	return ((Entity*)ptr)->GetParent();
+static void* GetParent(Entity* ptr) {
+	return ptr->GetParent();
 }
 
-static void AddChild(void* ptr, void* child) {
-	((Entity*)ptr)->AddChild((Entity*)child);
+static void AddChild(Entity* ptr, Entity* child) {
+	ptr->AddChild(child);
 }
 
-static void RemoveChild(void* ptr, void* child) {
-	((Entity*)ptr)->RemoveChild((Entity*)child);
+static void RemoveChild(Entity* ptr, Entity* child) {
+	ptr->RemoveChild(child);
 }
 
 static MonoArray* GetChildren(void* ptr) {
@@ -33,29 +35,29 @@ static MonoArray* GetChildren(void* ptr) {
 	return result;
 }
 
-static AABB GetAABB(void* ptr) {
-	return ((Entity*)ptr)->GetAABB();
+static AABB GetAABB(Entity* ptr) {
+	return ptr->GetAABB();
 }
 
-static void* GetScene(void* ptr) {
-	return ((Entity*)ptr)->GetScene();
+static void* GetScene(Entity* ptr) {
+	return ptr->GetScene();
 }
 
-static void SetActive(void* ptr, bool active) {
-	((Entity*)ptr)->SetActive(active);
+static void SetActive(Entity* ptr, bool active) {
+	ptr->SetActive(active);
 }
 
-static bool IsActive(void* ptr) {
-	return ((Entity*)ptr)->IsActive();
+static bool IsActive(Entity* ptr) {
+	return ptr->IsActive();
 }
 
-static void SetName(void* ptr, MonoString* name) {
-	((Entity*)ptr)->SetName(std::string(mono_string_to_utf8(name)));
+static void SetName(Entity* ptr, MonoString* name) {
+	ptr->SetName(std::string(mono_string_to_utf8(name)));
 }
 
-static MonoString* GetName(void* ptr) {
+static MonoString* GetName(Entity* ptr) {
 	MonoScriptingLayer* layer = MonoScriptingLayer::Get();
-	return mono_string_new(layer->GetDomain(), ((Entity*)ptr)->GetName().c_str());
+	return mono_string_new(layer->GetDomain(), ptr->GetName().c_str());
 }
 
 static void SetPosition(void* ptr, Vec3 position) {
@@ -108,6 +110,12 @@ static void* WComponent(void* ptr, int type, int action) {
 		break;
 	case ENTITY_COMPONENT_CAMERA:
 		return _WComponent<Camera>(ent, action);
+		break;
+	case ENTITY_COMPONENT_PARTICLE_EMITTER:
+		return _WComponent<ParticleEmitterComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_CHARACTER_CONTROLLER:
+		return _WComponent<ParticleEmitterComponent>(ent, action);
 		break;
 	}
 	return nullptr;

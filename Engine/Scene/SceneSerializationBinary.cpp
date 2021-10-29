@@ -14,7 +14,11 @@ void SceneSerializer::SerializeBinary(byte** data, uint32& size) {
 	ByteSerialize serializer;
 
 	serializer.WriteBytes("vsgebscene", 11);
-
+	//Store environment settings
+	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
+	serializer.Serialize(settings.GetAmbientColor());
+	serializer.Serialize(settings._skybox_material.GetResourceName());
+	
 	uint32 entities_count = _scene->GetEntitiesCount() + 1;
 	serializer.Serialize(entities_count);
 
@@ -74,6 +78,10 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size) {
 
 	if (header != "vsgebscene")
 		return false;
+
+	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
+	settings.SetAmbientColor(solver.GetValue<Color>());
+	settings._skybox_material.SetResource(solver.ReadNextString());
 
 	uint32 entity_count = solver.GetValue<uint32>();
 

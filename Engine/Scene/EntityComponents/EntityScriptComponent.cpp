@@ -40,6 +40,10 @@ void EntityScriptComponent::OnUpdate() {
 	_script_instance->CallOnUpdate();
 }
 
+void EntityScriptComponent::OnGui() {
+	_script_instance->CallOnGui();
+}
+
 void EntityScriptComponent::OnTriggerStay(Entity* entity) {
 	if(IsActive())
 		_script_instance->CallOnTriggerStay(entity);

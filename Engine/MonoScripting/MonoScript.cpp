@@ -76,8 +76,12 @@ void MonoScriptInstance::CallOnUpdate() {
         CallMethod(_update_method, nullptr);
 }
 
-void MonoScriptInstance::CallOnTriggerStay(void* entity) {
+void MonoScriptInstance::CallOnGui() {
+    
+}
 
+void MonoScriptInstance::CallOnTriggerStay(void* entity) {
+   
 }
 void MonoScriptInstance::CallOnTriggerEnter(void* entity) {
 

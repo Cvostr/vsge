@@ -36,6 +36,10 @@ namespace VSGE {
 		void OnActivate();
 		void OnDeactivate();
 
+		void Activate();
+		void Deactivate();
+		void AddToWorld();
+
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);
 

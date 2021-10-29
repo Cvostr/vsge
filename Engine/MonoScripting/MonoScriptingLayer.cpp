@@ -59,6 +59,8 @@ bool MonoScriptingLayer::CreateRootDomain() {
     BindInputApi();
     BindEntityComponentsApi();
 
+    BindUiRenderList();
+
     return true;
 }
 

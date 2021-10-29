@@ -7,7 +7,7 @@ namespace VSGE {
 	void BindResourcesApi();
 	void BindInputApi();
 	void BindEntityComponentsApi();
-	void BindUI();
+	void BindUiRenderList();
 
 	void BindLightsource();
 	void BindAudiosource();

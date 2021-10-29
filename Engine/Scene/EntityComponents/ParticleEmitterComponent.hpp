@@ -21,28 +21,6 @@ namespace VSGE {
 		PRM_DIRECTION
 	};
 
-	template <typename T>
-	struct BeginEndValue {
-		T Begin;
-		T End;
-
-		BeginEndValue() :
-			Begin(0),
-			End(10)
-		{}
-
-		BeginEndValue(T Value) :
-			Begin(Value),
-			End(Value)
-		{
-		}
-
-		BeginEndValue(T BeginValue, T EndValue) :
-			Begin(BeginValue),
-			End(EndValue)
-		{}
-	};
-
 	template<typename T>
 	struct MinMaxValue {
 		T Min;

@@ -294,6 +294,10 @@ void Entity::CallOnPreRender() {
 		if (component->IsActive())
 			component->OnPreRender();
 	}
+	for (auto script : _scripts) {
+		if (script->IsActive())
+			script->OnPreRender();
+	}
 }
 void Entity::CallOnTriggerStay(Entity* entity) {
 	for (auto script : _scripts) {

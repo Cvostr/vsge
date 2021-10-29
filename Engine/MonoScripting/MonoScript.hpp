@@ -48,6 +48,7 @@ namespace VSGE {
 
 		void CallOnStart();
 		void CallOnUpdate();
+		void CallOnGui();
 		void CallOnTriggerStay(void* entity);
 		void CallOnTriggerEnter(void* entity);
 		void CallOnTriggerExit(void* entity);

@@ -31,7 +31,7 @@ public class CharacterControllerComponent : IEntityComponent {
     private static extern bool i_IsOnGround(ulong handle);
    
     [MethodImpl(MethodImplOptions.InternalCall)]
-    private static extern bool i_Move(ulong handle, Vec2 dir);
+    private static extern void i_Move(ulong handle, Vec2 dir);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern Vec3 i_GetCenter(ulong handle);

@@ -40,6 +40,8 @@ namespace VSGE {
 		/// </summary>
 		void OnUpdate();
 
+		void OnGui();
+
 		void OnTriggerStay(Entity* entity);
 
 		void OnTriggerEnter(Entity* entity);

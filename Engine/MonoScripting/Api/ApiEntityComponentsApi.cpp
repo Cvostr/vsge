@@ -34,4 +34,6 @@ void VSGE::BindEntityComponentsApi() {
 	BindCamera();
 	BindMaterial();
 	BindMesh();
+	BindCharacterController();
+	BindParticleEmitter();
 }

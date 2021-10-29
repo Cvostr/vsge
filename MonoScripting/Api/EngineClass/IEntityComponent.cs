@@ -37,6 +37,8 @@ public class IEntityComponent : InternalObject {
             return 3;
         if(typeof(T).Equals(typeof(AnimatorComponent)))
             return 4;
+        if(typeof(T).Equals(typeof(ParticleEmitterComponent)))
+            return 5;
         if(typeof(T).Equals(typeof(AudioSourceComponent)))
             return 6;
         if(typeof(T).Equals(typeof(CameraComponent)))
@@ -45,6 +47,8 @@ public class IEntityComponent : InternalObject {
             return 8;
         if(typeof(T).Equals(typeof(ColliderComponent)))
             return 9;
+        if(typeof(T).Equals(typeof(CharacterControllerComponent)))
+            return 13;
         
         return -1;
     }

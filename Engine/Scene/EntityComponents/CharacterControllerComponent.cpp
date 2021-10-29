@@ -4,6 +4,7 @@
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <Physics/PhysicsLayer.hpp>
 #include <Core/YamlHelper.hpp>
+#include <Math/MatrixTransform.hpp>
 
 using namespace YAML;
 using namespace VSGE;
@@ -55,7 +56,7 @@ btTransform CharacterControllerComponent::GetEntityTransform() {
 	return result;
 }
 
-void CharacterControllerComponent::OnUpdate() {
+void CharacterControllerComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
 	if (_character_collision && _character)
@@ -94,12 +95,46 @@ void CharacterControllerComponent::OnUpdate() {
 
 	PhysicsLayer::Get()->AddRigidbody(_character);
 }
+
+void CharacterControllerComponent::OnUpdate() {
+	if (!_character)
+		AddToWorld();
+
+	btVector3 bullet_pos = _character->getCenterOfMassPosition();
+	btQuaternion bullet_rot = _character->getOrientation();
+
+	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
+	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
+
+	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
+	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
+	Mat4 _new = mm * parent_tranform.invert();
+
+	_entity->SetPosition(_new.GetPosition());
+	_entity->SetRotation(GetRotationFromQuat(_new));
+
+	Activate();
+}
 void CharacterControllerComponent::OnDestroy() {
 	if (_character) {
 		PhysicsLayer::Get()->RemoveRigidbody(_character);
 		SAFE_RELEASE(_character)
 	}
 	SAFE_RELEASE(_character_collision)
+}
+
+void CharacterControllerComponent::Activate() {
+	if (!_character)
+		return;
+
+	_character->activate(true);
+}
+
+void CharacterControllerComponent::Deactivate() {
+	if (!_character)
+		return;
+
+	_character->setActivationState(WANTS_DEACTIVATION);
 }
 
 void CharacterControllerComponent::OnActivate() {
