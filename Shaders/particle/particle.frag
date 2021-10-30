@@ -28,6 +28,6 @@ void main(){
     if(sprite.a < 0.05)
         discard;
 	
-    FragColor = vec4(color, sprite.a);    
+    FragColor = vec4(color, sprite.a);
     tPos = FragPos;
 }

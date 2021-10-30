@@ -19,6 +19,10 @@ ColliderComponent::ColliderComponent() :
 {
 }
 
+ColliderComponent::~ColliderComponent() {
+
+}
+
 ColliderShape ColliderComponent::GetShape() {
 	return _shape;
 }

@@ -65,6 +65,7 @@ namespace VSGE{
         uint32 _terrains_processed;
         uint32 _vegetables_transforms_written;
 
+        uint32 _camera_index;
         uint32 _outputWidth;
         uint32 _outputHeight;
     public:
@@ -80,6 +81,7 @@ namespace VSGE{
         void ResetProcessedTerrains();
         void DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index);
         void SetOutputSizes(uint32 width, uint32 height);
+        void SetCameraIndex(uint32 camera_index);
         VulkanSampler* GetTerrainMasksTextureSampler();
         VulkanSampler* GetTerrainTextureSampler();
         VulkanTexture* GetEmptyZeroTexture();

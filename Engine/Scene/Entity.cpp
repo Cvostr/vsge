@@ -163,9 +163,6 @@ void Entity::Destroy() {
 	if (_parent) {
 		_parent->RemoveChild(this);
 	}
-	for (auto component : _components) {
-		component->OnDestroy();
-	}
 	//Call Destroy() on each child
 	while(GetChildrenCount() > 0){
 		_children[0]->Destroy();

@@ -226,6 +226,7 @@ void VulkanTerrain::Destroy() {
 
 VulkanTerrainRenderer::VulkanTerrainRenderer() {
 	_terrains_processed = 0;
+	_camera_index = 0;
 }
 VulkanTerrainRenderer::~VulkanTerrainRenderer() {
 	SAFE_RELEASE(_terrain_pipeline)
@@ -375,7 +376,9 @@ void VulkanTerrainRenderer::SetOutputSizes(uint32 width, uint32 height) {
 	_outputWidth = width;
 	_outputHeight = height;
 }
-
+void VulkanTerrainRenderer::SetCameraIndex(uint32 camera_index) {
+	_camera_index = camera_index;
+}
 VulkanSampler* VulkanTerrainRenderer::GetTerrainMasksTextureSampler() {
 	return _terrain_masks_sampler;
 }
@@ -416,7 +419,7 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 	VulkanTerrain* vk_terrain = _terrains[terrain_index];
 	TerrainComponent* terrain = vk_terrain->GetTerrain();
 
-	uint32 offsets[2] = { 0, draw_index * UNI_ALIGN % 65535 };
+	uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, draw_index * UNI_ALIGN % 65535 };
 	int vertexDescriptorID = (draw_index * UNI_ALIGN) / 65535;
 
 	VulkanMesh* terrain_mesh = (VulkanMesh*)terrain->GetTerrainMesh();

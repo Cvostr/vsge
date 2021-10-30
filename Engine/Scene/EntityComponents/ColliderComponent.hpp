@@ -30,6 +30,7 @@ namespace VSGE {
 		btCollisionShape* GetBtShape();
 	public:
 		ColliderComponent();
+		~ColliderComponent();
 
 		ColliderShape GetShape();
 

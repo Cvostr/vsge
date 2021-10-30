@@ -112,8 +112,12 @@ namespace VSGE{
 			uint32* indices;
 			std::vector<GrassIdTransforms> _grass_transforms;
 			//physics
+			bool _physics_enabled;
 			btBvhTriangleMeshShape* _physical_shape;
 			btRigidBody* _rigidbody;
+			btTransform GetEntityBtTransform();
+			btBvhTriangleMeshShape* GetPhysicalShape();
+			void AddPhysicsToWorld();
 		public:
 			TerrainComponent();
 			~TerrainComponent();
@@ -139,12 +143,8 @@ namespace VSGE{
 
 			Vec2i GetRayIntersectionTraingle(const Ray& ray);
 
-			std::vector<TerrainTexture>& GetTerrainTextures() {
-				return _terrain_textures;
-			}
-			std::vector<TerrainGrass>& GetTerrainVegetables() {
-				return _terrain_grass;
-			}
+			std::vector<TerrainTexture>& GetTerrainTextures();
+			std::vector<TerrainGrass>& GetTerrainVegetables();
 
 			void AddNewTexture();
 			void AddNewGrass();
@@ -153,6 +153,9 @@ namespace VSGE{
 			Texture* GetTerrainMasksTexture();
 			std::vector<GrassIdTransforms>& GetGrassTransforms();
 			const AABB GetBoundingBox();
+			void CreatePhysics();
+
+			void OnUpdate();
 
 			void Serialize(YAML::Emitter& e);
 			void Deserialize(YAML::Node& entity);

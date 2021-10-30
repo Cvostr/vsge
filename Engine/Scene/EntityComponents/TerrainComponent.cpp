@@ -2,6 +2,7 @@
 #include <Scene/Entity.hpp>
 #include <Math/MatrixTransform.hpp>
 #include <Core/Random.hpp>
+#include <Physics/PhysicsLayer.hpp>
 
 using namespace VSGE;
 using namespace YAML;
@@ -38,6 +39,7 @@ TerrainComponent::TerrainComponent() {
 	heightmap = nullptr;
 	indices = nullptr;
 
+	_physics_enabled = true;
 	_physical_shape = nullptr;
 	_rigidbody = nullptr;
 
@@ -86,6 +88,13 @@ Mesh* TerrainComponent::GetTerrainMesh() {
 
 Texture* TerrainComponent::GetTerrainMasksTexture() {
 	return _texture_masks;
+}
+
+std::vector<TerrainTexture>& TerrainComponent::GetTerrainTextures() {
+	return _terrain_textures;
+}
+std::vector<TerrainGrass>& TerrainComponent::GetTerrainVegetables() {
+	return _terrain_grass;
 }
 
 const AABB TerrainComponent::GetBoundingBox() {
@@ -531,4 +540,64 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 	UpdateMesh();
 	UpdateTextureMasks();
 	UpdateVegetables();
+}
+void TerrainComponent::OnUpdate(){
+	if (_physics_enabled) {
+		if (!_rigidbody)
+			AddPhysicsToWorld();
+
+		if (_rigidbody) {
+			btTransform transform = GetEntityBtTransform();
+			_rigidbody->setWorldTransform(transform);
+		}
+	}
+}
+btTransform TerrainComponent::GetEntityBtTransform() {
+	btTransform result;
+
+	Vec3 abs_pos = _entity->GetAbsolutePosition();
+	Quat abs_rot = _entity->GetAbsoluteRotation();
+
+	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));
+	result.setRotation(btQuaternion(abs_rot.x, abs_rot.y, abs_rot.z, abs_rot.w));
+
+	return result;
+}
+void TerrainComponent::AddPhysicsToWorld() {
+	btVector3 local_intertia(0, 0, 0);
+
+	if (_rigidbody)
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
+
+	//release old collider shape
+	SAFE_RELEASE(_physical_shape);
+	//release old rigidbody
+	SAFE_RELEASE(_rigidbody);
+	//Create new collision shape
+	_physical_shape = GetPhysicalShape();
+	//check new shape
+	if (_physical_shape == nullptr)
+		//shape wasn't created, exiting
+		return;
+
+	btTransform startTransform = GetEntityBtTransform();
+	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
+	//rigidbody info
+	btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, motionState, _physical_shape, local_intertia);
+	_rigidbody = new btRigidBody(constructionInfo);
+	_rigidbody->setUserPointer(_entity);
+	//apply gravity
+	_rigidbody->setGravity(btVector3(0, 0, 0));
+	//add rigidbody to world
+	PhysicsLayer::Get()->AddRigidbody(_rigidbody);
+}
+btBvhTriangleMeshShape* TerrainComponent::GetPhysicalShape() {
+	int numFaces = (_width - 1) * (_height - 1) * 2;
+	int vertStride = sizeof(Vertex);
+	int indexStride = 3 * sizeof(uint32);
+
+	btTriangleIndexVertexArray* va = new btTriangleIndexVertexArray(numFaces, (int*)indices, indexStride, _width * _height, reinterpret_cast<btScalar*>(heightmap), vertStride);
+	//Allocate Shape with geometry
+	return new btBvhTriangleMeshShape(va, false, true);
 }

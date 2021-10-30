@@ -141,6 +141,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
 
 	VulkanTerrainRenderer* terrain_renderer = VulkanRenderer::Get()->GetTerrainRenderer();
+	terrain_renderer->SetCameraIndex(_camera_index);
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
 
