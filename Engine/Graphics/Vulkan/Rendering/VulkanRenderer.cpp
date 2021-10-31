@@ -241,6 +241,8 @@ void VulkanRenderer::SetupRenderer() {
 
 	particle_template = new MaterialTemplate;
 	particle_template->SetName("default_particle");
+	particle_template->SetDepthTest(false);
+	particle_template->SetRenderStage(RENDER_STAGE_POST);
 	particle_template->SetVertexLayout(_vertexLayout);
 	particle_template->SetCullMode(CULL_MODE_NONE);
 	particle_template->SetBlendingAttachmentDesc(0, particle_blend_desc);

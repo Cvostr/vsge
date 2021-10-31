@@ -18,8 +18,7 @@ namespace VSGE {
 		VulkanPipelineLayout* _deferred_pipeline_layout;
 		VulkanPipeline* _deferred_pipeline;
 
-		//Buffers
-		VulkanBuffer* _lights_buffer;
+		VulkanGBufferRenderer* _gbuffer;
 
 		uint32 _fb_width;
 		uint32 _fb_height;
@@ -36,9 +35,7 @@ namespace VSGE {
 
 		void SetLightsBuffer(VulkanBuffer* lights_buffer);
 		void SetGBuffer(VulkanGBufferRenderer* gbuffer);
-		void SetGBufferFromFramebuffer(VulkanFramebuffer* fb);
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
-		void SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut);
 		void SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler = nullptr);
 		void SetCameraIndex(uint32 camera_index);
 		void UnsetIBL();
@@ -47,6 +44,7 @@ namespace VSGE {
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
 		VulkanTexture* GetOutputTexture();
+		VulkanDescriptorSet* GetDeferredDescriptorSet();
 		void RecordCmdbuf(VulkanCommandBuffer* cmdbuf);
 		void Resize(uint32 width, uint32 height);
 		void SetEnvmap(bool envmap);

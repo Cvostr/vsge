@@ -25,8 +25,6 @@ void VulkanRenderTarget::Create() {
 	_deferred_renderer->CreateFramebuffer();
 	_deferred_renderer->CreateDescriptorSet();
 	_deferred_renderer->CreatePipeline();
-	_deferred_renderer->SetBRDF_LUT(vk_renderer->GetBRDF());
-	_deferred_renderer->SetLightsBuffer((VulkanBuffer*)vk_renderer->GetLightsBuffer()->GetLightsGpuBuffer());
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
@@ -117,11 +115,8 @@ VulkanDeferredLight* VulkanRenderTarget::GetDeferredLightRenderer() {
 	return _deferred_renderer;
 }
 void VulkanRenderTarget::RecordCommandBuffers() {
-	//if () {
-		VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
-		_gbuffer_renderer->SetScene(vk_renderer->GetScene());
-	//}
-
+	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
+	_gbuffer_renderer->SetScene(vk_renderer->GetScene());
 
 	_gbuffer_cmdbuf->Begin();
 	_gbuffer_renderer->RecordCmdBuffer(_gbuffer_cmdbuf);

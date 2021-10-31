@@ -16,7 +16,8 @@ MaterialTemplate::MaterialTemplate() :
 	_shader(nullptr),
 	_pipeline(nullptr),
 	_cullMode(CULL_MODE_FRONT),
-	_depthTest(true)
+	_depthTest(true),
+	_render_stage(RENDER_STAGE_GBUFFER)
 {
 	SetupDefaultVertexLayout();
 }
@@ -95,6 +96,14 @@ bool MaterialTemplate::GetDepthTest(){
 
 void MaterialTemplate::SetDepthTest(bool depth_test){
 	_depthTest = depth_test;
+}
+
+void MaterialTemplate::SetRenderStage(MaterialRenderStage stage) {
+	_render_stage = stage;
+}
+
+MaterialRenderStage MaterialTemplate::GetRenderStage() {
+	return _render_stage;
 }
 
 void MaterialTemplate::SetVertexLayout(const VertexLayout& vertexLayout) {
@@ -185,7 +194,10 @@ MaterialParameter* Material::GetParameterByName(const std::string& param_name) {
 }
 
 void Material::SetTexture(const std::string& texture_name, ResourceReference& texture) {
-	GetTextureByName(texture_name)->_resource = texture;
+	MaterialTexture* material_texture = GetTextureByName(texture_name);
+	if (!material_texture)
+		return;
+	material_texture->_resource = texture;
 	bool hasTexture = texture.GetResource() != nullptr;
 	SetParameter("@has_" + texture_name, hasTexture);
 	_texturesDirty = true;

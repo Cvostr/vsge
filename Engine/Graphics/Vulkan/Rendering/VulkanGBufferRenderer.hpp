@@ -47,6 +47,9 @@ namespace VSGE {
 		void EnableReverseCull();
 
 		void SetEntitiesToRender(tEntityList& entities, tEntityList& particles);
+		tEntityList* GetEntitiesToRender();
+		tEntityList* GetParticlesToRender();
+
 		void SetScene(Scene* scene);
 		void SetBuffers(
 			VulkanBuffer* transforms_buffer = nullptr,
@@ -69,6 +72,7 @@ namespace VSGE {
 		VulkanBuffer* GetParticlesBuffer();
 
 		std::vector<VulkanDescriptorSet*>& GetVertexDescriptorSets();
+		VulkanDescriptorSet* GetParticlesDescriptorSet();
 		VulkanDescriptorSet* GetAnimationsDescriptorSet();
 	};
 }

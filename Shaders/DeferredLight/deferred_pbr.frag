@@ -33,6 +33,7 @@ struct Light{
 layout (std140, binding = 1) uniform CamMatrices{
     mat4 cam_view_projection;
     mat4 cam_view;
+    mat4 cam_projection;
     vec3 cam_position;
 };
 

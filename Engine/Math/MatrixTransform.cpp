@@ -5,10 +5,10 @@
 Mat4 GetTranslationMatrix(const Vec3& pos) {
     Mat4 mat;
 
-    mat.Values[0][0] = 1; mat.Values[0][1] = 0; mat.Values[0][2] = 0; mat.Values[0][3] = 0;
-    mat.Values[1][0] = 0; mat.Values[1][1] = 1; mat.Values[1][2] = 0; mat.Values[1][3] = 0;
-    mat.Values[2][0] = 0; mat.Values[2][1] = 0; mat.Values[2][2] = 1; mat.Values[2][3] = 0;
-    mat.Values[3][0] = pos.x; mat.Values[3][1] = pos.y; mat.Values[3][2] = pos.z; mat.Values[3][3] = 1;
+    mat[0][0] = 1; mat[0][1] = 0; mat[0][2] = 0; mat[0][3] = 0;
+    mat[1][0] = 0; mat[1][1] = 1; mat[1][2] = 0; mat[1][3] = 0;
+    mat[2][0] = 0; mat[2][1] = 0; mat[2][2] = 1; mat[2][3] = 0;
+    mat[3][0] = pos.x; mat[3][1] = pos.y; mat[3][2] = pos.z; mat[3][3] = 1;
 
     return mat;
 }
@@ -159,18 +159,18 @@ Mat4 GetTransform(const Rect& rect, const Vec2& pivot, const float rotation) {
 Mat4 Translate(Mat4& origin, const Vec3& translation) {
     Mat4 result = origin;
 
-    result.Values[3][0] += translation.x;
-    result.Values[3][1] += translation.y;
-    result.Values[3][2] += translation.z;
+    result[3][0] += translation.x;
+    result[3][1] += translation.y;
+    result[3][2] += translation.z;
 
     return result;
 }
 Mat4 Scale(Mat4& origin, const Vec3& scale) {
     Mat4 result = origin;
 
-    result.Values[0][0] *= scale.x;
-    result.Values[1][1] *= scale.y;
-    result.Values[2][2] *= scale.z;
+    result[0][0] *= scale.x;
+    result[1][1] *= scale.y;
+    result[2][2] *= scale.z;
 
     return result;
 }

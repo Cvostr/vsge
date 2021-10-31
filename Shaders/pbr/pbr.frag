@@ -19,6 +19,7 @@ layout(set = 1, binding = 7) uniform sampler2D emission_map;
 layout (std140, set = 0, binding = 0) uniform CamMatrices{
     mat4 cam_view_projection;
     mat4 cam_view;
+    mat4 cam_projection;
     vec3 cam_position;
 };
 

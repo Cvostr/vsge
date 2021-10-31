@@ -54,7 +54,7 @@ void VkMaterialsThumbnails::Create() {
     _lights_buffer = new LightsBuffer;
     _lights_buffer->SetMaxLightsCount(1);
     _lights_buffer->Create();
-    _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0, 0, 0), Vec3(0.4, 0.3, -0.7), Color());
+    _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0.f, 0.f, 0.f), Vec3(0.4f, 0.3f, -0.7f), Color());
     _lights_buffer->SetLightsCount(1);
     _lights_buffer->SetAmbientColor(Color());
     _lights_buffer->UpdateGpuBuffer();
@@ -88,7 +88,6 @@ void VkMaterialsThumbnails::Create() {
     _light->SetGBuffer(_gbuffer);
     _light->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
     _light->SetCameraIndex(99);
-    _light->SetBRDF_LUT(VulkanRenderer::Get()->GetBRDF());
     _light->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _cmdpool = new VulkanCommandPool;

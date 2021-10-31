@@ -38,14 +38,9 @@ namespace VSGE {
 	typedef std::vector<MaterialTexture*> tMaterialTexturesList;
 	typedef std::vector<MaterialParameter> tMaterialParamsList;
 
-	struct TextureTypesIds {
-		uint8 _albedo_index;
-		uint8 _normal_index;
-
-		TextureTypesIds() : 
-			_albedo_index(0),
-			_normal_index(1)
-		{}
+	enum MaterialRenderStage {
+		RENDER_STAGE_GBUFFER,
+		RENDER_STAGE_POST
 	};
 
 	class MaterialTemplate {
@@ -61,7 +56,7 @@ namespace VSGE {
 		CullMode _cullMode;
 		bool _depthTest;
 		std::map<uint32, BlendAttachmentDesc> _blendDescs;
-		TextureTypesIds _texture_ids;
+		MaterialRenderStage _render_stage;
 
 		void SetupDefaultVertexLayout();
 	public:
@@ -93,10 +88,6 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		tMaterialParamsList& GetParams();
-
-		TextureTypesIds& GetTexturesIds() {
-			return _texture_ids;
-		}
 		/// <summary>
 		/// Add new template parameter description
 		/// </summary>
@@ -134,10 +125,19 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="mode">- new face cull mode</param>
 		void SetCullMode(CullMode mode);
-
+		/// <summary>
+		/// Get current depth test parameter
+		/// </summary>
 		bool GetDepthTest();
-
+		/// <summary>
+		/// Set new depth test parameter
+		/// </summary>
+		/// <param name="depth_test">- depth test parameter</param>
 		void SetDepthTest(bool depth_test);
+
+		void SetRenderStage(MaterialRenderStage stage);
+
+		MaterialRenderStage GetRenderStage();
 
 		void SetVertexLayout(const VertexLayout& vertexLayout);
 

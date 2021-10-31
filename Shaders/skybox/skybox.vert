@@ -8,7 +8,8 @@ layout (location = 1) out vec3 _pos;
 
 layout (std140, binding = 0) uniform CamMatrices{
     mat4 cam_view_projection;
-    mat4 cam_view_projection_skybox;
+    mat4 cam_view;
+    mat4 cam_projection;
     vec3 cam_position;
 };
 
@@ -20,5 +21,16 @@ void main()
 {
     _uv = uv;
     _pos = pos;
-    gl_Position = cam_view_projection_skybox * vec4(pos, 1.0);
+
+    mat4 modified_view = cam_view;
+    modified_view[3][0] = 0;
+    modified_view[3][1] = 0;
+    modified_view[3][2] = 0;
+    modified_view[3][3] = 1;
+    modified_view[0][3] = 0;
+    modified_view[1][3] = 0;
+    modified_view[2][3] = 0;
+
+
+    gl_Position = cam_projection * modified_view * vec4(pos, 1.0);
 }  

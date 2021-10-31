@@ -15,14 +15,21 @@ VulkanMaterial::~VulkanMaterial() {
 }
 
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
+	VulkanRenderPass* renderpass = _main_render_target->GetGBufferRenderer()->GetRenderPass();
+	if (mat_template->GetRenderStage() != RENDER_STAGE_GBUFFER) {
+		renderpass = _main_render_target->GetDeferredLightRenderer()->GetRenderPass();
+	}
+	
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
 	//Add common vertex descriptor
 	p_layout->PushDescriptorSet(_main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets()[0]);
-
 	//Add materials descriptor
 	VulkanDescriptorSet* materialsDescrSet = CreateDescriptorSetFromMaterialTemplate(mat_template);
 	p_layout->PushDescriptorSet(materialsDescrSet);
 	p_layout->PushDescriptorSet(_main_render_target->GetGBufferRenderer()->GetAnimationsDescriptorSet());
+	if (mat_template->GetRenderStage() != RENDER_STAGE_GBUFFER) {
+		p_layout->PushDescriptorSet(_main_render_target->GetDeferredLightRenderer()->GetDeferredDescriptorSet());
+	}
 	//Create pipeline layout
 	p_layout->Create();
 
@@ -31,7 +38,7 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 	pipeline->SetDepthTest(mat_template->GetDepthTest());
 	pipeline->SetCullMode(mat_template->GetCullMode());
 	pipeline->SetBlendingDescs(mat_template->GetBlendingAttachmentDescs());
-	pipeline->Create((VulkanShader*)mat_template->GetShader(), _main_render_target->GetGBufferRenderer()->GetRenderPass(), mat_template->GetLayout(), p_layout);
+	pipeline->Create((VulkanShader*)mat_template->GetShader(), renderpass, mat_template->GetLayout(), p_layout);
 	//Store pipeline pointer in material template	
 	mat_template->SetPipeline(pipeline);
 

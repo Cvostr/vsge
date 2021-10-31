@@ -445,6 +445,9 @@ void ParticleEmitterComponent::GetParticlesTransforms(Mat4** Transforms, Camera&
 	for (int i = 0; i < _particles.size(); i++) {
 		Particle* Particle = _particles[i];
 		if (Particle->_alive) {
+			//Mat4 translationMat = GetTranslationMatrix(Particle->_position);
+			//Mat4 transformMat = GetScaleMatrix(Vec3(Particle->_size.x, Particle->_size.y, 1)) 
+			// * GetRotationZMatrixEuler(Particle->_rotation) * translationMat;
 			Mat4 transformMat = GetTranslationMatrix(Particle->_position);
 			transformMat = RemoveRotationFromTransform(transformMat, cam.GetViewMatrix());
 			transformMat = GetScaleMatrix(Vec3(Particle->_size.x, Particle->_size.y, 1)) * GetRotationZMatrixEuler(Particle->_rotation) * transformMat;
@@ -459,24 +462,6 @@ void ParticleEmitterComponent::GetParticlesTransforms(Mat4** Transforms, Camera&
 				* getTranslationMat(Particle->Position);*/
 
 			(*Transforms)[TransformI++] = transformMat;
-		}
-	}
-
-	Vec3 CamPos = cam.GetPosition();
-	//Sort Array
-	for (unsigned int i = 1; i < aliveParticlesCount - 1; i++) {
-		for (unsigned int j = 0; j < aliveParticlesCount - i - 1; j++) {
-			Vec3 Pos1 = (*Transforms)[j].GetPosition();
-			Vec3 Pos2 = (*(*Transforms + (j + 1))).GetPosition();
-
-			float Dist1 = CamPos.DistanceTo(Pos1);
-			float Dist2 = CamPos.DistanceTo(Pos2);
-
-			if (Dist1 < Dist2) {
-				Mat4 temp = (*Transforms)[j];
-				(*Transforms)[j] = (*Transforms)[j + 1];
-				*(*Transforms + (j + 1)) = temp;
-			}
 		}
 	}
 }

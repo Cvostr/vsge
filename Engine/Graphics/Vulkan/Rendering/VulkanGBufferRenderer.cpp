@@ -115,6 +115,14 @@ void VulkanGBufferRenderer::SetEntitiesToRender(tEntityList& entities, tEntityLi
 	_particles_to_render = &particles;
 }
 
+tEntityList* VulkanGBufferRenderer::GetEntitiesToRender() {
+	return _entities_to_render;
+}
+
+tEntityList* VulkanGBufferRenderer::GetParticlesToRender() {
+	return _particles_to_render;
+}
+
 void VulkanGBufferRenderer::SetScene(Scene* scene) {
 	_scene = scene;
 }
@@ -231,6 +239,9 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			if (!camera->IsVisibleInFrustum(bounding_box))
 				continue;
 			
+			if (templ->GetRenderStage() != RENDER_STAGE_GBUFFER)
+				continue;
+
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
 
 			BindPipeline(cmdbuf, pipl);
@@ -243,52 +254,6 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 				cmdbuf->DrawIndexed(mesh->GetIndexCount());
 			else
 				cmdbuf->Draw(mesh->GetVerticesCount());
-		}
-	}
-
-	for (uint32 particle_em_i = 0; particle_em_i < _particles_to_render->size(); particle_em_i++) {
-		Entity* entity = (*_particles_to_render)[particle_em_i];
-		ParticleEmitterComponent* particle_emitter = entity->GetComponent<ParticleEmitterComponent>();
-
-		if (!particle_emitter->IsSimulating())
-			continue;
-
-		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
-		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
-
-		//bind material
-		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
-		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
-		Material* mat = mat_resource->GetMaterial();
-		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
-
-		cmdbuf->BindPipeline(*pipl);
-		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-		cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
-		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
-		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
-
-		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
-			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
-			//Mark mesh resource used in this frame
-			mesh_resource->Use();
-			//Mark material resource used in this frame
-			mat_resource->Use();
-
-			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
-			uint32 offset2 = _writtenParticleTransforms * sizeof(Mat4);
-
-			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets1);
-			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _particles_descriptor_set, 1, &offset2);
-			cmdbuf->BindMesh(*mesh);
-			uint32 instances_count = particle_emitter->GetAliveParticlesCount();
-			if (mesh->GetIndexCount() > 0)
-				cmdbuf->DrawIndexed(mesh->GetIndexCount(), instances_count);
-			else
-				cmdbuf->Draw(mesh->GetVerticesCount(), instances_count);
-
-			uint32 particles_count = particle_emitter->GetAliveParticlesCount();
-			_writtenParticleTransforms += particles_count;
 		}
 	}
 
@@ -342,6 +307,9 @@ VulkanBuffer* VulkanGBufferRenderer::GetParticlesBuffer() {
 
 std::vector<VulkanDescriptorSet*>& VulkanGBufferRenderer::GetVertexDescriptorSets() {
 	return _vertex_descriptor_sets;
+}
+VulkanDescriptorSet* VulkanGBufferRenderer::GetParticlesDescriptorSet() {
+	return _particles_descriptor_set;
 }
 VulkanDescriptorSet* VulkanGBufferRenderer::GetAnimationsDescriptorSet() {
 	return _animations_descriptor_set;

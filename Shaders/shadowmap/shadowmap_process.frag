@@ -26,6 +26,7 @@ layout(binding = 1) uniform sampler2D gpos;
 layout (std140, binding = 2) uniform CamMatrices{
     mat4 cam_view_projection;
     mat4 cam_view;
+    mat4 cam_projection;
     vec3 cam_position;
 };
 

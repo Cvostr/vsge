@@ -68,13 +68,12 @@ void VulkanCamerasBuffer::WriteCameraToBuffer(
 	const Vec3& pos
 ) {
 	Mat4 projection_view = view * projection;
-	Mat4 skybox_viewproj = RemoveTranslationFromViewMat(view) * projection;
-
 	uint32 offset = index * CAMERA_ELEM_SIZE;
 
 	memcpy(_cameras_cpu_buffer + offset, &projection_view, sizeof(Mat4));
-	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4), &skybox_viewproj, sizeof(Mat4));
-	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4) * 2, (void*)&pos, sizeof(Vec3));
+	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4), &view, sizeof(Mat4));
+	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4) * 2, &projection, sizeof(Mat4));
+	memcpy(_cameras_cpu_buffer + offset + sizeof(Mat4) * 3, (void*)&pos, sizeof(Vec3));
 }
 
 void VulkanCamerasBuffer::SetCamera(uint32 camera_index, Camera* camera) {

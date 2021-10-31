@@ -1,6 +1,10 @@
 #include "VulkanDeferredLight.hpp"
 #include "VulkanRenderer.hpp"
 
+#include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
+#include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
+
 using namespace VSGE;
 
 VulkanDeferredLight::VulkanDeferredLight() {
@@ -9,10 +13,12 @@ VulkanDeferredLight::VulkanDeferredLight() {
 	_camera_index = 0;
 	_is_envmap = false;
 	_outputFormat = FORMAT_RGBA16F;
+	_gbuffer = nullptr;
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
 	SAFE_RELEASE(_deferred_pipeline)
+	SAFE_RELEASE(_deferred_pipeline_layout)
 
 	SAFE_RELEASE(_deferred_fb)
 	SAFE_RELEASE(_deferred_rp)
@@ -60,6 +66,8 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
 	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderer::Get()->GetBlackTexture(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)VulkanRenderer::Get()->GetLightsBuffer()->GetLightsGpuBuffer());
+	_deferred_descriptor->WriteDescriptorImage(9, VulkanRenderer::Get()->GetBRDF()->GetTextureLut(), attachment_sampler);
 
 	UnsetIBL();
 }
@@ -82,27 +90,18 @@ void VulkanDeferredLight::CreatePipeline() {
 }
 
 void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
-	_lights_buffer = lights_buffer;
 	_deferred_descriptor->WriteDescriptorBuffer(2, lights_buffer);
 }
 
 void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
+	_gbuffer = gbuffer;
+
 	if (!_deferred_descriptor)
 		return;
 
+	VulkanFramebuffer* fb = gbuffer->GetFramebuffer();
 	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
-
-	_deferred_descriptor->WriteDescriptorImage(3, gbuffer->GetAlbedoAttachment(), attachment_sampler);
-	_deferred_descriptor->WriteDescriptorImage(4, gbuffer->GetNormalAttachment(), attachment_sampler);
-	_deferred_descriptor->WriteDescriptorImage(5, gbuffer->GetPositionAttachment(), attachment_sampler);
-	_deferred_descriptor->WriteDescriptorImage(6, gbuffer->GetMaterialsAttachment(), attachment_sampler);
-	//depth
-	_deferred_descriptor->WriteDescriptorImage(8, gbuffer->GetDepthAttachment(), attachment_sampler);
-}
-
-void VulkanDeferredLight::SetGBufferFromFramebuffer(VulkanFramebuffer* fb) {
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
-
+	//attachments
 	_deferred_descriptor->WriteDescriptorImage(3, (VulkanTexture*)fb->GetColorAttachments()[0], attachment_sampler);
 	_deferred_descriptor->WriteDescriptorImage(4, (VulkanTexture*)fb->GetColorAttachments()[1], attachment_sampler);
 	_deferred_descriptor->WriteDescriptorImage(5, (VulkanTexture*)fb->GetColorAttachments()[2], attachment_sampler);
@@ -118,15 +117,6 @@ void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
 
 	_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
-}
-
-void VulkanDeferredLight::SetBRDF_LUT(Vulkan_BRDF_LUT* brdf_lut) {
-	if (!_deferred_descriptor)
-		return;
-
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
-
-	_deferred_descriptor->WriteDescriptorImage(9, brdf_lut->GetTextureLut(), attachment_sampler);
 }
 
 void VulkanDeferredLight::UnsetIBL() {
@@ -161,6 +151,55 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
 	cmdbuf->BindMesh(*mesh, 0);
 	cmdbuf->DrawIndexed(6);
+
+	uint32 _writtenParticleTransforms = 0;
+	for (uint32 particle_em_i = 0; particle_em_i < _gbuffer->GetParticlesToRender()->size(); particle_em_i++) {
+		Entity* entity = (*_gbuffer->GetParticlesToRender())[particle_em_i];
+		ParticleEmitterComponent* particle_emitter = entity->GetComponent<ParticleEmitterComponent>();
+
+		if (!particle_emitter->IsSimulating())
+			continue;
+
+		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
+
+		//bind material
+		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+		Material* mat = mat_resource->GetMaterial();
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+
+		cmdbuf->BindPipeline(*pipl);
+		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
+		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+
+		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+
+		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			//Mark mesh resource used in this frame
+			mesh_resource->Use();
+			//Mark material resource used in this frame
+			mat_resource->Use();
+
+			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
+			uint32 offset2 = _writtenParticleTransforms * sizeof(Mat4);
+
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[0], 2, offsets1);
+			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _gbuffer->GetParticlesDescriptorSet(), 1, &offset2);
+			cmdbuf->BindDescriptorSets(*ppl, 3, 1, _deferred_descriptor, 1, offsets1);
+			cmdbuf->BindMesh(*mesh);
+			uint32 instances_count = particle_emitter->GetAliveParticlesCount();
+			if (mesh->GetIndexCount() > 0)
+				cmdbuf->DrawIndexed(mesh->GetIndexCount(), instances_count);
+			else
+				cmdbuf->Draw(mesh->GetVerticesCount(), instances_count);
+
+			uint32 particles_count = particle_emitter->GetAliveParticlesCount();
+			_writtenParticleTransforms += particles_count;
+		}
+	}
 
 	cmdbuf->EndRenderPass();
 }
@@ -199,4 +238,8 @@ TextureFormat VulkanDeferredLight::GetOutputFormat() {
 
 VulkanTexture* VulkanDeferredLight::GetOutputTexture() {
 	return (VulkanTexture*)_deferred_fb->GetColorAttachments()[0];
+}
+
+VulkanDescriptorSet* VulkanDeferredLight::GetDeferredDescriptorSet() {
+	return _deferred_descriptor;
 }
