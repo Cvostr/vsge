@@ -84,7 +84,7 @@ void SceneViewWindow::OnWindowResize() {
     editor_layer->GetCamera()->SetAspectRatio(_size.x / _size.y);
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
-    renderer->ResizeOutput(_size.x, _size.y);
+    renderer->ResizeOutput((uint32)_size.x, (uint32)_size.y);
 
     if(texture != nullptr){
         //ImGui_ImplVulkan_DestroyTexture(texture);

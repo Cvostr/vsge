@@ -119,6 +119,7 @@ namespace VSGEditor {
 		}
 
 		bool OpenProject(const Project& project);
+		const Project& GetProject();
 
 		void OnAttach();
 		void OnUpdate();

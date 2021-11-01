@@ -9,13 +9,13 @@ namespace VSGEditor {
 	private:
 		std::string _project_name;
 		VSGE::ResourceReference _main_scene;
+
+		void Save();
 	public:
 
-		ProjectSettingsWindow() {
-			_showCloseCross = true;
-			_main_scene.SetResourceType(VSGE::RESOURCE_TYPE_SCENE);
-		}
+		ProjectSettingsWindow();
 
+		void LoadSettings();
 		void OnDrawWindow();
 	};
 }

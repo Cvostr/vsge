@@ -1,5 +1,6 @@
 #include "VulkanDeferredLight.hpp"
 #include "VulkanRenderer.hpp"
+#include <Resources/DefaultResources.hpp>
 
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
@@ -17,11 +18,14 @@ VulkanDeferredLight::VulkanDeferredLight() {
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
-	SAFE_RELEASE(_deferred_pipeline)
-	SAFE_RELEASE(_deferred_pipeline_layout)
+	SAFE_RELEASE(_deferred_pipeline);
+	SAFE_RELEASE(_deferred_pipeline_layout);
 
-	SAFE_RELEASE(_deferred_fb)
-	SAFE_RELEASE(_deferred_rp)
+	SAFE_RELEASE(_deferred_descriptor);
+	SAFE_RELEASE(_deferred_pool);
+
+	SAFE_RELEASE(_deferred_fb);
+	SAFE_RELEASE(_deferred_rp);
 }
 
 void VulkanDeferredLight::CreateFramebuffer() {
@@ -145,6 +149,9 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
+
+	DrawSkybox(cmdbuf);
+
 	cmdbuf->BindPipeline(*_deferred_pipeline);
 	cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
 	uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
@@ -152,7 +159,49 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->BindMesh(*mesh, 0);
 	cmdbuf->DrawIndexed(6);
 
-	uint32 _writtenParticleTransforms = 0;
+	DrawParticles(cmdbuf);
+
+	cmdbuf->EndRenderPass();
+}
+
+void VulkanDeferredLight::DrawSkybox(VulkanCommandBuffer* cmdbuf) {
+	if (_gbuffer->GetScene()) {
+		SceneEnvironmentSettings& env_settings = _gbuffer->GetScene()->GetEnvironmentSettings();
+		if (env_settings._skybox_material.IsResourceSpecified()) {
+			MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
+			if (resource) {
+
+				if (resource->IsUnloaded()) {
+					resource->Load();
+				}
+
+				if (resource->IsReady()) {
+					resource->Use();
+					Material* mat = resource->GetMaterial();
+					VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
+					VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+					MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
+					VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+					VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+
+					cmdbuf->BindPipeline(*pipl);
+					cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+					cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
+					uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
+					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[0], 2, offsets);
+					cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+					cmdbuf->BindDescriptorSets(*ppl, 3, 1, _deferred_descriptor, 1, &offsets[1]);
+
+					VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
+					cmdbuf->BindMesh(*cube);
+					cmdbuf->Draw(cube->GetVerticesCount());
+				}
+			}
+		}
+	}
+}
+void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf) {
+	uint32 writtenParticleTransforms = 0;
 	for (uint32 particle_em_i = 0; particle_em_i < _gbuffer->GetParticlesToRender()->size(); particle_em_i++) {
 		Entity* entity = (*_gbuffer->GetParticlesToRender())[particle_em_i];
 		ParticleEmitterComponent* particle_emitter = entity->GetComponent<ParticleEmitterComponent>();
@@ -184,7 +233,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 			mat_resource->Use();
 
 			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
-			uint32 offset2 = _writtenParticleTransforms * sizeof(Mat4);
+			uint32 offset2 = writtenParticleTransforms * sizeof(Mat4);
 
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[0], 2, offsets1);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _gbuffer->GetParticlesDescriptorSet(), 1, &offset2);
@@ -197,11 +246,9 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 				cmdbuf->Draw(mesh->GetVerticesCount(), instances_count);
 
 			uint32 particles_count = particle_emitter->GetAliveParticlesCount();
-			_writtenParticleTransforms += particles_count;
+			writtenParticleTransforms += particles_count;
 		}
 	}
-
-	cmdbuf->EndRenderPass();
 }
 
 void VulkanDeferredLight::Resize(uint32 width, uint32 height) {

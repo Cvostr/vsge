@@ -53,6 +53,7 @@ void VulkanRenderTarget::Destroy() {
 }
 void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) {
 	_gbuffer_renderer->SetCameraIndex(camera_index);
+	_deferred_renderer->SetCameraIndex(camera_index);
 }
 void VulkanRenderTarget::SetEntitiesToRender(tEntityList& entities, tEntityList& particles) {
 	_gbuffer_renderer->SetEntitiesToRender(entities, particles);

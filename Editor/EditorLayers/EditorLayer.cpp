@@ -51,7 +51,7 @@ void EditorLayer::OnDetach() {
 }
 
 bool EditorLayer::OpenProject(const Project& project) {
-
+	_project = project;
 	mResourcesWatcher->WatchDirectory(project.GetAssetsDirectory());
 	ResourceCache::Get()->AddResourceDir(project.GetAssetsDirectory());
 
@@ -72,6 +72,7 @@ bool EditorLayer::OpenProject(const Project& project) {
 
 	ProjectSettingsWindow* proj_settings = new ProjectSettingsWindow;
 	proj_settings->Hide();
+	proj_settings->LoadSettings();
 	ImGuiLayer::Get()->AddWindow(proj_settings);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
@@ -85,6 +86,10 @@ bool EditorLayer::OpenProject(const Project& project) {
 	MonoScriptStorage::Get()->Compile();
 
 	return false;
+}
+
+const Project& EditorLayer::GetProject() {
+	return _project;
 }
 
 void EditorLayer::OnEvent(const VSGE::IEvent& event) {

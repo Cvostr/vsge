@@ -153,41 +153,6 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
 
-
-	if (_scene) {
-		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
-		if (env_settings._skybox_material.IsResourceSpecified()) {
-			MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
-			if (resource) {
-
-				if (resource->IsUnloaded()) {
-					resource->Load();
-				}
-
-				if (resource->IsReady()) {
-					resource->Use();
-					Material* mat = resource->GetMaterial();
-					VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
-					VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
-					MaterialTemplate* templ = resource->GetMaterial()->GetTemplate();
-					VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
-					VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
-
-					cmdbuf->BindPipeline(*pipl);
-					cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-					cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
-					uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
-					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[0], 2, offsets);
-					cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
-
-					VulkanMesh* cube = (VulkanMesh*)((MeshResource*)GetCubeMesh())->GetMesh();
-					cmdbuf->BindMesh(*cube);
-					cmdbuf->Draw(cube->GetVerticesCount());
-				}
-			}
-		}
-	}
-
 	_boundPipeline = nullptr;
 	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
 		Entity* entity = (*_entities_to_render)[e_i];
@@ -273,6 +238,9 @@ void VulkanGBufferRenderer::CreateBuffers() {
 
 void VulkanGBufferRenderer::SetCameraIndex(uint32 camera_index) {
 	_camera_index = camera_index;
+}
+Scene* VulkanGBufferRenderer::GetScene() {
+	return _scene;
 }
 VulkanFramebuffer* VulkanGBufferRenderer::GetFramebuffer() {
 	return _gbuffer_fb;

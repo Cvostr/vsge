@@ -60,6 +60,7 @@ namespace VSGE {
 
 		void RecordCmdBuffer(VulkanCommandBuffer* cmdbuf);
 
+		Scene* GetScene();
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
 		VulkanTexture* GetAlbedoAttachment();
