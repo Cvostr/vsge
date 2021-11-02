@@ -7,7 +7,7 @@ using namespace VSGE;
 
 Application* Application::_this = nullptr;
 
-extern Application* VSGEMain();
+extern Application* VSGEMain(int argc, char* argv[]);
 
 Application::Application(ApplicationCreateInfo descr) :
 	_running(false),
@@ -107,7 +107,7 @@ IRenderer* Application::GetRenderer() {
 }
 
 int main(int argc, char* argv[]) {
-	Application* app = VSGEMain();
+	Application* app = VSGEMain(argc, argv);
 
 	app->Run();
 

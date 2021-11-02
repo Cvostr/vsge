@@ -49,6 +49,10 @@ std::vector<MonoScript*>& MonoScriptStorage::GetScripts() {
 	return _scripts;
 }
 
+const std::string& MonoScriptStorage::GetDllOutputPath() {
+	return _compiler->GetOutputPath();
+}
+
 bool MonoScriptStorage::IsScriptingReady() {
 	return _is_scripting_ready;
 }

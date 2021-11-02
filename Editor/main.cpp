@@ -23,7 +23,7 @@
 using namespace VSGE;
 using namespace VSGEditor;
 
-Application* VSGEMain() {
+Application* VSGEMain(int argc, char* argv[]) {
 
 	ApplicationCreateInfo descr = {"Editor", 1};
 	descr.graphicsApi = GRAPHICS_API_VULKAN;

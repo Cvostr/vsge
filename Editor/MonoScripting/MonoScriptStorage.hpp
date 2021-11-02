@@ -39,6 +39,7 @@ namespace VSGEditor {
 		}
 
 		std::vector<MonoScript*>& GetScripts();
+		const std::string& GetDllOutputPath();
 		MonoScript* GetScriptWithFilePath(const std::string& file_path);
 		void AddScript(const std::string& file_path);
 		void RemoveScript(const std::string& file_path);

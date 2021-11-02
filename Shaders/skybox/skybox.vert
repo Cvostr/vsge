@@ -31,6 +31,5 @@ void main()
     modified_view[1][3] = 0;
     modified_view[2][3] = 0;
 
-
     gl_Position = cam_projection * modified_view * vec4(pos, 1.0);
 }  

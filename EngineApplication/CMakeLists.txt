@@ -5,12 +5,15 @@ project ("EngineApplication")
 
 set(CMAKE_CXX_STANDARD 17)
 
+include_directories("./" REQUIRED)
 include_directories(../Engine REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("../vendor/headers/" REQUIRED)
 
 set(SRC_FILES 
-                main.cpp)
+                main.cpp
+                Layers/MainLayer.cpp
+                Misc/ArgsParser.cpp)
 
 set(HEADER_FILES 
               )

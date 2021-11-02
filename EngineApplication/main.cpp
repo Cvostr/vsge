@@ -8,13 +8,17 @@
 #include <Input/InputLayer.hpp>
 #include <UI/UiLayer.hpp>
 #include <Graphics/Fonts.hpp>
+#include <Misc/ArgsParser.hpp>
+#include <Layers/MainLayer.hpp>
 
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
 using namespace VSGE;
 
-Application* VSGEMain() {
+Application* VSGEMain(int argc, char* argv[]) {
+	ArgsParser parser(argc, argv);
+
 	ApplicationCreateInfo descr = { "Engine Application", 1 };
 	descr.graphicsApi = GRAPHICS_API_VULKAN;
 
@@ -41,6 +45,8 @@ Application* VSGEMain() {
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();
+
+	app->AddLayer(new MainLayer);
 
 	return app;
 }

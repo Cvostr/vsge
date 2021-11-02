@@ -8,7 +8,8 @@
 #include "../EditorLayers/EditorLayer.hpp"
 
 #include <Scene/SceneSerialization.hpp>
-
+#include "../EditorLayers/ImGuiLayer.hpp"
+#include <Windows/ProjectBuildingWindow.hpp>
 #include <Misc/DialogWindows.hpp>
 
 using namespace VSGEditor;
@@ -53,7 +54,7 @@ void File_Menu::OnDrawMenu() {
 			ImportFile(path);
 		}
 		if (ImGui::MenuItem("Build", NULL)) {
-			
+			ImGuiLayer::Get()->GetWindow<ProjectBuildingWindow>()->Show();
 		}
 
 		ImGui::EndMenu();

@@ -165,9 +165,13 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     PushResource(res);
 }
 
-bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
+bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
+    std::string directory = bundle_map_path;
+    while (directory[directory.size()] != '\\' || directory[directory.size()] != '/')
+        directory.pop_back();
+    
     std::ifstream stream;
-    stream.open(bundle_path, std::ios::binary | std::ios::ate);
+    stream.open(bundle_map_path, std::ios::binary | std::ios::ate);
 
     if (stream.fail()) {
         return false;
@@ -179,14 +183,26 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_path) {
     stream.read((char*)data, size);
     stream.close();
 
-    uint32 resources_count = 0;
     ByteSolver solver(data, size);
-    solver.Copy(resources_count);
-    while (!solver.end()) {
-        ResourceType type = RESOURCE_TYPE_NONE;
-        DataDescription ddescr = {};
-        solver.Copy(&type);
 
+    std::vector<std::string> bundle_names;
+    while (true) {
+        std::string next = solver.ReadNextString();
+        if (next == "__data__")
+            break;
+        else
+            bundle_names.push_back(next);
+    }
+    uint64 count = solver.GetValue<uint64>();
+
+    for (uint64 i = 0; i < count; i++) {
+        std::string name = solver.ReadNextString();
+        ResourceType type = solver.GetValue<ResourceType>();
+        DataDescription descr;
+        descr.file_path = directory + bundle_names[solver.GetValue<uint32>()];
+        descr.offset = solver.GetValue<uint32>();
+        descr.size = solver.GetValue<uint32>();
+        CreateResource(descr, type);
     }
 
     return true;

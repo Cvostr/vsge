@@ -92,7 +92,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="bundle_path">- path to resource bundle file on disk</param>
 		/// <returns></returns>
-		bool AddResourceBundle(const std::string& bundle_path);
+		bool AddResourceBundle(const std::string& bundle_map_path);
 
 		void AddResourceReference(ResourceReference* reference);
 		void RemoveResourceReference(ResourceReference* reference);

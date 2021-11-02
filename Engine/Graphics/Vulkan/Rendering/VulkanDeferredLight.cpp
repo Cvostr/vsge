@@ -153,6 +153,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	DrawSkybox(cmdbuf);
 
 	cmdbuf->BindPipeline(*_deferred_pipeline);
+	cmdbuf->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 	cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
 	uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
 	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
@@ -186,7 +187,6 @@ void VulkanDeferredLight::DrawSkybox(VulkanCommandBuffer* cmdbuf) {
 
 					cmdbuf->BindPipeline(*pipl);
 					cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
-					cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
 					uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
 					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[0], 2, offsets);
 					cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);

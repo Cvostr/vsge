@@ -13,7 +13,7 @@ layout(set = 1, binding = 5) uniform sampler2D bottom;
 layout(set = 1, binding = 6) uniform sampler2D top;
 
 layout (std140, set = 1, binding = 0) uniform MaterialData{
-    bool hasBack;
+  bool hasBack;
 	bool hasFront;
 	bool hasLeft;
 	bool hasRight;

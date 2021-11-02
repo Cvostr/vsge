@@ -259,7 +259,7 @@ void VulkanRenderer::SetupRenderer() {
 	skybox_template->SetRenderStage(RENDER_STAGE_POST);
 	skybox_template->SetVertexLayout(_vertexLayout);
 	skybox_template->SetDepthTest(false);
-	skybox_template->SetCullMode(CULL_MODE_NONE);
+	skybox_template->SetCullMode(CULL_MODE_FRONT);
 
 	skybox_template->AddTexture("Back", 1);
 	skybox_template->AddTexture("Front", 2);

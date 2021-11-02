@@ -31,11 +31,6 @@ void Thread::THRFunc() {
 	while (_running) {
 
 		ThreadedFunction();
-		
-		//thread destroyed on function time
-		if (!_running) {
-
-		}
 
 		SleepThread(_sleep_time);
 	}

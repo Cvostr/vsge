@@ -10,7 +10,8 @@ using namespace VSGEditor;
 MonoScriptCompiler::MonoScriptCompiler() :
 	_mutex(new Mutex),
 	_state(COMPILATION_STATE_DONE),
-    _compilation_error(false)
+    _compilation_error(false),
+    _output_path("mono_temp.dll")
 {
 
 }
@@ -27,7 +28,11 @@ std::string MonoScriptCompiler::GetCompilationCmd() {
     if(input.size() > 0)
         input.pop_back(); //remove space
 
-    return "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:api.dll -out:mono_temp.dll " + input;
+    return "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:api.dll -out:" + _output_path + " " + input;
+}
+
+const std::string& MonoScriptCompiler::GetOutputPath() {
+    return _output_path;
 }
 
 void MonoScriptCompiler::THRFunc() {

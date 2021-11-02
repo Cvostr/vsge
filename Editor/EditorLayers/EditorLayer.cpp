@@ -15,6 +15,7 @@
 #include "../Windows/EditorSettingsWindow.hpp"
 #include "../Windows/EnvironmentSettingsWindow.hpp"
 #include "../Windows/ProjectSettingsWindow.hpp"
+#include "../Windows/ProjectBuildingWindow.hpp"
 #include <Misc/DialogWindows.hpp>
 
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
@@ -74,6 +75,10 @@ bool EditorLayer::OpenProject(const Project& project) {
 	proj_settings->Hide();
 	proj_settings->LoadSettings();
 	ImGuiLayer::Get()->AddWindow(proj_settings);
+
+	ProjectBuildingWindow* pbw = new ProjectBuildingWindow;
+	pbw->Hide();
+	ImGuiLayer::Get()->AddWindow(pbw);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 	ImGuiLayer::Get()->AddMenu(new Edit_Menu);

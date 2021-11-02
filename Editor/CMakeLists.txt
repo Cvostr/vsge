@@ -50,6 +50,7 @@ set(SRC_FILES
                 Windows/EditorSettingsWindow.cpp
                 Windows/InspectorWindow.cpp
                 Windows/ProjectSettingsWindow.cpp
+                Windows/ProjectBuildingWindow.cpp
                 Windows/CreateProjectWindow.cpp
                 Windows/EnvironmentSettingsWindow.cpp
                 Windows/ResourcePickWindow.cpp
