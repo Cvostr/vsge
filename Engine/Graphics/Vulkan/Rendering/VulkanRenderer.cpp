@@ -173,7 +173,6 @@ void VulkanRenderer::SetupRenderer() {
 		mParticlesTransformShaderBuffer);
 	
 	_main_render_target->SetIBL(_ibl_map);
-	mOutput = _main_render_target->GetDeferredOutput();
 
 	_render_targets.resize(1);
 	_render_targets[0] = _main_render_target;
@@ -197,6 +196,8 @@ void VulkanRenderer::SetupRenderer() {
 		_ui_renderer->GetOutputTexture());
 	_postprocessing->Create();
 	_postprocessing->ResizeOutput(GetOutputSizes());
+
+	mOutput = _postprocessing->GetOutputTexture();
 
 	_shadowmapper = new VulkanShadowmapping(
 		&gbuffer->GetVertexDescriptorSets(),
@@ -467,7 +468,12 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 			mAnimationTransformsShaderBuffer,
 			mParticlesTransformShaderBuffer);
 		TextureResource* resource = camera->GetTargetResource();
+		
 		if (resource) {
+			if (resource->IsUnloaded()) {
+				resource->Load();
+				continue;
+			}
 			VulkanTexture* target_texture = (VulkanTexture*)resource->GetTexture();
 			render_target->SetOutput(target_texture);
 			render_target->ResizeOutput(target_texture->GetWidth(), target_texture->GetHeight());
@@ -548,6 +554,11 @@ VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
 
 VulkanSemaphore* VulkanRenderer::GetBeginSemaphore() {
 	return mBeginSemaphore;
+}
+
+void VulkanRenderer::SetBeginSemaphore(VulkanSemaphore* semaphore) {
+	delete mBeginSemaphore;
+	mBeginSemaphore = semaphore;
 }
 
 VulkanSemaphore* VulkanRenderer::GetEndSemaphore() {

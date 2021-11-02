@@ -38,7 +38,7 @@ target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/freetype/freetype.lib
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/assimp/assimp.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/openal/OpenAL32.lib)
 
-if (CMAKE_BUILD_TYPE MATCHES Release)
+if (CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
 #bullet
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletCollision.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletDynamics.lib)

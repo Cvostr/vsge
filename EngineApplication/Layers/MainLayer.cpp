@@ -17,8 +17,7 @@ void MainLayer::OnAttach() {
 	Application::Get()->GetLayer<SceneLayer>()->SetWorkingScene(scene);
 
 	SceneResource* sc_res = ResourceCache::Get()->GetResource<SceneResource>("cubes_test");
-	sc_res->Load();
-	ResourceCache::Get()->GetAsyncLoader()->WaitForLoading(sc_res);
+	ResourceCache::Get()->GetAsyncLoader()->LoadResource(sc_res, true);
 
 	VSGE::SceneSerializer ss;
 	ss.SetScene(scene);

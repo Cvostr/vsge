@@ -105,6 +105,7 @@ namespace VSGE {
 		VulkanCommandPool* GetCommandPool();
 
 		VulkanSemaphore* GetBeginSemaphore();
+		void SetBeginSemaphore(VulkanSemaphore* semaphore);
 
 		VulkanSemaphore* GetEndSemaphore();
 

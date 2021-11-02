@@ -18,6 +18,47 @@ void VulkanLayer::OnAttach() {
 
     _presentBegin = new VulkanSemaphore;
     _presentBegin->Create();
+
+    _copy_shader = new VulkanShader;
+    _copy_shader->AddShaderFromFile("copy.vert", SHADER_STAGE_VERTEX);
+    _copy_shader->AddShaderFromFile("copy.frag", SHADER_STAGE_FRAGMENT);
+
+    _output_rp = new VulkanRenderPass;
+    _output_rp->PushColorOutputAttachment();
+    _output_rp->Create();
+
+    _output_fb = new VulkanFramebuffer;
+    _output_fb->PushOutputAttachment(0);
+    _output_fb->Create(_output_rp);
+
+    _pool = new VulkanDescriptorPool;
+    _pool->SetDescriptorSetsCount(1);
+    _pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1);
+    _pool->Create();
+
+    _set = new VulkanDescriptorSet;
+    _set->SetDescriptorPool(_pool);
+    _set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _set->Create();
+
+    _output_pipeline_layout = new VulkanPipelineLayout;
+    _output_pipeline_layout->PushDescriptorSet(_set);
+    _output_pipeline_layout->Create();
+
+    VertexLayout _vertexLayout;
+    _vertexLayout.AddBinding(sizeof(Vertex));
+    _vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+    _vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
+
+    output_pipeline = new VulkanPipeline;
+    output_pipeline->SetDepthTest(false);
+    output_pipeline->Create(_copy_shader, _output_rp, _vertexLayout, _output_pipeline_layout);
+
+    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+
+    _set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetOutputTexture(), renderer->GetAttachmentSampler());
+
+    renderer->SetBeginSemaphore(_imageAvailable);
 }
 void VulkanLayer::OnUpdate() {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
@@ -26,7 +67,7 @@ void VulkanLayer::OnUpdate() {
     _imageIndex = 0;
     _recreated = false;
     //Check, if swapchain is no more suitable
-    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
+    /*if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
         //Swapchain is no more suitable
         vkDeviceWaitIdle(vk->GetDevice()->getVkDevice());
         //Recreate swapchain
@@ -34,14 +75,16 @@ void VulkanLayer::OnUpdate() {
         vk->GetSwapChain()->initSwapchain(vk->GetDevice());
 
         _recreated = true;
-    }
+    }*/
     //if (!_recreated)
     //    VulkanGraphicsSubmit(cmdbuf, *_imageAvailable, *endSemaphore);
 
+    RecordCmdbuf();
+
 	VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 	renderer->DrawScene(nullptr);
-    //VulkanGraphicsSubmit(*_cmdbuf, *_imageAvailablem);
-    VulkanPresent(*renderer->GetEndSemaphore(), 0);
+    VulkanGraphicsSubmit(*_cmdbuf, *renderer->GetEndSemaphore(), *_presentBegin);
+    VulkanPresent(*_presentBegin, 0);
 }
 
 void VulkanLayer::OnDetach() {
@@ -55,45 +98,15 @@ void VulkanLayer::RecordCmdbuf() {
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
     VulkanTexture* output = (VulkanTexture*)renderer->GetOutputTexture();
 
+    VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
+
     _cmdbuf->Begin();
-
-    //VkImageLayout old = _output->GetImageLayout();
-    //_output->CmdChangeLayout(_cmdbuf, old, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    VkImageCopy copy = {};
-    VkImageSubresourceLayers src = {};
-    src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    src.mipLevel = 0;
-    src.baseArrayLayer = 0;
-    src.layerCount = 1;
-
-    VkImageSubresourceLayers dst = src;
-    dst.baseArrayLayer = 0;
-
-    copy.srcSubresource = src;
-    copy.dstSubresource = dst;
-
-    VkOffset3D offset;
-    offset.x = 0;
-    offset.y = 0;
-    offset.z = 0;
-
-    copy.srcOffset = offset;
-    copy.dstOffset = offset;
-    copy.extent = { output->GetWidth(), output->GetHeight(), 1 };
-
-    output->CmdChangeLayout(_cmdbuf, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-
-    VkImage image = output->GetImage();
-    vkCmdCopyImage(
-        _cmdbuf->GetCommandBuffer(),
-        image,
-        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-        swc->GetImageAtIndex(0),
-        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        1,
-        &copy);
-
-    output->CmdChangeLayout(_cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
+    _output_rp->CmdBegin(*_cmdbuf, *_output_fb);
+    _cmdbuf->BindPipeline(*output_pipeline);
+    _cmdbuf->SetViewport(0, 0, 1280, 720);
+    _cmdbuf->BindDescriptorSets(*_output_pipeline_layout, 0, 1, _set);
+    _cmdbuf->BindMesh(*mesh, 0);
+    _cmdbuf->DrawIndexed(6);
+    _cmdbuf->EndRenderPass();
     _cmdbuf->End();
 }
