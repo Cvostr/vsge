@@ -11,6 +11,8 @@
 #include <Misc/ArgsParser.hpp>
 #include <Layers/MainLayer.hpp>
 
+#include <Layers/Graphics/VulkanLayer.hpp>
+
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
@@ -47,6 +49,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	AddDefaultMeshes();
 
 	app->AddLayer(new MainLayer);
+	app->AddLayer(new VulkanLayer);
 
 	return app;
 }

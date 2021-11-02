@@ -19,7 +19,7 @@ namespace VSGE {
 		std::vector<Resource*> _resources;
 		std::vector<ResourceReference*> _references;
 
-		void CreateResource(DataDescription& descr, ResourceType type);
+		Resource* CreateResource(DataDescription& descr, ResourceType type);
 
 	public:
 

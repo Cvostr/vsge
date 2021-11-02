@@ -34,6 +34,7 @@ namespace VSGEditor {
 		bool _finished;
 
 		void WriteFileToBundle(byte* data, uint32 size);
+		void CheckForBundleOverflow();
 
 		template<typename T>
 		ResourcePacker& operator<<(T value) {

@@ -43,7 +43,8 @@ namespace VSGE {
         uint32_t GetSwapChainImagesCount() { 
             return static_cast<uint32_t>(mSwapChainImages.size()); 
         }
-        VkImageView GetImageViewAtIndex(unsigned int Index);
+        VkImage GetImageAtIndex(uint32 index);
+        VkImageView GetImageViewAtIndex(uint32 index);
         VkExtent2D GetExtent() { return swap_extend; }
 
         VulkanSwapChain();

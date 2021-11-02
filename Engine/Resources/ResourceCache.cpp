@@ -109,29 +109,34 @@ void ResourceCache::RemoveResource(Resource* resource) {
     }
 }
 
-void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
+Resource* ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
     Resource* res = nullptr;
 
-    if (type == RESOURCE_TYPE_TEXTURE) {
-        res = new TextureResource;
-    }
-    else if (type == RESOURCE_TYPE_MESHGROUP) {
-        res = new MeshGroupResource;
-    }
-    else if (type == RESOURCE_TYPE_MATERIAL) {
-        res = new MaterialResource;
-    }
-    else if (type == RESOURCE_TYPE_ANIMATION) {
-        res = new AnimationResource;
-    }
-    else if (type == RESOURCE_TYPE_AUDIOCLIP) {
-        res = new AudioClipResource;
-    }
-    else if (type == RESOURCE_TYPE_SCENE) {
-        res = new SceneResource;
-    }
-    else if (type == RESOURCE_TYPE_PREFAB) {
-        res = new PrefabResource;
+    switch (type) {
+        case RESOURCE_TYPE_TEXTURE :
+            res = new TextureResource;
+            break;
+        case RESOURCE_TYPE_MESHGROUP :
+            res = new MeshGroupResource;
+            break;
+        case RESOURCE_TYPE_MATERIAL :
+            res = new MaterialResource;
+            break;
+        case RESOURCE_TYPE_ANIMATION:
+            res = new AnimationResource;
+            break;
+        case (RESOURCE_TYPE_AUDIOCLIP) :
+            res = new AudioClipResource;
+            break;
+        case (RESOURCE_TYPE_SCENE) :
+            res = new SceneResource;
+            break;
+        case (RESOURCE_TYPE_PREFAB) :
+            res = new PrefabResource;
+            break;
+        default:
+            res = new PrefabResource;
+            break;
     }
 
     if(res != nullptr)
@@ -163,11 +168,13 @@ void ResourceCache::CreateResource(DataDescription& descr, ResourceType type) {
 
     //Push resource
     PushResource(res);
+
+    return res;
 }
 
 bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
     std::string directory = bundle_map_path;
-    while (directory[directory.size()] != '\\' || directory[directory.size()] != '/')
+    while ( *(directory.end() - 1) != '/')
         directory.pop_back();
     
     std::ifstream stream;
@@ -202,7 +209,8 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
         descr.file_path = directory + bundle_names[solver.GetValue<uint32>()];
         descr.offset = solver.GetValue<uint32>();
         descr.size = solver.GetValue<uint32>();
-        CreateResource(descr, type);
+        Resource* res = CreateResource(descr, type);
+        res->SetName(name);
     }
 
     return true;

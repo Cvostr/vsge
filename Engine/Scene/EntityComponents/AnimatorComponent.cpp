@@ -118,7 +118,7 @@ void AnimatorComponent::Deserialize(YAML::Node& entity) {
 }
 
 void AnimatorComponent::Serialize(ByteSerialize& serializer) {
-    uint32 anims_count = _animations.size();
+    uint32 anims_count = static_cast<uint32>(_animations.size());
     serializer.Serialize(anims_count);
 
     for (const auto& anim : _animations) {

@@ -292,7 +292,7 @@ void VulkanRenderer::DestroyRenderer() {
 }
 
 void VulkanRenderer::StoreWorldObjects() {
-	CreateRenderList();
+	//CreateRenderList();
 
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
@@ -429,7 +429,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	_shadowmapper->SetScene(mScene);
 	_ibl_map->SetScene(mScene);
 	//---------------------
-
+	CreateRenderList();
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
 		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();
 		_cameras_buffer->SetCamera(camera_i, camera);

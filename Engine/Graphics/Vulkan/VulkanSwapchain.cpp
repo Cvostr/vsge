@@ -5,10 +5,16 @@
 
 using namespace VSGE;
 
-VkImageView VulkanSwapChain::GetImageViewAtIndex(unsigned int Index) {
-    if (Index > this->mSwapChainImageViews.size())
-        Index = static_cast<uint32_t>(mSwapChainImageViews.size());
-    return mSwapChainImageViews[Index];
+VkImageView VulkanSwapChain::GetImageViewAtIndex(uint32 index) {
+    if (index > this->mSwapChainImageViews.size())
+        index = static_cast<uint32_t>(mSwapChainImageViews.size());
+    return mSwapChainImageViews[index];
+}
+
+VkImage VulkanSwapChain::GetImageAtIndex(uint32 index) {
+    if (index > this->mSwapChainImages.size())
+        index = static_cast<uint32_t>(mSwapChainImages.size());
+    return mSwapChainImages[index];
 }
 
 bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {

@@ -13,6 +13,7 @@ include_directories("../vendor/headers/" REQUIRED)
 set(SRC_FILES 
                 main.cpp
                 Layers/MainLayer.cpp
+                Layers/Graphics/VulkanLayer.cpp
                 Misc/ArgsParser.cpp)
 
 set(HEADER_FILES 

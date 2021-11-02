@@ -3,6 +3,7 @@
 #include <Core/FileLoader.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
 #include <Core/ByteSerialize.hpp>
+#include <Scene/SceneSerialization.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -50,9 +51,23 @@ void ResourcePacker::Write(){
 
         byte* file_data = nullptr;
         uint32 file_size = 0;
-        bool result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
+        bool result = false;
+        if(resource->GetResourceType() != RESOURCE_TYPE_SCENE)
+            result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
+        else {
+            VSGE::Scene* temp_scene = new Scene;
+            temp_scene->NewScene();
+
+            SceneSerializer serializer;
+            serializer.SetScene(temp_scene);
+            serializer.Deserialize(resource->GetDataDescription().file_path);
+            serializer.SerializeBinary(&file_data, file_size);
+            delete temp_scene;
+            result = true;
+        }
 
         if (result) {
+            CheckForBundleOverflow();
             MapEntry entry;
             entry.resource_name = resource->GetName();
             entry.type = resource->GetResourceType();
@@ -63,6 +78,8 @@ void ResourcePacker::Write(){
             entry.bundle_index = _current_bundle - 1;
             _map_entries.push_back(entry);
         }
+
+        SAFE_RELEASE_ARR(file_data);
     }
 
     //write scripts dll
@@ -72,6 +89,7 @@ void ResourcePacker::Write(){
         bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
 
         if (result) {
+            CheckForBundleOverflow();
             MapEntry entry;
             entry.resource_name = "runtime.dll";
             entry.type = RESOURCE_TYPE_NONE;
@@ -97,10 +115,10 @@ void ResourcePacker::Write(){
         std::string bundle_name = _bundle_name_prefix + "." + std::to_string(bundle_i);
         serializer.Serialize(bundle_name);
     }
-    serializer.Serialize("__data__");
+    serializer.Serialize(std::string("__data__"));
     serializer.Serialize((uint64)_map_entries.size());
     for (MapEntry& entry : _map_entries) {
-        serializer.Serialize(entry.resource_name.c_str());
+        serializer.Serialize(entry.resource_name);
         serializer.Serialize(entry.type);
         serializer.Serialize(entry.bundle_index);
         serializer.Serialize(entry.offset);
@@ -120,7 +138,7 @@ const std::string& ResourcePacker::GetOutput() {
     return _output;
 }
 
-void ResourcePacker::WriteFileToBundle(byte* data, uint32 size) {
+void ResourcePacker::CheckForBundleOverflow() {
     if (_written_bytes >= _bundle_file_split_size * MEGS_2_BYTES || !_bundle_stream.is_open()) {
         //check, if stream opened, then close it
         if (_bundle_stream.is_open())
@@ -131,6 +149,10 @@ void ResourcePacker::WriteFileToBundle(byte* data, uint32 size) {
         _current_bundle++;
         _written_bytes = 0;
     }
+}
+
+void ResourcePacker::WriteFileToBundle(byte* data, uint32 size) {
+    
 
     _bundle_stream.write((char*)data, size);
     _written_bytes += size;
