@@ -17,7 +17,7 @@ namespace VSGE {
 			_sleep_time(5)
 		{}
 
-		~Thread() {
+		virtual ~Thread() {
 			Stop();
 		}
 

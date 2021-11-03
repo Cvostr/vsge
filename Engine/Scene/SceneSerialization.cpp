@@ -81,6 +81,7 @@ void SceneSerializer::Serialize(const std::string& path) {
 
 	std::ofstream fout(path);
 	fout << out.c_str();
+	fout.close();
 }
 
 void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {

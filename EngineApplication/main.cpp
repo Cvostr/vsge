@@ -23,13 +23,22 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	ApplicationCreateInfo descr = { "Engine Application", 1 };
 	descr.graphicsApi = GRAPHICS_API_VULKAN;
+	descr.headless = parser.IsHeadless();
+	descr.server = parser.IsServer();
+	//descr.application_dir = parser.GetApplicationDirPath();
+	descr.application_dir = "D:/DEV/vsge_test_assets/built";
 
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");
 
-	VulkanRAPI* vk = new VulkanRAPI;
-	vk->Create(&app->GetWindow());
-	VulkanRenderer* renderer = new VulkanRenderer;
+	if (!descr.headless) {
+		VulkanRAPI* vk = new VulkanRAPI;
+		vk->Create(&app->GetWindow());
+		VulkanRenderer* renderer = new VulkanRenderer;
+
+		AddDefaultMaterial();
+		AddDefaultMeshes();
+	}
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);
@@ -45,11 +54,9 @@ Application* VSGEMain(int argc, char* argv[]) {
 	GlyphManager* glyph_manager = new GlyphManager;
 	glyph_manager->AddFontContainer("c:\\Windows\\Fonts\\Arial.ttf", "arial");
 
-	AddDefaultMaterial();
-	AddDefaultMeshes();
-
 	app->AddLayer(new MainLayer);
-	app->AddLayer(new VulkanLayer);
+	if(!descr.headless)
+		app->AddLayer(new VulkanLayer);
 
 	return app;
 }

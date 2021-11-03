@@ -392,11 +392,11 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		}
 
 		//Check distance
-		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
+		/*if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
 			float distance = caster->_lightsource->GetEntity()->GetPosition().DistanceTo(entity->GetAbsolutePosition());
 			if (distance > caster->_lightsource->GetRange())
 				continue;
-		}
+		}*/
 
 		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };
@@ -453,9 +453,21 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 			shadowmaps.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 	}
 
-	_shadowrenderer_descrSet->WriteDescriptorImages(3, shadowmaps.data(), _shadowmap_sampler, shadowmaps.size());
-	_shadowrenderer_descrSet->WriteDescriptorImages(4, shadowmaps_point.data(), _shadowmap_sampler, shadowmaps_point.size());
-	_shadowrenderer_descrSet->WriteDescriptorImages(5, shadowmaps_spot.data(), _shadowmap_sampler, shadowmaps_spot.size());
+	_shadowrenderer_descrSet->WriteDescriptorImages(3, 
+		shadowmaps.data(),
+		_shadowmap_sampler, 
+		static_cast<uint32>(shadowmaps.size())
+	);
+	_shadowrenderer_descrSet->WriteDescriptorImages(4, 
+		shadowmaps_point.data(), 
+		_shadowmap_sampler, 
+		static_cast<uint32>(shadowmaps_point.size())
+	);
+	_shadowrenderer_descrSet->WriteDescriptorImages(5, 
+		shadowmaps_spot.data(),
+		_shadowmap_sampler, 
+		static_cast<uint32>(shadowmaps_spot.size())
+	);
 	_shadowprocess_buffer->WriteData(SHADOWPROCESS_SHADOWCOUNT_OFFSET, 4, &_added_casters);
 	RecordShadowProcessingCmdbuf();
 

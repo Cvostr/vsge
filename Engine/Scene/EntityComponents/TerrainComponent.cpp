@@ -30,8 +30,13 @@ TerrainComponent::TerrainComponent() {
 	_height = 500;
 	_max_terrain_height = 0;
 
+	_mesh_dirty = false;
+	_texturemaps_dirty = false;
+	_vegetables_dirty = false;
+
 	_heightmap = nullptr;
 	_texture_factors = nullptr;
+	_vegetables_data = nullptr;
 
 	_heightmap_mesh = nullptr;
 	_texture_masks = nullptr;
@@ -44,8 +49,7 @@ TerrainComponent::TerrainComponent() {
 	_rigidbody = nullptr;
 
 	Flat(0);
-	UpdateMesh();
-	UpdateTextureMasks();
+	QueueGraphicsUpdate();
 }
 TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_heightmap);
@@ -112,6 +116,7 @@ std::vector<GrassIdTransforms>& TerrainComponent::GetGrassTransforms() {
 void TerrainComponent::Flat(float height) {
 	SAFE_RELEASE_ARR(_heightmap);
 	SAFE_RELEASE_ARR(_texture_factors);
+	SAFE_RELEASE_ARR(_vegetables_data);
 
 	uint32 vertices_count = GetVerticesCount();
 
@@ -204,6 +209,12 @@ Vec2i TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
 		}
 	}
 	return Vec2i(-1);
+}
+
+void TerrainComponent::QueueGraphicsUpdate() {
+	_mesh_dirty = true;
+	_texturemaps_dirty = true;
+	_vegetables_dirty = true;
 }
 
 void TerrainComponent::UpdateMesh() {
@@ -440,9 +451,7 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 			(GRASS_ID)heightmap[GetVerticesCount() + _terrain_textures.size() * GetVerticesCount() + v].as<int>();
 	}
 	
-	UpdateMesh();
-	UpdateTextureMasks();
-	UpdateVegetables();
+	QueueGraphicsUpdate();
 }
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_width);
@@ -537,10 +546,24 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 		_vegetables_data[i] = solver.GetValue<GRASS_ID>();
 	}
 
-	UpdateMesh();
-	UpdateTextureMasks();
-	UpdateVegetables();
+	QueueGraphicsUpdate();
 }
+
+void TerrainComponent::OnPreRender() {
+	if (_mesh_dirty) {
+		UpdateMesh();
+		_mesh_dirty = false;
+	}
+	if (_texturemaps_dirty) {
+		UpdateTextureMasks();
+		_texturemaps_dirty = false;
+	}
+	if (_vegetables_dirty) {
+		UpdateVegetables();
+		_vegetables_dirty = false;
+	}
+}
+
 void TerrainComponent::OnUpdate(){
 	if (_physics_enabled) {
 		if (!_rigidbody)

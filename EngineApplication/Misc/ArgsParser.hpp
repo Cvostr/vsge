@@ -13,5 +13,10 @@ namespace VSGE {
 		int _port;
 	public:
 		ArgsParser(int argc, char** argv);
+
+		bool IsServer();
+		bool IsHeadless();
+		const std::string& GetApplicationDirPath();
+		int GetServerPort();
 	};
 }

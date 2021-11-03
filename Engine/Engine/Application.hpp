@@ -18,6 +18,8 @@ namespace VSGE {
 		std::string ApplicationName;
 		uint32 ApplicationVersion;
 
+		std::string application_dir;
+		bool server;
 		bool headless;
 		GraphicsApi graphicsApi;
 
@@ -25,6 +27,7 @@ namespace VSGE {
 			ApplicationName = name;
 			ApplicationVersion = version;
 			headless = false;
+			server = false;
 			graphicsApi = GRAPHICS_API_VULKAN;
 		}
 	};

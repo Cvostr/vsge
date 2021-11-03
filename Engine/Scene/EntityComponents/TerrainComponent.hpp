@@ -98,6 +98,10 @@ namespace VSGE{
 			uint32 _height;
 			float _max_terrain_height;
 	
+			bool _mesh_dirty;
+			bool _texturemaps_dirty;
+			bool _vegetables_dirty;
+
 			float* _heightmap;
 			TerrainTexturesFactors* _texture_factors;
 			GRASS_ID* _vegetables_data;
@@ -137,6 +141,7 @@ namespace VSGE{
 			void ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id);
 			void ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id);
 			
+			void QueueGraphicsUpdate();
 			void UpdateMesh();
 			void UpdateTextureMasks();
 			void UpdateVegetables();
@@ -155,6 +160,7 @@ namespace VSGE{
 			const AABB GetBoundingBox();
 			void CreatePhysics();
 
+			void OnPreRender();
 			void OnUpdate();
 
 			void Serialize(YAML::Emitter& e);

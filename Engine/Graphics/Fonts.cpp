@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <Core/FileLoader.hpp>
+#include <Engine/Application.hpp>
 
 using namespace VSGE;
 
@@ -23,6 +24,9 @@ void GlyphManager::AddFontContainer(GlyphFontContainer* ptr) {
 }
 
 void GlyphManager::AddFontContainer(const std::string& file_path, const std::string& name) {
+    if (Application::Get()->GetDescription().headless)
+        return;
+
     byte* data = nullptr;
     uint32 size = 0;
     bool result = LoadFile(file_path, (char**)&data, &size);

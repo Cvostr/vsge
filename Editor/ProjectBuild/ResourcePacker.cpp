@@ -31,6 +31,7 @@ void ResourcePacker::THRFunc() {
 }
 
 void ResourcePacker::Write(){
+    _output_log.clear();
     _finished = false;
     _written_bytes = 0;
     _current_bundle = 0;
@@ -139,7 +140,7 @@ bool ResourcePacker::IsFinished() {
 }
 
 const std::string& ResourcePacker::GetOutput() {
-    return _output;
+    return _output_log;
 }
 
 void ResourcePacker::CheckForBundleOverflow() {

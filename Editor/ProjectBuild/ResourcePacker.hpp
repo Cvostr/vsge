@@ -20,7 +20,7 @@ namespace VSGEditor {
 
 	class ResourcePacker : public VSGE::Thread {
 	private:
-		std::string _output;
+		std::string _output_log;
 		std::ofstream _bundle_stream;
 
 		std::string _output_dir;
@@ -38,7 +38,7 @@ namespace VSGEditor {
 
 		template<typename T>
 		ResourcePacker& operator<<(T value) {
-			_output += value;
+			_output_log += value;
 			return *this;
 		}
 
