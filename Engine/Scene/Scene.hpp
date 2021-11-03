@@ -61,5 +61,6 @@ namespace VSGE {
 		void UpdateSceneTree(const Vec3& size = Vec3(100, 50, 100));
 
 		Scene();
+		~Scene();
 	};
 }

@@ -18,7 +18,7 @@ namespace VSGE {
 	private:
 		ColliderShape _shape;
 
-		btRigidBody* _rigidBody;
+		btRigidBody* _rigidbody;
 		btGhostObject* _trigger;
 		btCollisionShape* _collision_shape;
 

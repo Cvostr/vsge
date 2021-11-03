@@ -28,7 +28,8 @@ namespace VSGE {
 	class MonoScriptCompiler : public Thread {
 	private:
 		std::string _output;
-		std::string _output_path;
+		std::string _dll_output_path;
+		std::string _api_dll_path;
 		Mutex* _mutex;
 		COMPILATION_STATE _state;
 		bool _compilation_error;
@@ -48,5 +49,7 @@ namespace VSGE {
 		bool IsCompilationError();
 
 		const std::string& GetOutputPath();
+
+		const std::string& GetApiDllPath();
 	};
 }

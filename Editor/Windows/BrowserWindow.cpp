@@ -216,7 +216,10 @@ void FileBrowserWindow::OnDrawWindow() {
         //Draw button with file
         unsigned int pix = 0;
         bool hovered = false;
-        bool clicked = ImageButtonWithText(icon, e->name.c_str(), &pix, &hovered, ImVec2(_itemsSize, _itemsSize), ImVec2(0, 0),
+        bool clicked = ImageButtonWithText(icon, e->name.c_str(),
+            &pix, &hovered,
+            ImVec2((float)_itemsSize, (float)_itemsSize),
+            ImVec2(0, 0),
             ImVec2(1, 1),
             -1,
             ImVec4(0, 0, 0, 0),

@@ -199,6 +199,8 @@ void RigidBodyComponent::AddToWorld() {
 void RigidBodyComponent::OnUpdate() {
 	if (!_rigidBody)
 		AddToWorld();
+	if (!_rigidBody)
+		return;
 
 	btVector3 bullet_pos = _rigidBody->getCenterOfMassPosition();
 	btQuaternion bullet_rot = _rigidBody->getOrientation();

@@ -81,28 +81,32 @@ void ResourcePacker::Write(){
 
         SAFE_RELEASE_ARR(file_data);
     }
-
+    _bundle_stream.close();
     //write scripts dll
     {
         byte* file_data = nullptr;
         uint32 file_size = 0;
+        
         bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
-
         if (result) {
-            CheckForBundleOverflow();
-            MapEntry entry;
-            entry.resource_name = "runtime.dll";
-            entry.type = RESOURCE_TYPE_NONE;
-            entry.offset = _written_bytes;
-            entry.size = file_size;
-            WriteFileToBundle(file_data, file_size);
-
-            entry.bundle_index = _current_bundle - 1;
-            _map_entries.push_back(entry);
+            std::string output_file = _output_dir + "runtime.dll";
+            std::ofstream scripts_stream(output_file, std::ios::binary);
+            scripts_stream.write((char*)file_data, file_size);
+            scripts_stream.close();
         }
-    }
 
-    _bundle_stream.close();
+        SAFE_RELEASE_ARR(file_data);
+
+        result = LoadFile(MonoScriptStorage::Get()->GetApiDllPath(), (char**)&file_data, &file_size);
+        if (result) {
+            std::string output_file = _output_dir + "api.dll";
+            std::ofstream scripts_stream(output_file, std::ios::binary);
+            scripts_stream.write((char*)file_data, file_size);
+            scripts_stream.close();
+        }
+
+        SAFE_RELEASE_ARR(file_data);
+    }
 
     *this << "Writing map file\n";
 
@@ -110,7 +114,6 @@ void ResourcePacker::Write(){
     
     std::ofstream map_stream(_output_dir + "resources.map", std::ios::binary);
 
-    char termi = '\0';
     for (uint32 bundle_i = 0; bundle_i < _current_bundle; bundle_i++) {
         std::string bundle_name = _bundle_name_prefix + "." + std::to_string(bundle_i);
         serializer.Serialize(bundle_name);
@@ -126,6 +129,7 @@ void ResourcePacker::Write(){
     }
 
     map_stream.write((char*)serializer.GetBytes(), serializer.GetSerializedSize());
+    map_stream.close();
     *this << "Done\n";
     _finished = true;
 }
@@ -152,8 +156,6 @@ void ResourcePacker::CheckForBundleOverflow() {
 }
 
 void ResourcePacker::WriteFileToBundle(byte* data, uint32 size) {
-    
-
     _bundle_stream.write((char*)data, size);
     _written_bytes += size;
 }

@@ -53,6 +53,10 @@ const std::string& MonoScriptStorage::GetDllOutputPath() {
 	return _compiler->GetOutputPath();
 }
 
+const std::string& MonoScriptStorage::GetApiDllPath() {
+	return _compiler->GetApiDllPath();
+}
+
 bool MonoScriptStorage::IsScriptingReady() {
 	return _is_scripting_ready;
 }

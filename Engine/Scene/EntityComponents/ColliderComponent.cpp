@@ -11,7 +11,7 @@ using namespace VSGE;
 
 ColliderComponent::ColliderComponent() :
 	_shape(COLLIDER_SHAPE_CUBE),
-	_rigidBody(nullptr),
+	_rigidbody(nullptr),
 	_trigger(nullptr),
 	_collision_shape(nullptr),
 	_size(1, 1, 1),
@@ -50,15 +50,15 @@ void ColliderComponent::SetCenter(const Vec3& center) {
 void ColliderComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
-	if(_rigidBody)
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	if(_rigidbody)
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
 	if (_trigger)
 		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
 
 	//release old collider shape
 	SAFE_RELEASE(_collision_shape);
 	//release old rigidbody
-	SAFE_RELEASE(_rigidBody);
+	SAFE_RELEASE(_rigidbody);
 	//release old ghost
 	SAFE_RELEASE(_trigger);
 	//Create new collision shape
@@ -74,12 +74,12 @@ void ColliderComponent::AddToWorld() {
 		btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
 		//rigidbody info
 		btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, motionState, _collision_shape, local_intertia);
-		_rigidBody = new btRigidBody(constructionInfo);
-		_rigidBody->setUserPointer(_entity);
+		_rigidbody = new btRigidBody(constructionInfo);
+		_rigidbody->setUserPointer(_entity);
 		//apply gravity
-		_rigidBody->setGravity(btVector3(0, 0, 0));
+		_rigidbody->setGravity(btVector3(0, 0, 0));
 		//add rigidbody to world
-		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+		PhysicsLayer::Get()->AddRigidbody(_rigidbody);
 	}
 	else {
 		_trigger = new btGhostObject();
@@ -96,19 +96,16 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 	Vec3 scale = _entity->GetAbsoluteScale();
 
 	switch (_shape) {
-	case COLLIDER_SHAPE_CUBE: {
+	case COLLIDER_SHAPE_CUBE:
 		shape = new btBoxShape(btVector3(btScalar(scale.x),
 		btScalar(scale.y),
 		btScalar(scale.z)));
 		break;
-	}
-	case COLLIDER_SHAPE_SPHERE: {
+	case COLLIDER_SHAPE_SPHERE:
 		shape = new btSphereShape(scale.y);
 		break;
-	}
-	case COLLIDER_SHAPE_MESH: {
+	case COLLIDER_SHAPE_MESH:
 		break;
-	}
 	}
 
 	if (shape) {
@@ -131,12 +128,12 @@ btTransform ColliderComponent::GetEntityTransform() {
 }
 
 void ColliderComponent::OnUpdate() {
-	if (!_rigidBody && !_trigger)
+	if (!_rigidbody && !_trigger)
 		AddToWorld();
 
-	if (_rigidBody) {
+	if (_rigidbody) {
 		btTransform transform = GetEntityTransform();
-		_rigidBody->setWorldTransform(transform);
+		_rigidbody->setWorldTransform(transform);
 	}
 
 	if (_trigger) {
@@ -153,9 +150,9 @@ void ColliderComponent::OnUpdate() {
 }
 
 void ColliderComponent::OnDestroy() {
-	if (_rigidBody) {
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
-		SAFE_RELEASE(_rigidBody)
+	if (_rigidbody) {
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
+		SAFE_RELEASE(_rigidbody)
 	}
 	if (_trigger) {
 		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
@@ -165,8 +162,8 @@ void ColliderComponent::OnDestroy() {
 }
 
 void ColliderComponent::OnActivate() {
-	if (_rigidBody) {
-		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+	if (_rigidbody) {
+		PhysicsLayer::Get()->AddRigidbody(_rigidbody);
 	}
 	if (_trigger) {
 		PhysicsLayer::Get()->AddCollisionObject(_trigger);
@@ -174,8 +171,8 @@ void ColliderComponent::OnActivate() {
 }
 
 void ColliderComponent::OnDeactivate() {
-	if (_rigidBody) {
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+	if (_rigidbody) {
+		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
 	}
 	if (_trigger) {
 		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);

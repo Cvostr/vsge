@@ -47,8 +47,8 @@ void ProjectBuildingWindow::DrawPreBuildingInterface() {
 
 void ProjectBuildingWindow::DrawBuildingInterface() {
     if (_packer->IsFinished() && _building) {
-        _building = false;
         _packer->Stop();
+        _building = false;
     }
 
     ImGui::Text(_packer->GetOutput().c_str());

@@ -9,6 +9,12 @@ Scene::Scene() :
 	_rootEntity(nullptr) 
 {}
 
+Scene::~Scene() {
+	if (_rootEntity) {
+		_rootEntity->Destroy();
+	}
+}
+
 void Scene::NewScene() {
 	if (_rootEntity) {
 		_rootEntity->Destroy();
