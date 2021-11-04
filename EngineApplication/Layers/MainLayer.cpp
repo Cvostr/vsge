@@ -15,8 +15,7 @@ void MainLayer::OnAttach() {
 	ResourceCache::Get()->AddResourceBundle(app_dir + "/resources.map");
 	Scene* scene = new Scene();
 	scene->NewScene();
-	if(VulkanRenderer::Get())
-		VulkanRenderer::Get()->SetScene(scene);
+
 	Application::Get()->GetLayer<SceneLayer>()->SetWorkingScene(scene);
 
 	SceneResource* sc_res = ResourceCache::Get()->GetResource<SceneResource>("cubes_test");
@@ -27,6 +26,9 @@ void MainLayer::OnAttach() {
 	VSGE::SceneSerializer ss;
 	ss.SetScene(scene);
 	ss.DeserializeBinary(sc_res->GetLoadedData(), sc_res->GetDataDescription().size);
+
+	if (VulkanRenderer::Get())
+		VulkanRenderer::Get()->SetScene(scene);
 
 	Application::Get()->GetLayer<SceneLayer>()->StartScene();
 }

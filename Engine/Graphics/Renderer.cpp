@@ -94,6 +94,7 @@ void IRenderer::ProcessEntity(Entity* entity) {
 
 void IRenderer::SetScene(Scene* scene) { 
 	mScene = scene; 
+	CreateRenderList();
 }
 Scene* IRenderer::GetScene() { 
 	return mScene; 

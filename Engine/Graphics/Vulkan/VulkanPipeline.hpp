@@ -13,15 +13,16 @@ namespace VSGE {
 	private:
 		VkPipeline _pipeline;
 		VulkanPipelineLayout* _pipelineLayout;
+		bool _dynamic_cull_mode;
 	public:
 
 		VulkanPipeline();
 
-		VkPipeline GetPipeline() { return _pipeline; }
+		VkPipeline GetPipeline();
 
-		VulkanPipelineLayout* GetPipelineLayout() {
-			return _pipelineLayout;
-		}
+		VulkanPipelineLayout* GetPipelineLayout();
+
+		void SetDynamicCullMode(bool dynamic_cull_mode);
 
 		bool Create(VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout);
 

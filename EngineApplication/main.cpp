@@ -35,6 +35,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 		VulkanRAPI* vk = new VulkanRAPI;
 		vk->Create(&app->GetWindow());
 		VulkanRenderer* renderer = new VulkanRenderer;
+		app->SetRenderer(renderer);
 
 		AddDefaultMaterial();
 		AddDefaultMeshes();

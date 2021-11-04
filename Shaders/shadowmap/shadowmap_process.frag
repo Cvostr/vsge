@@ -120,15 +120,21 @@ void main(){
             vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
             float realDepth = shadowProjection.z;
             vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
-            float shadowFactor = casters[caster_i].ShadowStrength;
-            float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].caster_index, start_offset);
-            if(realDepth <= 1.0 && shadowmap_depth < 1.0){
-                float shadow = (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
-                if(result < 0.01) 
-                    result += shadow;
-                else if(shadow > 0.01) {
-                    result = casters[caster_i].ShadowStrength;
+            float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
+            float shadow = 0;
+            for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
+                for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
+                    vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
+                    float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].caster_index, uvoffset);
+                    if(realDepth <= 1.0) 
+                        shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
                 }
+            }
+
+            if(result < 0.01)
+                result += shadow;
+            else if(shadow > 0.01) {
+                result = casters[caster_i].ShadowStrength;
             }
         }
     }

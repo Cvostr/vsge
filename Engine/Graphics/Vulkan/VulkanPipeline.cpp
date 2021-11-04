@@ -34,8 +34,21 @@ VkFormat GetVertexLayoutFormatVK(VertexLayoutFormat format) {
 
 VulkanPipeline::VulkanPipeline() : 
 	_pipeline(VK_NULL_HANDLE),
-	_pipelineLayout(nullptr)
+	_pipelineLayout(nullptr),
+	_dynamic_cull_mode(true)
 {}
+
+VkPipeline VulkanPipeline::GetPipeline() { 
+	return _pipeline; 
+}
+
+VulkanPipelineLayout* VulkanPipeline::GetPipelineLayout() {
+	return _pipelineLayout;
+}
+
+void VulkanPipeline::SetDynamicCullMode(bool dynamic_cull_mode) {
+	_dynamic_cull_mode = dynamic_cull_mode;
+}
 
 bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout) {
 	_pipelineLayout = layout;
@@ -196,17 +209,20 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 	colorBlending.attachmentCount = rpass->GetColorAttachmentsCount();
 	colorBlending.pAttachments = colorBlendAttachments.data();
 
-	VkDynamicState dynamicStates[] = {
+	std::vector<VkDynamicState> dynamicStates = {
 		VK_DYNAMIC_STATE_VIEWPORT,
 		VK_DYNAMIC_STATE_SCISSOR,
-		VK_DYNAMIC_STATE_LINE_WIDTH,
-		VK_DYNAMIC_STATE_CULL_MODE_EXT
+		VK_DYNAMIC_STATE_LINE_WIDTH
 	};
+
+	if (_dynamic_cull_mode) {
+		dynamicStates.push_back(VK_DYNAMIC_STATE_CULL_MODE_EXT);
+	}
 
 	VkPipelineDynamicStateCreateInfo dynamicState{};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = 4;
-	dynamicState.pDynamicStates = dynamicStates;
+	dynamicState.dynamicStateCount = dynamicStates.size();
+	dynamicState.pDynamicStates = dynamicStates.data();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {};
 	pipeline_create_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

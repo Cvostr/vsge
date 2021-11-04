@@ -124,8 +124,6 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 	}
 }
 
-
-
 Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 	Vec3 direction = GetDirection();
 	Vec3 cam_pos = cam->GetPosition();
@@ -191,7 +189,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 		}
 		else if (_lightType == LIGHT_TYPE_POINT) {
 			result = new Mat4[6];
-			Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, _range);
+			Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, _range * 3);
 			projection[1][1] *= -1;
 			Vec3 pos = GetEntity()->GetAbsolutePosition();
 
@@ -204,7 +202,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 		}
 		else if (_lightType == LIGHT_TYPE_SPOT) {
 			result = new Mat4[1];
-			Mat4 projection = GetPerspectiveRH_ZeroOne((_spot_angle + 12) * 2, 1, 0.1f, _range);
+			Mat4 projection = GetPerspectiveRH_ZeroOne((_spot_angle + 12) * 2, 1, 0.1f, _range * 3);
 			Vec3 pos = GetEntity()->GetAbsolutePosition();
 			Vec3 lightDir = (GetDirection()).GetNormalized();
 

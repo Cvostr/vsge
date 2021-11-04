@@ -117,11 +117,13 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmapPipeline->SetDepthTest(true);
 	_shadowmapPipeline->SetDepthClamp(true);
 	_shadowmapPipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
+	_shadowmapPipeline->SetDynamicCullMode(false);
 	_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
 
 	_shadowmap_point_Pipeline = new VulkanPipeline;
 	_shadowmap_point_Pipeline->SetDepthTest(false);
+	_shadowmap_point_Pipeline->SetDynamicCullMode(false);
 	_shadowmap_point_Pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
 	_shadowmap_point_Pipeline->Create(
 		_shadowmap_point_shader,
@@ -392,11 +394,11 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		}
 
 		//Check distance
-		/*if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
+		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
 			float distance = caster->_lightsource->GetEntity()->GetPosition().DistanceTo(entity->GetAbsolutePosition());
-			if (distance > caster->_lightsource->GetRange())
+			if (distance > caster->_lightsource->GetRange() * 3)
 				continue;
-		}*/
+		}
 
 		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };
@@ -418,7 +420,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	SAFE_RELEASE_ARR(_dir_caster_frustums)
 
 	cmdbuf->EndRenderPass();
-	
 }
 
 void VulkanShadowmapping::ExecuteShadowCasters(VulkanSemaphore* begin, VulkanSemaphore* end) {
@@ -438,7 +439,6 @@ void VulkanShadowmapping::RecordShadowProcessingCmdbuf() {
 }
 
 void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore* end) {
-
 	//Write shadowmaps to descriptor set
 	std::vector<VulkanTexture*> shadowmaps;
 	std::vector<VulkanTexture*> shadowmaps_point;
