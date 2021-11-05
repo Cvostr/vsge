@@ -6,6 +6,8 @@ VulkanIBL::VulkanIBL() {
 	_envmap = nullptr;
 	_irmap = nullptr;
 	_spmap = nullptr;
+	_alternately = false;
+	_prev_step = 2;
 }
 VulkanIBL::~VulkanIBL() {
 	Destroy();
@@ -24,6 +26,10 @@ void VulkanIBL::SetInputData(tEntityList& entities,
 	_animations_buffer = animations;
 	_particles_buffer = particles_buffer;
 	_lights_buffer = lights;
+}
+
+void VulkanIBL::SetSpmapIrmapAlternately(bool alternately) {
+	_alternately = alternately;
 }
 
 void VulkanIBL::SetScene(Scene* scene) {
@@ -60,14 +66,47 @@ void VulkanIBL::Destroy() {
 
 void VulkanIBL::RecordCmdBufs() {
 	_envmap->RecordCmdbufs();
-	_irmap->RecordCmdBuffer();
-	_spmap->FillCommandBuffer();
+
+	if (_alternately) {
+		if (_prev_step == 1) {
+			_irmap->RecordCmdBuffer();
+		}
+		else if (_prev_step == 2) {
+			_spmap->FillCommandBuffer();
+		}
+	}
+	else {
+		_irmap->RecordCmdBuffer();
+		_spmap->FillCommandBuffer();
+	}
+	
 }
 
 void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
-	_envmap->Execute(_spmap->GetBeginSemaphore());
-	_spmap->Execute(_irmap->GetBeginSemaphore());
-	_irmap->ComputeIrmapTexture(end_semaphore);
+
+	VulkanSemaphore* env_end_semaphore = _spmap->GetBeginSemaphore();
+	if (_alternately) {
+		if (_prev_step == 1) {
+			env_end_semaphore = _irmap->GetBeginSemaphore();
+		}
+	}
+
+	_envmap->Execute(env_end_semaphore);
+
+	if (_alternately) {
+		if (_prev_step == 1) {
+			_irmap->ComputeIrmapTexture(end_semaphore);
+			_prev_step = 2;
+		}
+		else if (_prev_step == 2) {
+			_spmap->Execute(end_semaphore);
+			_prev_step = 1;
+		}
+	}
+	else {
+		_spmap->Execute(_irmap->GetBeginSemaphore());
+		_irmap->ComputeIrmapTexture(end_semaphore);
+	}
 }
 
 VulkanSemaphore* VulkanIBL::GetBeginSemaphore() {

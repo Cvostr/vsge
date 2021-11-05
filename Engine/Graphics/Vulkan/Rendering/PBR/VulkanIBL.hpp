@@ -23,8 +23,8 @@ namespace VSGE {
 		VulkanBuffer* _particles_buffer;
 		VulkanBuffer* _lights_buffer;
 
-		bool _buildIrrmap;
-		bool _buildSpMap;
+		bool _alternately;
+		int _prev_step; //1 - spmap, 2 - irmap
 	public:
 
 		VulkanIBL();
@@ -36,6 +36,7 @@ namespace VSGE {
 			VulkanBuffer* animations,
 			VulkanBuffer* particles_buffer,
 			VulkanBuffer* lights);
+		void SetSpmapIrmapAlternately(bool alternately);
 		void Create();
 		void Destroy();
 

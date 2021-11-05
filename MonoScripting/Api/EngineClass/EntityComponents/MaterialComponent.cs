@@ -12,15 +12,19 @@ public class MaterialComponent : IEntityComponent {
         i_SetMaterial(handle, resource_name);
     }
 
-    void SetMaterial(Resource resource){
+    public void SetMaterial(Resource resource){
         i_SetMaterial(handle, resource.GetHandle());
     }
 
-    bool IsCastShadows(){
+    public Material GetMaterial(){
+        return new Material(i_GetMaterialHandle(handle));
+    }
+
+    public bool IsCastShadows(){
         return i_IsCastShadows(handle);
     }
 
-    void SetCastShadows(bool cast){
+    public void SetCastShadows(bool cast){
         i_SetCastShadows(handle, cast);
     }
 
@@ -30,6 +34,8 @@ public class MaterialComponent : IEntityComponent {
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern string i_SetMaterial(ulong handle, ulong resource_handle);
 
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_GetMaterialHandle(ulong handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern bool i_IsCastShadows(ulong handle);

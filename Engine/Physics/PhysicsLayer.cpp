@@ -40,6 +40,7 @@ PhysicsLayer::PhysicsLayer() {
 }
 
 PhysicsLayer::~PhysicsLayer() {
+    SAFE_RELEASE(_ghost_callback)
     SAFE_RELEASE(_world)
     SAFE_RELEASE(_constraint_solver)
     SAFE_RELEASE(_collision_dispatcher)

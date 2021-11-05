@@ -133,6 +133,8 @@ set(SRC_FILES
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
 				MonoScripting/Api/ApiLogger.cpp
+				MonoScripting/Api/ApiApplication.cpp
+				MonoScripting/Api/ApiMaterial.cpp
 				MonoScripting/Api/ApiEntity.cpp
 				MonoScripting/Api/ApiScene.cpp
 				MonoScripting/Api/ApiResource.cpp

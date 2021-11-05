@@ -12,6 +12,12 @@ MaterialResource* MaterialComponent::GetMaterialResource() {
 	return _materialResource.GetResource<MaterialResource>();
 }
 
+Material* MaterialComponent::GetMaterial() {
+	if (GetMaterialResource())
+		return GetMaterialResource()->GetMaterial();
+	return nullptr;
+}
+
 ResourceReference& MaterialComponent::GetResourceReference() {
 	return _materialResource;
 }

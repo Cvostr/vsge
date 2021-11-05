@@ -13,6 +13,7 @@ namespace VSGE {
 		MaterialComponent();
 
 		MaterialResource* GetMaterialResource();
+		Material* GetMaterial();
 
 		ResourceReference& GetResourceReference();
 
