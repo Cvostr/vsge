@@ -69,29 +69,32 @@ MonoClassFieldDesc::MonoClassFieldDesc(MonoClassDesc* class_desc, MonoClassField
 	_name = std::string(mono_field_get_name(mono_field));
 
 	MonoType* field_type = mono_field_get_type(mono_field);
-	_type = (mono_class_from_mono_type(field_type));
+	_type_class = (mono_class_from_mono_type(field_type));
 
 	int visiblity = mono_field_get_flags(mono_field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
 
 	switch (visiblity) {
 	case MONO_FIELD_ATTR_PRIVATE:
 		_visibility = FIELD_PRIVATE;
+		break;
 	case MONO_FIELD_ATTR_ASSEMBLY:
 		_visibility = FIELD_INTERNAL;
+		break;
 	case MONO_FIELD_ATTR_FAMILY:
 		_visibility = FIELD_PROTECTED;
+		break;
 	case MONO_FIELD_ATTR_PUBLIC:
 		_visibility = FIELD_PUBLIC;
+		break;
 	}
-}
 
-const std::string MonoClassFieldDesc::GetTypeName() const {
-	return std::string(mono_class_get_name(_type));
-}
-
-void MonoClassFieldDesc::GetBaseValue() {
 	MonoObject* temp_obj = _class->CreateObjectInstance();
 	MonoObject* value = GetValue(temp_obj);
 
 	std::string type_string = GetTypeName();
+	_type = GetValueTypeFromString(type_string);
+}
+
+const std::string MonoClassFieldDesc::GetTypeName() const {
+	return std::string(mono_class_get_name(_type_class));
 }

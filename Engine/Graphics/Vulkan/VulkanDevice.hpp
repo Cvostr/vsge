@@ -6,18 +6,36 @@
 
 namespace VSGE {
 
+    enum QueueFamilyTask {
+        TASK_GRAPHICS,
+        TASK_COMPUTE,
+        TASK_TRANSFER,
+        TASK_PRESENT
+    };
+
+    struct QueueFamilyIndexPair {
+        VkQueue queue;
+        uint32 familyIndex;
+
+        QueueFamilyIndexPair() : queue(VK_NULL_HANDLE), familyIndex(0) {}
+        QueueFamilyIndexPair(VkQueue queue, uint32 familyIndex) :
+            queue(queue), familyIndex(familyIndex) {}
+    };
+
     class VulkanDevice : public IGpuObject {
     private:
         VkPhysicalDevice mPhysicalDevice;
         VkDevice mDevice; //logical device, created from physical device
+        std::vector<VkQueueFamilyProperties> _vkQueueFamilyProps;
+        std::vector<VkQueue> _queues;
 
-        VkQueue _graphicsQueue; //queue of logical device
-        VkQueue _presentQueue; //queue to present
-        VkQueue _computeQueue;
+        QueueFamilyIndexPair _present_queue;
+        std::vector<QueueFamilyIndexPair> _graphics_queues;
+        std::vector<QueueFamilyIndexPair> _compute_queues;
+        std::vector<QueueFamilyIndexPair> _transfer_queues;
 
-        int32 _graphicsQueueFamilyIndex;
-        int32 _presentQueueFamilyIndex;
-        int32 _computeQueueFamilyIndex;
+        bool CheckQueueFamilySupport(uint32 family_index, QueueFamilyTask task);
+        VkQueue GetQueueByIndexInFamily(uint32 family_index, uint32 queue_index);
 
         VkPhysicalDeviceProperties DeviceProps;
 
@@ -38,13 +56,15 @@ namespace VSGE {
 
         const std::string GetDeviceName();
 
-        VkQueue GetGraphicsQueue();
+        VkQueue GetGraphicsQueue(uint32 index = 0);
         VkQueue GetPresentQueue();
-        VkQueue GetComputeQueue();
+        VkQueue GetComputeQueue(uint32 index = 0);
+        VkQueue GetTransferQueue(uint32 index = 0);
 
-        int32 GetGraphicsQueueFamilyIndex();
-        int32 GetPresentQueueFamilyIndex();
-        int32 GetComputeQueueFamilyIndex();
+        uint32 GetGraphicsQueueFamilyIndex(uint32 index = 0);
+        uint32 GetPresentQueueFamilyIndex();
+        uint32 GetComputeQueueFamilyIndex(uint32 index = 0);
+        uint32 GetTransferQueueFamilyIndex(uint32 index = 0);
 
         VulkanDevice();
     };

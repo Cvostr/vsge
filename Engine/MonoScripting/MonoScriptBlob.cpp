@@ -10,7 +10,7 @@ MonoScriptBlob::MonoScriptBlob() :
 
 }
 MonoScriptBlob::~MonoScriptBlob() {
-	
+	_class_descs.clear();
 }
 
 void MonoScriptBlob::Release() {
@@ -30,6 +30,14 @@ MonoAssembly* MonoScriptBlob::GetAssembly() {
 }
 MonoImage* MonoScriptBlob::GetImage() {
 	return _image;
+}
+
+MonoClassDesc* MonoScriptBlob::GetMonoClassDesc(const std::string& class_name) {
+	for (auto& desc : _class_descs) {
+		if (desc.GetName() == class_name)
+			return &desc;
+	}
+	return nullptr;
 }
 
 void MonoScriptBlob::LoadFromFile(const std::string& path) {

@@ -7,6 +7,7 @@
 #include <Math/Vec4.hpp>
 #include <Math/Quaternion.hpp>
 #include <Math/Color.hpp>
+#include <string>
 
 enum ValueType {
 	VALUE_TYPE_INT32 = 1,
@@ -23,7 +24,8 @@ enum ValueType {
 	VALUE_TYPE_VEC4I,
 	VALUE_TYPE_QUAT,
 	VALUE_TYPE_COLOR,
-	VALUE_TYPE_GUID
+	VALUE_TYPE_GUID,
+	VALUE_TYPE_STRING
 };
 
 union MultitypeData{

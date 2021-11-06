@@ -221,7 +221,7 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 
 	VkPipelineDynamicStateCreateInfo dynamicState{};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicState.dynamicStateCount = dynamicStates.size();
+	dynamicState.dynamicStateCount = static_cast<uint32>(dynamicStates.size());
 	dynamicState.pDynamicStates = dynamicStates.data();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {};

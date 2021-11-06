@@ -23,11 +23,9 @@ namespace VSGE {
 		MonoClassDesc* _class;
 		MonoClassField* _field;
 		std::string _name;
-		MonoClass* _type;
+		MonoClass* _type_class;
 		MonoClassFieldVisibility _visibility;
-		Variant _base_value;
-
-		void GetBaseValue();
+		ValueType _type;
 	public:
 
 		const std::string& GetName() const;

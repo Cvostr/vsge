@@ -13,6 +13,10 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
+#define GRAPHICS_QUEUES_NEEDED 1
+#define COMPUTE_QUEUES_NEEDED 2
+#define TRANSFER_QUEUES_NEEDED 3
+
 VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices){
     if(devices.size() == 0)
         return VK_NULL_HANDLE;
@@ -78,63 +82,29 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     mPhysicalDevice = Device;
     uint32_t vkQueueFamilyPropsCount = 0;
-    std::vector<VkQueueFamilyProperties> vkQueueFamilyProps;
+    
     //Obtain queue family props
     vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, nullptr);
-    vkQueueFamilyProps.resize(vkQueueFamilyPropsCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, vkQueueFamilyProps.data());
-
-    VkDeviceQueueCreateInfo QueueGraphicsCreateInfo = {};
-    VkDeviceQueueCreateInfo QueuePresentCreateInfo = {};
-    VkDeviceQueueCreateInfo QueueComputeCreateInfo = {};
+    _vkQueueFamilyProps.resize(vkQueueFamilyPropsCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, _vkQueueFamilyProps.data());
 
     std::vector<VkDeviceQueueCreateInfo> QueuesToCreate;
-
-    _graphicsQueueFamilyIndex = -1;
-    _presentQueueFamilyIndex = -1;
-    _computeQueueFamilyIndex = -1;
-
-    for (int32_t q_i = 0; q_i < (int32_t)vkQueueFamilyPropsCount; q_i++) {
-        VkQueueFamilyProperties prop = vkQueueFamilyProps[q_i];
-        if ((prop.queueFlags & VK_QUEUE_GRAPHICS_BIT) && _graphicsQueueFamilyIndex < 0)
-            _graphicsQueueFamilyIndex = q_i;
-
-        if ((prop.queueFlags & VK_QUEUE_COMPUTE_BIT) && _computeQueueFamilyIndex < 0)
-            _computeQueueFamilyIndex = q_i;
-
-        VkBool32 canPresent = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(Device, q_i, instance->GetSurface(), &canPresent);
-        if (canPresent && _presentQueueFamilyIndex < 0) {
-            _presentQueueFamilyIndex = q_i;
-        }
-    }
-
-    if (_graphicsQueueFamilyIndex >= 0 && _presentQueueFamilyIndex >= 0 && _computeQueueFamilyIndex >= 0) { //if we found right queue family
+    float priority = 1.0f;
+    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) {
+        VkDeviceQueueCreateInfo QueueGraphicsCreateInfo = {};
         QueueGraphicsCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         QueueGraphicsCreateInfo.pNext = nullptr;
-        QueueGraphicsCreateInfo.queueFamilyIndex = static_cast<uint32_t>(_graphicsQueueFamilyIndex);
-        QueueGraphicsCreateInfo.queueCount = 1;
+        QueueGraphicsCreateInfo.queueFamilyIndex = i;
+        QueueGraphicsCreateInfo.queueCount = _vkQueueFamilyProps[i].queueCount;
         QueueGraphicsCreateInfo.flags = 0;
-        float priority = 1.0f;
-        QueueGraphicsCreateInfo.pQueuePriorities = &priority;
+       
+        float* priorities_array = new float[_vkQueueFamilyProps[i].queueCount];
+        for (int _i = 0; _i < _vkQueueFamilyProps[i].queueCount; _i++)
+            priorities_array[_i] = 1.f;
 
-        QueuePresentCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        QueuePresentCreateInfo.pNext = nullptr;
-        QueuePresentCreateInfo.queueFamilyIndex = static_cast<uint32_t>(_presentQueueFamilyIndex);
-        QueuePresentCreateInfo.queueCount = 1;
-        QueuePresentCreateInfo.flags = 0;
-        QueuePresentCreateInfo.pQueuePriorities = &priority;
+        QueueGraphicsCreateInfo.pQueuePriorities = priorities_array;
 
-        QueueComputeCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        QueueComputeCreateInfo.pNext = nullptr;
-        QueueComputeCreateInfo.queueFamilyIndex = static_cast<uint32_t>(_computeQueueFamilyIndex);
-        QueueComputeCreateInfo.queueCount = 1;
-        QueueComputeCreateInfo.flags = 0;
-        QueueComputeCreateInfo.pQueuePriorities = &priority;
-        //push create structs to vector
         QueuesToCreate.push_back(QueueGraphicsCreateInfo);
-        QueuesToCreate.push_back(QueuePresentCreateInfo);
-        QueuesToCreate.push_back(QueueComputeCreateInfo);
     }
 
     VkPhysicalDeviceFeatures features = {};
@@ -167,25 +137,107 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     //create logical device
     if (vkCreateDevice(Device, &logical_gpu_create_info, nullptr, &mDevice) != VK_SUCCESS) //creating logical device
         return false;                                                           
-    //get graphics queue
-    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(_graphicsQueueFamilyIndex), 0, &this->_graphicsQueue);
-    //get present queue
-    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(_presentQueueFamilyIndex), 0, &this->_presentQueue);
-    //get compute queue
-    vkGetDeviceQueue(mDevice, static_cast<uint32_t>(_computeQueueFamilyIndex), 0, &this->_computeQueue);
+  
+    for (uint32 family_i = 0; family_i < _vkQueueFamilyProps.size(); family_i++) {
+        
+        for (uint32 q_i = 0; q_i < _vkQueueFamilyProps[family_i].queueCount; q_i++) {
+            VkQueue queue;
+            vkGetDeviceQueue(mDevice, family_i, q_i, &queue);
+
+            if (CheckQueueFamilySupport(family_i, TASK_PRESENT) && _present_queue.queue == VK_NULL_HANDLE) {
+                _present_queue = QueueFamilyIndexPair(queue, family_i);
+            }
+            else
+                if (_graphics_queues.size() < GRAPHICS_QUEUES_NEEDED) {
+                    QueueFamilyIndexPair pair(queue, family_i);
+                    _graphics_queues.push_back(pair);
+                }
+                else
+                    if (_compute_queues.size() < COMPUTE_QUEUES_NEEDED) {
+                        QueueFamilyIndexPair pair(queue, family_i);
+                        _compute_queues.push_back(pair);
+                    }
+                    else
+                        if (_transfer_queues.size() < TRANSFER_QUEUES_NEEDED) {
+                            QueueFamilyIndexPair pair(queue, family_i);
+                            _transfer_queues.push_back(pair);
+                        }
+
+            _queues.push_back(queue);
+        }
+    }
+
+    std::vector<uint32> used_queues;
+
+    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) {
+        if (CheckQueueFamilySupport(i, TASK_PRESENT)) {
+            _present_queue = QueueFamilyIndexPair(_queues[0], i);
+        }
+    }
 
     mCreated = true;
 
     return true;
 }
 
-VkQueue VulkanDevice::GetGraphicsQueue() { return _graphicsQueue; }
-VkQueue VulkanDevice::GetPresentQueue() { return _presentQueue; }
-VkQueue VulkanDevice::GetComputeQueue() { return _computeQueue; }
+bool VulkanDevice::CheckQueueFamilySupport(uint32 family_index, QueueFamilyTask task) {
+    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
+    VulkanInstance* instance = vulkan_rapi->GetInstance();
+    VkQueueFamilyProperties prop = _vkQueueFamilyProps[family_index];
+    
+    if (task == TASK_GRAPHICS && prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        return true;
 
-int32 VulkanDevice::GetGraphicsQueueFamilyIndex() { return _graphicsQueueFamilyIndex; }
-int32 VulkanDevice::GetPresentQueueFamilyIndex() { return _presentQueueFamilyIndex; }
-int32 VulkanDevice::GetComputeQueueFamilyIndex() { return _computeQueueFamilyIndex; }
+    if (task == TASK_COMPUTE && prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
+        return true;
+
+    if (task == TASK_TRANSFER && prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
+        return true;
+
+    if (task == TASK_PRESENT) {
+        VkBool32 canPresent = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice, family_index, instance->GetSurface(), &canPresent);
+        if (canPresent) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+VkQueue VulkanDevice::GetQueueByIndexInFamily(uint32 family_index, uint32 queue_index) {
+    uint32 first_queue_index = 0;
+    for (uint32 i = 0; i < family_index; i++) {
+        first_queue_index += _vkQueueFamilyProps[i].queueCount;
+    }
+    return _queues[first_queue_index + queue_index];
+}
+
+VkQueue VulkanDevice::GetGraphicsQueue(uint32 index) { 
+    return _graphics_queues[index].queue; 
+}
+VkQueue VulkanDevice::GetPresentQueue() { 
+    return _present_queue.queue; 
+}
+VkQueue VulkanDevice::GetComputeQueue(uint32 index) { 
+    return _compute_queues[index].queue;
+}
+VkQueue VulkanDevice::GetTransferQueue(uint32 index) {
+    return _transfer_queues[index].queue;
+}
+
+uint32 VulkanDevice::GetGraphicsQueueFamilyIndex(uint32 index) { 
+    return _graphics_queues[index].familyIndex;
+}
+uint32 VulkanDevice::GetPresentQueueFamilyIndex() { 
+    return _present_queue.familyIndex; 
+}
+uint32 VulkanDevice::GetComputeQueueFamilyIndex(uint32 index) { 
+    return _compute_queues[index].familyIndex; 
+}
+uint32 VulkanDevice::GetTransferQueueFamilyIndex(uint32 index) {
+    return _transfer_queues[index].familyIndex;
+}
 
 uint32 VulkanDevice::GetUniformBufferMinAlignment() {
     return (uint32)DeviceProps.limits.minUniformBufferOffsetAlignment;

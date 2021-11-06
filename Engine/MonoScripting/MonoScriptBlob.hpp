@@ -21,9 +21,9 @@ namespace VSGE {
 		MonoScriptBlob();
 		~MonoScriptBlob();
 
-
 		MonoAssembly* GetAssembly();
 		MonoImage* GetImage();
+		MonoClassDesc* GetMonoClassDesc(const std::string& class_name);
 
 		void Release();
 
