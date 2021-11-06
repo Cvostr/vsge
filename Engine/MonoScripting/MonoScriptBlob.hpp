@@ -7,12 +7,15 @@
 #include <mono/metadata/loader.h>
 #include <mono/metadata/debug-helpers.h>
 #include <Core/VarTypes/Base.hpp>
+#include "MonoClassDesc.hpp"
 
 namespace VSGE {
+
 	class MonoScriptBlob {
 	private:
 		MonoAssembly* _assembly;
 		MonoImage* _image;
+		std::vector<MonoClassDesc> _class_descs;
 	public:
 
 		MonoScriptBlob();
@@ -27,5 +30,6 @@ namespace VSGE {
 		void LoadFromFile(const std::string& path);
 		MonoClass* GetClassDescription(const std::string& class_name, const std::string& namespace_name = "");
 		MonoMethod* GetMethodByDescription(MonoMethodDesc* method_desc);
+		void BuildMonoClassDescsList();
 	};
 }

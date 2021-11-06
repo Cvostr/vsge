@@ -84,3 +84,10 @@ void Variant::SetColor(const VSGE::Color& _color) {
 	_data._color = _color;
 	_type = VALUE_TYPE_COLOR;
 }
+
+ValueType GetValueTypeFromString(const std::string& type_str) {
+	if (type_str == "Vec3")
+		return VALUE_TYPE_VEC3F;
+	else if (type_str == "Vec2")
+		return VALUE_TYPE_VEC2F;
+}

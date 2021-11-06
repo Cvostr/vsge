@@ -48,6 +48,8 @@ union MultitypeData{
 	void operator=(MultitypeData& data);
 };
 
+ValueType GetValueTypeFromString(const std::string& type_str);
+
 class Variant {
 private:
 	MultitypeData _data;

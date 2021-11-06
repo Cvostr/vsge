@@ -9,8 +9,10 @@
 #include <mono/metadata/environment.h>
 #include <mono/metadata/debug-helpers.h>
 #include <string>
+#include "MonoClassDesc.hpp"
 
 namespace VSGE {
+
 	class MonoScriptInstance {
 	private:
 		std::string _class_name;
