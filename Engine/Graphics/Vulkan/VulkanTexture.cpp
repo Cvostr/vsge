@@ -256,15 +256,9 @@ void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 laye
 	VulkanDevice* device = rapi->GetDevice();
 	VulkanMA* ma = rapi->GetAllocator();
 
-	VkCommandBuffer cmdbuf = ma->GetSingleTimeCmdBuf();
-
-
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-	vkBeginCommandBuffer(cmdbuf, &beginInfo);
-
+	ThreadCmdbufPair* pair = ma->GetTransferCmdbufThreaded();
+	VkCommandBuffer cmdbuf = pair->cmdbuf->GetCommandBuffer();
+	pair->cmdbuf->Begin(true);
 
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
@@ -276,18 +270,16 @@ void VulkanTexture::Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 laye
 	region.imageExtent.height = Height;
 	region.imageExtent.depth = 1;
 
-	vkCmdCopyBufferToImage(cmdbuf, buffer.Buffer, _image.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+	vkCmdCopyBufferToImage(pair->cmdbuf->GetCommandBuffer(), buffer.Buffer, _image.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-
-	//Run command
-	vkEndCommandBuffer(cmdbuf);
+	pair->cmdbuf->End();
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &cmdbuf;
 
-	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
+	vkQueueSubmit(pair->transfer_queue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(pair->transfer_queue);
 }
 
 void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
@@ -295,25 +287,21 @@ void VulkanTexture::ChangeLayout(VkImageLayout newLayout) {
 	VulkanDevice* device = rapi->GetDevice();
 	VulkanMA* ma = rapi->GetAllocator();
 
-	VkCommandBuffer cmdbuf = ma->GetSingleTimeCmdBuf();
-
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-	vkBeginCommandBuffer(cmdbuf, &beginInfo);
+	ThreadCmdbufPair* pair = ma->GetTransferCmdbufThreaded();
+	VkCommandBuffer cmdbuf = pair->cmdbuf->GetCommandBuffer();
+	pair->cmdbuf->Begin(true);
 
 	CmdChangeLayout(cmdbuf, _layout, newLayout);
 
-	vkEndCommandBuffer(cmdbuf);
+	pair->cmdbuf->End();
 
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &cmdbuf;
 
-	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
+	vkQueueSubmit(pair->transfer_queue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(pair->transfer_queue);
 
 	_layout = newLayout;
 }

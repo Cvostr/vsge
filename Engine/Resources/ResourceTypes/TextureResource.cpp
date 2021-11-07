@@ -24,4 +24,5 @@ void TextureResource::PostLoad() {
 
 void TextureResource::Prepare(){
 	ProcessTexture(GetLoadedData(), GetDataDescription().size, _processed_texture);
+	
 }

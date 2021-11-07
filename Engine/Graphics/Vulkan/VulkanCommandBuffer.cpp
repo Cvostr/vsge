@@ -6,53 +6,6 @@ using namespace VSGE;
 VkDescriptorSet temp_sets[6];
 VkBuffer temp_bufs[6];
 
-VkCommandPool VSGE::beginCommandPool() {
-    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
-    VulkanDevice* device = vulkan_rapi->GetDevice();
-    
-    //Generate Command Pool
-    VkCommandPool commandPool;
-    VkCommandPoolCreateInfo poolInfo = {};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = device->GetGraphicsQueueFamilyIndex();
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
-    vkCreateCommandPool(device->getVkDevice(), &poolInfo, nullptr, &commandPool);
-
-    return commandPool;
-}
-
-VkCommandBuffer VSGE::CreateSingleTimeComdbuf(VkCommandPool commandPool) {
-    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
-    VulkanDevice* device = vulkan_rapi->GetDevice();
-
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
-    allocInfo.commandBufferCount = 1;
-
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(device->getVkDevice(), &allocInfo, &commandBuffer);
-
-    return commandBuffer;
-}
-void VSGE::endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool) {
-    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
-    VulkanDevice* device = vulkan_rapi->GetDevice();
-
-    vkEndCommandBuffer(commandBuffer);
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
-
-    vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device->GetGraphicsQueue());
-
-    vkFreeCommandBuffers(device->getVkDevice(), commandPool, 1, &commandBuffer);
-}
-
 bool VulkanCommandPool::Create(uint32 queueFamilyIndex) {
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -103,11 +56,11 @@ bool VulkanCommandBuffer::Create(VulkanCommandPool* pool) {
     return true;
 }
 
-void VulkanCommandBuffer::Begin() {
+void VulkanCommandBuffer::Begin(bool one_time_submit) {
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = 0; // Optional
-    beginInfo.pInheritanceInfo = nullptr; // Optional
+    beginInfo.flags = (one_time_submit ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : 0);
+    beginInfo.pInheritanceInfo = nullptr;
 
     vkBeginCommandBuffer(mCommandBuffer, &beginInfo);
 }
@@ -181,6 +134,14 @@ void VulkanCommandBuffer::SetViewport(float x, float y, float width, float heigh
 void VulkanCommandBuffer::SetCullMode(VkCullModeFlags cull_mode) {
     PFN_vkCmdSetCullModeEXT vkCmdSetCullModeEXT = (PFN_vkCmdSetCullModeEXT)vkGetInstanceProcAddr(VulkanRAPI::Get()->GetInstance()->GetInstance(), "vkCmdSetCullModeEXT");
     vkCmdSetCullModeEXT(mCommandBuffer, cull_mode);
+}
+
+void VulkanCommandBuffer::CopyBuffer(VkBuffer src, VkBuffer dst, uint32 size, uint32 src_offset, uint32 dst_offset) {
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = src_offset;
+    copyRegion.dstOffset = dst_offset;
+    copyRegion.size = size;
+    vkCmdCopyBuffer(mCommandBuffer, src, dst, 1, &copyRegion);
 }
 
 void VulkanCommandBuffer::ImagePipelineBarrier(VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, const std::vector<VkImageMemoryBarrier>& barriers){

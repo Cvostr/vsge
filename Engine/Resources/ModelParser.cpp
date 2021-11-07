@@ -168,7 +168,7 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
                 Bone bone(bone_label);
                 Mat4 boneTransform;
                 solver.Copy(&boneTransform);
-                bone.SetOffsetMatrix(boneTransform);
+                bone.SetOffsetMatrix(boneTransform.transpose());
                 
                 mesh->bonesArray[b_i] = bone;
             }

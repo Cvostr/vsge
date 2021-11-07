@@ -32,6 +32,10 @@ void VulkanIBL::SetSpmapIrmapAlternately(bool alternately) {
 	_alternately = alternately;
 }
 
+void VulkanIBL::SetEnabled(bool enabled) {
+	_enabled = enabled;
+}
+
 void VulkanIBL::SetScene(Scene* scene) {
 	_envmap->SetScene(scene);
 }

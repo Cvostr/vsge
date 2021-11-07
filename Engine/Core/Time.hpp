@@ -30,5 +30,6 @@ namespace VSGE {
 		/// <returns></returns>
 		uint64 GetFramesCount();
 		uint64 GetCurrentTime();
+		uint64 GetTicks();
 	};
 }

@@ -13,10 +13,6 @@ namespace VSGE {
 
 	class VulkanPipeline;
 
-	VkCommandPool beginCommandPool();
-	VkCommandBuffer CreateSingleTimeComdbuf(VkCommandPool commandPool);
-	void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool);
-
 	VkImageMemoryBarrier GetImageBarrier(VulkanTexture* texture, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	class VulkanCommandPool : public IGpuObject {
@@ -50,7 +46,7 @@ namespace VSGE {
 
 		bool Create(VulkanCommandPool* pool);
 
-		void Begin();
+		void Begin(bool one_time_submit = false);
 
 		void BindPipeline(VulkanPipeline& pipeline);
 
@@ -81,6 +77,8 @@ namespace VSGE {
 		void SetViewport(float x, float y, float width, float height, float depthMin = 0.f, float depthMax = 1.f, uint32 index = 0);
 
 		void SetCullMode(VkCullModeFlags cull_mode);
+
+		void CopyBuffer(VkBuffer src, VkBuffer dst, uint32 size, uint32 src_offset = 0, uint32 dst_offset = 0);
 
 		void EndRenderPass();
 

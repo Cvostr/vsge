@@ -23,6 +23,7 @@ namespace VSGE {
 		VulkanBuffer* _particles_buffer;
 		VulkanBuffer* _lights_buffer;
 
+		bool _enabled;
 		bool _alternately;
 		int _prev_step; //1 - spmap, 2 - irmap
 	public:
@@ -37,6 +38,7 @@ namespace VSGE {
 			VulkanBuffer* particles_buffer,
 			VulkanBuffer* lights);
 		void SetSpmapIrmapAlternately(bool alternately);
+		void SetEnabled(bool enabled);
 		void Create();
 		void Destroy();
 

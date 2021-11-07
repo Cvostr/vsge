@@ -14,6 +14,7 @@ using namespace VSGE;
 static DWORD WINAPI CallThreadFuncton(VOID* data)
 {
 	Thread* thread = static_cast<Thread*>(data);
+	thread->SetThreadID();
 	thread->THRFunc();
 	return 0;
 }
@@ -21,6 +22,7 @@ static DWORD WINAPI CallThreadFuncton(VOID* data)
 static void* CallThreadFuncton(void* data)
 {
 	Thread* thread = static_cast<Thread*>(data);
+	thread->SetThreadID();
 	thread->THRFunc();
 	pthread_exit((void*)nullptr);
 	return nullptr;
@@ -99,5 +101,21 @@ void Thread::SetThreadName(const std::string& name) {
 #ifdef __linux__
 	pthread_t* thread = (pthread_t*)mThreadHandle;
 	pthread_setname_np(*thread, name.c_str());
+#endif
+}
+
+void Thread::SetThreadID() {
+	_thread_id = Thread::GetCurrentThreadID();
+}
+
+uint32 Thread::GetThreadID() {
+	return _thread_id;
+}
+
+uint32 Thread::GetCurrentThreadID() {
+#ifdef _WIN32
+	return GetCurrentThreadId();
+#else
+	return pthread_self();
 #endif
 }

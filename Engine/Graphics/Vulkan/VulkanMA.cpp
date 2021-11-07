@@ -1,6 +1,8 @@
 #include "VulkanMA.hpp"
 #include "VulkanRAPI.hpp"
 #include "VulkanCommandBuffer.hpp"
+#include <Core/Threading/Thread.hpp>
+#include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 
 #define VMA_IMPLEMENTATION
 #include <vma/vk_mem_alloc.h>
@@ -18,8 +20,11 @@ VulkanMA::VulkanMA(VulkanInstance* inst, VulkanDevice* device) {
 
     vmaCreateAllocator(&allocatorInfo, (VmaAllocator*)allocator);
 
-    this->MemoryCommandPool = beginCommandPool();
-    this->MemoryCommandBuffer = CreateSingleTimeComdbuf(MemoryCommandPool);
+    for (auto& family_prop : device->GetQueueFamilyProperties()) {
+        VulkanCommandPool* cmdpool = new VulkanCommandPool;
+        cmdpool->Create((uint32)_family_cmdpools.size());
+        _family_cmdpools.push_back(cmdpool);
+    }
 }
 
 void VulkanMA::allocate(const VkBufferCreateInfo createInfo, VkBuffer* buffer) {
@@ -81,30 +86,22 @@ void VulkanMA::copy(VkBuffer buffer, uint32 offset, void* data, uint32 size) {
     //Copy data to temporary buffer
     memcpy((char*)tempBufferAllocInfo.pMappedData + offset, data, size);
 
+    ThreadCmdbufPair* pair = GetTransferCmdbufThreaded();
+    pair->cmdbuf->Begin(true);
+    pair->cmdbuf->CopyBuffer(tempBuffer, buffer, size);
+    pair->cmdbuf->End();
 
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(this->MemoryCommandBuffer, &beginInfo);
-    //Copy buffer command
-    VkBufferCopy copyRegion{};
-    copyRegion.srcOffset = 0; // Optional
-    copyRegion.dstOffset = 0; // Optional
-    copyRegion.size = size;
-    vkCmdCopyBuffer(MemoryCommandBuffer, tempBuffer, buffer, 1, &copyRegion);
-    //Run command
-    vkEndCommandBuffer(MemoryCommandBuffer);
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &MemoryCommandBuffer;
+    VkCommandBuffer cmdbuffer = pair->cmdbuf->GetCommandBuffer();
+    submitInfo.pCommandBuffers = &cmdbuffer;
 
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanDevice* device = vulkan_rapi->GetDevice();
 
-    vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device->GetGraphicsQueue());
+    vkQueueSubmit(pair->transfer_queue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(pair->transfer_queue);
 
     vkDestroyBuffer(device->getVkDevice(), tempBuffer, nullptr);
 }
@@ -151,4 +148,28 @@ bool VulkanMA::createImage(VkImageCreateInfo* info, VmaVkImage* image) {
 
 void VulkanMA::destroyImage(VmaVkImage* image) {
     vmaDestroyImage(*((VmaAllocator*)allocator), image->Image, (VmaAllocation)image->_allocation);
+}
+
+ThreadCmdbufPair* VulkanMA::GetTransferCmdbufThreaded() {
+    uint32 cur_thread = Thread::GetCurrentThreadID();
+
+    for (auto& pair : _threaded_cmdbufs) {
+        if (pair->thread_id == cur_thread)
+            return pair;
+    }
+
+    VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
+
+    uint32 used_queues = _threaded_cmdbufs.size();
+    VkQueue queue = device->GetTransferQueue(used_queues);
+    uint32 queue_family_index = device->GetTransferQueueFamilyIndex(used_queues);
+
+    ThreadCmdbufPair* new_pair = new ThreadCmdbufPair;
+    new_pair->thread_id = cur_thread;
+    new_pair->transfer_queue = queue;
+    new_pair->family_index = queue_family_index;
+    new_pair->cmdbuf = new VulkanCommandBuffer;
+    new_pair->cmdbuf->Create(_family_cmdpools[queue_family_index]);
+    _threaded_cmdbufs.push_back(new_pair);
+    return new_pair;
 }

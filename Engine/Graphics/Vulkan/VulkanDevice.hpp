@@ -66,6 +66,8 @@ namespace VSGE {
         uint32 GetComputeQueueFamilyIndex(uint32 index = 0);
         uint32 GetTransferQueueFamilyIndex(uint32 index = 0);
 
+        std::vector<VkQueueFamilyProperties>& GetQueueFamilyProperties();
+
         VulkanDevice();
     };
 

@@ -40,6 +40,7 @@ namespace VSGE {
 		uint32 _cube_size;
 		uint32 _steps;
 		uint32 _processed;
+		bool _enabled;
 	public:
 
 		VulkanEnvMap();

@@ -1,7 +1,7 @@
 #include "VulkanRenderer.hpp"
 #include "../VulkanRAPI.hpp"
 #include "../VulkanShader.hpp"
-
+#include <Core/Time.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
@@ -126,6 +126,7 @@ void VulkanRenderer::SetupRenderer() {
 	//---------------------Samplers------------------
 	mMaterialMapsSampler = new VulkanSampler;
 	mMaterialMapsSampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
+	mMaterialMapsSampler->SetLodsRanges(0, 10);
 	mMaterialMapsSampler->Create();
 
 	mAttachmentSampler = new VulkanSampler;
@@ -294,8 +295,6 @@ void VulkanRenderer::DestroyRenderer() {
 }
 
 void VulkanRenderer::StoreWorldObjects() {
-	//CreateRenderList();
-
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
 		//send lights to gpu buffer
@@ -325,26 +324,25 @@ void VulkanRenderer::StoreWorldObjects() {
 		MeshResource* mresource = mesh_component->GetMeshResource();
 		if (!mresource)
 			continue;
-
-		for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
-			Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
+		if (mresource->GetMesh()->GetBones().size() > 0) {
 			Entity* rootNode = entity->GetRootSkinningEntity();
-			Entity* node = nullptr;
 			Mat4 rootNodeTransform;
-
 			if (rootNode != nullptr) {
-				//if RootNode is specified
-				node = rootNode->GetChildEntityWithLabel(bone->GetName());
 				//Get root transform
 				rootNodeTransform = rootNode->GetLocalTransform().invert();
-			}
+				for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
+					Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
 
-			if (node != nullptr) {
-				//Calculate result matrix
-				Mat4 matrix = bone->GetOffsetMatrix().transpose() * node->GetWorldTransform() * rootNodeTransform;
-				//Send skinned matrix to skinning uniform buffer
-				anim[_writtenBones] = matrix;
-				_writtenBones++;
+					Entity* node = rootNode->GetChildEntityWithLabel(bone->GetName());
+
+					if (node != nullptr) {
+						//Calculate result matrix
+						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * rootNodeTransform;
+						//Send skinned matrix to skinning uniform buffer
+						anim[_writtenBones] = matrix;
+						_writtenBones++;
+					}
+				}
 			}
 		}
 	}
@@ -485,6 +483,8 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	}
 
 	StoreWorldObjects();
+
+	
 
 	VulkanSemaphore* begin = mBeginSemaphore;
 	if (_shadowcasters.size() > 0){

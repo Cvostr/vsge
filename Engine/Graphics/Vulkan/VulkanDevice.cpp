@@ -15,7 +15,7 @@ const std::vector<const char*> validationLayers = {
 
 #define GRAPHICS_QUEUES_NEEDED 1
 #define COMPUTE_QUEUES_NEEDED 2
-#define TRANSFER_QUEUES_NEEDED 3
+#define TRANSFER_QUEUES_NEEDED 4
 
 VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices){
     if(devices.size() == 0)
@@ -99,7 +99,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
         QueueGraphicsCreateInfo.flags = 0;
        
         float* priorities_array = new float[_vkQueueFamilyProps[i].queueCount];
-        for (int _i = 0; _i < _vkQueueFamilyProps[i].queueCount; _i++)
+        for (uint32 _i = 0; _i < _vkQueueFamilyProps[i].queueCount; _i++)
             priorities_array[_i] = 1.f;
 
         QueueGraphicsCreateInfo.pQueuePriorities = priorities_array;
@@ -146,32 +146,25 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
             if (CheckQueueFamilySupport(family_i, TASK_PRESENT) && _present_queue.queue == VK_NULL_HANDLE) {
                 _present_queue = QueueFamilyIndexPair(queue, family_i);
+                continue;
             }
-            else
-                if (_graphics_queues.size() < GRAPHICS_QUEUES_NEEDED) {
-                    QueueFamilyIndexPair pair(queue, family_i);
-                    _graphics_queues.push_back(pair);
-                }
-                else
-                    if (_compute_queues.size() < COMPUTE_QUEUES_NEEDED) {
-                        QueueFamilyIndexPair pair(queue, family_i);
-                        _compute_queues.push_back(pair);
-                    }
-                    else
-                        if (_transfer_queues.size() < TRANSFER_QUEUES_NEEDED) {
-                            QueueFamilyIndexPair pair(queue, family_i);
-                            _transfer_queues.push_back(pair);
-                        }
+            if (_graphics_queues.size() < GRAPHICS_QUEUES_NEEDED && CheckQueueFamilySupport(family_i, TASK_GRAPHICS)) {
+                QueueFamilyIndexPair pair(queue, family_i);
+                _graphics_queues.push_back(pair);
+                continue;
+            }
+            if (_compute_queues.size() < COMPUTE_QUEUES_NEEDED && CheckQueueFamilySupport(family_i, TASK_COMPUTE)) {
+                QueueFamilyIndexPair pair(queue, family_i);
+                _compute_queues.push_back(pair);
+                continue;
+            }
+            if (_transfer_queues.size() < TRANSFER_QUEUES_NEEDED && CheckQueueFamilySupport(family_i, TASK_TRANSFER)) {
+                QueueFamilyIndexPair pair(queue, family_i);
+                _transfer_queues.push_back(pair);
+                continue;
+            }
 
             _queues.push_back(queue);
-        }
-    }
-
-    std::vector<uint32> used_queues;
-
-    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) {
-        if (CheckQueueFamilySupport(i, TASK_PRESENT)) {
-            _present_queue = QueueFamilyIndexPair(_queues[0], i);
         }
     }
 
@@ -237,6 +230,10 @@ uint32 VulkanDevice::GetComputeQueueFamilyIndex(uint32 index) {
 }
 uint32 VulkanDevice::GetTransferQueueFamilyIndex(uint32 index) {
     return _transfer_queues[index].familyIndex;
+}
+
+std::vector<VkQueueFamilyProperties>& VulkanDevice::GetQueueFamilyProperties() {
+    return _vkQueueFamilyProps;
 }
 
 uint32 VulkanDevice::GetUniformBufferMinAlignment() {

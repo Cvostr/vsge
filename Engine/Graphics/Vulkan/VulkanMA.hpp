@@ -2,6 +2,7 @@
 
 #include "VulkanDevice.hpp"
 
+
 namespace VSGE {
 	struct VmaVkBuffer {
 		VkBuffer Buffer;
@@ -25,12 +26,23 @@ namespace VSGE {
 		}
 	};
 
+	class VulkanCommandPool;
+	class VulkanCommandBuffer;
+
+	struct ThreadCmdbufPair {
+		uint32 thread_id;
+
+		uint32 family_index;
+		VulkanCommandBuffer* cmdbuf;
+		VkQueue transfer_queue;
+	};
+
 	class VulkanMA {
 	private:
 		void* allocator;
 
-		VkCommandPool MemoryCommandPool;
-		VkCommandBuffer MemoryCommandBuffer;
+		std::vector<ThreadCmdbufPair*> _threaded_cmdbufs;
+		std::vector<VulkanCommandPool*> _family_cmdpools;
 
 	public:
 
@@ -40,10 +52,9 @@ namespace VSGE {
 		void allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size, void** mapped);
 		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* data, uint32 size);
 		void copy(VkBuffer buffer, uint32 offset, void* data, uint32 size);
-
-		VkCommandBuffer GetSingleTimeCmdBuf() { return MemoryCommandBuffer; }
-		VkCommandPool GetSingleTimeCmdPool() { return MemoryCommandPool; }
 		bool createImage(VkImageCreateInfo* info, VmaVkImage* image);
+
+		ThreadCmdbufPair* GetTransferCmdbufThreaded();
 
 		void map(VmaVkBuffer* buf, void** mem);
 		void unmap(VmaVkBuffer* buf);

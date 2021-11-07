@@ -55,7 +55,10 @@ void PhysicsLayer::OnAttach() {
 void PhysicsLayer::OnUpdate() {
     if (SceneLayer::Get()->IsSceneRunning()) {
         float delta_time = TimePerf::Get()->GetDeltaTime();
+        //uint32 pre = TimePerf::Get()->GetTicks();
         _world->stepSimulation(delta_time);
+        //uint32 diff = TimePerf::Get()->GetTicks() - pre;
+        //Logger::Log() << "DIFF " << diff;
     }
 }
 void PhysicsLayer::OnDetach() {

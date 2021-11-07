@@ -34,3 +34,6 @@ uint64 TimePerf::GetFramesCount() {
 uint64 TimePerf::GetCurrentTime() {
 	return mNow;
 }
+uint64 TimePerf::GetTicks() {
+	return SDL_GetTicks();
+}
