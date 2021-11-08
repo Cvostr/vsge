@@ -71,11 +71,7 @@ void ImGuiLayer::OnAttach() {
     imgui_pool.SetDescriptorSetsCount(1000 * 5);
     imgui_pool.Create();
 
-    imgui_rpass.PushColorOutputAttachment();
-    imgui_rpass.Create();
-
-    imgui_fb.PushOutputAttachment(0);
-    imgui_fb.Create(&imgui_rpass);
+    presenter = new VSGE::VulkanPresenter;
 
     imageAvailable.Create();
     presentBegin.Create();
@@ -93,10 +89,10 @@ void ImGuiLayer::OnAttach() {
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = imgui_pool.GetDescriptorPool();
     init_info.Allocator = NULL;
-    init_info.MinImageCount = 2;
-    init_info.ImageCount = 2;
+    init_info.MinImageCount = vk->GetSwapChain()->GetSwapChainImagesCount();
+    init_info.ImageCount = vk->GetSwapChain()->GetSwapChainImagesCount();
 
-    ImGui_ImplVulkan_Init(&init_info, imgui_rpass.GetRenderPass());
+    ImGui_ImplVulkan_Init(&init_info, presenter->GetRenderPass()->GetRenderPass());
 #ifdef _WIN32
     ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 #endif
@@ -110,50 +106,44 @@ void ImGuiLayer::OnAttach() {
    
 }
 
-void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data) {
+void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index) {
     cmdbuf.Begin();
-    imgui_rpass.CmdBegin(cmdbuf, imgui_fb);
+    presenter->GetRenderPass()->CmdBegin(cmdbuf, *presenter->GetFramebuffer(image_index));
 
     ImGui_ImplVulkan_RenderDrawData(draw_data, cmdbuf.GetCommandBuffer());
 
     cmdbuf.EndRenderPass();
     cmdbuf.End();
 
-
     VkMaterialsThumbnails::Get()->RecordCmdBuffer();
 }
 
-void ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore) {
-    VulkanRecordCmdBuf(draw_data);
-
+uint32 ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore) {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
     VSGE::Window* win = &VSGE::Application::Get()->GetWindow();
 
-    uint32_t _imageIndex;
+    uint32_t imageIndex;
+    VkResult imageResult = AcquireNextImage(imageAvailable, imageIndex);
 
-    VkResult imageResult = AcquireNextImage(imageAvailable, _imageIndex);
-
-    _imageIndex = 0;
     recreated = false;
     //Check, if swapchain is no more suitable
     if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
         //Swapchain is no more suitable
         vkDeviceWaitIdle(vk->GetDevice()->getVkDevice());
-        //Destroy output framebuffer
-        imgui_fb.Destroy();
-        imgui_fb.SetSize(win->GetWindowWidth(), win->GetWindowHeight());
-        imgui_rpass.SetClearSize(win->GetWindowWidth(), win->GetWindowHeight());
         //Recreate swapchain
         vk->GetSwapChain()->Destroy();
         vk->GetSwapChain()->initSwapchain(vk->GetDevice());
-
-        imgui_fb.PushOutputAttachment(0);
-        imgui_fb.Create(&imgui_rpass);
+        //recreate presenter
+        presenter->Recreate();
 
         recreated = true;
     }
-    if(!recreated)
+    if (!recreated) {
+        VulkanRecordCmdBuf(draw_data, imageIndex);
         VulkanGraphicsSubmit(cmdbuf, imageAvailable, *endSemaphore);
+    }
+
+    return imageIndex;
 }
 
 
@@ -189,8 +179,7 @@ void ImGuiLayer::OnUpdate() {
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 
-    //VulkanRender(draw_data, renderer->GetBeginSemaphore());
-    VulkanRender(draw_data, VkMaterialsThumbnails::Get()->GetBeginSemaphore());
+    uint32 img_index = VulkanRender(draw_data, VkMaterialsThumbnails::Get()->GetBeginSemaphore());
     VkMaterialsThumbnails::Get()->CmdExecute(renderer->GetBeginSemaphore());
 
     if(recreated){
@@ -204,8 +193,7 @@ void ImGuiLayer::OnUpdate() {
 
     renderer->DrawScene(cam);
 
-    VulkanPresent(*renderer->GetEndSemaphore(), 0);
-    
+    VulkanPresent(*renderer->GetEndSemaphore(), img_index);
 }
 
 void ImGuiLayer::OnDetach() {
@@ -215,8 +203,7 @@ void ImGuiLayer::OnDetach() {
     presentBegin.Destroy();
     imageAvailable.Destroy();
 
-    imgui_fb.Destroy();
-    imgui_rpass.Destroy();
+    delete presenter;
     imgui_pool.Destroy();
 
 

@@ -7,10 +7,9 @@
 #include <imgui_internal.h>
 
 #include <Graphics/Vulkan/VulkanDescriptors.hpp>
-#include <Graphics/Vulkan/VulkanRenderpass.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
-#include <Graphics/Vulkan/VulkanFramebuffer.hpp>
+#include <Graphics/Vulkan/VulkanPresenter.hpp>
 
 #include "../Base/ImGuiWindow.hpp"
 #include "../Base/ImGuiMenu.hpp"
@@ -27,8 +26,7 @@ namespace VSGEditor {
 		tImGuiMenuList mMenus;
 
 		VSGE::VulkanDescriptorPool imgui_pool;
-		VSGE::VulkanRenderPass imgui_rpass;
-		VSGE::VulkanFramebuffer imgui_fb;
+		VSGE::VulkanPresenter* presenter;
 
 		VSGE::VulkanSemaphore imageAvailable;
 		VSGE::VulkanSemaphore presentBegin;
@@ -79,8 +77,8 @@ namespace VSGEditor {
 
 		void AddMenu(ImGuiMenu* menu);
 
-		void VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore);
-		void VulkanRecordCmdBuf(ImDrawData* draw_data);
+		uint32 VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore);
+		void VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index = 0);
 
 		static ImGuiLayer* Get() {
 			return _this;

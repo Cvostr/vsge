@@ -23,13 +23,7 @@ void VulkanLayer::OnAttach() {
     _copy_shader->AddShaderFromFile("copy.vert", SHADER_STAGE_VERTEX);
     _copy_shader->AddShaderFromFile("copy.frag", SHADER_STAGE_FRAGMENT);
 
-    _output_rp = new VulkanRenderPass;
-    _output_rp->PushColorOutputAttachment();
-    _output_rp->Create();
-
-    _output_fb = new VulkanFramebuffer;
-    _output_fb->PushOutputAttachment(0);
-    _output_fb->Create(_output_rp);
+    _presenter = new VulkanPresenter;
 
     _pool = new VulkanDescriptorPool;
     _pool->SetDescriptorSetsCount(1);
@@ -52,7 +46,7 @@ void VulkanLayer::OnAttach() {
 
     output_pipeline = new VulkanPipeline;
     output_pipeline->SetDepthTest(false);
-    output_pipeline->Create(_copy_shader, _output_rp, _vertexLayout, _output_pipeline_layout);
+    output_pipeline->Create(_copy_shader, _presenter->GetRenderPass(), _vertexLayout, _output_pipeline_layout);
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 
@@ -64,7 +58,6 @@ void VulkanLayer::OnUpdate() {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
     uint32_t _imageIndex;
     VkResult imageResult = AcquireNextImage(*_imageAvailable, _imageIndex);
-    _imageIndex = 0;
     _recreated = false;
     //Check, if swapchain is no more suitable
     /*if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
@@ -79,19 +72,19 @@ void VulkanLayer::OnUpdate() {
     //if (!_recreated)
     //    VulkanGraphicsSubmit(cmdbuf, *_imageAvailable, *endSemaphore);
 
-    RecordCmdbuf();
+    RecordCmdbuf(_imageIndex);
 
 	VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 	renderer->DrawScene(nullptr);
     VulkanGraphicsSubmit(*_cmdbuf, *renderer->GetEndSemaphore(), *_presentBegin);
-    VulkanPresent(*_presentBegin, 0);
+    VulkanPresent(*_presentBegin, _imageIndex);
 }
 
 void VulkanLayer::OnDetach() {
 
 }
 
-void VulkanLayer::RecordCmdbuf() {
+void VulkanLayer::RecordCmdbuf(uint32 index) {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
     VulkanSwapChain* swc = vk->GetSwapChain();
     
@@ -101,7 +94,7 @@ void VulkanLayer::RecordCmdbuf() {
     VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
     _cmdbuf->Begin();
-    _output_rp->CmdBegin(*_cmdbuf, *_output_fb);
+    _presenter->GetRenderPass()->CmdBegin(*_cmdbuf, *_presenter->GetFramebuffer(index));
     _cmdbuf->BindPipeline(*output_pipeline);
     _cmdbuf->SetViewport(0, 0, 1280, 720);
     _cmdbuf->BindDescriptorSets(*_output_pipeline_layout, 0, 1, _set);

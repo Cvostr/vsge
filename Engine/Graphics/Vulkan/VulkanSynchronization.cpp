@@ -48,7 +48,6 @@ void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wa
 	VulkanDevice* device = vulkan->GetDevice();
 
 	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
 }
 
 void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf) {
@@ -63,6 +62,28 @@ void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf) {
 	VulkanDevice* device = vulkan->GetDevice();
 
 	vkQueueSubmit(device->GetGraphicsQueue(), 1, &end_info, VK_NULL_HANDLE);
+}
+
+void VSGE::VulkanComputeSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wait, VulkanSemaphore& signal) {
+	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
+	VkCommandBuffer vcmdbuf = cmdbuf.GetCommandBuffer();
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &vcmdbuf;
+
+	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT };
+	VkSemaphore _wait = wait.GetSemaphore();
+	VkSemaphore _signal = signal.GetSemaphore();
+
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = &_wait;
+	submitInfo.pWaitDstStageMask = waitStages;
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = &_signal;
+
+	vkQueueSubmit(device->GetComputeQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 }
 
 void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
@@ -86,6 +107,7 @@ void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
 	presentInfo.pResults = nullptr; // Optional
 
 	vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
+	vkQueueWaitIdle(device->GetPresentQueue());
 }
 
 VkResult VSGE::AcquireNextImage(VulkanSemaphore& signal, uint32& imageIndex) {

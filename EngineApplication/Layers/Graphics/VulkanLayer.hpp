@@ -6,6 +6,7 @@
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 #include <Engine/ApplicationLayer.hpp>
+#include <Graphics/Vulkan/VulkanPresenter.hpp>
 
 namespace VSGE {
 	class VulkanLayer : public IApplicationLayer {
@@ -16,8 +17,7 @@ namespace VSGE {
 		VulkanCommandBuffer* _cmdbuf;
 
 		VulkanShader* _copy_shader;
-		VulkanRenderPass* _output_rp;
-		VulkanFramebuffer* _output_fb;
+		VulkanPresenter* _presenter;
 		VulkanPipelineLayout* _output_pipeline_layout;
 		VulkanPipeline* output_pipeline;
 
@@ -27,7 +27,7 @@ namespace VSGE {
 		VulkanSemaphore* _imageAvailable;
 		VulkanSemaphore* _presentBegin;
 
-		void RecordCmdbuf();
+		void RecordCmdbuf(uint32 index);
 	public:
 		void OnAttach();
 		void OnUpdate();

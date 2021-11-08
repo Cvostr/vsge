@@ -62,6 +62,7 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanSynchronization.cpp
 				Graphics/Vulkan/VulkanTexture.cpp
 				Graphics/Vulkan/VulkanComputePipeline.cpp
+				Graphics/Vulkan/VulkanPresenter.cpp
 				Graphics/Vulkan/Rendering/VulkanMaterials.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderTarget.cpp

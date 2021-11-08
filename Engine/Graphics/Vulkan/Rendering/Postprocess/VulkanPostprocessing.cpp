@@ -127,7 +127,7 @@ VulkanSemaphore* VulkanPostprocessing::GetBeginSemaphore() {
 	return _begin_semaphore;
 }
 void VulkanPostprocessing::Execute(VulkanSemaphore* end_semaphore) {
-	VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end_semaphore);
+	VulkanComputeSubmit(*_cmdbuf, *_begin_semaphore, *end_semaphore);
 }
 void VulkanPostprocessing::ResizeOutput(const Vec2i& new_size) {
 	if (_output_sizes == new_size)

@@ -206,24 +206,5 @@ void VulkanSpecularMap::FillCommandBuffer() {
 }
 
 void VulkanSpecularMap::Execute(VulkanSemaphore* end_semaphore) {
-	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
-	VkCommandBuffer cmdbuf = _spmap_cmdbuffer->GetCommandBuffer();
-
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &cmdbuf;
-
-	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT };
-	VkSemaphore wait = _spmap_begin_semaphore->GetSemaphore();
-	VkSemaphore signal = end_semaphore->GetSemaphore();
-
-	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = &wait;
-	submitInfo.pWaitDstStageMask = waitStages;
-	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = &signal;
-
-	vkQueueSubmit(device->GetComputeQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetComputeQueue());
+	VulkanComputeSubmit(*_spmap_cmdbuffer, *_spmap_begin_semaphore, *end_semaphore);
 }
