@@ -5,6 +5,7 @@ using namespace VSGE;
 
 VulkanPresenter::VulkanPresenter() {
 	Create();
+	_recreated = false;
 }
 VulkanPresenter::~VulkanPresenter() {
 	Destroy();
@@ -37,6 +38,27 @@ void VulkanPresenter::Create() {
 void VulkanPresenter::Recreate() {
 	Destroy();
 	Create();
+}
+
+bool VulkanPresenter::IsRecreated() {
+	return _recreated;
+}
+void VulkanPresenter::Update(VkResult imageResult) {
+	_recreated = false;
+	//Check, if swapchain is no more suitable
+	if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
+		VulkanRAPI* rapi = VulkanRAPI::Get();
+		VulkanSwapChain* swc = rapi->GetSwapChain();
+		//Swapchain is no more suitable
+		vkDeviceWaitIdle(rapi->GetDevice()->getVkDevice());
+		//Recreate swapchain
+		swc->Destroy();
+		swc->initSwapchain(rapi->GetDevice());
+		//recreate presenter
+		Recreate();
+		//set recreated flag to true
+		_recreated = true;
+	}
 }
 
 void VulkanPresenter::Destroy() {

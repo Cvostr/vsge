@@ -83,10 +83,6 @@ namespace VSGE {
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
 
-		//TEMPORARY 
-		Camera* cam;
-		//-----------------------
-
 	public:
 
 		VulkanRenderer() : IRenderer() {
@@ -127,7 +123,7 @@ namespace VSGE {
 
 		LightsBuffer* GetLightsBuffer();
 
-		void StoreWorldObjects();
+		void StoreWorldObjects(Camera* cam);
 
 		void SetupRenderer();
 		void DestroyRenderer();

@@ -11,8 +11,6 @@
 namespace VSGE {
 	class VulkanLayer : public IApplicationLayer {
 	private:
-		bool _recreated;
-
 		VulkanCommandPool* _cmdpool;
 		VulkanCommandBuffer* _cmdbuf;
 
@@ -27,6 +25,7 @@ namespace VSGE {
 		VulkanSemaphore* _imageAvailable;
 		VulkanSemaphore* _presentBegin;
 
+		void UpdatePresentingTexture();
 		void RecordCmdbuf(uint32 index);
 	public:
 		void OnAttach();

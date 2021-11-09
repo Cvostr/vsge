@@ -125,20 +125,9 @@ uint32 ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* en
     uint32_t imageIndex;
     VkResult imageResult = AcquireNextImage(imageAvailable, imageIndex);
 
-    recreated = false;
-    //Check, if swapchain is no more suitable
-    if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
-        //Swapchain is no more suitable
-        vkDeviceWaitIdle(vk->GetDevice()->getVkDevice());
-        //Recreate swapchain
-        vk->GetSwapChain()->Destroy();
-        vk->GetSwapChain()->initSwapchain(vk->GetDevice());
-        //recreate presenter
-        presenter->Recreate();
+    presenter->Update(imageResult);
 
-        recreated = true;
-    }
-    if (!recreated) {
+    if (!presenter->IsRecreated()) {
         VulkanRecordCmdBuf(draw_data, imageIndex);
         VulkanGraphicsSubmit(cmdbuf, imageAvailable, *endSemaphore);
     }
@@ -182,7 +171,7 @@ void ImGuiLayer::OnUpdate() {
     uint32 img_index = VulkanRender(draw_data, VkMaterialsThumbnails::Get()->GetBeginSemaphore());
     VkMaterialsThumbnails::Get()->CmdExecute(renderer->GetBeginSemaphore());
 
-    if(recreated){
+    if(presenter->IsRecreated()){
        return;
     } 
 

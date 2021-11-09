@@ -59,10 +59,10 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
 
     if (!justRead) {
         //Do some specific work (on MeshGroupResource as example)
-        resource->Prepare();
         //Send Resource load event
         if (mMutex != nullptr)
             mMutex->Lock();
+        resource->Prepare();
         ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
         Application::Get()->QueueEvent(rle);
         if (mMutex != nullptr)

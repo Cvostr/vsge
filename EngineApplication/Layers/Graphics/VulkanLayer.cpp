@@ -56,38 +56,42 @@ void VulkanLayer::OnAttach() {
 }
 void VulkanLayer::OnUpdate() {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
-    uint32_t _imageIndex;
-    VkResult imageResult = AcquireNextImage(*_imageAvailable, _imageIndex);
-    _recreated = false;
-    //Check, if swapchain is no more suitable
-    /*if (imageResult == VK_ERROR_OUT_OF_DATE_KHR || imageResult == VK_SUBOPTIMAL_KHR) {
-        //Swapchain is no more suitable
-        vkDeviceWaitIdle(vk->GetDevice()->getVkDevice());
-        //Recreate swapchain
-        vk->GetSwapChain()->Destroy();
-        vk->GetSwapChain()->initSwapchain(vk->GetDevice());
+    uint32_t imageIndex;
+    VkResult imageResult = AcquireNextImage(*_imageAvailable, imageIndex);
 
-        _recreated = true;
-    }*/
-    //if (!_recreated)
-    //    VulkanGraphicsSubmit(cmdbuf, *_imageAvailable, *endSemaphore);
+    _presenter->Update(imageResult);
 
-    RecordCmdbuf(_imageIndex);
+    if (_presenter->IsRecreated())
+        UpdatePresentingTexture();
 
-	VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
-	renderer->DrawScene(nullptr);
-    VulkanGraphicsSubmit(*_cmdbuf, *renderer->GetEndSemaphore(), *_presentBegin);
-    VulkanPresent(*_presentBegin, _imageIndex);
+    if (!_presenter->IsRecreated()) {
+        RecordCmdbuf(imageIndex);
+        VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+        renderer->DrawScene(nullptr);
+        VulkanGraphicsSubmit(*_cmdbuf, *renderer->GetEndSemaphore(), *_presentBegin);
+        VulkanPresent(*_presentBegin, imageIndex);
+    }
 }
 
 void VulkanLayer::OnDetach() {
 
 }
 
+void VulkanLayer::UpdatePresentingTexture() {
+    VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
+    VulkanSwapChain* swc = vk->GetSwapChain();
+    VkExtent2D new_extent = swc->GetExtent();
+    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+
+    renderer->ResizeOutput(new_extent.width, new_extent.height);
+
+    _set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetOutputTexture(), renderer->GetAttachmentSampler());
+}
+
 void VulkanLayer::RecordCmdbuf(uint32 index) {
     VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
     VulkanSwapChain* swc = vk->GetSwapChain();
-    
+    VkExtent2D extent = swc->GetExtent();
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
     VulkanTexture* output = (VulkanTexture*)renderer->GetOutputTexture();
 
@@ -96,7 +100,7 @@ void VulkanLayer::RecordCmdbuf(uint32 index) {
     _cmdbuf->Begin();
     _presenter->GetRenderPass()->CmdBegin(*_cmdbuf, *_presenter->GetFramebuffer(index));
     _cmdbuf->BindPipeline(*output_pipeline);
-    _cmdbuf->SetViewport(0, 0, 1280, 720);
+    _cmdbuf->SetViewport(0, 0, extent.width, extent.height);
     _cmdbuf->BindDescriptorSets(*_output_pipeline_layout, 0, 1, _set);
     _cmdbuf->BindMesh(*mesh, 0);
     _cmdbuf->DrawIndexed(6);

@@ -294,7 +294,7 @@ void VulkanRenderer::DestroyRenderer() {
 	SAFE_RELEASE(_postprocessing)
 }
 
-void VulkanRenderer::StoreWorldObjects() {
+void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
 		//send lights to gpu buffer
@@ -435,8 +435,10 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 		_cameras_buffer->SetCamera(camera_i, camera);
 	}
 
+	Camera* main_camera = nullptr;
+
 	if (cam) {
-		this->cam = cam;
+		main_camera = cam;
 		_shadowmapper->SetCamera(cam);
 		_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
 		_cameras_buffer->SetCamera(0, cam);
@@ -444,7 +446,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	else if(_cameras.size() > 0) {
 		Camera* camera = _cameras[0]->GetComponent<Camera>();
 		if (camera) {
-			this->cam = camera;
+			main_camera = camera;
 			_shadowmapper->SetCamera(camera);
 			_cameras_buffer->SetEnvmapCameras(camera->GetPosition(), 100.f);
 		}
@@ -482,9 +484,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 		}
 	}
 
-	StoreWorldObjects();
-
-	
+	StoreWorldObjects(main_camera);
 
 	VulkanSemaphore* begin = mBeginSemaphore;
 	if (_shadowcasters.size() > 0){
@@ -528,7 +528,6 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	}
 
 	_ibl_map->Execute(_ui_renderer->GetBeginSemaphore());
-	//VulkanGraphicsSubmit(*mLightsCmdbuf, *mGBufferSemaphore, *_ui_renderer->GetBeginSemaphore());
 
 	_ui_renderer->Execute(_postprocessing->GetBeginSemaphore());
 

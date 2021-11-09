@@ -9,6 +9,7 @@ namespace VSGE {
 	private:
 		VulkanRenderPass* _renderpass;
 		std::vector<VulkanFramebuffer*> _fbs;
+		bool _recreated;
 
 		void Create();
 		void Destroy();
@@ -20,5 +21,8 @@ namespace VSGE {
 		VulkanRenderPass* GetRenderPass();
 		VulkanFramebuffer* GetFramebuffer(uint32 index);
 		void Recreate();
+
+		bool IsRecreated();
+		void Update(VkResult imageResult);
 	};
 }

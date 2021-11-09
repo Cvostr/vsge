@@ -31,6 +31,10 @@ Application* VSGEMain(int argc, char* argv[]) {
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");
 
+	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
+	app->AddLayer(mono_scripting_layer);
+	app->AddLayer(new SceneLayer);
+
 	if (!descr.headless) {
 		VulkanRAPI* vk = new VulkanRAPI;
 		vk->Create(&app->GetWindow());
@@ -41,16 +45,12 @@ Application* VSGEMain(int argc, char* argv[]) {
 		AddDefaultMeshes();
 	}
 
-	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
-	app->AddLayer(mono_scripting_layer);
-
 	app->AddLayer(new PhysicsLayer);
-	app->AddLayer(new SceneLayer);
 
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
 	app->AddLayer(new InputLayer);
-	app->AddLayer(new UiLayer);
+	
 
 	GlyphManager* glyph_manager = new GlyphManager;
 	glyph_manager->AddFontContainer("c:\\Windows\\Fonts\\Arial.ttf", "arial");
@@ -58,6 +58,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 	app->AddLayer(new MainLayer);
 	if(!descr.headless)
 		app->AddLayer(new VulkanLayer);
+
+	app->AddLayer(new UiLayer);
 
 	return app;
 }

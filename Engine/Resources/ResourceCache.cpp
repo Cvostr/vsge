@@ -163,7 +163,7 @@ Resource* ResourceCache::CreateResource(DataDescription& descr, ResourceType typ
 
     //if it is mesh group - load it to create meshes
     if (type == RESOURCE_TYPE_MESHGROUP) {
-       // res->Load();
+        res->Load();
     }
 
     //Push resource

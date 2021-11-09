@@ -40,13 +40,14 @@ Application* VSGEMain(int argc, char* argv[]) {
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);
 
+	app->AddLayer(new SceneLayer);
+
 	VulkanRenderer* renderer = new VulkanRenderer;
 	app->SetRenderer(renderer);
 
 	app->AddLayer(new EditorLayer);
 	app->AddLayer(new ImGuiLayer);
 	app->AddLayer(new PhysicsLayer);
-	app->AddLayer(new SceneLayer);
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
 	app->AddLayer(new InputLayer);

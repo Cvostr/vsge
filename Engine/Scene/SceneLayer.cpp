@@ -25,10 +25,12 @@ void SceneLayer::StartScene() {
 	if (_scene_running)
 		return;
 
+	bool was_paused = _scene_paused;
+
 	_scene_running = true;
 	_scene_paused = false;
 
-	if (_scene) {
+	if (_scene && !was_paused) {
 		CallOnStart(_scene->GetRootEntity());
 	}
 }
