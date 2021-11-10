@@ -49,12 +49,6 @@ void VulkanRenderer::SetupRenderer() {
 
 	mEndSemaphore = new VulkanSemaphore;
 	mEndSemaphore->Create();
-
-	mShadowmappingEndSemaphore = new VulkanSemaphore;
-	mShadowmappingEndSemaphore->Create();
-
-	mShadowprocessingEndSemaphore = new VulkanSemaphore;
-	mShadowprocessingEndSemaphore->Create();
 	
 	//---------------------Buffers--------------------------------
 	_cameras_buffer = new VulkanCamerasBuffer;
@@ -163,8 +157,11 @@ void VulkanRenderer::SetupRenderer() {
 	_ibl_map->SetSpmapIrmapAlternately(true);
 
 	//---------------------Command buffers------------------------
-	mCmdPool = new VulkanCommandPool;
-	mCmdPool->Create(device->GetGraphicsQueueFamilyIndex());
+	_cmdpool = new VulkanCommandPool;
+	_cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
+
+	_render_targets_cmdbuf = new VulkanCommandBuffer;
+	_render_targets_cmdbuf->Create(_cmdpool);
 
 	_main_render_target = new VulkanRenderTarget;
 	_main_render_target->SetCameraIndex(0);
@@ -402,7 +399,6 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
 		_shadowmapper->AddEntity(_shadowcasters[caster_i]);
 	}
-	_shadowmapper->ProcessShadowCasters();
 	//-----------------------------
 	//-------------TERRAINS------------------
 	_terrain_renderer->ResetProcessedTerrains();
@@ -411,12 +407,15 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 	}
 	//-----------------------------
 
-	for (auto& render_target : _render_targets) {
-		render_target->RecordCommandBuffers();
-	}
-
 	_ui_renderer->FillBuffers();
-	_ui_renderer->FillCommandBuffer();
+
+	_render_targets_cmdbuf->Begin();
+	_shadowmapper->ProcessShadowCasters(_render_targets_cmdbuf);
+	for (auto& render_target : _render_targets) {
+		render_target->RecordCommandBuffers(_render_targets_cmdbuf);
+	}
+	_ui_renderer->RecordCommandBuffer(_render_targets_cmdbuf);
+	_render_targets_cmdbuf->End();
 
 	_postprocessing->FillCommandBuffer();
 	_ibl_map->RecordCmdBufs();
@@ -486,29 +485,9 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	StoreWorldObjects(main_camera);
 
-	VulkanSemaphore* begin = mBeginSemaphore;
-	if (_shadowcasters.size() > 0){
-		_shadowmapper->ExecuteShadowCasters(mBeginSemaphore, mShadowmappingEndSemaphore);
-		begin = mShadowmappingEndSemaphore;
-	}
+	VulkanGraphicsSubmit(*_render_targets_cmdbuf, *mBeginSemaphore, *_ibl_map->GetBeginSemaphore());
 
-	begin = mShadowmappingEndSemaphore;
-	VulkanSemaphore* end = nullptr;
-	for (uint32 rt_i = 0; rt_i < _render_targets.size(); rt_i ++) {
-		VulkanRenderTarget* render_target = _render_targets[rt_i];
-		
-		VulkanGraphicsSubmit(*render_target->GetGBufferCommandBuffer(), *begin, *render_target->GetEndSemaphore());
-
-		begin = render_target->GetEndSemaphore();
-
-		bool last_rt = rt_i == _render_targets.size() - 1;
-		if (last_rt)
-			end = _ibl_map->GetBeginSemaphore();
-	}
-
-	_ibl_map->Execute(_ui_renderer->GetBeginSemaphore());
-
-	_ui_renderer->Execute(_postprocessing->GetBeginSemaphore());
+	_ibl_map->Execute(_postprocessing->GetBeginSemaphore());
 
 	_postprocessing->Execute(mEndSemaphore);
 }
@@ -596,5 +575,5 @@ LightsBuffer* VulkanRenderer::GetLightsBuffer() {
 }
 
 VulkanCommandPool* VulkanRenderer::GetCommandPool() {
-	return mCmdPool;
+	return _cmdpool;
 }

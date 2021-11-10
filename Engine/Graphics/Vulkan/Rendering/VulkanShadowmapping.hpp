@@ -45,7 +45,6 @@ namespace VSGE {
 		VulkanRenderPass* _shadowmap_point_RenderPass;
 		VulkanRenderPass* _shadowprocessRenderPass;
 
-		VulkanCommandPool* _shadowmapCmdPool;
 		//-----------------Shadow Pipeline------------
 		VertexLayout shadowmap_vertex_layout;
 		VulkanShader* _shadowmap_shader;
@@ -59,8 +58,6 @@ namespace VSGE {
 		VulkanPipelineLayout* _shadowprocess_layout;
 		VulkanPipeline* _shadowprocess_pipeline;
 		VulkanFramebuffer* _shadowprocess_framebuffer;
-		VulkanCommandBuffer* _shadowprocess_cmdbuf;
-		VulkanCommandBuffer* _shadowrenderer_cmdbuf;
 
 		std::vector<VulkanShadowCaster*> _casters;
 		uint32 _added_casters;
@@ -124,8 +121,7 @@ namespace VSGE {
 		void ResetCasters();
 		
 		void ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf);
-		void ProcessShadowCasters();
-		void ExecuteShadowCasters(VulkanSemaphore* begin, VulkanSemaphore* end);
+		void ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer);
 		
 		void UpdateShadowrenderingDescriptors();
 		void RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf);

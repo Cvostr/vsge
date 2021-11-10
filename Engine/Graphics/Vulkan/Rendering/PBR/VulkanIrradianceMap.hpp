@@ -20,8 +20,6 @@ namespace VSGE {
 		VulkanSampler* _envmap_sampler;
 
 		VulkanSemaphore* _irmap_begin_semaphore;
-		VulkanCommandPool* _irmap_cmdpool;
-		VulkanCommandBuffer* _irmap_cmdbuffer;
 
 		uint32 _irmap_size;
 		uint32 _steps_count;
@@ -32,8 +30,7 @@ namespace VSGE {
 		~VulkanIrradianceMap();
 
 		void Create();
-		void RecordCmdBuffer();
-		void ComputeIrmapTexture(VulkanSemaphore* end_semaphore);
+		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer);
 		void SetInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetIrradianceMap();
 		VulkanSemaphore* GetBeginSemaphore();

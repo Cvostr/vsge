@@ -105,15 +105,6 @@ void VulkanSpecularMap::Create() {
 	_spmap_pipeline->Create(_spmap_shader, _spmap_pipeline_layout);
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
-
-	_spmap_cmdpool = new VulkanCommandPool;
-	_spmap_cmdpool->Create(device->GetComputeQueueFamilyIndex());
-
-	_spmap_cmdbuffer = new VulkanCommandBuffer();
-	_spmap_cmdbuffer->Create(_spmap_cmdpool);
-
-	_spmap_begin_semaphore = new VulkanSemaphore;
-	_spmap_begin_semaphore->Create();
 }
 
 void VulkanSpecularMap::SetEnvMapInputTexture(VulkanTexture* texture) {
@@ -122,22 +113,18 @@ void VulkanSpecularMap::SetEnvMapInputTexture(VulkanTexture* texture) {
 VulkanTexture* VulkanSpecularMap::GetSpecularOutputTexture() {
 	return _spmap_output_texture;
 }
-VulkanSemaphore* VulkanSpecularMap::GetBeginSemaphore() {
-	return _spmap_begin_semaphore;
-}
+
 void VulkanSpecularMap::Destroy() {
-	SAFE_RELEASE(_spmap_begin_semaphore)
+	
 }
 
-void VulkanSpecularMap::FillCommandBuffer() {
+void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
 	VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(_spmap_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 	VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(_spmap_output_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	_spmap_cmdbuffer->Begin();
-
-	_spmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {pre_irmap_barrier});
-	_spmap_cmdbuffer->BindComputePipeline(*_spmap_pipeline);
-	_spmap_cmdbuffer->BindDescriptorSets(*_spmap_pipeline_layout, 0, 1, _spmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
+	cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {pre_irmap_barrier});
+	cmdbuffer->BindComputePipeline(*_spmap_pipeline);
+	cmdbuffer->BindDescriptorSets(*_spmap_pipeline_layout, 0, 1, _spmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
 
 	uint32 mip_map_levels = (uint32)_mipmap_levels.size();
 	const float deltaRoughness = 1.0f / std::max(float(mip_map_levels), 1.0f);
@@ -154,21 +141,19 @@ void VulkanSpecularMap::FillCommandBuffer() {
 		int32 pc_level = level - 1;
 		float roughness = level * deltaRoughness;
 
-		_spmap_cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &pc_level);
-		_spmap_cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 4, 4, &roughness);
-		_spmap_cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 8, 4, &passed);
-
-
-		_spmap_cmdbuffer->Dispatch(numGroups, numGroups, per_time);
+		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &pc_level);
+		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 4, 4, &roughness);
+		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 8, 4, &passed);
+		cmdbuffer->Dispatch(numGroups, numGroups, per_time);
 	}
 
-	_spmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
+	cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
 
 	_steps_passed++;
 
 	//copy base mipmap level
-	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	_envmap_input_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	_spmap_output_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	_envmap_input_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	VkImageSubresourceLayers src = {};
 	src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	src.mipLevel = 0;
@@ -190,7 +175,7 @@ void VulkanSpecularMap::FillCommandBuffer() {
 	img_copy.extent = { MAX_MAP_SIZE , MAX_MAP_SIZE , 1 };
 
 	vkCmdCopyImage(
-		_spmap_cmdbuffer->GetCommandBuffer(),
+		cmdbuffer->GetCommandBuffer(),
 		_envmap_input_texture->GetImage(),
 		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		_spmap_output_texture->GetImage(),
@@ -198,13 +183,6 @@ void VulkanSpecularMap::FillCommandBuffer() {
 		1,
 		&img_copy);
 
-	_spmap_output_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	_envmap_input_texture->CmdChangeLayout(_spmap_cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-
-	_spmap_cmdbuffer->End();
-}
-
-void VulkanSpecularMap::Execute(VulkanSemaphore* end_semaphore) {
-	VulkanComputeSubmit(*_spmap_cmdbuffer, *_spmap_begin_semaphore, *end_semaphore);
+	_spmap_output_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	_envmap_input_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }

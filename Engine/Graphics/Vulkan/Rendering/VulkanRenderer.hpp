@@ -32,12 +32,11 @@ namespace VSGE {
 		
 		//--------------------Semaphores-----------------
 		VulkanSemaphore* mBeginSemaphore;
-		VulkanSemaphore* mShadowmappingEndSemaphore;
-		VulkanSemaphore* mShadowprocessingEndSemaphore;
 		VulkanSemaphore* mEndSemaphore;
 
 		//--------------------Command buffers------------
-		VulkanCommandPool* mCmdPool;
+		VulkanCommandPool* _cmdpool;
+		VulkanCommandBuffer* _render_targets_cmdbuf;
 		//--------------------Descriptors----------------
 		VulkanDescriptorPool* mMaterialsDescriptorPool;
 

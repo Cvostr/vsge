@@ -93,15 +93,6 @@ void VulkanUiRenderer::Create() {
 	_ui_pipeline->SetBlendingAttachmentDesc(0, ui_blend_desc);
 	_ui_pipeline->Create(_ui_shader, _ui_rp, _vertexLayout, _ui_pll);
 
-	_ui_cmdpool = new VulkanCommandPool;
-	_ui_cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
-	
-	_ui_cmdbuf = new VulkanCommandBuffer;
-	_ui_cmdbuf->Create(_ui_cmdpool);
-
-	_begin_semaphore = new VulkanSemaphore;
-	_begin_semaphore->Create();
-
 	_ui_sampler = new VulkanSampler;
 	_ui_sampler->Create();
 
@@ -129,9 +120,6 @@ void VulkanUiRenderer::ResizeOutput(uint32 width, uint32 height) {
 
 VulkanTexture* VulkanUiRenderer::GetOutputTexture() {
 	return (VulkanTexture*)_ui_framebuffer->GetColorAttachments()[0];
-}
-VulkanSemaphore* VulkanUiRenderer::GetBeginSemaphore() {
-	return _begin_semaphore;
 }
 void VulkanUiRenderer::WriteTransform(uint32 elem_id, const Mat4& transform) {
 	Mat4 total_transform = transform * _camera_transform;
@@ -202,21 +190,16 @@ void VulkanUiRenderer::FillBuffers() {
 		}
 	}
 }
-void VulkanUiRenderer::FillCommandBuffer() {
-	_ui_cmdbuf->Begin();
-	_ui_rp->CmdBegin(*_ui_cmdbuf, *_ui_framebuffer);
-	_ui_cmdbuf->BindPipeline(*_ui_pipeline);
-	_ui_cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+void VulkanUiRenderer::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
+	_ui_rp->CmdBegin(*cmdbuffer, *_ui_framebuffer);
+	cmdbuffer->BindPipeline(*_ui_pipeline);
+	cmdbuffer->SetViewport(0, 0, _fb_width, _fb_height);
 	
 	for (uint32 i = 0; i < written_elements; i ++) {
-		_ui_cmdbuf->BindDescriptorSets(*_ui_pll, 0, 1, _descr_sets[i]);
-		_ui_cmdbuf->BindMesh(*_ui_sprite_mesh);
-		_ui_cmdbuf->DrawIndexed(6);
+		cmdbuffer->BindDescriptorSets(*_ui_pll, 0, 1, _descr_sets[i]);
+		cmdbuffer->BindMesh(*_ui_sprite_mesh);
+		cmdbuffer->DrawIndexed(6);
 	}
 
-	_ui_cmdbuf->EndRenderPass();
-	_ui_cmdbuf->End();
-}
-void VulkanUiRenderer::Execute(VulkanSemaphore* end_semaphore) {
-	VulkanGraphicsSubmit(*_ui_cmdbuf, *_begin_semaphore, *end_semaphore);
+	cmdbuffer->EndRenderPass();
 }

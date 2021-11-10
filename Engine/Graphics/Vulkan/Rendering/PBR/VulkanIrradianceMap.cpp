@@ -51,12 +51,6 @@ void VulkanIrradianceMap::Create() {
 
     _irmap_descr_set->WriteDescriptorImage(1, _irmap_output_texture, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 
-    _irmap_cmdpool = new VulkanCommandPool();
-    _irmap_cmdpool->Create(device->GetComputeQueueFamilyIndex());
-
-    _irmap_cmdbuffer = new VulkanCommandBuffer();
-    _irmap_cmdbuffer->Create(_irmap_cmdpool);
-
     _irmap_begin_semaphore = new VulkanSemaphore();
     _irmap_begin_semaphore->Create();
 }
@@ -74,7 +68,7 @@ VulkanSemaphore* VulkanIrradianceMap::GetBeginSemaphore() {
     return _irmap_begin_semaphore;
 }
 
-void VulkanIrradianceMap::RecordCmdBuffer() {
+void VulkanIrradianceMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
     VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(_irmap_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
     VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(_irmap_output_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -84,20 +78,13 @@ void VulkanIrradianceMap::RecordCmdBuffer() {
     uint32 per_time = 6 / _steps_count;
     uint32 passed = _steps_passed * per_time;
 
-    _irmap_cmdbuffer->Begin();
-    _irmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_irmap_barrier });
-    _irmap_cmdbuffer->BindComputePipeline(*_irmap_pipeline);
-    _irmap_cmdbuffer->BindDescriptorSets(*_irmap_pipeline_layout, 0, 1, _irmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
+    cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_irmap_barrier });
+    cmdbuffer->BindComputePipeline(*_irmap_pipeline);
+    cmdbuffer->BindDescriptorSets(*_irmap_pipeline_layout, 0, 1, _irmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
     
-    _irmap_cmdbuffer->PushConstants(*_irmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &passed);
-    _irmap_cmdbuffer->Dispatch(_irmap_size / 32, _irmap_size / 32, per_time);
+    cmdbuffer->PushConstants(*_irmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &passed);
+    cmdbuffer->Dispatch(_irmap_size / 32, _irmap_size / 32, per_time);
     _steps_passed++;
 
-    _irmap_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
-    
-    _irmap_cmdbuffer->End();
-}
-
-void VulkanIrradianceMap::ComputeIrmapTexture(VulkanSemaphore* end_semaphore) {
-    VulkanComputeSubmit(*_irmap_cmdbuffer, *_irmap_begin_semaphore, *end_semaphore);
+    cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });
 }

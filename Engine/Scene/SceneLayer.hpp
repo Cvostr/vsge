@@ -4,6 +4,19 @@
 #include "Scene.hpp"
 
 namespace VSGE {
+
+	class OnSceneLoadedEvent : public IEvent {
+	public:
+		EVENT_CLASS_TYPE(EventType::EventSceneLoaded)
+		OnSceneLoadedEvent(){}
+	};
+
+	class OnSceneModifiedEvent : public IEvent {
+	public:
+		EVENT_CLASS_TYPE(EventType::EventSceneModified)
+		OnSceneModifiedEvent() {}
+	};
+
 	class SceneLayer : public VSGE::IApplicationLayer {
 	private:
 		Scene* _scene;

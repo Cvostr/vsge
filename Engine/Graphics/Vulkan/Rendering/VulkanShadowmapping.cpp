@@ -40,9 +40,6 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_point_RenderPass->PushColorAttachment(FORMAT_R32F);
 	_shadowmap_point_RenderPass->Create();
 
-	_shadowmapCmdPool = new VulkanCommandPool;
-	_shadowmapCmdPool->Create(device->GetGraphicsQueueFamilyIndex());
-
 	shadowmap_vertex_layout.AddBinding(sizeof(Vertex));
 	shadowmap_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
@@ -171,18 +168,10 @@ VulkanShadowmapping::VulkanShadowmapping(
 		_shadowrenderer_descrSet->WriteDescriptorImage(4, VulkanRenderer::Get()->GetBlackCubeTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderer::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 	}
-
-	//--------------SHADOW PROCESS CMDBUF
-	_shadowprocess_cmdbuf = new VulkanCommandBuffer();
-	_shadowprocess_cmdbuf->Create(_shadowmapCmdPool);
-
-	_shadowrenderer_cmdbuf = new VulkanCommandBuffer;
-	_shadowrenderer_cmdbuf->Create(_shadowmapCmdPool);
 }
 VulkanShadowmapping::~VulkanShadowmapping() {
 	SAFE_RELEASE(_shadowcasters_buffer)
 	SAFE_RELEASE(_shadowprocess_buffer)
-	SAFE_RELEASE(_shadowmapCmdPool)
 
 	//Destroy renderpasses
 	SAFE_RELEASE(_shadowmapRenderPass)
@@ -293,14 +282,10 @@ void VulkanShadowmapping::ResetCasters() {
 	_added_casters = 0;
 }
 
-void VulkanShadowmapping::ProcessShadowCasters() {
-	_shadowrenderer_cmdbuf->Begin();
-
+void VulkanShadowmapping::ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer) {
 	for (uint32 caster_i = 0; caster_i < _added_casters; caster_i++) {
-		ProcessShadowCaster(caster_i, _shadowrenderer_cmdbuf);
+		ProcessShadowCaster(caster_i, cmdbuffer);
 	}
-
-	_shadowrenderer_cmdbuf->End();
 }
 
 void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf) {
@@ -418,10 +403,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	SAFE_RELEASE_ARR(_dir_caster_frustums)
 
 	cmdbuf->EndRenderPass();
-}
-
-void VulkanShadowmapping::ExecuteShadowCasters(VulkanSemaphore* begin, VulkanSemaphore* end) {
-	VulkanGraphicsSubmit(*_shadowrenderer_cmdbuf, *begin, *end);
 }
 
 void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf) {

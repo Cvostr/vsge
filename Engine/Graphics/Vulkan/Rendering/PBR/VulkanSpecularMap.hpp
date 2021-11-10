@@ -28,10 +28,6 @@ namespace VSGE {
 		VulkanTexture* _spmap_output_texture;
 		std::vector<SpecularMap_MipMapLevel> _mipmap_levels;
 
-		VulkanCommandPool* _spmap_cmdpool;
-		VulkanCommandBuffer* _spmap_cmdbuffer;
-		VulkanSemaphore* _spmap_begin_semaphore;
-
 		uint32 _steps_count;
 		uint32 _steps_passed;
 	public:
@@ -43,13 +39,10 @@ namespace VSGE {
 
 		void Destroy();
 
-		void FillCommandBuffer();
-
-		void Execute(VulkanSemaphore* end_semaphore);
+		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer);
 
 		void SetEnvMapInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetSpecularOutputTexture();
-		VulkanSemaphore* GetBeginSemaphore();
 
 		void SetStepsCount(uint32 steps_count);
 	};

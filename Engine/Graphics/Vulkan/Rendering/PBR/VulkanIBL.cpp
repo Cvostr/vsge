@@ -1,4 +1,5 @@
 #include "VulkanIBL.hpp"
+#include <Graphics/Vulkan/VulkanRAPI.hpp>
 
 using namespace VSGE;
 
@@ -52,6 +53,14 @@ void VulkanIBL::Create() {
 	_envmap->SetStepsCount(6);
 	_envmap->Create();
 
+	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
+
+	_pool = new VulkanCommandPool();
+	_pool->Create(device->GetComputeQueueFamilyIndex());
+
+	_maps_cmdbuf = new VulkanCommandBuffer;
+	_maps_cmdbuf->Create(_pool);
+
 	_irmap = new VulkanIrradianceMap;
 	_irmap->Create();
 	_irmap->SetStepsCount(6);
@@ -71,46 +80,28 @@ void VulkanIBL::Destroy() {
 void VulkanIBL::RecordCmdBufs() {
 	_envmap->RecordCmdbufs();
 
+	_maps_cmdbuf->Begin();
 	if (_alternately) {
 		if (_prev_step == 1) {
-			_irmap->RecordCmdBuffer();
-		}
-		else if (_prev_step == 2) {
-			_spmap->FillCommandBuffer();
-		}
-	}
-	else {
-		_irmap->RecordCmdBuffer();
-		_spmap->FillCommandBuffer();
-	}
-	
-}
-
-void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
-
-	VulkanSemaphore* env_end_semaphore = _spmap->GetBeginSemaphore();
-	if (_alternately) {
-		if (_prev_step == 1) {
-			env_end_semaphore = _irmap->GetBeginSemaphore();
-		}
-	}
-
-	_envmap->Execute(env_end_semaphore);
-
-	if (_alternately) {
-		if (_prev_step == 1) {
-			_irmap->ComputeIrmapTexture(end_semaphore);
+			_irmap->RecordCommandBuffer(_maps_cmdbuf);
 			_prev_step = 2;
 		}
 		else if (_prev_step == 2) {
-			_spmap->Execute(end_semaphore);
+			_spmap->RecordCommandBuffer(_maps_cmdbuf);
 			_prev_step = 1;
 		}
 	}
 	else {
-		_spmap->Execute(_irmap->GetBeginSemaphore());
-		_irmap->ComputeIrmapTexture(end_semaphore);
+		_irmap->RecordCommandBuffer(_maps_cmdbuf);
+		_spmap->RecordCommandBuffer(_maps_cmdbuf);
 	}
+	_maps_cmdbuf->End();
+}
+
+void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
+	_envmap->Execute(_irmap->GetBeginSemaphore());
+
+	VulkanComputeSubmit(*_maps_cmdbuf, *_irmap->GetBeginSemaphore(), *end_semaphore);
 }
 
 VulkanSemaphore* VulkanIBL::GetBeginSemaphore() {

@@ -29,18 +29,8 @@ void VulkanRenderTarget::Create() {
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
-
-	_cmdbuf = new VulkanCommandBuffer;
-	_cmdbuf->Create(vk_renderer->GetCommandPool());
-
-	_end_semaphore = new VulkanSemaphore;
-	_end_semaphore->Create();
 }
 void VulkanRenderTarget::Destroy() {
-	SAFE_RELEASE(_end_semaphore);
-
-	SAFE_RELEASE(_cmdbuf);
-
 	SAFE_RELEASE(_deferred_renderer);
 	SAFE_RELEASE(_gbuffer_renderer);
 }
@@ -79,12 +69,6 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
 	_output = output_texture;
 }
-VulkanCommandBuffer* VulkanRenderTarget::GetGBufferCommandBuffer() {
-	return _cmdbuf;
-}
-VulkanCommandBuffer* VulkanRenderTarget::GetDeferredCommandBuffer() {
-	return _cmdbuf;
-}
 VulkanTexture* VulkanRenderTarget::GetDeferredOutput() {
 	return _deferred_renderer->GetOutputTexture();
 }
@@ -97,35 +81,27 @@ VulkanTexture* VulkanRenderTarget::GetGBufferPositionsAttachment() {
 VulkanTexture* VulkanRenderTarget::GetGBufferDepthAttachment() {
 	return _gbuffer_renderer->GetDepthAttachment();
 }
-VulkanSemaphore* VulkanRenderTarget::GetEndSemaphore() {
-	return _end_semaphore;
-}
 VulkanGBufferRenderer* VulkanRenderTarget::GetGBufferRenderer() {
 	return _gbuffer_renderer;
 }
 VulkanDeferredLight* VulkanRenderTarget::GetDeferredLightRenderer() {
 	return _deferred_renderer;
 }
-void VulkanRenderTarget::RecordCommandBuffers() {
+void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
 	_gbuffer_renderer->SetScene(vk_renderer->GetScene());
 
-	_cmdbuf->Begin();
-	_gbuffer_renderer->RecordCmdBuffer(_cmdbuf);
-	
+	_gbuffer_renderer->RecordCmdBuffer(cmdbuffer);
 	if (_shadowmapper) {
 		_shadowmapper->UpdateShadowrenderingDescriptors();
-		_shadowmapper->RecordShadowProcessingCmdbuf(_cmdbuf);
+		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
 	}
-
-	_deferred_renderer->RecordCmdbuf(_cmdbuf);
+	_deferred_renderer->RecordCmdbuf(cmdbuffer);
 	if (_output) {
 		if (_output->IsCreated()) {
-			CopyDeferredToOutput(_cmdbuf);
+			CopyDeferredToOutput(cmdbuffer);
 		}
 	}
-
-	_cmdbuf->End();
 }
 
 void VulkanRenderTarget::CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf) {

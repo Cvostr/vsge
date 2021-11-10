@@ -160,11 +160,12 @@ void FileBrowserWindow::OnDrawWindow() {
         cd_up();
 
     std::string dir_name = "";
-    std::string path_to_go = "";
-    for(uint32 path_i = 0; path_i < _currentDir.size() + 1; path_i++) {
-        path_to_go.push_back(_currentDir[path_i]);
-        if (_currentDir[path_i] != '/' && _currentDir[path_i] != '\\' && _currentDir[path_i] != '\0') {
-            dir_name.push_back(_currentDir[path_i]);
+    std::string path_to_go = _rootDir;
+    std::string cur_dir_relative = _currentDir.substr(_rootDir.size());
+    for(uint32 path_i = 0; path_i < cur_dir_relative.size() + 1; path_i++) {
+        path_to_go.push_back(cur_dir_relative[path_i]);
+        if (cur_dir_relative[path_i] != '/' && cur_dir_relative[path_i] != '\\' && cur_dir_relative[path_i] != '\0') {
+            dir_name.push_back(cur_dir_relative[path_i]);
         }
         else {
             ImGui::SameLine();

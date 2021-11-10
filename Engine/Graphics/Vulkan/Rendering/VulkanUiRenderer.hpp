@@ -28,10 +28,6 @@ namespace VSGE {
 		VulkanPipelineLayout* _ui_pll;
 		VulkanPipeline* _ui_pipeline;
 
-		VulkanCommandPool* _ui_cmdpool;
-		VulkanCommandBuffer* _ui_cmdbuf;
-		VulkanSemaphore* _begin_semaphore;
-
 		VulkanMesh* _ui_sprite_mesh;
 
 		uint32 written_elements;
@@ -51,10 +47,8 @@ namespace VSGE {
 		void Destroy();
 		void ResizeOutput(uint32 width, uint32 height);
 		VulkanTexture* GetOutputTexture();
-		VulkanSemaphore* GetBeginSemaphore();
 
 		void FillBuffers();
-		void FillCommandBuffer();
-		void Execute(VulkanSemaphore* end_semaphore);
+		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer);
 	};
 }

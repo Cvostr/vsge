@@ -12,9 +12,8 @@ namespace VSGE {
 		VulkanIrradianceMap* _irmap;
 		VulkanSpecularMap* _spmap;
 
-		VulkanSemaphore* _envmap_begin;
-		VulkanSemaphore* _irmap_begin;
-		VulkanSemaphore* _spmap_begin;
+		VulkanCommandPool* _pool;
+		VulkanCommandBuffer* _maps_cmdbuf;
 
 		tEntityList* _entities_to_render;
 		tEntityList* _particles_to_render;
