@@ -127,7 +127,7 @@ namespace VSGE {
 		void ProcessShadowCasters();
 		void ExecuteShadowCasters(VulkanSemaphore* begin, VulkanSemaphore* end);
 		
-		void RecordShadowProcessingCmdbuf();
-		void RenderShadows(VulkanSemaphore* begin, VulkanSemaphore* end);
+		void UpdateShadowrenderingDescriptors();
+		void RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf);
 	};
 }

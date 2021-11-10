@@ -25,9 +25,7 @@ namespace VSGE {
 		EnvMapSide _sides[6];
 
 		VulkanCommandPool* _envmap_cmdpool;
-		VulkanCommandBuffer* _envmap_gbuffers_cmdbuf;
-		VulkanCommandBuffer* _envmap_lights_cmdbuf;
-		VulkanSemaphore* _envmap_middle_semaphore;
+		VulkanCommandBuffer* _envmap_cmdbuf;
 		VulkanSemaphore* _envmap_begin_semaphore;
 
 		tEntityList* _entities_to_render;

@@ -178,8 +178,6 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowrenderer_cmdbuf = new VulkanCommandBuffer;
 	_shadowrenderer_cmdbuf->Create(_shadowmapCmdPool);
-	
-	RecordShadowProcessingCmdbuf();
 }
 VulkanShadowmapping::~VulkanShadowmapping() {
 	SAFE_RELEASE(_shadowcasters_buffer)
@@ -426,19 +424,17 @@ void VulkanShadowmapping::ExecuteShadowCasters(VulkanSemaphore* begin, VulkanSem
 	VulkanGraphicsSubmit(*_shadowrenderer_cmdbuf, *begin, *end);
 }
 
-void VulkanShadowmapping::RecordShadowProcessingCmdbuf() {
-	_shadowprocess_cmdbuf->Begin();
-	_shadowprocessRenderPass->CmdBegin(*_shadowprocess_cmdbuf, *_shadowprocess_framebuffer);
-	_shadowprocess_cmdbuf->BindPipeline(*_shadowprocess_pipeline);
-	_shadowprocess_cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
-	_shadowprocess_cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet);
-	_shadowprocess_cmdbuf->BindMesh(*_screenPlane);
-	_shadowprocess_cmdbuf->DrawIndexed(6);
-	_shadowprocess_cmdbuf->EndRenderPass();
-	_shadowprocess_cmdbuf->End();
+void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf) {
+	_shadowprocessRenderPass->CmdBegin(*cmdbuf, *_shadowprocess_framebuffer);
+	cmdbuf->BindPipeline(*_shadowprocess_pipeline);
+	cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
+	cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet);
+	cmdbuf->BindMesh(*_screenPlane);
+	cmdbuf->DrawIndexed(6);
+	cmdbuf->EndRenderPass();
 }
 
-void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore* end) {
+void VulkanShadowmapping::UpdateShadowrenderingDescriptors() {
 	//Write shadowmaps to descriptor set
 	std::vector<VulkanTexture*> shadowmaps;
 	std::vector<VulkanTexture*> shadowmaps_point;
@@ -453,28 +449,27 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 			shadowmaps.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 	}
 
-	_shadowrenderer_descrSet->WriteDescriptorImages(3, 
+	_shadowrenderer_descrSet->WriteDescriptorImages(3,
 		shadowmaps.data(),
-		_shadowmap_sampler, 
+		_shadowmap_sampler,
 		static_cast<uint32>(shadowmaps.size())
 	);
-	_shadowrenderer_descrSet->WriteDescriptorImages(4, 
-		shadowmaps_point.data(), 
-		_shadowmap_sampler, 
+	_shadowrenderer_descrSet->WriteDescriptorImages(4,
+		shadowmaps_point.data(),
+		_shadowmap_sampler,
 		static_cast<uint32>(shadowmaps_point.size())
 	);
-	_shadowrenderer_descrSet->WriteDescriptorImages(5, 
+	_shadowrenderer_descrSet->WriteDescriptorImages(5,
 		shadowmaps_spot.data(),
-		_shadowmap_sampler, 
+		_shadowmap_sampler,
 		static_cast<uint32>(shadowmaps_spot.size())
 	);
 	_shadowprocess_buffer->WriteData(SHADOWPROCESS_SHADOWCOUNT_OFFSET, 4, &_added_casters);
-	RecordShadowProcessingCmdbuf();
 
-	if(_scene){
+	if (_scene) {
 		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
 		uint32 cascades_count = env_settings.GetShadowCascadesCount();
-		for(uint32 cascade = 0; cascade < cascades_count; cascade ++){
+		for (uint32 cascade = 0; cascade < cascades_count; cascade++) {
 			float cascade_depth = env_settings.GetCascadeDepths()[cascade];
 			_cascadeinfo_buffer->WriteData(16 * cascade, 4, &cascade_depth);
 		}
@@ -482,6 +477,4 @@ void VulkanShadowmapping::RenderShadows(VulkanSemaphore* begin, VulkanSemaphore*
 		int map_size = MAP_SIZE;
 		_cascadeinfo_buffer->WriteData(164, 4, &map_size);
 	}
-
-	VulkanGraphicsSubmit(*_shadowprocess_cmdbuf, *begin, *end);
 }

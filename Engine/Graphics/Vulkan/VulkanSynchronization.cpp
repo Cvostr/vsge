@@ -48,7 +48,7 @@ void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wa
 	VulkanDevice* device = vulkan->GetDevice();
 
 	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
+	//vkQueueWaitIdle(device->GetGraphicsQueue());
 }
 
 void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf) {
@@ -85,7 +85,7 @@ void VSGE::VulkanComputeSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wai
 	submitInfo.pSignalSemaphores = &_signal;
 
 	vkQueueSubmit(device->GetComputeQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetComputeQueue());
+	//vkQueueWaitIdle(device->GetComputeQueue());
 }
 
 void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
@@ -109,7 +109,7 @@ void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
 	presentInfo.pResults = nullptr;
 
 	vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
-	//vkQueueWaitIdle(device->GetPresentQueue());
+	vkQueueWaitIdle(device->GetPresentQueue());
 }
 
 VkResult VSGE::AcquireNextImage(VulkanSemaphore& signal, uint32& imageIndex) {

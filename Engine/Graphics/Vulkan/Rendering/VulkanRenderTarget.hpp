@@ -10,16 +10,18 @@ namespace VSGE {
 		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanDeferredLight* _deferred_renderer;
 
-		VulkanCommandBuffer* _gbuffer_cmdbuf;
-		VulkanCommandBuffer* _deferred_cmdbuf;
+		VulkanCommandBuffer* _cmdbuf;
 
-		VulkanSemaphore* _gbuffer_end_semaphore;
-		VulkanSemaphore* _deferred_end_semaphore;
+		VulkanSemaphore* _end_semaphore;
 
 		VulkanTexture* _output;
 
+		VulkanShadowmapping* _shadowmapper;
+
 		uint32 _width;
 		uint32 _height;
+
+		void CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf);
 	public:
 		VulkanRenderTarget();
 		~VulkanRenderTarget();
@@ -48,8 +50,7 @@ namespace VSGE {
 		VulkanCommandBuffer* GetGBufferCommandBuffer();
 		VulkanCommandBuffer* GetDeferredCommandBuffer();
 
-		VulkanSemaphore* GetGbufferEndSemaphore();
-		VulkanSemaphore* GetDeferredEndSemaphore();
+		VulkanSemaphore* GetEndSemaphore();
 
 		VulkanGBufferRenderer* GetGBufferRenderer();
 		VulkanDeferredLight* GetDeferredLightRenderer();

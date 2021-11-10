@@ -19,8 +19,7 @@ VulkanEnvMap::~VulkanEnvMap() {
 	}
 
 	SAFE_RELEASE(_envmap_cmdpool)
-	SAFE_RELEASE(_envmap_gbuffers_cmdbuf)
-	SAFE_RELEASE(_envmap_lights_cmdbuf)
+	SAFE_RELEASE(_envmap_cmdbuf)
 }
 
 void VulkanEnvMap::Create() {
@@ -52,14 +51,8 @@ void VulkanEnvMap::Create() {
 	_envmap_cmdpool = new VulkanCommandPool;
 	_envmap_cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
 
-	_envmap_gbuffers_cmdbuf = new VulkanCommandBuffer;
-	_envmap_gbuffers_cmdbuf->Create(_envmap_cmdpool);
-
-	_envmap_lights_cmdbuf = new VulkanCommandBuffer;
-	_envmap_lights_cmdbuf->Create(_envmap_cmdpool);
-
-	_envmap_middle_semaphore = new VulkanSemaphore;
-	_envmap_middle_semaphore->Create();
+	_envmap_cmdbuf = new VulkanCommandBuffer;
+	_envmap_cmdbuf->Create(_envmap_cmdpool);
 
 	_envmap_begin_semaphore = new VulkanSemaphore;
 	_envmap_begin_semaphore->Create();
@@ -87,20 +80,18 @@ void VulkanEnvMap::RecordCmdbufs() {
 
 	uint32 step_c = 6 / _steps;
 
-	_envmap_gbuffers_cmdbuf->Begin();
+	_envmap_cmdbuf->Begin();
 	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
-		_sides[i]._gbuffer->RecordCmdBuffer(_envmap_gbuffers_cmdbuf);
-	}
-	_envmap_gbuffers_cmdbuf->End();
-
-	_envmap_lights_cmdbuf->Begin();
-	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
-		_sides[i]._light->RecordCmdbuf(_envmap_lights_cmdbuf);
+		_sides[i]._gbuffer->RecordCmdBuffer(_envmap_cmdbuf);
 	}
 
-	CopyImagesToCubeTexture(_envmap_lights_cmdbuf);
+	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
+		_sides[i]._light->RecordCmdbuf(_envmap_cmdbuf);
+	}
 
-	_envmap_lights_cmdbuf->End();
+	CopyImagesToCubeTexture(_envmap_cmdbuf);
+
+	_envmap_cmdbuf->End();
 	_processed++;
 }
 
@@ -108,8 +99,10 @@ void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
 	VkImageLayout old = _env_cube_texture->GetImageLayout();
 	_env_cube_texture->CmdChangeLayout(cmdbuf, old, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
+	uint32 step_c = 6 / _steps;
+
 	VkImageCopy copy_args[6];
-	for (uint32 i = 0; i < 6; i++) {
+	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
 		VkImageSubresourceLayers src = {};
 		src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		src.mipLevel = 0;
@@ -134,7 +127,7 @@ void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
 		((VulkanTexture*)_sides[i]._light->GetFramebuffer()->GetColorAttachments()[0])->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	}
 
-	for (uint32 i = 0; i < 6; i++) {
+	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
 		VkImage image = ((VulkanTexture*)_sides[i]._light->GetFramebuffer()->GetColorAttachments()[0])->GetImage();
 		vkCmdCopyImage(
 			cmdbuf->GetCommandBuffer(),
@@ -156,8 +149,7 @@ VulkanTexture* VulkanEnvMap::GetCubeTexture() {
 }
 
 void VulkanEnvMap::Execute(VulkanSemaphore* end) {
-	VulkanGraphicsSubmit(*_envmap_gbuffers_cmdbuf, *_envmap_begin_semaphore, *_envmap_middle_semaphore);
-	VulkanGraphicsSubmit(*_envmap_lights_cmdbuf, *_envmap_middle_semaphore, *end);
+	VulkanGraphicsSubmit(*_envmap_cmdbuf, *_envmap_begin_semaphore, *end);
 }
 
 VulkanSemaphore* VulkanEnvMap::GetBeginSemaphore() {

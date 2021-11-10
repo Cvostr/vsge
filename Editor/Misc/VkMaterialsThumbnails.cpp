@@ -96,14 +96,8 @@ void VkMaterialsThumbnails::Create() {
     _cmdbuf = new VulkanCommandBuffer;
     _cmdbuf->Create(_cmdpool);
 
-    _cmdbuf_deferred = new VulkanCommandBuffer;
-    _cmdbuf_deferred->Create(_cmdpool);
-
     _begin_semaphore = new VulkanSemaphore();
     _begin_semaphore->Create();
-
-    _middle_semaphore = new VulkanSemaphore;
-    _middle_semaphore->Create();
 
     _sampler = new VulkanSampler();
     _sampler->Create();
@@ -172,19 +166,14 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
             VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
 
         _gbuffer->RecordCmdBuffer(_cmdbuf);
-    }
-    _cmdbuf->End();
-
-    _cmdbuf_deferred->Begin();
-    if (_queued.size() > 0) {
-        _light->RecordCmdbuf(_cmdbuf_deferred);
+        _light->RecordCmdbuf(_cmdbuf);
 
         VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
         thumb->material_name = _queued[0];
         VulkanTexture* src = (VulkanTexture*)_light->GetFramebuffer()->GetColorAttachments()[0];
         VulkanTexture* dst = thumb->texture;
 
-        src->CmdCopyTexture(_cmdbuf_deferred, dst, 0, 1);
+        src->CmdCopyTexture(_cmdbuf, dst, 0, 1);
 
         //shrink array to left
         for (uint32 q_i = 1; q_i < _queued.size(); q_i++) {
@@ -192,12 +181,11 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
         }
         _queued.pop_back();
     }
-    _cmdbuf_deferred->End();
+    _cmdbuf->End();
     
 }
 void VkMaterialsThumbnails::CmdExecute(VulkanSemaphore* end) {
-    VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *_middle_semaphore);
-    VulkanGraphicsSubmit(*_cmdbuf_deferred, *_middle_semaphore, *end);
+    VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end);
 }
 VulkanSemaphore* VkMaterialsThumbnails::GetBeginSemaphore() {
     return _begin_semaphore;

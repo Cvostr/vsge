@@ -42,9 +42,7 @@ private:
 
 	VSGE::VulkanCommandPool* _cmdpool;
 	VSGE::VulkanCommandBuffer* _cmdbuf;
-	VSGE::VulkanCommandBuffer* _cmdbuf_deferred;
 	VSGE::VulkanSemaphore* _begin_semaphore;
-	VSGE::VulkanSemaphore* _middle_semaphore;
 
 	std::vector<VkMaterialThumbnail*> _thumbnails;
 	std::vector<std::string> _queued;

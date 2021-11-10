@@ -494,37 +494,16 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	begin = mShadowmappingEndSemaphore;
 	VulkanSemaphore* end = nullptr;
-	VulkanSemaphore* gbuffer_end = nullptr;
 	for (uint32 rt_i = 0; rt_i < _render_targets.size(); rt_i ++) {
 		VulkanRenderTarget* render_target = _render_targets[rt_i];
-		VulkanGraphicsSubmit(
-			*render_target->GetGBufferCommandBuffer(),
-			*begin,
-			*render_target->GetGbufferEndSemaphore());
+		
+		VulkanGraphicsSubmit(*render_target->GetGBufferCommandBuffer(), *begin, *render_target->GetEndSemaphore());
 
-		gbuffer_end = render_target->GetGbufferEndSemaphore();
-			 
+		begin = render_target->GetEndSemaphore();
+
 		bool last_rt = rt_i == _render_targets.size() - 1;
-		bool is_main_rt = render_target == _main_render_target;
-
 		if (last_rt)
 			end = _ibl_map->GetBeginSemaphore();
-		else
-			end = render_target->GetDeferredEndSemaphore();
-
-		if (is_main_rt) {
-			_shadowmapper->RenderShadows(render_target->GetGbufferEndSemaphore(),
-				mShadowprocessingEndSemaphore);
-
-			gbuffer_end = mShadowprocessingEndSemaphore;
-		}
-
-		VulkanGraphicsSubmit(
-			*render_target->GetDeferredCommandBuffer(),
-			*gbuffer_end,
-			*end);
-
-		begin = render_target->GetDeferredEndSemaphore();
 	}
 
 	_ibl_map->Execute(_ui_renderer->GetBeginSemaphore());
