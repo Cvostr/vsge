@@ -227,6 +227,7 @@ void VulkanTerrain::Destroy() {
 VulkanTerrainRenderer::VulkanTerrainRenderer() {
 	_terrains_processed = 0;
 	_camera_index = 0;
+	_reverse_cull = false;
 }
 VulkanTerrainRenderer::~VulkanTerrainRenderer() {
 	SAFE_RELEASE(_terrain_pipeline)
@@ -315,7 +316,7 @@ void VulkanTerrainRenderer::Create(
 	_terrain_masks_sampler->Create();
 
 	_terrain_textures_sampler = new VulkanSampler;
-	_terrain_textures_sampler->SetWrapModes(SAMPLER_WRAP_MIRRORED_REPEAT, SAMPLER_WRAP_MIRRORED_REPEAT);
+	_terrain_textures_sampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
 	_terrain_textures_sampler->Create();
 
 	_terrains_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -414,7 +415,9 @@ VulkanBuffer* VulkanTerrainRenderer::GetTerrainsBuffer() {
 uint32& VulkanTerrainRenderer::GetWrittenGrassTransforms() {
 	return _vegetables_transforms_written;
 }
-
+void VulkanTerrainRenderer::SetReverseFaceCull(bool reverse) {
+	_reverse_cull = reverse;
+}
 void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index) {
 	VulkanTerrain* vk_terrain = _terrains[terrain_index];
 	TerrainComponent* terrain = vk_terrain->GetTerrain();
@@ -436,6 +439,11 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 	}
 
 	cmdbuffer->BindPipeline(*_grass_pipeline);
+	if (_reverse_cull) {
+		cmdbuffer->SetCullMode(VK_CULL_MODE_BACK_BIT);
+	}
+	else
+		cmdbuffer->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 	cmdbuffer->SetViewport(0, 0, (float)_outputWidth, (float)_outputHeight);
 	cmdbuffer->BindDescriptorSets(*_grass_pipeline_layout, 0, 1, _entity_descr_set->at(vertexDescriptorID), 2, offsets);
 

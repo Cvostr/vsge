@@ -4,7 +4,6 @@ using namespace VSGE;
 
 TextureResource::TextureResource() {
 	_texture = CreateTexture();
-	_isRenderTarget = false;
 }
 
 TextureResource::~TextureResource() {
@@ -29,7 +28,6 @@ void TextureResource::Prepare(){
 		_description.size = 0;
 		_processed_texture.Destroy();
 		SetState(RESOURCE_STATE_UNLOADED);
-		//Load();
 		return;
 	}
 	_processed_texture.Destroy();

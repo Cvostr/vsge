@@ -497,8 +497,6 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputHeight = height;
 
 	_main_render_target->ResizeOutput(width, height);
-
-	_terrain_renderer->SetOutputSizes(width, height);
 	
 	_shadowmapper->ResizeOutput(width, height);
 	_shadowmapper->SetGbufferPositionsAttachment(_main_render_target->GetGBufferPositionsAttachment());

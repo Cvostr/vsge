@@ -65,6 +65,7 @@ namespace VSGE{
         uint32 _terrains_processed;
         uint32 _vegetables_transforms_written;
 
+        bool _reverse_cull;
         uint32 _camera_index;
         uint32 _outputWidth;
         uint32 _outputHeight;
@@ -91,5 +92,6 @@ namespace VSGE{
         VulkanBuffer* GetGrassTransformsBuffer();
         VulkanBuffer* GetTerrainsBuffer();
         uint32& GetWrittenGrassTransforms();
+        void SetReverseFaceCull(bool reverse);
     };
 }

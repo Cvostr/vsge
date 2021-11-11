@@ -150,6 +150,8 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	VulkanTerrainRenderer* terrain_renderer = VulkanRenderer::Get()->GetTerrainRenderer();
 	terrain_renderer->SetCameraIndex(_camera_index);
+	terrain_renderer->SetReverseFaceCull(_reverseCull);
+	terrain_renderer->SetOutputSizes(_fb_width, _fb_height);
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
 

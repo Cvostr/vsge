@@ -103,7 +103,6 @@ void ImGuiLayer::OnAttach() {
     ImGui_ImplVulkan_CreateFontsTexture(cmdbuf.GetCommandBuffer());
     cmdbuf.End();
     VulkanGraphicsSubmit(cmdbuf);
-   
 }
 
 void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index) {
