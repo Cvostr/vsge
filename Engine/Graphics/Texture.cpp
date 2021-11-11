@@ -66,6 +66,8 @@ bool Texture::CreateFromBuffer(byte* data, uint32 size) {
 }
 
 bool Texture::CreateFromProcessed(const ProcessedTexture& texture) {
+    if (texture._width == 0 || texture._height == 0)
+        return false;
     Create(texture._width, texture._height, texture._format, 1, (uint32)texture._mip_levels.size());
 
     for (uint32 mip_i = 0; mip_i < texture._mip_levels.size(); mip_i++) {

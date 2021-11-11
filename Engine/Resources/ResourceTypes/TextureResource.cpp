@@ -23,7 +23,15 @@ void TextureResource::PostLoad() {
 
 void TextureResource::Prepare(){
 	ProcessTexture(GetLoadedData(), GetDataDescription().size, _processed_texture);
-	_texture->CreateFromProcessed(_processed_texture);
+	bool result = _texture->CreateFromProcessed(_processed_texture);
+	if (!result) {
+		FreeLoadedData();
+		_description.size = 0;
+		_processed_texture.Destroy();
+		SetState(RESOURCE_STATE_UNLOADED);
+		//Load();
+		return;
+	}
 	_processed_texture.Destroy();
 	SetState(RESOURCE_STATE_READY);
 }

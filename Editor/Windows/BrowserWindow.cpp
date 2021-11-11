@@ -269,6 +269,8 @@ void FileBrowserWindow::OnDrawWindow() {
                 MessageDialog(&desc, action);
                 if(action == DIALOG_USER_ACTION_ACCEPT){
                     RemoveFile(e->abs_path);
+                    InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
+                    insp->SetShowingResource(nullptr);
                 }
             }
                

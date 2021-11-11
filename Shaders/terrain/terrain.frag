@@ -28,6 +28,13 @@ layout (std140, set = 1, binding = 0) uniform TerrainData{
     MaterialFactors factors[MAX_TEXTURES];
 };
 
+layout (std140, binding = 0) uniform CamMatrices{
+    mat4 cam_view_projection;
+    mat4 cam_view;
+    mat4 cam_projection;
+    vec3 cam_position;
+};
+
 layout(set = 1, binding = 1) uniform sampler2DArray masks;
 layout(set = 1, binding = 2) uniform sampler2D albedo[MAX_TEXTURES];
 layout(set = 1, binding = 3) uniform sampler2D normal[MAX_TEXTURES];
@@ -70,6 +77,46 @@ float GetHeight(vec2 uv, uint texture_id){
     return texture(height[texture_id], uv).r;
 }
 
+vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir, uint texture_id){
+    // number of depth layers
+    const float minLayers = 8;
+    const float maxLayers = 64;
+    float height_factor = factors[texture_id].height_factor;
+    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), view_dir)));  
+    // calculate the size of each layer
+    float layerDepth = 1.0 / numLayers;
+    // depth of current layer
+    float currentLayerDepth = 0.0;
+    // the amount to shift the texture coordinates per layer (from vector P)
+    vec2 P = view_dir.xy / view_dir.z * height_factor; 
+    vec2 deltaTexCoords = P / numLayers;
+    // get initial values
+    vec2  currentTexCoords     = uv;
+    float currentDepthMapValue = GetHeight(currentTexCoords, texture_id);
+      
+    while(currentLayerDepth < currentDepthMapValue)
+    {
+        // shift texture coordinates along direction of P
+        currentTexCoords -= deltaTexCoords;
+        // get depthmap value at current texture coordinates
+        currentDepthMapValue = GetHeight(currentTexCoords, texture_id);  
+        // get depth of next layer
+        currentLayerDepth += layerDepth;  
+    }
+    
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    // get depth after and before collision for linear interpolation
+    float afterDepth  = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = GetHeight(prevTexCoords, texture_id) - currentLayerDepth + layerDepth;
+ 
+    // interpolation of texture coordinates
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+}
+
 void CalculateTextures(vec2 uv){
     vec2 terrain_uv = vec2(0);
     terrain_uv.x = uv.x * texture_uv_x;
@@ -84,6 +131,11 @@ void CalculateTextures(vec2 uv){
     for(uint i = 0; i < textures_count; i ++){
         float factor = GetFactor(uv, i);
         if(factor > 0.001){
+            //height
+            mat3 transposed_tbn = transpose(TBN);
+            vec3 view_dir = normalize(transposed_tbn * cam_position - transposed_tbn * FragPos);
+            terrain_uv = CalcParallaxOcclusion(terrain_uv, view_dir, i);
+
             //albedo
             vec3 tex_sample = GetAlbedo(terrain_uv, i);
             result_albedo += tex_sample * factor;

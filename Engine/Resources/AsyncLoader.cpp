@@ -36,6 +36,7 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
         //and get file size
         stream.open(file_path, std::ofstream::binary | std::ofstream::ate);
         desc.size = static_cast<uint32>(stream.tellg());
+        resource->SetDataDescription(desc);
         stream.seekg(0);
     }
 

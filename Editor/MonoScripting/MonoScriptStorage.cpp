@@ -116,6 +116,9 @@ void MonoScriptStorage::BuildScriptList(const std::string& root_dir) {
 }
 
 void MonoScriptStorage::Compile() {
+	if (_scripts.size() == 0)
+		return;
+
 	MonoScriptingLayer::Get()->ReleaseDomain();
 	MonoScriptingLayer::Get()->CreateDomain();
 

@@ -54,8 +54,7 @@ void EditorWindow::Show() {
 	_showing = true;
 }
 
-bool EditorWindow::IsInFocus() {
-	return _inFocus;
+bool EditorWindow::IsInFocus() {	return _inFocus;
 }
 
 void EditorWindow::SetSize(uint32 width, uint32 height) {

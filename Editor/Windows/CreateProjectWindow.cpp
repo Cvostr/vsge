@@ -49,15 +49,23 @@ void CreateProjectWindow::OnDrawWindow() {
             YAML::Emitter out;
             out << YAML::BeginMap;
             out << YAML::Key << "project_name" << YAML::Value << project_name;
+            out << YAML::Key << "main_scene" << YAML::Value << "";
             out << YAML::EndMap;
 
             std::ofstream fout(root_dir + "/project.manifest");
             fout << out.c_str();
             fout.close();
 
+            YAML::Emitter out_app;
+            out_app << YAML::BeginMap;
+            out_app << YAML::Key << "project_name" << YAML::Value << project_name;
+            out_app << YAML::EndMap;
+
             fout.open(root_dir + "/application.manifest");
-            fout << out.c_str();
+            fout << out_app.c_str();
             fout.close();
+
+            Hide();
         }
 
         ImGui::End();

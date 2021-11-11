@@ -46,7 +46,7 @@ float CalcLuminance(vec3 color)
 vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir){
     // number of depth layers
     const float minLayers = 8;
-    const float maxLayers = 32;
+    const float maxLayers = 64;
     float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), view_dir)));  
     // calculate the size of each layer
     float layerDepth = 1.0 / numLayers;
@@ -81,7 +81,6 @@ vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir){
     vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
 
     return finalTexCoords;
-    //return currentTexCoords;
 }
 
 void main() {

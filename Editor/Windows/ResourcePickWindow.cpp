@@ -54,7 +54,14 @@ void ResourcePickerWindow::DrawResourcePicker() {
                 if (texture) {
                     unsigned int pix = 0;
                     bool hovered = false;
-                    bool clicked = ImageButtonWithText((void*)texture->imtexture, resource->GetName().c_str(), &pix, &hovered, ImVec2(64, 64));
+                    bool clicked = ImageButtonWithText((void*)texture->imtexture, resource->GetName().c_str(),
+                        &pix, &hovered, ImVec2(64, 64),
+                        ImVec2(0, 0),
+                        ImVec2(1, 1),
+                        -1,
+                        ImVec4(0, 0, 0, 0),
+                        ImVec4(1, 1, 1, 1),
+                        resource_i);
                     if (clicked) {
                         SetResourceToReference(resource);
                     }

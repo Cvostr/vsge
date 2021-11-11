@@ -79,7 +79,7 @@ void ResourceCache::AddResourceFile(const std::string& path) {
         DataDescription ddescr = {};
         ddescr.file_path = path;
         ddescr.offset = 0;
-        ddescr.size = static_cast<uint32>(file.file_size());
+        ddescr.size = 0;
         CreateResource(ddescr, type);
     }
 }
