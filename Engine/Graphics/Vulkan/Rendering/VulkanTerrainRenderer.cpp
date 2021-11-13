@@ -304,7 +304,6 @@ void VulkanTerrainRenderer::Create(
 
 	_grass_pipeline = new VulkanPipeline;
 	_grass_pipeline->SetDepthTest(true);
-	//_grass_pipeline->SetCullMode();
 	_grass_pipeline->Create(_grass_shader, gbuffer_renderpass, _vertexLayout, _grass_pipeline_layout);
 
 	_terrain_pipeline = new VulkanPipeline;
@@ -428,6 +427,10 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 	VulkanMesh* terrain_mesh = (VulkanMesh*)terrain->GetTerrainMesh();
 	if (terrain_mesh) {
 		cmdbuffer->BindPipeline(*_terrain_pipeline);
+		if (_reverse_cull)
+			cmdbuffer->SetCullMode(VK_CULL_MODE_BACK_BIT);
+		else
+			cmdbuffer->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 		cmdbuffer->SetViewport(0, 0, (float)_outputWidth, (float)_outputHeight);
 		uint32 terrain_data_offset = terrain_index * TERRAIN_DATA_ELEM_SIZE;
 
@@ -439,11 +442,6 @@ void VulkanTerrainRenderer::DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 t
 	}
 
 	cmdbuffer->BindPipeline(*_grass_pipeline);
-	if (_reverse_cull) {
-		cmdbuffer->SetCullMode(VK_CULL_MODE_BACK_BIT);
-	}
-	else
-		cmdbuffer->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 	cmdbuffer->SetViewport(0, 0, (float)_outputWidth, (float)_outputHeight);
 	cmdbuffer->BindDescriptorSets(*_grass_pipeline_layout, 0, 1, _entity_descr_set->at(vertexDescriptorID), 2, offsets);
 

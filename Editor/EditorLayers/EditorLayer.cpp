@@ -29,7 +29,7 @@
 #include <MonoScripting/MonoScriptStorage.hpp>
 #include <MonoScripting/MonoScriptCompile.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
-
+#include <Input/Input.hpp>
 #include <Math/Ray.hpp>
 #include <ImGuizmo.h>
 
@@ -45,7 +45,26 @@ void EditorLayer::OnAttach() {
 
 }
 void EditorLayer::OnUpdate() {
+	ImGuiLayer* imgui = ImGuiLayer::Get();
+	if (imgui->GetWindow<SceneViewWindow>())
+		if (imgui->GetWindow<SceneViewWindow>()->IsInFocus()) {
 
+			TimePerf* time = TimePerf::Get();
+			Vec3 cam_pos_offset(0.f);
+			if (Input::Get()->IsKeyHold(KEY_CODE_W))
+				cam_pos_offset = mEditorCamera->GetFront() * MONEMENT_COEFF * time->GetDeltaTime();
+
+			if (Input::Get()->IsKeyHold(KEY_CODE_A))
+				cam_pos_offset = mEditorCamera->GetRight() * -MONEMENT_COEFF * time->GetDeltaTime();
+
+			if (Input::Get()->IsKeyHold(KEY_CODE_D))
+				cam_pos_offset = mEditorCamera->GetRight() * MONEMENT_COEFF * time->GetDeltaTime();
+
+			if (Input::Get()->IsKeyHold(KEY_CODE_S))
+				cam_pos_offset = mEditorCamera->GetFront() * -MONEMENT_COEFF * time->GetDeltaTime();
+
+			mEditorCamera->SetPosition(mEditorCamera->GetPosition() + cam_pos_offset);
+		}
 }
 void EditorLayer::OnDetach() {
 
@@ -221,7 +240,7 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 						}
 					}
 				}
-
+				
 				std::vector<RayHit> hits;
 
 				Entity* picked = nullptr;
@@ -300,7 +319,7 @@ void EditorLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
 void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 	ImGuiLayer* imgui = ImGuiLayer::Get();
 	TimePerf* time = TimePerf::Get();
-	Vec3 cam_pos_offset(0.f);
+
 	switch (kbd.GetKeyCode()) {
 	case KEY_CODE_BACKSPACE:
 		if(imgui->GetWindow<FileBrowserWindow>())
@@ -323,15 +342,11 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 	case KEY_CODE_LCTRL:
 		InputState.isLCrtlHold = true;
 		break;
-	case KEY_CODE_W:
-		cam_pos_offset = mEditorCamera->GetFront() * MONEMENT_COEFF* time->GetDeltaTime();
-		break;
 	
 	case KEY_CODE_S:
 		if (InputState.isLCrtlHold) {
 			ImGuiLayer::Get()->GetMenu<File_Menu>()->OnSave();
-		}else
-			cam_pos_offset = mEditorCamera->GetFront() * -MONEMENT_COEFF * time->GetDeltaTime();
+		}
 		break;
 
 	case KEY_CODE_Q:
@@ -342,17 +357,7 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 				_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
 		}
 		break;
-
-	case KEY_CODE_A:
-		cam_pos_offset = mEditorCamera->GetRight() * -MONEMENT_COEFF * time->GetDeltaTime();
-		break;
-
-	case KEY_CODE_D:
-		cam_pos_offset = mEditorCamera->GetRight() * MONEMENT_COEFF * time->GetDeltaTime();
-		break;
 	}
-	Vec3 right = mEditorCamera->GetRight();
-	mEditorCamera->SetPosition(mEditorCamera->GetPosition() + cam_pos_offset);
 }
 
 void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {

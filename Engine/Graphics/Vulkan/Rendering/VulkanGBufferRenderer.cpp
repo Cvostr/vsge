@@ -170,8 +170,11 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 				Vec3 bb_max = bounding_box.GetMax();
 				bb_max.y = terrain->GetMaxTerrainHeight();
 				bounding_box.Extend(bb_max);
-				if (camera->IsVisibleInFrustum(bounding_box))
+				if (camera->IsVisibleInFrustum(bounding_box)) {
 					terrain_renderer->DrawTerrain(cmdbuf, drawn_terrains++, e_i);
+					//need to rebind pipeline
+					_boundPipeline = nullptr;
+				}
 			}
 			continue;
 		}

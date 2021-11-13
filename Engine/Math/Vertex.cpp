@@ -70,12 +70,6 @@ void ProcessTangentSpace(Vertex* vert_array, uint32 vertices_num) {
         bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
         bitangent.Normalize();
 
-        tangent.z *= -1;
-        bitangent.z *= -1;
-
-        tangent.x *= -1;
-        bitangent.x *= -1;
-
         for (int i = v_i; i < v_i + 3; i++) {
             vert_array[i].tangent = tangent;
             vert_array[i].bitangent = bitangent;
