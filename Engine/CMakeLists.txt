@@ -134,6 +134,7 @@ set(SRC_FILES
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
 				MonoScripting/MonoClassDesc.cpp
+				MonoScripting/MonoClassFieldDesc.cpp
 				MonoScripting/Api/ApiLogger.cpp
 				MonoScripting/Api/ApiApplication.cpp
 				MonoScripting/Api/ApiMaterial.cpp

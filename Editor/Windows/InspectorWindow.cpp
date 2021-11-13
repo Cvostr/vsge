@@ -108,49 +108,6 @@ void InspectorWindow::DrawComponent() {
 	}
 }
 
-void InspectorWindow::DrawScript(VSGE::EntityScriptComponent* script, uint32 index) {
-
-	if (!script->IsActive()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
-	}
-
-	std::string header = "Script";
-
-	bool is_down = ImGui::CollapsingHeader(header.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
-
-	if (!script->IsActive()) {
-		ImGui::PopStyleColor();
-	}
-
-	if (!is_down)
-		return;
-
-	if (ImGui::IsItemClicked(1))
-	{
-		ImGui::OpenPopup(header.c_str());
-	}
-
-	bool removeComponent = false;
-	if (ImGui::BeginPopup(header.c_str()))
-	{
-		bool active = script->IsActive();
-		ImGui::MenuItem("Active", NULL, &active);
-		script->SetActive(active);
-
-		if (ImGui::MenuItem("Remove component"))
-			removeComponent = true;
-
-		ImGui::EndPopup();
-	}
-
-	if (removeComponent) {
-		mShowingEntity->RemoveScript(script);
-		return;
-	}
-
-	DrawScriptPicker("Class name", script, index);
-}
-
 void InspectorWindow::OnDrawWindow() {
 	if (Draw("Inspector")) {
 
@@ -226,9 +183,8 @@ void InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::CharacterControllerComponent>();
 
 	for (uint32 script_i = 0; script_i < mShowingEntity->GetScriptsCount(); script_i++) {
-		DrawScript(mShowingEntity->GetScripts()[script_i], script_i);
+		DrawScriptComponent(mShowingEntity->GetScripts()[script_i], script_i);
 	}
-
 
 	ImGui::Separator();
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Core/VarTypes/Base.hpp>
-#include <Core/VarTypes/Variant.hpp>
 #include <mono/metadata/appdomain.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -16,7 +15,7 @@ namespace VSGE {
 	class MonoScriptInstance {
 	private:
 		std::string _class_name;
-		MonoClass* _mono_class_desc;
+		MonoClassDesc* _mono_class_desc;
 		MonoObject* _mono_class_instance;
 		//base class methods
 		MonoMethod* _update_method;
@@ -35,7 +34,11 @@ namespace VSGE {
 		MonoClass* GetClassDesc();
 		MonoMethod* GetUpdateMethod();
 		MonoObject* GetObject();
+
 		void SetValuePtrToField(const std::string field, void* value);
+		void SetStringToField(const std::string field, const String& str);
+		void SetStringToField(const std::string field, const std::string& str);
+
 		void* GetValueOfField(const std::string& field);
 
 		template<typename T>
@@ -50,7 +53,6 @@ namespace VSGE {
 
 		void CallOnStart();
 		void CallOnUpdate();
-		void CallOnGui();
 		void CallOnTriggerStay(void* entity);
 		void CallOnTriggerEnter(void* entity);
 		void CallOnTriggerExit(void* entity);

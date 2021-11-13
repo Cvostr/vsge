@@ -167,7 +167,7 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 
 		this->_materialTextures.push_back(mat_texture);
 	}
-	for (auto param : mat_template->GetParams()) {
+	for (auto& param : mat_template->GetParams()) {
 		this->_materialParams.push_back(param);
 	}
 }

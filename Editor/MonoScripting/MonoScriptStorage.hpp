@@ -47,6 +47,7 @@ namespace VSGEditor {
 		void BuildScriptList(const std::string& root_dir);
 		void ClearScripts();
 		void Compile();
+		void CompileAndWait();
 		bool IsScriptingReady();
 		void SetScriptingReady();
 	};

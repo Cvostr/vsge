@@ -16,6 +16,7 @@
 #include <Misc/DialogWindows.hpp>
 #include <Misc/EditorIcons.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
+#include <MonoScripting/MonoScriptStorage.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #include <shellapi.h>
@@ -91,7 +92,7 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     VSGE::Resource* resource = nullptr;
-    if (Entry.ext == ".scn") {
+    if (Entry.ext == ".scn" && MonoScriptStorage::Get()->IsScriptingReady()) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
         insp->SetShowingEntity(nullptr);
 

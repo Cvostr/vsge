@@ -32,7 +32,7 @@ MonoImage* MonoScriptBlob::GetImage() {
 	return _image;
 }
 
-MonoClassDesc* MonoScriptBlob::GetMonoClassDesc(const std::string& class_name) {
+MonoClassDesc* MonoScriptBlob::GetMonoClassDesc(const std::string& class_name, const std::string& namespace_name) {
 	for (auto& desc : _class_descs) {
 		if (desc.GetName() == class_name)
 			return &desc;
@@ -44,10 +44,6 @@ void MonoScriptBlob::LoadFromFile(const std::string& path) {
 	_assembly = mono_domain_assembly_open(MonoScriptingLayer::Get()->GetDomain(), path.c_str());
 	_image = mono_assembly_get_image(_assembly);
 	BuildMonoClassDescsList();
-}
-
-MonoClass* MonoScriptBlob::GetClassDescription(const std::string& class_name, const std::string& namespace_name) {
-	return mono_class_from_name(_image, namespace_name.c_str(), class_name.c_str());
 }
 
 MonoMethod* MonoScriptBlob::GetMethodByDescription(MonoMethodDesc* method_desc) {

@@ -52,7 +52,8 @@ static bool IsActive(Entity* ptr) {
 }
 
 static void SetName(Entity* ptr, MonoString* name) {
-	ptr->SetName(std::string(mono_string_to_utf8(name)));
+	if (ptr->GetParent() != nullptr)
+		ptr->SetName(std::string(mono_string_to_utf8(name)));
 }
 
 static MonoString* GetName(Entity* ptr) {

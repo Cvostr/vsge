@@ -13,6 +13,9 @@ void VSGEditor::DrawVariantInput(const std::string& label, Variant& value) {
 	case VALUE_TYPE_FLOAT:
 		InputFloat(label_s, &value.GetValue<float>());
 		break;
+	case VALUE_TYPE_DOUBLE:
+		InputDouble(label_s, &value.GetValue<double>());
+		break;
 	case VALUE_TYPE_BOOL:
 		Checkbox(label_s, &value.GetValue<bool>());
 		break;

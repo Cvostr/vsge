@@ -44,6 +44,8 @@ namespace VSGE {
 
 		void QueueCompilation();
 
+		bool IsCompiling();
+
 		bool IsCompilationDone();
 
 		bool IsCompilationError();

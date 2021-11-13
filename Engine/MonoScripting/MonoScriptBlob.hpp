@@ -23,12 +23,11 @@ namespace VSGE {
 
 		MonoAssembly* GetAssembly();
 		MonoImage* GetImage();
-		MonoClassDesc* GetMonoClassDesc(const std::string& class_name);
+		MonoClassDesc* GetMonoClassDesc(const std::string& class_name, const std::string& namespace_name = "");
 
 		void Release();
 
 		void LoadFromFile(const std::string& path);
-		MonoClass* GetClassDescription(const std::string& class_name, const std::string& namespace_name = "");
 		MonoMethod* GetMethodByDescription(MonoMethodDesc* method_desc);
 		void BuildMonoClassDescsList();
 	};

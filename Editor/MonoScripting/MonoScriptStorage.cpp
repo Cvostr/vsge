@@ -127,3 +127,11 @@ void MonoScriptStorage::Compile() {
 	_compiler->QueueCompilation();
 	_is_scripting_ready = false;
 }
+
+void MonoScriptStorage::CompileAndWait() {
+	Compile();
+	while (true) {
+		if (_compiler->IsCompilationDone())
+			break;
+	}
+}

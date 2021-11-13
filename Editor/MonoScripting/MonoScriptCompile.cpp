@@ -45,7 +45,6 @@ void MonoScriptCompiler::THRFunc() {
 
         if (_state == COMPILATION_STATE_QUEUED) {
             _state = COMPILATION_STATE_ON_PROCESS;
-            //_mutex->Lock();
             //Obtain pointer to LoadRequest
             std::string cmd = GetCompilationCmd();
             _output = ExecuteShellCommand(cmd);
@@ -59,8 +58,6 @@ void MonoScriptCompiler::THRFunc() {
                 Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << message << "\n";
             }
             _state = COMPILATION_STATE_DONE;
-            //unlock thread
-            //_mutex->Release();
 
             ScriptCompilationDoneEvent* app_event = new ScriptCompilationDoneEvent;
             Application::Get()->QueueEvent(app_event);
@@ -86,4 +83,8 @@ bool MonoScriptCompiler::IsCompilationDone() {
 
 bool MonoScriptCompiler::IsCompilationError() {
     return _compilation_error;
+}
+
+bool MonoScriptCompiler::IsCompiling() {
+    return _state == COMPILATION_STATE_QUEUED || _state == COMPILATION_STATE_ON_PROCESS;
 }

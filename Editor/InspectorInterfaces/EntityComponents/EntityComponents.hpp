@@ -26,7 +26,7 @@ namespace VSGEditor {
 	void DrawAudioSourceComponent(VSGE::AudioSourceComponent* asc);
 	void DrawRigidbodyComponent(VSGE::RigidBodyComponent* rgbc);
 	void DrawColliderComponent(VSGE::ColliderComponent* clc);
-	void DrawScriptComponent(VSGE::EntityScriptComponent* esc);
+	void DrawScriptComponent(VSGE::EntityScriptComponent* esc, uint32 index);
 	void DrawCameraComponent(VSGE::Camera* cac);
 	void DrawCharControllerComponent(VSGE::CharacterControllerComponent* ccc);
 

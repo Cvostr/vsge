@@ -39,8 +39,8 @@ MonoObject* MonoScriptInstance::CallMethod(MonoMethod* method_desc, void** args)
 bool MonoScriptInstance::CreateClassByName(const std::string& class_name) {
     this->_class_name = class_name;
     MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
-    _mono_class_desc = blob->GetClassDescription(class_name);
-    _mono_class_instance = mono_object_new(MonoScriptingLayer::Get()->GetDomain(), _mono_class_desc);
+    _mono_class_desc = blob->GetMonoClassDesc(class_name);
+    _mono_class_instance = _mono_class_desc->CreateObjectInstance();
 
     _update_method = GetMethod("OnUpdate()");
 
@@ -52,15 +52,25 @@ void MonoScriptInstance::CallDefaultConstructor() {
 }
 
 void MonoScriptInstance::SetValuePtrToField(const std::string field, void* value) {
-    MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc, field.c_str());
+    MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc->GetMonoClass(), field.c_str());
     if (field_desc) {
         mono_field_set_value(_mono_class_instance, field_desc, value);
     }
 }
 
+void MonoScriptInstance::SetStringToField(const std::string field, const String& str) {
+    MonoString* mono_str = mono_string_new_utf32(MonoScriptingLayer::Get()->GetDomain(), str.c_str(), str.Length());
+    SetValuePtrToField(field, mono_str);
+}
+
+void MonoScriptInstance::SetStringToField(const std::string field, const std::string& str) {
+    MonoString* mono_str = mono_string_new(MonoScriptingLayer::Get()->GetDomain(), str.c_str());
+    SetValuePtrToField(field, mono_str);
+}
+
 void* MonoScriptInstance::GetValueOfField(const std::string& field) {
     void* result = nullptr;
-    MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc, field.c_str());
+    MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc->GetMonoClass(), field.c_str());
     mono_field_get_value(_mono_class_instance, field_desc, &result);
     return result;
 }
@@ -74,10 +84,6 @@ void MonoScriptInstance::CallOnStart() {
 void MonoScriptInstance::CallOnUpdate() {
     if (_update_method)
         CallMethod(_update_method, nullptr);
-}
-
-void MonoScriptInstance::CallOnGui() {
-    
 }
 
 void MonoScriptInstance::CallOnTriggerStay(void* entity) {
@@ -101,7 +107,7 @@ const std::string& MonoScriptInstance::GetClassName() {
     return _class_name;
 }
 MonoClass* MonoScriptInstance::GetClassDesc() {
-	return _mono_class_desc;
+	return _mono_class_desc->GetMonoClass();
 }
 MonoObject* MonoScriptInstance::GetObject() {
     return _mono_class_instance;

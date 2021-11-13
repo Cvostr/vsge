@@ -6,23 +6,51 @@
 
 namespace VSGE {
 
+	class MonoScriptField {
+	private:
+		MonoClassFieldDesc* _desc;
+		Variant _value;
+		String _str_value;
+	public:
+
+		MonoClassFieldDesc* GetDesc() {
+			return _desc;
+		}
+
+		Variant& GetValue() {
+			return _value;
+		}
+
+		MonoScriptField(MonoClassFieldDesc* desc) {
+			_desc = desc;
+			_value.SetType(desc->GetValueType());
+		}
+	};
+
 	class EntityScriptComponent : public IEntityComponent {
 	private:
 		MonoScriptInstance* _script_instance;
 		std::string _class_name;
+
+		std::vector<MonoScriptField> _fields;
 	public:
 		EntityScriptComponent();
 
 		~EntityScriptComponent();
 		
 		void SetClassName(const std::string& class_name);
-
+		/// <summary>
+		/// Get current picked mono script class name
+		/// </summary>
+		/// <returns></returns>
 		const std::string& GetClassName();
 		/// <summary>
 		/// Get instance of mono script
 		/// </summary>
 		/// <returns></returns>
 		MonoScriptInstance* GetInstance();
+
+		std::vector<MonoScriptField>& GetFields();
 		/// <summary>
 		/// Creates mono object and call constructor
 		/// </summary>
@@ -39,8 +67,6 @@ namespace VSGE {
 		/// Calls OnUpdate() on script class
 		/// </summary>
 		void OnUpdate();
-
-		void OnGui();
 
 		void OnTriggerStay(Entity* entity);
 

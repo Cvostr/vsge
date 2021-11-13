@@ -7,7 +7,7 @@
 #include <Math/Vec4.hpp>
 #include <Math/Quaternion.hpp>
 #include <Math/Color.hpp>
-#include <string>
+#include "String.hpp"
 
 enum ValueType {
 	VALUE_TYPE_INT32 = 1,
@@ -45,12 +45,13 @@ union MultitypeData{
 	VSGE::Color _color;
 	VSGE::Guid guid;
 
+	void Assign(MultitypeData& data);
+
 	MultitypeData();
+	~MultitypeData();
 
 	void operator=(MultitypeData& data);
 };
-
-ValueType GetValueTypeFromString(const std::string& type_str);
 
 class Variant {
 private:
@@ -61,6 +62,7 @@ public:
 	Variant();
 
 	ValueType GetType();
+	void SetType(ValueType type);
 
 	template<typename T>
 	T& GetValue() {
@@ -70,21 +72,6 @@ public:
 	void* GetValuePtr();
 
 	void SetData(ValueType type, MultitypeData value);
-	void SetInt(int _int);
-	void SetBool(bool _bool);
-	void SetFloat(float _float);
-	void SetDouble(double _double);
-	void SetInt64(int64 ___int64);
-	void SetPtr(void* _ptr);
-	void SetVec2f(const Vec2& _vec);
-	void SetVec2i(const Vec2i& _vec);
-	void SetVec3f(const Vec3& _vec);
-	void SetVec3i(const Vec3i& _vec);
-	void SetVec4f(const Vec4& _vec);
-	void SetVec4i(const Vec4i& _vec);
-	void SetQuat(const Quat& _quat);
-	void SetColor(const VSGE::Color& _color);
-
 
 	Variant(int _int) {
 		_data._int = _int;
@@ -141,5 +128,8 @@ public:
 	Variant(const VSGE::Color& _color) {
 		_data._color = _color;
 		_type = VALUE_TYPE_COLOR;
+	}
+	Variant(const std::string& str) {
+		_type = VALUE_TYPE_STRING;
 	}
 };
