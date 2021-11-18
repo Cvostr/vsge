@@ -31,6 +31,12 @@ static void ImGui_ApplyStyle()
     style.Alpha = 1.0f;
 }
 
+ImGuiLayer::ImGuiLayer() {
+    _this = this;
+    presenter = nullptr;
+    _draw_windows = true;
+}
+
 void ImGuiLayer::OnAttach() {
     VSGE::Application* app = VSGE::Application::Get();
     VSGE::Window* win = &app->GetWindow();
@@ -103,6 +109,9 @@ void ImGuiLayer::OnAttach() {
     ImGui_ImplVulkan_CreateFontsTexture(cmdbuf.GetCommandBuffer());
     cmdbuf.End();
     VulkanGraphicsSubmit(cmdbuf);
+
+    mHoldOnWindow = new HoldOnWindow;
+    mHoldOnWindow->Hide();
 }
 
 void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index) {
@@ -153,13 +162,15 @@ void ImGuiLayer::OnUpdate() {
 	ImGui::EndMainMenuBar();
 
     DrawDockWindow();
-
-    for (uint32 win_i = 0; win_i < mWindows.size(); win_i ++) {
-        EditorWindow* win = mWindows[win_i];
-        win->OnDrawWindow();
+    
+    if (_draw_windows) {
+        for (uint32 win_i = 0; win_i < mWindows.size(); win_i++) {
+            EditorWindow* win = mWindows[win_i];
+            win->OnDrawWindow();
+        }
     }
-
     ImGui::End();
+    mHoldOnWindow->OnDrawWindow();
 
     ImGui::Render();
     
@@ -192,6 +203,7 @@ void ImGuiLayer::OnDetach() {
     imageAvailable.Destroy();
 
     delete presenter;
+    delete mHoldOnWindow;
     imgui_pool.Destroy();
 
 
@@ -235,6 +247,14 @@ void ImGuiLayer::AddWindow(EditorWindow* window) {
 void ImGuiLayer::RemoveWindow(EditorWindow* window) {
     tEditorWindowList::iterator it = std::remove(mWindows.begin(), mWindows.end(), window);
     mWindows.pop_back();
+}
+
+void ImGuiLayer::SetDrawWindows(bool draw_windows) {
+    _draw_windows = draw_windows;
+}
+
+HoldOnWindow* ImGuiLayer::GetHoldOnWindow() {
+    return mHoldOnWindow;
 }
 
 void ImGuiLayer::AddMenu(ImGuiMenu* menu) {

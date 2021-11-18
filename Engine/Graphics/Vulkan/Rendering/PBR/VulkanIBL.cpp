@@ -9,6 +9,7 @@ VulkanIBL::VulkanIBL() {
 	_spmap = nullptr;
 	_alternately = false;
 	_prev_step = 2;
+	_enabled = true;
 }
 VulkanIBL::~VulkanIBL() {
 	Destroy();
@@ -56,10 +57,22 @@ void VulkanIBL::Create() {
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
 	_pool = new VulkanCommandPool();
-	_pool->Create(device->GetComputeQueueFamilyIndex());
+	_pool->Create(device->GetGraphicsQueueFamilyIndex());
+
+	_compute_pool = new VulkanCommandPool();
+	_compute_pool->Create(device->GetComputeQueueFamilyIndex());
+
+	_env_cmdbuf = new VulkanCommandBuffer;
+	_env_cmdbuf->Create(_pool);
 
 	_maps_cmdbuf = new VulkanCommandBuffer;
-	_maps_cmdbuf->Create(_pool);
+	_maps_cmdbuf->Create(_compute_pool);
+
+	_envmap_begin_semaphore = new VulkanSemaphore;
+	_envmap_begin_semaphore->Create();
+
+	_envmap_end_semaphore = new VulkanSemaphore;
+	_envmap_end_semaphore->Create();
 
 	_irmap = new VulkanIrradianceMap;
 	_irmap->Create();
@@ -78,34 +91,44 @@ void VulkanIBL::Destroy() {
 }
 
 void VulkanIBL::RecordCmdBufs() {
-	_envmap->RecordCmdbufs();
+	
+	_env_cmdbuf->Begin();
+	if (_enabled)
+		_envmap->RecordCmdbuffer(_env_cmdbuf);
+	_env_cmdbuf->End();
 
 	_maps_cmdbuf->Begin();
-	if (_alternately) {
-		if (_prev_step == 1) {
+	if (_enabled) {
+		if (_alternately) {
+			if (_prev_step == 1) {
+				_irmap->RecordCommandBuffer(_maps_cmdbuf);
+				_prev_step = 2;
+			}
+			else if (_prev_step == 2) {
+				_spmap->RecordCommandBuffer(_maps_cmdbuf);
+				_prev_step = 1;
+			}
+		}
+		else {
 			_irmap->RecordCommandBuffer(_maps_cmdbuf);
-			_prev_step = 2;
-		}
-		else if (_prev_step == 2) {
 			_spmap->RecordCommandBuffer(_maps_cmdbuf);
-			_prev_step = 1;
 		}
-	}
-	else {
-		_irmap->RecordCommandBuffer(_maps_cmdbuf);
-		_spmap->RecordCommandBuffer(_maps_cmdbuf);
 	}
 	_maps_cmdbuf->End();
 }
 
 void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
-	_envmap->Execute(_irmap->GetBeginSemaphore());
+	if (!_enabled) {
+		VulkanGraphicsSubmit(*_env_cmdbuf, *_envmap_begin_semaphore, *end_semaphore);
+		return;
+	}
 
-	VulkanComputeSubmit(*_maps_cmdbuf, *_irmap->GetBeginSemaphore(), *end_semaphore);
+	VulkanGraphicsSubmit(*_env_cmdbuf, *_envmap_begin_semaphore, *_envmap_end_semaphore);
+	VulkanComputeSubmit(*_maps_cmdbuf, *_envmap_end_semaphore, *end_semaphore);
 }
 
 VulkanSemaphore* VulkanIBL::GetBeginSemaphore() {
-	return _envmap->GetBeginSemaphore();
+	return _envmap_begin_semaphore;
 }
 
 VulkanTexture* VulkanIBL::GetEnvMap() {

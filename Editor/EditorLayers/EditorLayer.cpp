@@ -105,6 +105,8 @@ bool EditorLayer::OpenProject(const Project& project) {
 
 	VulkanRenderer::Get()->SetScene(this->mScene);
 
+	ImGuiLayer::Get()->SetDrawWindows(false);
+
 	MonoScriptStorage::Get()->ClearScripts();
 	MonoScriptStorage::Get()->BuildScriptList(project.GetAssetsDirectory());
 	MonoScriptStorage::Get()->Compile();
@@ -127,16 +129,15 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::FileChageEvent>(event, EVENT_FUNC(EditorLayer::OnFileEvent));
 	DispatchEvent<VSGE::MessageEvent>(event, EVENT_FUNC(EditorLayer::OnMessageEvent));
 	DispatchEvent<VSGE::ScriptCompilationDoneEvent>(event, EVENT_FUNC(EditorLayer::OnScriptCompiledEvent));
+	DispatchEvent<VSGE::ScriptCompilationBeginEvent>(event, EVENT_FUNC(EditorLayer::OnScriptBeginEvent));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
-	InputState.cursorx = motion.GetMouseX();
-	InputState.cursory = motion.GetMouseY();
-
 	ImGuiLayer* imgui = ImGuiLayer::Get();
 	SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 	if (win) {
-		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY()) && InputState.right_btn_hold) {
+		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY())
+			&& Input::Get()->IsMouseButtonHold(MouseButton::MOUSE_BUTTON_RIGHT)) {
 
 			int relX = motion.GetMouseRelativeX();
 			int relY = motion.GetMouseRelativeY();
@@ -162,7 +163,10 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 	ImGuiLayer* imgui = ImGuiLayer::Get();
 	SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 	if (win) {
-		if (win->IsInFocus() && win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
+		Vec2i cursor_pos = Input::Get()->GetMouseCursorPos();
+		uint32 cursorx = cursor_pos.x;
+		uint32 cursory = cursor_pos.y;
+		if (win->IsInFocus() && win->isInsideWindow(cursorx, cursory)) {
 			Vec3 cam_front = mEditorCamera->GetFront() * (float)scroll.GetOffsetY();
 			Vec3 new_pos = mEditorCamera->GetPosition() + cam_front;
 			mEditorCamera->SetPosition(new_pos);
@@ -171,24 +175,23 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 }
 
 void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
-
-	if (mbd.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
-		InputState.right_btn_hold = true;
-	}
 	if (mbd.GetMouseButton() == MOUSE_BUTTON_LEFT) {
-		InputState.left_btn_hold = true;
-
 		//Try to pick object
 		ImGuiLayer* imgui = ImGuiLayer::Get();
 		SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
+
+		Vec2i cursor_pos = Input::Get()->GetMouseCursorPos();
+		uint32 cursorx = cursor_pos.x;
+		uint32 cursory = cursor_pos.y;
+
 		if (win && _camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
 			if (!win->IsTransformGizmoUsed() && 
 				win->IsInFocus() && 
-				win->isInsideWindow(InputState.cursorx, InputState.cursory)) {
+				win->isInsideWindow(cursorx, cursory)) {
 
-				int relx = InputState.cursorx - (int)win->GetPos().x;
-				int rely = -InputState.cursory + (int)win->GetPos().y + (int)win->GetSize().y;
+				int relx = cursorx - (int)win->GetPos().x;
+				int rely = -cursory + (int)win->GetPos().y + (int)win->GetSize().y;
 
 				bool picking_allowed = true;
 				if (_pickedEntity) {
@@ -300,19 +303,12 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 }
 
 void EditorLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
-	if (mbu.GetMouseButton() == MOUSE_BUTTON_RIGHT) {
-		InputState.right_btn_hold = false;
-	}
-	if (mbu.GetMouseButton() == MOUSE_BUTTON_LEFT) {
-		InputState.left_btn_hold = false;
-	}
+
 }
 
 void EditorLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
 	switch (kbd.GetKeyCode()) {
-	case KEY_CODE_LCTRL:
-		InputState.isLCrtlHold = false;
-		break;
+
 	}
 }
 
@@ -339,18 +335,15 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 			_pickedEntity = nullptr;
 		}
 		break;
-	case KEY_CODE_LCTRL:
-		InputState.isLCrtlHold = true;
-		break;
 	
 	case KEY_CODE_S:
-		if (InputState.isLCrtlHold) {
+		if (Input::Get()->IsKeyHold(KEY_CODE_LCTRL)) {
 			ImGuiLayer::Get()->GetMenu<File_Menu>()->OnSave();
 		}
 		break;
 
 	case KEY_CODE_Q:
-		if (InputState.isLCrtlHold) {
+		if (Input::Get()->IsKeyHold(KEY_CODE_LCTRL)) {
 			if (_camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA)
 				_camera_mode = EDITOR_CAMERA_MODE_GAME_CAMERA;
 			else if (_camera_mode == EDITOR_CAMERA_MODE_GAME_CAMERA)
@@ -442,7 +435,14 @@ void EditorLayer::OnMessageEvent(const VSGE::MessageEvent& me) {
 		cw->addMsg((VSGE::MessageEvent*)&me);
 }
 
+void EditorLayer::OnScriptBeginEvent(const VSGE::ScriptCompilationBeginEvent& scbe) {
+	ImGuiLayer::Get()->GetHoldOnWindow()->Show();
+	ImGuiLayer::Get()->GetHoldOnWindow()->SetTaskDescription("Compiling scripts...");
+}
+
 void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde) {
 	MonoScriptStorage::Get()->SetScriptingReady();
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile("mono_temp.dll");
+	ImGuiLayer::Get()->SetDrawWindows(true);
+	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
 }

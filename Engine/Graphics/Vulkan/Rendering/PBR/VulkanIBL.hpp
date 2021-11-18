@@ -13,7 +13,12 @@ namespace VSGE {
 		VulkanSpecularMap* _spmap;
 
 		VulkanCommandPool* _pool;
+		VulkanCommandPool* _compute_pool;
+		VulkanCommandBuffer* _env_cmdbuf;
 		VulkanCommandBuffer* _maps_cmdbuf;
+
+		VulkanSemaphore* _envmap_begin_semaphore;
+		VulkanSemaphore* _envmap_end_semaphore;
 
 		tEntityList* _entities_to_render;
 		tEntityList* _particles_to_render;

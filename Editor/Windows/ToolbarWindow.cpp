@@ -15,12 +15,12 @@ void ToolbarWindow::OnDrawWindow() {
     VSGE::Application* app = VSGE::Application::Get();
     VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
 
-    if (Draw("Toolbar" , (ImGuiWindowFlags_)(ImGuiWindowFlags_NoTitleBar |
+    if (Draw("Toolbar" , ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoMove | 
         ImGuiWindowFlags_NoResize | 
         ImGuiWindowFlags_NoScrollbar |
         ImGuiWindowFlags_NoScrollWithMouse
-        ))) {
+        )) {
         
         if (ImGui::Button("T", ImVec2(BTN_SIZE, BTN_SIZE))) {
             EditorLayer::Get()->SetTransformMode(ImGuizmo::OPERATION::TRANSLATE);

@@ -30,19 +30,6 @@ namespace VSGEditor {
 			float cam_pitch;
 		}CameraState;
 
-		struct inp_state {
-			bool left_btn_hold;
-			bool right_btn_hold;
-			int cursorx;
-			int cursory;
-
-			bool isLCrtlHold;
-
-			inp_state() {
-				isLCrtlHold = false;
-			}
-		}InputState;
-
 		std::string _openedSceneFile;
 		VSGE::Entity* _pickedEntity;
 		int _transformMode;
@@ -60,8 +47,6 @@ namespace VSGEditor {
 
 			CameraState.cam_yaw = 0;
 			CameraState.cam_pitch = 0;
-			InputState.right_btn_hold = false;
-			InputState.left_btn_hold = false;
 
 			_pickedEntity = nullptr;
 			_transformMode = 7;
@@ -84,10 +69,6 @@ namespace VSGEditor {
 
 		void SetTransformMode(int mode) {
 			_transformMode = mode;
-		}
-
-		const inp_state& GetInputState() {
-			return InputState;
 		}
 
 		static EditorLayer* Get() {
@@ -135,6 +116,7 @@ namespace VSGEditor {
 		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
 		void OnFileEvent(const VSGE::FileChageEvent& fce);
 		void OnMessageEvent(const VSGE::MessageEvent& me);
+		void OnScriptBeginEvent(const VSGE::ScriptCompilationBeginEvent& scbe);
 		void OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde);
 	};
 }

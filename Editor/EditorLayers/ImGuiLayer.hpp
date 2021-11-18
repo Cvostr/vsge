@@ -10,6 +10,7 @@
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanPresenter.hpp>
+#include <Windows/HoldOnWindow.hpp>
 
 #include "../Base/ImGuiWindow.hpp"
 #include "../Base/ImGuiMenu.hpp"
@@ -23,6 +24,9 @@ namespace VSGEditor {
 
 		tEditorWindowList mWindows;
 		tImGuiMenuList mMenus;
+		HoldOnWindow* mHoldOnWindow;
+		bool _draw_windows;
+
 
 		VSGE::VulkanDescriptorPool imgui_pool;
 		VSGE::VulkanPresenter* presenter;
@@ -34,10 +38,7 @@ namespace VSGEditor {
 		VSGE::VulkanCommandBuffer cmdbuf;
 	public:
 
-		ImGuiLayer() {
-			_this = this;
-			presenter = nullptr;
-		}
+		ImGuiLayer();
 
 		void DrawDockWindow();
 
@@ -51,6 +52,8 @@ namespace VSGEditor {
 
 		void AddWindow(EditorWindow* window);
 		void RemoveWindow(EditorWindow* window);
+		void SetDrawWindows(bool draw_windows);
+		HoldOnWindow* GetHoldOnWindow();
 
 		void OnWindowResize(const VSGE::EventWindowResized& wr);
 

@@ -24,10 +24,6 @@ namespace VSGE {
 		VulkanTexture* _env_cube_texture;
 		EnvMapSide _sides[6];
 
-		VulkanCommandPool* _envmap_cmdpool;
-		VulkanCommandBuffer* _envmap_cmdbuf;
-		VulkanSemaphore* _envmap_begin_semaphore;
-
 		tEntityList* _entities_to_render;
 		tEntityList* _particles_to_render;
 		VulkanBuffer* _transforms_buffer;
@@ -46,9 +42,7 @@ namespace VSGE {
 
 		void Create();
 		void Resize(uint32 new_size);
-		void RecordCmdbufs();
-		void Execute(VulkanSemaphore* end);
-		VulkanSemaphore* GetBeginSemaphore();
+		void RecordCmdbuffer(VulkanCommandBuffer* cmdbuf);
 		void CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf);
 
 		VulkanTexture* GetCubeTexture();

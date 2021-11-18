@@ -68,7 +68,6 @@ void Vulkan_BRDF_LUT::Create(){
 
     vkQueueSubmit(device->GetComputeQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(device->GetComputeQueue());
-    //vkResetCommandBuffer(cmdbuf, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 }
 
 void Vulkan_BRDF_LUT::Destroy(){

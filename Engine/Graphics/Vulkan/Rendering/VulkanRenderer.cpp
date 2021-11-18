@@ -155,6 +155,7 @@ void VulkanRenderer::SetupRenderer() {
 		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
 	_ibl_map->SetSpmapIrmapAlternately(true);
+	//_ibl_map->SetEnabled(false);
 
 	//---------------------Command buffers------------------------
 	_cmdpool = new VulkanCommandPool;

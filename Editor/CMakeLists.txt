@@ -59,6 +59,7 @@ set(SRC_FILES
                 Windows/SceneWindow.cpp
                 Windows/StartWindow.cpp
                 Windows/ToolbarWindow.cpp
+                Windows/HoldOnWindow.cpp
                 MonoScripting/MonoScriptStorage.cpp
                 MonoScripting/MonoScriptCompile.cpp
                 main.cpp)

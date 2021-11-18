@@ -9,6 +9,7 @@ VulkanEnvMap::VulkanEnvMap() {
 	_cube_size = 256;
 	_steps = 1;
 	_processed = 0;
+	_enabled = true;
 }
 VulkanEnvMap::~VulkanEnvMap() {
 	SAFE_RELEASE(_env_cube_texture);
@@ -17,9 +18,6 @@ VulkanEnvMap::~VulkanEnvMap() {
 		SAFE_RELEASE(_sides[i]._gbuffer);
 		SAFE_RELEASE(_sides[i]._light);
 	}
-
-	SAFE_RELEASE(_envmap_cmdpool)
-	SAFE_RELEASE(_envmap_cmdbuf)
 }
 
 void VulkanEnvMap::Create() {
@@ -48,15 +46,6 @@ void VulkanEnvMap::Create() {
 		_sides[i]._light->Resize(_cube_size, _cube_size);
 	}
 
-	_envmap_cmdpool = new VulkanCommandPool;
-	_envmap_cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
-
-	_envmap_cmdbuf = new VulkanCommandBuffer;
-	_envmap_cmdbuf->Create(_envmap_cmdpool);
-
-	_envmap_begin_semaphore = new VulkanSemaphore;
-	_envmap_begin_semaphore->Create();
-
 	_env_cube_texture = new VulkanTexture;
 	_env_cube_texture->SetCubemap(true);
 	_env_cube_texture->Create(_cube_size, _cube_size, _sides[0]._light->GetOutputFormat(), 6, 1);
@@ -74,25 +63,24 @@ void VulkanEnvMap::Resize(uint32 new_size) {
 	_env_cube_texture->Create(_cube_size, _cube_size, _sides[0]._light->GetOutputFormat(), 6, 1);
 }
 
-void VulkanEnvMap::RecordCmdbufs() {
+void VulkanEnvMap::RecordCmdbuffer(VulkanCommandBuffer* cmdbuf) {
 	if (_processed == _steps)
 		_processed = 0;
 
 	uint32 step_c = 6 / _steps;
 
-	_envmap_cmdbuf->Begin();
-	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
-		_sides[i]._gbuffer->RecordCmdBuffer(_envmap_cmdbuf);
+	if (_enabled) {
+		for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
+			_sides[i]._gbuffer->RecordCmdBuffer(cmdbuf);
+		}
+
+		for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
+			_sides[i]._light->RecordCmdbuf(cmdbuf);
+		}
+
+		CopyImagesToCubeTexture(cmdbuf);
+		_processed++;
 	}
-
-	for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
-		_sides[i]._light->RecordCmdbuf(_envmap_cmdbuf);
-	}
-
-	CopyImagesToCubeTexture(_envmap_cmdbuf);
-
-	_envmap_cmdbuf->End();
-	_processed++;
 }
 
 void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
@@ -146,14 +134,6 @@ void VulkanEnvMap::CopyImagesToCubeTexture(VulkanCommandBuffer* cmdbuf) {
 
 VulkanTexture* VulkanEnvMap::GetCubeTexture() {
 	return _env_cube_texture;
-}
-
-void VulkanEnvMap::Execute(VulkanSemaphore* end) {
-	VulkanGraphicsSubmit(*_envmap_cmdbuf, *_envmap_begin_semaphore, *end);
-}
-
-VulkanSemaphore* VulkanEnvMap::GetBeginSemaphore() {
-	return _envmap_begin_semaphore;
 }
 
 void VulkanEnvMap::SetInputData(
