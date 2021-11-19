@@ -1,6 +1,7 @@
 #include "EnvironmentSettingsWindow.hpp"
 #include "../EditorLayers/EditorLayer.hpp"
 #include "../InspectorInterfaces/ResourcePicker.hpp"
+#include <Scene/SceneLayer.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -8,7 +9,7 @@ using namespace VSGE;
 void EnvironmentSettingsWindow::OnDrawWindow(){
     if (Draw("Environment settings")) {
 		
-		Scene* scene = EditorLayer::Get()->GetScene();
+		Scene* scene = SceneLayer::Get()->GetMainScene();
 		SceneEnvironmentSettings& settings = scene->GetEnvironmentSettings();
 
 		Color ambient_color = settings.GetAmbientColor();

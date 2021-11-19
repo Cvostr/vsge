@@ -11,6 +11,7 @@
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 #include <Scene/Camera.hpp>
+#include <Scene/SceneLayer.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 
 using namespace VSGEditor;
@@ -18,7 +19,7 @@ using namespace VSGE;
 using namespace std;
 
 void SceneWindow::OnDrawWindow() {
-    Scene* scene = EditorLayer::Get()->GetScene();
+    Scene* scene = SceneLayer::Get()->GetMainScene();
     
     if (Draw("Scene Hierarchy")) {
         //clear counter
@@ -201,7 +202,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
 
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJ_SORT", target_flags))
         {
-            Scene* scene = EditorLayer::Get()->GetScene();
+            Scene* scene = SceneLayer::Get()->GetMainScene();
             //Get ID of moving entity
             uint32* move_from = (uint32*)payload->Data;
             Guid id;

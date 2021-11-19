@@ -160,7 +160,7 @@ ThreadCmdbufPair* VulkanMA::GetTransferCmdbufThreaded() {
 
     VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
-    uint32 used_queues = _threaded_cmdbufs.size();
+    uint32 used_queues = (uint32)_threaded_cmdbufs.size();
     VkQueue queue = device->GetTransferQueue(used_queues);
     uint32 queue_family_index = device->GetTransferQueueFamilyIndex(used_queues);
 

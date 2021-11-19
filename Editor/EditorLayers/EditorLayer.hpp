@@ -21,7 +21,6 @@ namespace VSGEditor {
 	class EditorLayer : public VSGE::IApplicationLayer {
 	private:
 		static EditorLayer* _this;
-		VSGE::Scene* mScene;
 		VSGE::Camera* mEditorCamera;
 		VSGE::FileWatcher* mResourcesWatcher;
 
@@ -38,10 +37,8 @@ namespace VSGEditor {
 	public:
 
 		EditorLayer() {
-			mScene = new VSGE::Scene;
 			mEditorCamera = new VSGE::Camera;
 			mEditorCamera->SetFarPlane(5000);
-			mScene->NewScene();
 			_this = this;
 			mResourcesWatcher = new VSGE::FileWatcher;
 
@@ -54,7 +51,6 @@ namespace VSGEditor {
 		}
 
 		~EditorLayer() {
-			delete mScene;
 			delete mEditorCamera;
 			delete mResourcesWatcher;
 		}
@@ -73,10 +69,6 @@ namespace VSGEditor {
 
 		static EditorLayer* Get() {
 			return _this;
-		}
-
-		VSGE::Scene* GetScene() {
-			return mScene;
 		}
 
 		VSGE::Camera* GetCamera() {

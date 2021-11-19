@@ -6,7 +6,9 @@
 using namespace VSGE;
 
 Scene::Scene() :
-	_rootEntity(nullptr) 
+	_rootEntity(nullptr) ,
+	_running(false),
+	_paused(false)
 {}
 
 Scene::~Scene() {
@@ -109,6 +111,79 @@ AABB Scene::GetSceneBoundingBox() {
 	if(_rootEntity)
 		return _rootEntity->GetAABB();
 	return AABB();
+}
+
+void Scene::CallOnStart(Entity* entity) {
+	entity->CallOnStart();
+
+	uint32 children_count = entity->GetChildrenCount();
+	for (uint32 child_i = 0; child_i < children_count; child_i++) {
+		CallOnStart(entity->GetChildren()[child_i]);
+	}
+}
+
+void Scene::CallOnUpdate(Entity* entity) {
+	entity->CallOnUpdate();
+
+	uint32 children_count = entity->GetChildrenCount();
+	for (uint32 child_i = 0; child_i < children_count; child_i++) {
+		CallOnUpdate(entity->GetChildren()[child_i]);
+	}
+}
+
+void Scene::CallOnStop(Entity* entity) {
+	entity->CallOnStop();
+
+	uint32 children_count = entity->GetChildrenCount();
+	for (uint32 child_i = 0; child_i < children_count; child_i++) {
+		CallOnStop(entity->GetChildren()[child_i]);
+	}
+}
+
+bool Scene::IsSceneRunning() {
+	return _running;
+}
+
+bool Scene::IsScenePaused() {
+	return _paused;
+}
+
+void Scene::Run() {
+	if (_running)
+		return;
+
+	bool was_paused = _paused;
+
+	_running = true;
+	_paused = false;
+
+	if (!was_paused) {
+		CallOnStart(GetRootEntity());
+	}
+}
+
+void Scene::Pause() {
+	if (!_running)
+		return;
+
+	_running = false;
+	_paused = true;
+}
+
+void Scene::Stop() {
+	if (!_running)
+		return;
+
+	_running = false;
+	_paused = false;
+
+	CallOnStop(GetRootEntity());
+}
+
+void Scene::Update() {
+	if (_running) {
+		CallOnUpdate(GetRootEntity());
+	}
 }
 
 void Scene::UpdateSceneTree(const Vec3& size) {

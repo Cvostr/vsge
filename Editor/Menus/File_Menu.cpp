@@ -6,6 +6,7 @@
 
 #include "../Misc/ResourceImporter.hpp"
 #include "../EditorLayers/EditorLayer.hpp"
+#include <Scene/SceneLayer.hpp>
 
 #include <Scene/SceneSerialization.hpp>
 #include "../EditorLayers/ImGuiLayer.hpp"
@@ -19,7 +20,7 @@ void SaveScene(std::string file) {
 	EditorLayer* el = EditorLayer::Get();
 
 	VSGE::SceneSerializer sc;
-	sc.SetScene(el->GetScene());
+	sc.SetScene(SceneLayer::Get()->GetMainScene());
 	sc.Serialize(file);
 
 	el->GetOpenedSceneFile() = file;

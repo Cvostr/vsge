@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
 #include <EditorLayers/EditorLayer.hpp>
+#include <Scene/SceneLayer.hpp>
 #include <EditorLayers/ImGuiLayer.hpp>
 #include <Misc/SceneExt.hpp>
 #include <Scene/SceneSerialization.hpp>
@@ -99,10 +100,12 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         EditorLayer* el = EditorLayer::Get();
         el->SetPickedEntity(nullptr);
         el->GetOpenedSceneFile() = Entry.abs_path;
-        el->GetScene()->NewScene();
+
+        SceneLayer* scene_layer = SceneLayer::Get();
 
         VSGE::SceneSerializer ss;
-        ss.SetScene(el->GetScene());
+        scene_layer->GetMainScene()->NewScene();
+        ss.SetScene(scene_layer->GetMainScene());
         ss.Deserialize(Entry.abs_path);
     }
     else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
@@ -231,11 +234,11 @@ void FileBrowserWindow::OnDrawWindow() {
         //if user right clicked file
         if (ImGui::BeginPopupContextItem())
         {
-
+            SceneLayer* scene_layer = SceneLayer::Get();
             if (e->is3dModel()) {
                 if (ImGui::MenuItem("Add to scene")) {
                     EditorLayer* el = EditorLayer::Get();
-                    AddSubSceneVS3M(el->GetScene(), e->abs_path);
+                    AddSubSceneVS3M(scene_layer->GetMainScene(), e->abs_path);
                 }
             }
             if (e->isPrefab()) {
@@ -246,7 +249,7 @@ void FileBrowserWindow::OnDrawWindow() {
                     //read prefab file
                     LoadFile(e->abs_path, &out, &size);
                     //Create entities from prefab
-                    el->GetScene()->AddFromPrefab((byte*)out, size);
+                    scene_layer->GetMainScene()->AddFromPrefab((byte*)out, size);
                     //clean memory
                     delete[] out;
                 }

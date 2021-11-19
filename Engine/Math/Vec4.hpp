@@ -50,11 +50,11 @@ public:
 		return tVec4(x - r.x, y - r.y, z - r.z, w - r.w);
 	}
 
-	tVec4 operator*(float d) const {
+	tVec4 operator*(T d) const {
 		return tVec4(x * d, y * d, z * d, w * d);
 	}
 
-	tVec4 operator/(float d) const {
+	tVec4 operator/(T d) const {
 		return tVec4(x / d, y / d, z / d, w / d);
 	}
 

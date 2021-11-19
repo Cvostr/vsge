@@ -91,7 +91,7 @@ void ToolbarWindow::StopScene() {
     insp->SetShowingEntity(nullptr);
     EditorLayer::Get()->SetPickedEntity(nullptr);
     //Clear scene
-    scene_layer->GetWorkingScene()->NewScene();
+    scene_layer->GetMainScene()->NewScene();
     //Deserialize temp scene
     scene_layer->RestoreScene();
 }

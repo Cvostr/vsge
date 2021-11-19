@@ -73,7 +73,5 @@ Application* VSGEMain(int argc, char* argv[]) {
 	cpw->Hide();
 	app->GetLayer<ImGuiLayer>()->AddWindow(cpw);
 
-	app->GetLayer<SceneLayer>()->SetWorkingScene(app->GetLayer<EditorLayer>()->GetScene());
-
 	return app;
 }

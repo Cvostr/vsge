@@ -54,7 +54,7 @@
 			return tVec3(x - r.x, y - r.y, z - r.z);
 		}
 
-		tVec3 operator*(float d) const {
+		tVec3 operator*(T d) const {
 			return tVec3(x * d, y * d, z * d);
 		}
 
@@ -62,7 +62,7 @@
 			return tVec3(x * v.x, y * v.y, z * v.z);
 		}
 
-		tVec3 operator/(float d) const {
+		tVec3 operator/(T d) const {
 			return tVec3(x / d, y / d, z / d);
 		}
 
@@ -88,13 +88,13 @@
 			z *= v.z;
 		}
 
-		void operator*=(float v) {
+		void operator*=(T v) {
 			x *= v;
 			y *= v;
 			z *= v;
 		}
 
-		void operator/=(float v) {
+		void operator/=(T v) {
 			x /= v;
 			y /= v;
 			z /= v;

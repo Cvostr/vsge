@@ -19,14 +19,7 @@ namespace VSGE {
 
 	class SceneLayer : public VSGE::IApplicationLayer {
 	private:
-		Scene* _scene;
-
-		bool _scene_running;
-		bool _scene_paused;
-
-		void CallOnStart(Entity* entity);
-		void CallOnUpdate(Entity* entity);
-		void CallOnStop(Entity* entity);
+		std::vector<Scene*> _scenes;
 
 		byte* _scene_backup_data;
 		uint32 _scene_backup_size;
@@ -39,24 +32,32 @@ namespace VSGE {
 			return _this;
 		}
 
-		void SetWorkingScene(Scene* scene);
-
-		Scene* GetWorkingScene();
+		void AddScene();
+		/// <summary>
+		/// Get vector of all created scenes
+		/// </summary>
+		/// <returns></returns>
+		std::vector<Scene*>& GetScenes();
+		/// <summary>
+		/// Get first rendering scene
+		/// </summary>
+		/// <returns></returns>
+		Scene* GetMainScene();
 		/// <summary>
 		/// Start scene execution, call OnStart() on all objects
 		/// </summary>
-		void StartScene();
+		void StartScene(uint32 index = 0);
 		/// <summary>
 		/// Stop scene execution and call OnStop() on all objects
 		/// </summary>
-		void StopScene();
+		void StopScene(uint32 index = 0);
 		/// <summary>
 		/// Pause scene execution
 		/// </summary>
-		void PauseScene();
+		void PauseScene(uint32 index = 0);
 
-		bool IsSceneRunning();
-		bool IsScenePaused();
+		bool IsSceneRunning(uint32 index = 0);
+		bool IsScenePaused(uint32 index = 0);
 
 		void OnAttach();
 		void OnDetach();

@@ -13,15 +13,13 @@ using namespace VSGE;
 void MainLayer::OnAttach() {
 	std::string app_dir = Application::Get()->GetDescription().application_dir;
 	ResourceCache::Get()->AddResourceBundle(app_dir + "/resources.map");
-	Scene* scene = new Scene();
-	scene->NewScene();
-
-	Application::Get()->GetLayer<SceneLayer>()->SetWorkingScene(scene);
 
 	SceneResource* sc_res = ResourceCache::Get()->GetResource<SceneResource>("cubes_test");
 	ResourceCache::Get()->GetAsyncLoader()->LoadResource(sc_res, true);
 
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");
+
+	Scene* scene = SceneLayer::Get()->GetMainScene();
 
 	VSGE::SceneSerializer ss;
 	ss.SetScene(scene);

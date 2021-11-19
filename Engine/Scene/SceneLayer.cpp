@@ -6,61 +6,26 @@ using namespace VSGE;
 SceneLayer* SceneLayer::_this = nullptr;
 
 SceneLayer::SceneLayer() {
-	_scene = nullptr;
-	_scene_running = false;
-	_scene_paused = false;
+	AddScene();
+
 	_scene_backup_data = nullptr;
 	_scene_backup_size = 0;
 
 	_this = this;
 }
-void SceneLayer::SetWorkingScene(Scene* scene) {
-	_scene = scene;
-}
-Scene* SceneLayer::GetWorkingScene(){
-	return _scene;
-}
 
-void SceneLayer::StartScene() {
-	if (_scene_running)
-		return;
-
-	bool was_paused = _scene_paused;
-
-	_scene_running = true;
-	_scene_paused = false;
-
-	if (_scene && !was_paused) {
-		CallOnStart(_scene->GetRootEntity());
-	}
+void SceneLayer::AddScene() {
+	Scene* scene = new Scene;
+	scene->NewScene();
+	_scenes.push_back(scene);
 }
 
-void SceneLayer::StopScene() {
-	if (!_scene_running)
-		return;
-
-	_scene_running = false;
-	_scene_paused = false;
-
-	if (_scene) {
-		CallOnStop(_scene->GetRootEntity());
-	}
+std::vector<Scene*>& SceneLayer::GetScenes() {
+	return _scenes;
 }
 
-void SceneLayer::PauseScene() {
-	if (!_scene_running)
-		return;
-
-	_scene_running = false;
-	_scene_paused = true;
-}
-
-bool SceneLayer::IsSceneRunning() {
-	return _scene_running;
-}
-
-bool SceneLayer::IsScenePaused() {
-	return _scene_paused;
+Scene* SceneLayer::GetMainScene() {
+	return _scenes[0];
 }
 
 void SceneLayer::OnAttach() {
@@ -70,37 +35,28 @@ void SceneLayer::OnDetach() {
 
 }
 
-void SceneLayer::CallOnStart(Entity* entity) {
-	entity->CallOnStart();
-
-	uint32 children_count = entity->GetChildrenCount();
-	for (uint32 child_i = 0; child_i < children_count; child_i++) {
-		CallOnStart(entity->GetChildren()[child_i]);
-	}
-}
-
-void SceneLayer::CallOnUpdate(Entity* entity) {
-	entity->CallOnUpdate();
-
-	uint32 children_count = entity->GetChildrenCount();
-	for (uint32 child_i = 0; child_i < children_count; child_i++) {
-		CallOnUpdate(entity->GetChildren()[child_i]);
-	}
-}
-
-void SceneLayer::CallOnStop(Entity* entity) {
-	entity->CallOnStop();
-
-	uint32 children_count = entity->GetChildrenCount();
-	for (uint32 child_i = 0; child_i < children_count; child_i++) {
-		CallOnStop(entity->GetChildren()[child_i]);
-	}
-}
-
 void SceneLayer::OnUpdate() {
-	if (_scene_running && _scene) {
-		CallOnUpdate(_scene->GetRootEntity());
-	}
+	_scenes[0]->Update();
+}
+
+void SceneLayer::StartScene(uint32 index) {
+	_scenes[index]->Run();
+}
+
+void SceneLayer::StopScene(uint32 index) {
+	_scenes[index]->Stop();
+}
+
+void SceneLayer::PauseScene(uint32 index) {
+	_scenes[index]->Pause();
+}
+
+bool SceneLayer::IsSceneRunning(uint32 index) {
+	return _scenes[index]->IsSceneRunning();
+}
+
+bool SceneLayer::IsScenePaused(uint32 index) {
+	return _scenes[index]->IsScenePaused();
 }
 
 void SceneLayer::BackupScene() {
@@ -108,7 +64,7 @@ void SceneLayer::BackupScene() {
 }
 void SceneLayer::BackupScene(byte** data, uint32& size) {
 	VSGE::SceneSerializer sc;
-	sc.SetScene(_scene);
+	sc.SetScene(_scenes[0]);
 	sc.SerializeBinary(data, size);
 }
 void SceneLayer::RestoreScene() {
@@ -117,6 +73,6 @@ void SceneLayer::RestoreScene() {
 }
 void SceneLayer::RestoreScene(byte* data, uint32 size) {
 	VSGE::SceneSerializer sc;
-	sc.SetScene(_scene);
+	sc.SetScene(_scenes[0]);
 	sc.DeserializeBinary(data, size);
 }

@@ -33,11 +33,11 @@ public:
 		return tVec2(x - r.x, y - r.y);
 	}
 
-	tVec2 operator*(float d) const {
+	tVec2 operator*(T d) const {
 		return tVec2(x * d, y * d);
 	}
 
-	tVec2 operator/(float d) const {
+	tVec2 operator/(T d) const {
 		return tVec2(x / d, y / d);
 	}
 
@@ -50,12 +50,12 @@ public:
 		y *= v.y;
 	}
 
-	void operator*=(float v) {
+	void operator*=(T v) {
 		x *= v;
 		y *= v;
 	}
 
-	void operator/=(float v) {
+	void operator/=(T v) {
 		x /= v;
 		y /= v;
 	}

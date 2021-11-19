@@ -20,6 +20,7 @@
 
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/SceneLayer.hpp>
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Edit_Menu.hpp"
@@ -103,7 +104,7 @@ bool EditorLayer::OpenProject(const Project& project) {
 	ImGuiLayer::Get()->AddMenu(new Edit_Menu);
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
-	VulkanRenderer::Get()->SetScene(this->mScene);
+	VulkanRenderer::Get()->SetScene(SceneLayer::Get()->GetScenes()[0]);
 
 	ImGuiLayer::Get()->SetDrawWindows(false);
 
@@ -182,8 +183,8 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
 
 		Vec2i cursor_pos = Input::Get()->GetMouseCursorPos();
-		uint32 cursorx = cursor_pos.x;
-		uint32 cursory = cursor_pos.y;
+		int32 cursorx = cursor_pos.x;
+		int32 cursory = cursor_pos.y;
 
 		if (win && _camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
 			if (!win->IsTransformGizmoUsed() && 
@@ -307,9 +308,7 @@ void EditorLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
 }
 
 void EditorLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
-	switch (kbd.GetKeyCode()) {
 
-	}
 }
 
 void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {

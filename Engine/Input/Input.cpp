@@ -38,6 +38,7 @@ bool Input::IsMouseButtonPressed(MouseButton button) {
 		return _mouse_btn_state.rightbtn_pressed;
 		break;
 	}
+	return false;
 }
 bool Input::IsMouseButtonHold(MouseButton button) {
 	switch (button) {
@@ -51,6 +52,7 @@ bool Input::IsMouseButtonHold(MouseButton button) {
 		return _mouse_btn_state.rightbtn_hold;
 		break;
 	}
+	return false;
 }
 bool Input::IsKeyPressed(KeyCode key) {
 	for (uint32 i = 0; i < _pressed_key_count; i++) {
