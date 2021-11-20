@@ -131,6 +131,8 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::MessageEvent>(event, EVENT_FUNC(EditorLayer::OnMessageEvent));
 	DispatchEvent<VSGE::ScriptCompilationDoneEvent>(event, EVENT_FUNC(EditorLayer::OnScriptCompiledEvent));
 	DispatchEvent<VSGE::ScriptCompilationBeginEvent>(event, EVENT_FUNC(EditorLayer::OnScriptBeginEvent));
+	DispatchEvent<VSGE::SceneLoadBeginEvent>(event, EVENT_FUNC(EditorLayer::OnSceneLoadBeginEvent));
+	DispatchEvent<VSGE::SceneLoadedEvent>(event, EVENT_FUNC(EditorLayer::OnSceneLoadedEvent));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
@@ -443,5 +445,14 @@ void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& 
 	MonoScriptStorage::Get()->SetScriptingReady();
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile("mono_temp.dll");
 	ImGuiLayer::Get()->SetDrawWindows(true);
+	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
+}
+
+void EditorLayer::OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe) {
+	ImGuiLayer::Get()->GetHoldOnWindow()->Show();
+	ImGuiLayer::Get()->GetHoldOnWindow()->SetTaskDescription("Loading scene...");
+}
+
+void EditorLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle) {
 	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
 }

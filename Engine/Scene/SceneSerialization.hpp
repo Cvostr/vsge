@@ -34,6 +34,7 @@ namespace VSGE {
 		void DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id = nullptr);
 
 		bool Deserialize(const std::string& path);
+		bool Deserialize(byte* scene_data);
 		bool DeserializeBinary(byte* data, uint32 size);
 	};
 }

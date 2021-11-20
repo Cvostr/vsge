@@ -5,10 +5,16 @@
 
 namespace VSGE {
 
-	class OnSceneLoadedEvent : public IEvent {
+	class SceneLoadedEvent : public IEvent {
 	public:
 		EVENT_CLASS_TYPE(EventType::EventSceneLoaded)
-		OnSceneLoadedEvent(){}
+		SceneLoadedEvent(){}
+	};
+
+	class SceneLoadBeginEvent : public IEvent {
+	public:
+		EVENT_CLASS_TYPE(EventType::EventSceneLoadBegin)
+		SceneLoadBeginEvent() {}
 	};
 
 	class OnSceneModifiedEvent : public IEvent {
@@ -67,5 +73,8 @@ namespace VSGE {
 		void BackupScene(byte** data, uint32& size);
 		void RestoreScene();
 		void RestoreScene(byte* data, uint32 size);
+
+		void LoadSceneYAML(byte* data, uint32 index = 0);
+		void LoadSceneBinary(byte* data, uint32 size, uint32 index = 0);
 	};
 }

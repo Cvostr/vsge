@@ -79,8 +79,8 @@ void SceneSerializer::Serialize(const std::string& path) {
 	out << YAML::EndSeq;
 	out << YAML::EndMap;
 
-	std::ofstream fout(path);
-	fout << out.c_str();
+	std::ofstream fout(path, std::ios_base::binary);
+	fout.write(out.c_str(), out.size());
 	fout.close();
 }
 
@@ -117,6 +117,29 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 
 bool SceneSerializer::Deserialize(const std::string& path) {
 	Node data = YAML::LoadFile(path);
+	if (!data["Scene"])
+		return false;
+
+	//Load environment settings
+	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
+	settings.SetAmbientColor(data["env_amb_color"].as<Color>());
+	settings._skybox_material.SetResource(data["env_skybox"].as<std::string>());
+
+	auto entities = data["Entities"];
+	if (entities)
+	{
+		for (auto entity : entities)
+		{
+			Entity* ent = new Entity;
+			DeserializeEntity(ent, entity);
+		}
+	}
+
+	return true;
+}
+
+bool SceneSerializer::Deserialize(byte* scene_data) {
+	Node data = YAML::Load((const char*)scene_data);
 	if (!data["Scene"])
 		return false;
 

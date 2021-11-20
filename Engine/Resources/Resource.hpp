@@ -117,7 +117,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		const DataDescription& GetDataDescription();
-
+		/// <summary>
+		/// Set pointer to loaded bytes array, used in AsyncLoader
+		/// </summary>
+		/// <param name="data"></param>
 		void SetLoadedData(byte* data);
 		/// <summary>
 		/// Free memory of loaded data
@@ -148,6 +151,9 @@ namespace VSGE {
 		bool IsDefault();
 
 		virtual void Load(bool just_read = false);
+		/// <summary>
+		/// Work to do on resource release
+		/// </summary>
 		virtual void OnRelease() {}
 		virtual void Prepare() {}
 		virtual void PostLoad() {}

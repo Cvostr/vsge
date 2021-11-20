@@ -28,7 +28,7 @@ void ResourcesWatchdog::AddResource(Resource* resource) {
 
 void ResourcesWatchdog::RemoveResource(Resource* resource) {
     _mutex->Lock();
-    std::remove(_resources.begin(), _resources.end(), resource);
+    auto iterator = std::remove(_resources.begin(), _resources.end(), resource);
     _mutex->Release();
 }
 

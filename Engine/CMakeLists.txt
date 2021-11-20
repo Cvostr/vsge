@@ -110,6 +110,7 @@ set(SRC_FILES
 				Resources/ResourceTypes/MeshResource.cpp
 				Resources/ResourceTypes/TextureResource.cpp
 				Resources/ResourceTypes/AnimationResource.cpp
+				Resources/ResourceTypes/SceneResource.cpp
 				Scene/Camera.cpp
 				Scene/Entity.cpp
 				Scene/IEntityComponent.cpp

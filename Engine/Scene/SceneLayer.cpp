@@ -1,5 +1,6 @@
 #include "SceneLayer.hpp"
 #include "SceneSerialization.hpp"
+#include <Engine/Application.hpp>
 
 using namespace VSGE;
 
@@ -75,4 +76,40 @@ void SceneLayer::RestoreScene(byte* data, uint32 size) {
 	VSGE::SceneSerializer sc;
 	sc.SetScene(_scenes[0]);
 	sc.DeserializeBinary(data, size);
+}
+
+void SceneLayer::LoadSceneYAML(byte* data, uint32 index) {
+	if (_scenes.size() <= index)
+		return;
+
+	SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
+	Application::Get()->QueueEvent(load_event);
+
+	VSGE::SceneSerializer ss;
+	Scene* dest_scene = _scenes[index];
+
+	dest_scene->NewScene();
+	ss.SetScene(dest_scene);
+	ss.Deserialize(data);
+
+	SceneLoadedEvent* loaded_event = new SceneLoadedEvent;
+	Application::Get()->QueueEvent(loaded_event);
+}
+
+void SceneLayer::LoadSceneBinary(byte* data, uint32 size, uint32 index) {
+	if (_scenes.size() <= index)
+		return;
+
+	SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
+	Application::Get()->QueueEvent(load_event);
+
+	VSGE::SceneSerializer ss;
+	Scene* dest_scene = _scenes[index];
+
+	dest_scene->NewScene();
+	ss.SetScene(dest_scene);
+	ss.DeserializeBinary(data, size);
+
+	SceneLoadedEvent* loaded_event = new SceneLoadedEvent;
+	Application::Get()->QueueEvent(loaded_event);
 }

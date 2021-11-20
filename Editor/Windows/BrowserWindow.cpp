@@ -6,10 +6,9 @@
 #include <SDL2/SDL.h>
 #include <ImageBtnText.h>
 #include <EditorLayers/EditorLayer.hpp>
-#include <Scene/SceneLayer.hpp>
 #include <EditorLayers/ImGuiLayer.hpp>
 #include <Misc/SceneExt.hpp>
-#include <Scene/SceneSerialization.hpp>
+#include <Resources/ResourceTypes/SceneResource.hpp>
 #include <Resources/ResourceCache.hpp>
 #include "InspectorWindow.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
@@ -101,12 +100,9 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         el->SetPickedEntity(nullptr);
         el->GetOpenedSceneFile() = Entry.abs_path;
 
-        SceneLayer* scene_layer = SceneLayer::Get();
-
-        VSGE::SceneSerializer ss;
-        scene_layer->GetMainScene()->NewScene();
-        ss.SetScene(scene_layer->GetMainScene());
-        ss.Deserialize(Entry.abs_path);
+        SceneLayer::Get()->GetMainScene()->NewScene();
+        resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path);
+        ((SceneResource*)resource)->LoadAsync();
     }
     else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();

@@ -9,6 +9,7 @@
 #include <Core/Logger.hpp>
 #include <System/FileWatcher.hpp>
 #include <MonoScripting/MonoScriptCompile.hpp>
+#include <Scene/SceneLayer.hpp>
 #include <Base/Project.hpp>
 
 namespace VSGEditor {
@@ -110,5 +111,7 @@ namespace VSGEditor {
 		void OnMessageEvent(const VSGE::MessageEvent& me);
 		void OnScriptBeginEvent(const VSGE::ScriptCompilationBeginEvent& scbe);
 		void OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde);
+		void OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe);
+		void OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle);
 	};
 }

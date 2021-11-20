@@ -24,6 +24,7 @@ namespace VSGE {
 		EventResourceLoaded,
 
 		EventSceneLoaded,
+		EventSceneLoadBegin,
 		EventSceneModified,
 
 		EventScriptCompilationBegin,
