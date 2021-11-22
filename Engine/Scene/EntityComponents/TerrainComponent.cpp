@@ -32,7 +32,6 @@ TerrainComponent::TerrainComponent() {
 
 	_mesh_dirty = false;
 	_texturemaps_dirty = false;
-	_vegetables_dirty = false;
 
 	_heightmap = nullptr;
 	_texture_factors = nullptr;
@@ -212,18 +211,12 @@ Vec2i TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
 }
 
 void TerrainComponent::QueueGraphicsUpdate() {
-	_mesh_dirty = true;
-	_texturemaps_dirty = true;
-	_vegetables_dirty = true;
+	UpdateMesh();
+	UpdateTextureMasks();
+	UpdateVegetables();
 }
 
 void TerrainComponent::UpdateMesh() {
-	if (!_heightmap_mesh) {
-		_heightmap_mesh = CreateMesh();
-	}
-	else
-		_heightmap_mesh->Destroy();
-
 	SAFE_RELEASE_ARR(heightmap)
 	SAFE_RELEASE_ARR(indices)
 
@@ -260,36 +253,28 @@ void TerrainComponent::UpdateMesh() {
 	CalculateNormals(heightmap, indices, GetIndicesCount());
 	ProcessTangentSpace(heightmap, indices, GetIndicesCount());
 
-	_heightmap_mesh->SetVertexBuffer(heightmap, GetVerticesCount());
-	_heightmap_mesh->SetIndexBuffer(indices, GetIndicesCount());
-	_heightmap_mesh->Create();
+	_mesh_dirty = true;
 }
 void TerrainComponent::UpdateTextureMasks() {
 	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
-	if (!_texture_masks) {
-		SAFE_RELEASE(_texture_masks)
-		_texture_masks = CreateTexture();
-		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
-	}
+
+	uint32 layer_size = _width * _height * 4;
+	uint32 buffer_size = _width * _height * 4 * layers_count;
+	textures_masks = new byte[buffer_size];
 
 	for (uint32 layer_i = 0; layer_i < layers_count; layer_i++) {
-		uint32 buffer_size = _width * _height * 4;
-		byte* mask = new byte[buffer_size];
-
 		for (uint32 y = 0; y < _height; y++) {
 			for (uint32 x = 0; x < _width; x++) {
 				TerrainTexturesFactors* texture_factors = &_texture_factors[x * _height + y];
 
-				mask[(x * _height + y) * 4] = texture_factors->_textures_factors[layer_i * 4];
-				mask[(x * _height + y) * 4 + 1] = texture_factors->_textures_factors[layer_i * 4 + 1];
-				mask[(x * _height + y) * 4 + 2] = texture_factors->_textures_factors[layer_i * 4 + 2];
-				mask[(x * _height + y) * 4 + 3] = texture_factors->_textures_factors[layer_i * 4 + 3];
+				textures_masks[layer_i * layer_size + (x * _height + y) * 4] = texture_factors->_textures_factors[layer_i * 4];
+				textures_masks[layer_i * layer_size + (x * _height + y) * 4 + 1] = texture_factors->_textures_factors[layer_i * 4 + 1];
+				textures_masks[layer_i * layer_size + (x * _height + y) * 4 + 2] = texture_factors->_textures_factors[layer_i * 4 + 2];
+				textures_masks[layer_i * layer_size + (x * _height + y) * 4 + 3] = texture_factors->_textures_factors[layer_i * 4 + 3];
 			}
 		}
-		_texture_masks->AddMipLevel(mask, buffer_size, _width, _height, 0, layer_i);
-		_texture_masks->SetReadyToUseInShaders();
-		SAFE_RELEASE_ARR(mask)
 	}
+	_texturemaps_dirty = true;
 }
 
 void TerrainComponent::UpdateVegetables() {
@@ -331,6 +316,34 @@ void TerrainComponent::UpdateVegetables() {
 			grass_transforms.AddTransform(transform);
 		}
 	}
+}
+
+void TerrainComponent::UpdateGraphicsMesh() {
+	if (!_heightmap_mesh) {
+		_heightmap_mesh = CreateMesh();
+	}
+	else
+		_heightmap_mesh->Destroy();
+
+	_heightmap_mesh->SetVertexBuffer(heightmap, GetVerticesCount());
+	_heightmap_mesh->SetIndexBuffer(indices, GetIndicesCount());
+	_heightmap_mesh->Create();
+}
+void TerrainComponent::UpdateGraphicsTextureMasks() {
+	//Update texture masks
+	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
+	if (!_texture_masks) {
+		SAFE_RELEASE(_texture_masks)
+			_texture_masks = CreateTexture();
+		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
+	}
+
+	uint32 layer_size = _width * _height * 4;
+	for (uint32 layer_i = 0; layer_i < layers_count; layer_i++) {
+		_texture_masks->AddMipLevel(textures_masks + layer_i * layer_size, layer_size, _width, _height, 0, layer_i);
+	}
+	_texture_masks->SetReadyToUseInShaders();
+	SAFE_RELEASE_ARR(textures_masks)
 }
 
 void TerrainComponent::AddNewTexture() {
@@ -451,7 +464,9 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 			(GRASS_ID)heightmap[GetVerticesCount() + _terrain_textures.size() * GetVerticesCount() + v].as<int>();
 	}
 	
-	QueueGraphicsUpdate();
+	UpdateMesh();
+	UpdateTextureMasks();
+	UpdateVegetables();
 }
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_width);
@@ -551,16 +566,12 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 
 void TerrainComponent::OnPreRender() {
 	if (_mesh_dirty) {
-		UpdateMesh();
+		UpdateGraphicsMesh();
 		_mesh_dirty = false;
 	}
 	if (_texturemaps_dirty) {
-		UpdateTextureMasks();
+		UpdateGraphicsTextureMasks();
 		_texturemaps_dirty = false;
-	}
-	if (_vegetables_dirty) {
-		UpdateVegetables();
-		_vegetables_dirty = false;
 	}
 }
 

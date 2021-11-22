@@ -42,24 +42,23 @@ void TerrainThreadedEditor::THRFunc() {
 void TerrainThreadedEditor::ProcessRay(const Ray& ray) {
 	Vec2i coord = _terrain->GetRayIntersectionTraingle(ray);
 	if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
-		_terrain->ModifyHeight(coord, (float)GetTerrainEditorOpacity(), (uint32)GetTerrainEditorBrushSize());
-		_terrain->QueueGraphicsUpdate();
-		//_terrain->UpdateMesh();
-		//_terrain->UpdateVegetables();
+		_terrain->ModifyHeight(coord,
+			GetTerrainEditorOpacity(),
+			(uint32)GetTerrainEditorBrushSize());
+		_terrain->UpdateMesh();
+		_terrain->UpdateVegetables();
 	}
 	if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
 		_terrain->ModifyTexture(Vec2i(coord.y, coord.x),
 			GetTerrainEditorOpacity(),
 			(uint32)GetTerrainEditorBrushSize(),
 			GetTerrainEditorTextureIndex());
-		//_terrain->UpdateTextureMasks();
-		_terrain->QueueGraphicsUpdate();
+		_terrain->UpdateTextureMasks();
 	}
 	if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_GRASS && coord.x >= 0) {
 		_terrain->ModifyGrass(Vec2i(coord.x, coord.y),
 			(uint32)GetTerrainEditorOpacity(),
 			GetTerrainEditorVegetableIndex());
-		//_terrain->UpdateVegetables();
-		_terrain->QueueGraphicsUpdate();
+		_terrain->UpdateVegetables();
 	}
 }

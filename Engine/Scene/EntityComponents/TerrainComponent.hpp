@@ -100,7 +100,6 @@ namespace VSGE{
 	
 			bool _mesh_dirty;
 			bool _texturemaps_dirty;
-			bool _vegetables_dirty;
 
 			float* _heightmap;
 			TerrainTexturesFactors* _texture_factors;
@@ -114,6 +113,7 @@ namespace VSGE{
 			//computed geometry
 			Vertex* heightmap;
 			uint32* indices;
+			byte* textures_masks;
 			std::vector<GrassIdTransforms> _grass_transforms;
 			//physics
 			bool _physics_enabled;
@@ -122,6 +122,9 @@ namespace VSGE{
 			btTransform GetEntityBtTransform();
 			btBvhTriangleMeshShape* GetPhysicalShape();
 			void AddPhysicsToWorld();
+
+			void UpdateGraphicsMesh();
+			void UpdateGraphicsTextureMasks();
 		public:
 			TerrainComponent();
 			~TerrainComponent();
@@ -142,6 +145,7 @@ namespace VSGE{
 			void ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id);
 			
 			void QueueGraphicsUpdate();
+
 			void UpdateMesh();
 			void UpdateTextureMasks();
 			void UpdateVegetables();

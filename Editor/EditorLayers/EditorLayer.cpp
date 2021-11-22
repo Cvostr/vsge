@@ -189,7 +189,7 @@ void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
 				if (_pickedEntity) {
 					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
 					if (terrain) {
-					//	_terrain_editor->QueueRay(ray);
+						_terrain_editor->QueueRay(ray);
 					}
 				}
 			}
