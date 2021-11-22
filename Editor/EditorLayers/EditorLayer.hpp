@@ -11,6 +11,7 @@
 #include <MonoScripting/MonoScriptCompile.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Base/Project.hpp>
+#include <Misc/TerrainThreadedEditor.hpp>
 
 namespace VSGEditor {
 
@@ -35,26 +36,14 @@ namespace VSGEditor {
 		int _transformMode;
 		EditorCameraMode _camera_mode;
 		Project _project;
+		TerrainThreadedEditor* _terrain_editor;
+
+		bool GetPickingRay(VSGE::Ray& result);
 	public:
 
-		EditorLayer() {
-			mEditorCamera = new VSGE::Camera;
-			mEditorCamera->SetFarPlane(5000);
-			_this = this;
-			mResourcesWatcher = new VSGE::FileWatcher;
+		EditorLayer();
 
-			CameraState.cam_yaw = 0;
-			CameraState.cam_pitch = 0;
-
-			_pickedEntity = nullptr;
-			_transformMode = 7;
-			_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
-		}
-
-		~EditorLayer() {
-			delete mEditorCamera;
-			delete mResourcesWatcher;
-		}
+		~EditorLayer();
 
 		std::string& GetOpenedSceneFile() {
 			return _openedSceneFile;

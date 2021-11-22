@@ -42,6 +42,28 @@ namespace fs = std::filesystem;
 
 EditorLayer* EditorLayer::_this = nullptr;
 
+EditorLayer::EditorLayer() {
+	mEditorCamera = new VSGE::Camera;
+	mEditorCamera->SetFarPlane(5000);
+	_this = this;
+	mResourcesWatcher = new VSGE::FileWatcher;
+
+	CameraState.cam_yaw = 0;
+	CameraState.cam_pitch = 0;
+
+	_pickedEntity = nullptr;
+	_transformMode = 7;
+	_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
+	_terrain_editor = new TerrainThreadedEditor;
+	_terrain_editor->Run();
+}
+
+EditorLayer::~EditorLayer() {
+	delete mEditorCamera;
+	delete mResourcesWatcher;
+	delete _terrain_editor;
+}
+
 void EditorLayer::OnAttach() {
 
 }
@@ -159,6 +181,19 @@ void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
 			front.z = sin(to_radians(CameraState.cam_yaw)) * cos(to_radians(CameraState.cam_pitch));
 			mEditorCamera->SetFront(front.GetNormalized());
 		}
+		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY())
+			&& Input::Get()->IsMouseButtonHold(MouseButton::MOUSE_BUTTON_LEFT)) {
+			Ray ray;
+			if (GetPickingRay(ray)) {
+
+				if (_pickedEntity) {
+					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
+					if (terrain) {
+					//	_terrain_editor->QueueRay(ray);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -177,126 +212,118 @@ void EditorLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 	}
 }
 
+bool EditorLayer::GetPickingRay(VSGE::Ray& result) {
+	Vec2i cursor_pos = Input::Get()->GetMouseCursorPos();
+	int32 cursorx = cursor_pos.x;
+	int32 cursory = cursor_pos.y;
+
+	ImGuiLayer* imgui = ImGuiLayer::Get();
+	SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
+
+	if (win && _camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
+		if (!win->IsTransformGizmoUsed() &&
+			win->IsInFocus() &&
+			win->isInsideWindow(cursorx, cursory)) {
+			int relx = cursorx - (int)win->GetPos().x;
+			int rely = -cursory + (int)win->GetPos().y + (int)win->GetSize().y;
+
+			if (_pickedEntity) {
+				Vec3 mpos = _pickedEntity->GetWorldTransform().GetPosition();
+				ImGuizmo::vec_t model_pos = ImGuizmo::makeVect(mpos.x, mpos.y, mpos.z);
+				Mat4 _cam_transform = mEditorCamera->GetProjectionViewMatrix();
+				ImGuizmo::matrix_t cam_transform;
+				memcpy(&cam_transform, &_cam_transform, 64);
+				ImVec2 point_pos = ImGuizmo::worldToPos(model_pos, cam_transform);
+				point_pos.x -= win->GetPos().x;
+				point_pos.y -= win->GetPos().y;
+
+				if (abs(point_pos.x - relx) < 75 && abs(point_pos.y - rely) < 75)
+					return false;
+			}
+
+			Vec2 crpos = Vec2((float)relx / win->GetSize().x,
+				(float)rely / win->GetSize().y
+			);
+
+			Vec3 world_pos = mEditorCamera->ScreenPointToWorldPoint(crpos);
+			Vec3 dir = world_pos - mEditorCamera->GetPosition();
+
+			result = Ray(mEditorCamera->GetPosition(), dir.GetNormalized());
+			return true;
+		}
+	}
+	return false;
+}
+
 void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 	if (mbd.GetMouseButton() == MOUSE_BUTTON_LEFT) {
-		//Try to pick object
 		ImGuiLayer* imgui = ImGuiLayer::Get();
-		SceneViewWindow* win = imgui->GetWindow<SceneViewWindow>();
 		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
+		VulkanRenderer* renderer = VulkanRenderer::Get();
 
-		Vec2i cursor_pos = Input::Get()->GetMouseCursorPos();
-		int32 cursorx = cursor_pos.x;
-		int32 cursory = cursor_pos.y;
+		//Try to pick object
+		Ray ray;
+		if (GetPickingRay(ray)) {
 
-		if (win && _camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
-			if (!win->IsTransformGizmoUsed() && 
-				win->IsInFocus() && 
-				win->isInsideWindow(cursorx, cursory)) {
-
-				int relx = cursorx - (int)win->GetPos().x;
-				int rely = -cursory + (int)win->GetPos().y + (int)win->GetSize().y;
-
-				bool picking_allowed = true;
-				if (_pickedEntity) {
-					Vec3 mpos = _pickedEntity->GetWorldTransform().GetPosition();
-					ImGuizmo::vec_t model_pos = ImGuizmo::makeVect(mpos.x, mpos.y, mpos.z);
-					Mat4 _cam_transform = mEditorCamera->GetProjectionViewMatrix();
-					ImGuizmo::matrix_t cam_transform;
-					memcpy(&cam_transform, &_cam_transform, 64);
-					ImVec2 point_pos = ImGuizmo::worldToPos(model_pos, cam_transform);
-					point_pos.x -= win->GetPos().x;
-					point_pos.y -= win->GetPos().y;
-
-					if (abs(point_pos.x - relx) < 75 && abs(point_pos.y - rely) < 75)
-						return;
-				}
-
-				Vec2 crpos = Vec2((float)relx / win->GetSize().x,
-					(float)rely / win->GetSize().y
-				);
-
-				Vec3 world_pos = mEditorCamera->ScreenPointToWorldPoint(crpos);
-				Vec3 dir = world_pos - mEditorCamera->GetPosition();
-
-				VulkanRenderer* renderer = VulkanRenderer::Get();
-
-				Ray ray(mEditorCamera->GetPosition(), dir.GetNormalized());
-				//Try pick terrain vertex
-				if (_pickedEntity) {
-					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
-					if (terrain) {
-						Vec2i coord = terrain->GetRayIntersectionTraingle(ray);
-						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
-							terrain->ModifyHeight(coord, (float)GetTerrainEditorOpacity(), (uint32)GetTerrainEditorBrushSize());
-							terrain->UpdateMesh();
-							terrain->UpdateVegetables();
-						}
-						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
-							terrain->ModifyTexture(Vec2i(coord.y, coord.x),
-								GetTerrainEditorOpacity(),
-								(uint32)GetTerrainEditorBrushSize(),
-								GetTerrainEditorTextureIndex());
-							terrain->UpdateTextureMasks();
-						}
-						if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_GRASS && coord.x >= 0) {
-							terrain->ModifyGrass(Vec2i(coord.x, coord.y),
-								(uint32)GetTerrainEditorOpacity(),
-								GetTerrainEditorVegetableIndex());
-							terrain->UpdateVegetables();
-						}
-					}
-				}
-				
-				std::vector<RayHit> hits;
-
-				Entity* picked = nullptr;
-				for (auto entity : renderer->GetEntitiesToDraw()) {
-					AABB bb = entity->GetAABB(false);
-
-					float len = ray.GetHitdistance(bb);
-					if (len < 10000.f) {
-						RayHit newhit(ray.GetHitdistance(bb), Vec3(0, 0, 0), entity);
-						hits.push_back(newhit);
-					}
-				}
-
-				std::sort(hits.begin(), hits.end(), [](const RayHit& a, const RayHit& b) { return a.GetDistance() < b.GetDistance(); });
-				//triangle intersection
-				float min_distance = MAX_FLOAT;
-				if (hits.size() == 1) {
-					SetPickedEntity((Entity*)hits[0].GetHitObject());
-					insp->SetShowingEntity((Entity*)hits[0].GetHitObject());
+			if (_pickedEntity) {
+				TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
+				if (terrain) {
+					_terrain_editor->SetTerrain(terrain);
+					_terrain_editor->QueueRay(ray);
 				}
 				else
-				{
-					for (auto& hit : hits) {
-						Entity* ent = (Entity*)hit.GetHitObject();
-						Mat4 transform = ent->GetWorldTransform();
-						MeshComponent* mesh_comp = ent->GetComponent<MeshComponent>();
-						if (!mesh_comp)
-							continue;
+					_terrain_editor->SetTerrain(nullptr);
+			}
 
-						Mesh* entity_mesh = mesh_comp->GetMesh();
+			std::vector<RayHit> hits;
 
-						if (!entity_mesh)
-							continue;
+			Entity* picked = nullptr;
+			for (auto entity : renderer->GetEntitiesToDraw()) {
+				AABB bb = entity->GetAABB(false);
 
-						for (uint32 v_i = 0; v_i < entity_mesh->GetTrianglesCount(); v_i ++) {
-							Vec3 v0, v1, v2;
-							entity_mesh->GetTriangle(v_i, v0, v1, v2);
+				float len = ray.GetHitdistance(bb);
+				if (len < 10000.f) {
+					RayHit newhit(ray.GetHitdistance(bb), Vec3(0, 0, 0), entity);
+					hits.push_back(newhit);
+				}
+			}
 
-							Vec4 v01 = transform * Vec4(v0, 1);
-							Vec4 v11 = transform * Vec4(v1, 1);
-							Vec4 v21 = transform * Vec4(v2, 1);
+			std::sort(hits.begin(), hits.end(), [](const RayHit& a, const RayHit& b) { return a.GetDistance() < b.GetDistance(); });
+			//triangle intersection
+			float min_distance = MAX_FLOAT;
+			if (hits.size() == 1) {
+				SetPickedEntity((Entity*)hits[0].GetHitObject());
+				insp->SetShowingEntity((Entity*)hits[0].GetHitObject());
+			}
+			else
+			{
+				for (auto& hit : hits) {
+					Entity* ent = (Entity*)hit.GetHitObject();
+					Mat4 transform = ent->GetWorldTransform();
+					MeshComponent* mesh_comp = ent->GetComponent<MeshComponent>();
+					if (!mesh_comp)
+						continue;
 
-							float current_distance;
-							Vec2 current_pos;
-							bool intersects = ray.IntersectTriangle(v01.Vec3(), v11.Vec3(), v21.Vec3(), current_distance, current_pos);
-							if(intersects && current_distance < min_distance){
-								min_distance = current_distance;
-								SetPickedEntity(ent);
-								insp->SetShowingEntity(ent);
-							}
+					Mesh* entity_mesh = mesh_comp->GetMesh();
+
+					if (!entity_mesh)
+						continue;
+
+					for (uint32 v_i = 0; v_i < entity_mesh->GetTrianglesCount(); v_i++) {
+						Vec3 v0, v1, v2;
+						entity_mesh->GetTriangle(v_i, v0, v1, v2);
+
+						Vec4 v01 = transform * Vec4(v0, 1);
+						Vec4 v11 = transform * Vec4(v1, 1);
+						Vec4 v21 = transform * Vec4(v2, 1);
+
+						float current_distance;
+						Vec2 current_pos;
+						bool intersects = ray.IntersectTriangle(v01.Vec3(), v11.Vec3(), v21.Vec3(), current_distance, current_pos);
+						if (intersects && current_distance < min_distance) {
+							min_distance = current_distance;
+							SetPickedEntity(ent);
+							insp->SetShowingEntity(ent);
 						}
 					}
 				}

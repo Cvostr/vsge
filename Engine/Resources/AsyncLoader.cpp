@@ -7,18 +7,15 @@
 using namespace VSGE;
 
 AsyncLoader::AsyncLoader() :
-    mMutex(new Mutex),
-    queue_length(0)
+    mMutex(new Mutex)
 {
-    loadQueue = new LoadRequest[LOADER_QUEUE_SIZE];
 }
 
 AsyncLoader::~AsyncLoader() {
     SAFE_RELEASE(mMutex);
-    SAFE_RELEASE_ARR(loadQueue);
 }
 
-void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
+void AsyncLoader::LoadResource(Resource* resource) {
     resource->SetState(RESOURCE_STATE_LOADING);
     //Declare blob loader stream
     std::ifstream stream;
@@ -58,31 +55,31 @@ void AsyncLoader::LoadResource(Resource* resource, bool justRead) {
         return;
     }
 
-    if (!justRead) {
-        //Do some specific work (on MeshGroupResource as example)
-        //Send Resource load event
-        if (mMutex != nullptr)
-            mMutex->Lock();
-        resource->Prepare();
-        ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
-        Application::Get()->QueueEvent(rle);
-        if (mMutex != nullptr)
-            mMutex->Release();
-   }
+    //Do some specific work (on MeshGroupResource as example)
+    //Send Resource load event
+    if (mMutex != nullptr)
+        mMutex->Lock();
+    resource->Prepare();
+    ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
+    Application::Get()->QueueEvent(rle);
+    if (mMutex != nullptr)
+        mMutex->Release();
 }
 
-void AsyncLoader::AddToQueue(Resource* resource, bool justRead) {
+void AsyncLoader::AddToQueue(Resource* resource) {
     if (resource->GetState() != RESOURCE_STATE_UNLOADED)
         return;
     //Lock array mutex
     mMutex->Lock();
     
     resource->SetState(RESOURCE_STATE_QUEUED);
-    LoadRequest request(resource, justRead);
-    loadQueue[LOADER_QUEUE_SIZE - 1 - (queue_length)] = request;
-    queue_length++;
+    loadQueue.push(resource);
     //release array mutex
     mMutex->Release();
+}
+
+uint32 AsyncLoader::GetQueuedResourcesCount() {
+    return loadQueue.size(); 
 }
 
 void AsyncLoader::WaitForLoading(Resource* resource) {
@@ -92,16 +89,15 @@ void AsyncLoader::WaitForLoading(Resource* resource) {
 void AsyncLoader::THRFunc() {
     while (_running) {
 
-        if (queue_length > 0) {
+        if (loadQueue.size() > 0) {
             mMutex->Lock();
-            //Obtain pointer to LoadRequest
-            LoadRequest* request = &loadQueue[LOADER_QUEUE_SIZE - queue_length];
-            //Reduce requests pool amount
-            queue_length--;
+            //obtain next resource pointer
+            Resource* resource = loadQueue.front();
+            loadQueue.pop();
             //unlock thread
             mMutex->Release();
             //Load resource by request
-            LoadResource(request->_resource, request->_justRead);
+            LoadResource(resource);
         }
         SleepThread(5);
     }

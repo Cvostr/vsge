@@ -41,6 +41,7 @@ set(SRC_FILES
                 Misc/ResourceImporter.cpp
                 Misc/SceneExt.cpp
                 Misc/Thumbnails.cpp
+                Misc/TerrainThreadedEditor.cpp
                 Misc/VkMaterialsThumbnails.cpp
                 Misc/VkGizmos.cpp
                 Misc/EditorIcons.cpp
