@@ -10,12 +10,9 @@ namespace VSGE {
 		VulkanBuffer* indexBuffer;
 	public:
 
-		VulkanMesh() :
-			indexBuffer(nullptr) {}
+		VulkanMesh();
 
-		~VulkanMesh() {
-			Destroy();
-		}
+		virtual ~VulkanMesh();
 
 		VulkanBuffer** GetVertexBuffers() {
 			return vertexBuffers.data();

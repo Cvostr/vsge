@@ -19,18 +19,25 @@ typedef uint8 GRASS_ID;
 
 namespace VSGE{
 
+	
 	class TerrainTexturesFactors {
+	private:
+		byte* _textures_masks;
+		uint32 height;
+		uint32 width;
+		uint32 layers;
 	public:
-		uint8 _textures_factors[MAX_TEXTURES_PER_TERRAIN];
-
-		TerrainTexturesFactors() {
-			for (uint32 i = 0; i < MAX_TEXTURES_PER_TERRAIN; i++) {
-				_textures_factors[i] = 0;
-			}
-		}
-
-		void add(uint32 texture_id, uint32 val);
-		void reduce(uint32 texture_id, uint32 val);
+		TerrainTexturesFactors();
+		void Allocate(uint32 width, uint32 height, uint32 layers_count = 16);
+		void Free();
+		byte* GetArray();
+		byte* GetPointerToCoord(uint32 x, uint32 y, uint32 texture);
+		byte* GetPointerToCoord(uint32 index, uint32 texture);
+		void set(uint32 x, uint32 y, uint32 texture_id, uint32 val);
+		void set(uint32 index, uint32 texture_id, uint32 val);
+		uint8 get(uint32 index, uint32 texture_id);
+		void add(uint32 x, uint32 y, uint32 texture_id, uint32 val);
+		void reduce(uint32 x, uint32 y, uint32 texture_id, uint32 val);
 	};
 
 	class TerrainTexture {
@@ -101,8 +108,7 @@ namespace VSGE{
 			bool _mesh_dirty;
 			bool _texturemaps_dirty;
 
-			float* _heightmap;
-			TerrainTexturesFactors* _texture_factors;
+			TerrainTexturesFactors _texture_factors;
 			GRASS_ID* _vegetables_data;
 
 			std::vector<TerrainTexture> _terrain_textures;
@@ -111,9 +117,8 @@ namespace VSGE{
 			Mesh* _heightmap_mesh;
 			Texture* _texture_masks;
 			//computed geometry
-			Vertex* heightmap;
+			Vertex* _heightmap;
 			uint32* indices;
-			byte* textures_masks;
 			std::vector<GrassIdTransforms> _grass_transforms;
 			//physics
 			bool _physics_enabled;
@@ -122,6 +127,11 @@ namespace VSGE{
 			btTransform GetEntityBtTransform();
 			btBvhTriangleMeshShape* GetPhysicalShape();
 			void AddPhysicsToWorld();
+
+			void UpdateMaxHeight();
+			void UpdateNormals();
+			void CreateIndicesArray();
+			void CreateVerticesArray();
 
 			void UpdateGraphicsMesh();
 			void UpdateGraphicsTextureMasks();
@@ -146,8 +156,6 @@ namespace VSGE{
 			
 			void QueueGraphicsUpdate();
 
-			void UpdateMesh();
-			void UpdateTextureMasks();
 			void UpdateVegetables();
 
 			Vec2i GetRayIntersectionTraingle(const Ray& ray);

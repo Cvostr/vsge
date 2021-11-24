@@ -29,6 +29,7 @@ void Mesh::SetVertexBuffer(Vertex* vertices, uint32 vertexCount) {
 }
 
 void Mesh::SetIndexBuffer(uint32* indices, uint32 indicesCount) {
+	SAFE_RELEASE_ARR(_indexArray)
 	_indexArray = new uint32[indicesCount];
 	for (uint32 index_i = 0; index_i < indicesCount; index_i++) {
 		_indexArray[index_i] = indices[index_i];

@@ -2,6 +2,13 @@
 
 using namespace VSGE;
 
+VulkanMesh::VulkanMesh() :
+	indexBuffer(nullptr) {}
+
+VulkanMesh::~VulkanMesh() {
+	Destroy();
+}
+
 bool VulkanMesh::Create() {
 	for (auto vbd : _vertexBuffers) {
 		VulkanBuffer* vertexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
@@ -21,6 +28,8 @@ bool VulkanMesh::Create() {
 }
 
 void VulkanMesh::Destroy() {
+	SAFE_RELEASE_ARR(_positions_array);
+	SAFE_RELEASE_ARR(_indexArray)
 	if (mCreated) {
 		for (auto vertbuffer : vertexBuffers) {
 			vertbuffer->Destroy();
@@ -33,8 +42,6 @@ void VulkanMesh::Destroy() {
 			indexBuffer->Destroy();
 			SAFE_RELEASE(indexBuffer)
 		}
-
-		SAFE_RELEASE_ARR(_positions_array)
 
 		mCreated = false;
 	}

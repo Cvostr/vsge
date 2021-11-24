@@ -121,8 +121,6 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	ImGui::Separator();
 	if (ImGui::Button("Clear terrain", ImVec2(ImGui::GetWindowWidth(), 0))) {
 		tc->Flat(0);
-		tc->UpdateMesh();
-		tc->UpdateTextureMasks();
 	}
 
 	ImGui::Separator();

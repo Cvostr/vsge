@@ -103,7 +103,7 @@ void VulkanMA::copy(VkBuffer buffer, uint32 offset, void* data, uint32 size) {
     vkQueueSubmit(pair->transfer_queue, 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(pair->transfer_queue);
 
-    vkDestroyBuffer(device->getVkDevice(), tempBuffer, nullptr);
+    vmaDestroyBuffer(*((VmaAllocator*)allocator), tempBuffer, tempBufferAlloc);
 }
 
 void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* data, uint32 size) {

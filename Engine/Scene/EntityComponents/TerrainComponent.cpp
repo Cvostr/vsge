@@ -7,22 +7,64 @@
 using namespace VSGE;
 using namespace YAML;
 
-void TerrainTexturesFactors::add(uint32 texture_id, uint32 val) {
-	uint8* ptr = &_textures_factors[texture_id];
+TerrainTexturesFactors::TerrainTexturesFactors() {
+	_textures_masks = nullptr;
+}
+void TerrainTexturesFactors::Allocate(uint32 width, uint32 height, uint32 layers_count) {
+	this->height = height;
+	this->width = width;
+	this->layers = layers;
+	uint32 buffer_size = width * height * 4 * layers_count;
+	_textures_masks = new byte[buffer_size];
+}
+void TerrainTexturesFactors::Free() {
+	SAFE_RELEASE_ARR(_textures_masks);
+}
+byte* TerrainTexturesFactors::GetArray() {
+	return _textures_masks;
+}
+byte* TerrainTexturesFactors::GetPointerToCoord(uint32 x, uint32 y, uint32 texture) {
+	uint32 layer_num = texture / 4;
+	uint32 channel_num = texture % 4;
+	uint32 layer_size = width * height * 4;
+	return &_textures_masks[layer_num * layer_size + (x * height + y) * 4 + channel_num];
+}
+
+byte* TerrainTexturesFactors::GetPointerToCoord(uint32 index, uint32 texture) {
+	uint32 layer_num = texture / 4;
+	uint32 channel_num = texture % 4;
+	uint32 layer_size = width * height * 4;
+	return &_textures_masks[layer_num * layer_size + index * 4 + channel_num];
+}
+
+void TerrainTexturesFactors::add(uint32 x, uint32 y, uint32 texture_id, uint32 val) {
+	byte* ptr = GetPointerToCoord(x, y, texture_id);
 	if (static_cast<int>(*ptr) + val <= 255)
 		*ptr += val;
 	else {
 		*ptr = 255;
 	}
 }
-void TerrainTexturesFactors::reduce(uint32 texture_id, uint32 val) {
-	uint8* ptr = &_textures_factors[texture_id];
+void TerrainTexturesFactors::reduce(uint32 x, uint32 y, uint32 texture_id, uint32 val) {
+	byte* ptr = GetPointerToCoord(x, y, texture_id);
 	int result = static_cast<int>(*ptr) - val;
 	if (result >= 0)
 		*ptr -= val;
 	else {
 		*ptr = 0;
 	}
+}
+void TerrainTexturesFactors::set(uint32 x, uint32 y, uint32 texture_id, uint32 val) {
+	byte* ptr = GetPointerToCoord(x, y, texture_id);
+	*ptr = val;
+}
+void TerrainTexturesFactors::set(uint32 index, uint32 texture_id, uint32 val) {
+	byte* ptr = GetPointerToCoord(index, texture_id);
+	*ptr = val;
+}
+uint8 TerrainTexturesFactors::get(uint32 index, uint32 texture_id) {
+	byte* ptr = GetPointerToCoord(index, texture_id);
+	return *ptr;
 }
 
 TerrainComponent::TerrainComponent() {
@@ -34,13 +76,11 @@ TerrainComponent::TerrainComponent() {
 	_texturemaps_dirty = false;
 
 	_heightmap = nullptr;
-	_texture_factors = nullptr;
 	_vegetables_data = nullptr;
 
 	_heightmap_mesh = nullptr;
 	_texture_masks = nullptr;
 
-	heightmap = nullptr;
 	indices = nullptr;
 
 	_physics_enabled = true;
@@ -52,7 +92,8 @@ TerrainComponent::TerrainComponent() {
 }
 TerrainComponent::~TerrainComponent() {
 	SAFE_RELEASE_ARR(_heightmap);
-	SAFE_RELEASE_ARR(_texture_factors);
+	SAFE_RELEASE_ARR(indices);
+	_texture_factors.Free();
 	SAFE_RELEASE_ARR(_vegetables_data)
 
 	SAFE_RELEASE(_heightmap_mesh);
@@ -114,20 +155,27 @@ std::vector<GrassIdTransforms>& TerrainComponent::GetGrassTransforms() {
 
 void TerrainComponent::Flat(float height) {
 	SAFE_RELEASE_ARR(_heightmap);
-	SAFE_RELEASE_ARR(_texture_factors);
+	_texture_factors.Free();
 	SAFE_RELEASE_ARR(_vegetables_data);
 
 	uint32 vertices_count = GetVerticesCount();
 
-	_heightmap = new float[vertices_count];
-	_texture_factors = new TerrainTexturesFactors[vertices_count];
+	CreateVerticesArray();
+	_texture_factors.Allocate(_width, _height, 16);
 	_vegetables_data = new GRASS_ID[vertices_count];
 
 	for (uint32 i = 0; i < vertices_count; i++) {
-		_heightmap[i] = height;
-		_texture_factors[i]._textures_factors[0] = 255;
+		_heightmap[i].pos.y = height;
 		_vegetables_data[i] = NO_GRASS;
 	}
+	for (int x = 0; x < _width; x++) {
+		for (int y = 0; y < _height; y++) {
+			_texture_factors.set(x, y, 0, 255);
+		}
+	}
+
+	UpdateNormals();
+	_texturemaps_dirty = true;
 }
 
 void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) {
@@ -140,11 +188,12 @@ void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 
 				//calculate modifier
 				float toApply = (height) - static_cast<float>(dist * dist) / (float)range;
 				if (toApply > 0) {
-					_heightmap[y * _height + x] += (toApply);
+					_heightmap[y * _height + x].pos.y += (toApply);
 				}
 			}
 		}
 	}
+	_mesh_dirty = true;
 }
 
 void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id) {
@@ -163,13 +212,14 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 
 				for (uint32 texture_f = 0; texture_f < MAX_TEXTURES_PER_TERRAIN; texture_f++) {
 					if (texture_f != texture_id)
-						_texture_factors[y * _height + x].reduce(texture_f, _toApply);
+						_texture_factors.reduce(y, x, texture_f, _toApply);
 
 				}
-				_texture_factors[y * _height + x].add(texture_id, _toApply);
+				_texture_factors.add(y, x, texture_id, _toApply);
 			}
 		}
 	}
+	_texturemaps_dirty = true;
 }
 
 void TerrainComponent::ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id) {
@@ -186,15 +236,15 @@ void TerrainComponent::ModifyGrass(const Vec2i& position, uint32 range, uint32 g
 }
 
 Vec2i TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
-	if (!heightmap || !indices)
+	if (!_heightmap || !indices)
 		return Vec2i(-1);
 
 	Mat4 entity_transform = GetEntity()->GetWorldTransform();
 
 	for (uint32 index_i = 0; index_i < GetIndicesCount(); index_i += 3) {
-		Vec3 v0 = heightmap[indices[index_i]].pos;
-		Vec3 v1 = heightmap[indices[index_i + 1]].pos;
-		Vec3 v2 = heightmap[indices[index_i + 2]].pos;
+		Vec3 v0 = _heightmap[indices[index_i]].pos;
+		Vec3 v1 = _heightmap[indices[index_i + 1]].pos;
+		Vec3 v2 = _heightmap[indices[index_i + 2]].pos;
 
 		Vec4 v01 = entity_transform * Vec4(v0, 1);
 		Vec4 v11 = entity_transform * Vec4(v1, 1);
@@ -211,18 +261,12 @@ Vec2i TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) {
 }
 
 void TerrainComponent::QueueGraphicsUpdate() {
-	UpdateMesh();
-	UpdateTextureMasks();
 	UpdateVegetables();
 }
 
-void TerrainComponent::UpdateMesh() {
-	SAFE_RELEASE_ARR(heightmap)
-	SAFE_RELEASE_ARR(indices)
-
-	heightmap = new Vertex[GetVerticesCount()];
+void TerrainComponent::CreateIndicesArray() {
+	SAFE_RELEASE_ARR(indices);
 	indices = new uint32[GetIndicesCount()];
-
 	uint32 inds = 0;
 	for (uint32 y = 0; y < _height - 1; y++) {
 		for (uint32 x = 0; x < _width - 1; x++) {
@@ -237,44 +281,37 @@ void TerrainComponent::UpdateMesh() {
 			inds += 6;
 		}
 	}
+}
 
+void TerrainComponent::CreateVerticesArray() {
+	SAFE_RELEASE_ARR(_heightmap)
+	_heightmap = new Vertex[GetVerticesCount()];
+	for (uint32 y = 0; y < _height; y++) {
+		for (uint32 x = 0; x < _width; x++) {
+			_heightmap[x * _height + y].uv = Vec2(static_cast<float>(x) / _width, static_cast<float>(y) / _height);
+			_heightmap[x * _height + y].pos = Vec3(static_cast<float>(x), 0, static_cast<float>(y));
+		}
+	}
+
+	CreateIndicesArray();
+	UpdateNormals();
+	
+	_mesh_dirty = true;
+}
+
+void TerrainComponent::UpdateMaxHeight() {
 	_max_terrain_height = -10000;
 	for (uint32 y = 0; y < _height; y++) {
 		for (uint32 x = 0; x < _width; x++) {
-			if (_max_terrain_height < _heightmap[x * _height + y])
-				_max_terrain_height = _heightmap[x * _height + y];
-			//Set vertex height
-			heightmap[x * _height + y].pos = Vec3(static_cast<float>(x), _heightmap[x * _height + y], static_cast<float>(y));
-			//Calculate vertex texture UV
-			heightmap[x * _height + y].uv = Vec2(static_cast<float>(x) / _width, static_cast<float>(y) / _height);
+			if (_max_terrain_height < _heightmap[x * _height + y].pos.y)
+				_max_terrain_height = _heightmap[x * _height + y].pos.y;
 		}
 	}
-
-	CalculateNormals(heightmap, indices, GetIndicesCount());
-	ProcessTangentSpace(heightmap, indices, GetIndicesCount());
-
-	_mesh_dirty = true;
 }
-void TerrainComponent::UpdateTextureMasks() {
-	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 
-	uint32 layer_size = _width * _height * 4;
-	uint32 buffer_size = _width * _height * 4 * layers_count;
-	textures_masks = new byte[buffer_size];
-
-	for (uint32 layer_i = 0; layer_i < layers_count; layer_i++) {
-		for (uint32 y = 0; y < _height; y++) {
-			for (uint32 x = 0; x < _width; x++) {
-				TerrainTexturesFactors* texture_factors = &_texture_factors[x * _height + y];
-
-				textures_masks[layer_i * layer_size + (x * _height + y) * 4] = texture_factors->_textures_factors[layer_i * 4];
-				textures_masks[layer_i * layer_size + (x * _height + y) * 4 + 1] = texture_factors->_textures_factors[layer_i * 4 + 1];
-				textures_masks[layer_i * layer_size + (x * _height + y) * 4 + 2] = texture_factors->_textures_factors[layer_i * 4 + 2];
-				textures_masks[layer_i * layer_size + (x * _height + y) * 4 + 3] = texture_factors->_textures_factors[layer_i * 4 + 3];
-			}
-		}
-	}
-	_texturemaps_dirty = true;
+void TerrainComponent::UpdateNormals() {
+	CalculateNormals(_heightmap, indices, GetIndicesCount());
+	ProcessTangentSpace(_heightmap, indices, GetIndicesCount());
 }
 
 void TerrainComponent::UpdateVegetables() {
@@ -302,11 +339,11 @@ void TerrainComponent::UpdateVegetables() {
 			auto& grass = _terrain_grass[vegetable_id];
 
 			Vec3 rotation = Vec3(0, Random(0, 360), 0);
-			if (heightmap) {
-				Vec3 normal = heightmap[orig_x * _height + orig_y].normal;
+			if (_heightmap) {
+				Vec3 normal = _heightmap[orig_x * _height + orig_y].normal;
 			}
 
-			Vec3 position = Vec3(x, _heightmap[orig_x * _height + orig_y], y);
+			Vec3 position = Vec3(x, _heightmap[orig_x * _height + orig_y].pos.y, y);
 			Vec3 scale = Vec3(grass._width, grass._height, grass._width);
 
 			Mat4 scale_mat = GetScaleMatrix(scale);
@@ -322,10 +359,9 @@ void TerrainComponent::UpdateGraphicsMesh() {
 	if (!_heightmap_mesh) {
 		_heightmap_mesh = CreateMesh();
 	}
-	else
-		_heightmap_mesh->Destroy();
+	_heightmap_mesh->Destroy();
 
-	_heightmap_mesh->SetVertexBuffer(heightmap, GetVerticesCount());
+	_heightmap_mesh->SetVertexBuffer(_heightmap, GetVerticesCount());
 	_heightmap_mesh->SetIndexBuffer(indices, GetIndicesCount());
 	_heightmap_mesh->Create();
 }
@@ -333,17 +369,15 @@ void TerrainComponent::UpdateGraphicsTextureMasks() {
 	//Update texture masks
 	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 	if (!_texture_masks) {
-		SAFE_RELEASE(_texture_masks)
-			_texture_masks = CreateTexture();
+		_texture_masks = CreateTexture();
 		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
 	}
 
 	uint32 layer_size = _width * _height * 4;
 	for (uint32 layer_i = 0; layer_i < layers_count; layer_i++) {
-		_texture_masks->AddMipLevel(textures_masks + layer_i * layer_size, layer_size, _width, _height, 0, layer_i);
+		_texture_masks->AddMipLevel(_texture_factors.GetArray() + layer_i * layer_size, layer_size, _width, _height, 0, layer_i);
 	}
 	_texture_masks->SetReadyToUseInShaders();
-	SAFE_RELEASE_ARR(textures_masks)
 }
 
 void TerrainComponent::AddNewTexture() {
@@ -391,11 +425,11 @@ void TerrainComponent::Serialize(YAML::Emitter& e) {
 
 	e << YAML::Key << "heightmap" << YAML::Value << YAML::BeginSeq;
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		e << Value << _heightmap[v];
+		e << Value << _heightmap[v].pos.y;
 	}
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			e << Value << (int)_texture_factors[v]._textures_factors[texture_i];
+			e << Value << (int)_texture_factors.get(v, texture_i);
 		}
 	}
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
@@ -451,12 +485,12 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 	YAML::Node heightmap = entity["heightmap"];
 	
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		_heightmap[v] = heightmap[v].as<float>();
+		_heightmap[v].pos.y = heightmap[v].as<float>();
 	}
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			_texture_factors[v]._textures_factors[texture_i] = 
-				(uint8)heightmap[GetVerticesCount() + _terrain_textures.size() * v + texture_i].as<int>();
+			uint8 value = (uint8)heightmap[GetVerticesCount() + _terrain_textures.size() * v + texture_i].as<int>();
+			_texture_factors.set(v, texture_i, value);
 		}
 	}
 	for (uint32 v = 0; v < GetVerticesCount(); v++) {
@@ -464,8 +498,6 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 			(GRASS_ID)heightmap[GetVerticesCount() + _terrain_textures.size() * GetVerticesCount() + v].as<int>();
 	}
 	
-	UpdateMesh();
-	UpdateTextureMasks();
 	UpdateVegetables();
 }
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
@@ -501,7 +533,7 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 		serializer.Serialize(_heightmap[i]);
 
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			serializer.Serialize(_texture_factors[i]._textures_factors[texture_i]);
+			serializer.Serialize(_texture_factors.get(i, texture_i));
 		}
 
 		serializer.Serialize(_vegetables_data[i]);
@@ -552,10 +584,10 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 	}
 
 	for (uint32 i = 0; i < GetVerticesCount(); i++) {
-		_heightmap[i] = solver.GetValue<float>();
+		_heightmap[i].pos.y = solver.GetValue<float>();
 
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			_texture_factors[i]._textures_factors[texture_i] = solver.GetValue<uint8>();
+			_texture_factors.set(i, texture_i, solver.GetValue<uint8>());
 		}
 
 		_vegetables_data[i] = solver.GetValue<GRASS_ID>();
@@ -566,6 +598,8 @@ void TerrainComponent::Deserialize(ByteSolver& solver) {
 
 void TerrainComponent::OnPreRender() {
 	if (_mesh_dirty) {
+		UpdateMaxHeight();
+		UpdateNormals();
 		UpdateGraphicsMesh();
 		_mesh_dirty = false;
 	}
@@ -631,7 +665,7 @@ btBvhTriangleMeshShape* TerrainComponent::GetPhysicalShape() {
 	int vertStride = sizeof(Vertex);
 	int indexStride = 3 * sizeof(uint32);
 
-	btTriangleIndexVertexArray* va = new btTriangleIndexVertexArray(numFaces, (int*)indices, indexStride, _width * _height, reinterpret_cast<btScalar*>(heightmap), vertStride);
+	btTriangleIndexVertexArray* va = new btTriangleIndexVertexArray(numFaces, (int*)indices, indexStride, _width * _height, reinterpret_cast<btScalar*>(_heightmap), vertStride);
 	//Allocate Shape with geometry
 	return new btBvhTriangleMeshShape(va, false, true);
 }
