@@ -31,7 +31,14 @@ namespace VSGE {
 	private:
 		std::vector<UiRenderTask> _tasks;
 	public:
+		/// <summary>
+		/// Get queued tasks list
+		/// </summary>
+		/// <returns></returns>
 		std::vector<UiRenderTask>& GetTasks();
+		/// <summary>
+		/// Clear all pending tasks
+		/// </summary>
 		void ClearTasks();
 
 		void DrawSprite(const Rect& bounds, 
@@ -39,6 +46,11 @@ namespace VSGE {
 						TextureResource* sprite,
 						const Vec2& uv_min = Vec2(0,0),
 						const Vec2& uv_max = Vec2(1, 1));
-		void DrawText(const Rect& bounds, float rotation, const String& text, const std::string& font, const Color& text_color);
+		void DrawText(
+			const Rect& bounds, 
+			float rotation, 
+			const String& text, 
+			const std::string& font, 
+			const Color& text_color);
 	};
 }

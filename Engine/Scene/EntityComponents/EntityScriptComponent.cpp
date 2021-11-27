@@ -1,6 +1,8 @@
 #include "EntityScriptComponent.hpp"
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <Core/YamlHelper.hpp>
 
+using namespace YAML;
 using namespace VSGE;
 
 EntityScriptComponent::EntityScriptComponent() {
@@ -78,4 +80,30 @@ void EntityScriptComponent::OnTriggerEnter(Entity* entity) {
 void EntityScriptComponent::OnTriggerExit(Entity* entity) {
 	if (IsActive())
 		_script_instance->CallOnTriggerExit(entity);
+}
+
+void EntityScriptComponent::Serialize(YAML::Emitter& e) {
+	e << Key << "class" << Value << GetClassName();
+	//write fields
+	e << YAML::Key << "fields" << YAML::Value << YAML::BeginSeq;
+	for (auto& field : _fields) {
+		e << BeginMap;
+		e << Key << "name" << Value << field.GetDesc()->GetName();
+		e << Key << "type" << Value << (int)field.GetDesc()->GetValueType();
+		//e << Key << "value" << Value << field.GetValue().;
+		e << EndMap;
+	}
+
+	e << YAML::EndSeq;
+
+}
+void EntityScriptComponent::Deserialize(YAML::Node& entity) {
+	SetClassName(entity["class"].as<std::string>());
+}
+
+void EntityScriptComponent::Serialize(ByteSerialize& serializer) {
+	serializer.Serialize(GetClassName());
+}
+void EntityScriptComponent::Deserialize(ByteSolver& solver) {
+	SetClassName(solver.ReadNextString());
 }

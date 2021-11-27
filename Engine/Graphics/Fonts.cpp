@@ -155,10 +155,13 @@ Texture* GlyphFontContainer::GetTexture() {
 CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character) {
     return _characters.at(static_cast<uint32>(character));
 }
-uint32 GlyphFontContainer::GetWidthOfString(uint32* str, uint32 strlen) { 
-    uint32 result = 0;
+Vec2i GlyphFontContainer::GetSizeOfString(uint32* str, uint32 strlen) { 
+    Vec2i result = 0;
     for (uint32 i = 0; i < strlen; i++) {
-        result += static_cast<uint32>(GetGlyph(str[i])->mGlyphSize.x);
+        CharacterGlyph* glyph = GetGlyph(str[i]);
+        result.x += glyph->mGlyphSize.x;
+        if (result.y < glyph->mGlyphSize.y)
+            result.y = glyph->mGlyphSize.x;
     }
     return result;
 }

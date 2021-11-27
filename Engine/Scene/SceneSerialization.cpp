@@ -51,7 +51,7 @@ void SceneSerializer::SerializeEntity(Entity* ent, Emitter& e) {
 		e << YAML::Key << "script" << YAML::Value << YAML::BeginSeq;
 		for (uint32 script_i = 0; script_i < ent->GetScriptsCount(); script_i++) {
 			e << BeginMap;
-			e << Key << "class" << Value << ent->GetScripts()[script_i]->GetClassName();
+			ent->GetScripts()[script_i]->Serialize(e);
 			e << EndMap;
 		}
 		e << YAML::EndSeq;
@@ -105,7 +105,7 @@ void SceneSerializer::DeserializeEntity(Entity* ent, Node& entity) {
 	YAML::Node scripts = entity["script"];
 	for (auto script : scripts) {
 		EntityScriptComponent* script_ptr = new EntityScriptComponent;
-		script_ptr->SetClassName(script["class"].as<std::string>());
+		script_ptr->Deserialize(script);
 		ent->AddScript(script_ptr);
 	}
 

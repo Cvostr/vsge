@@ -55,7 +55,7 @@ void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializ
 	}
 	//serialize scripts
 	for (uint32 script_i = 0; script_i < scripts_count; script_i++) {
-		serializer.Serialize(ent->GetScripts()[script_i]->GetClassName());
+		ent->GetScripts()[script_i]->Serialize(serializer);
 	}
 	//Serialize children
 	for (uint32 child_i = 0; child_i < ent->GetChildrenCount(); child_i++) {
@@ -117,7 +117,7 @@ void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, G
 	}
 	for (uint32 script_i = 0; script_i < scripts_count; script_i++) {
 		EntityScriptComponent* script_ptr = new EntityScriptComponent;
-		script_ptr->SetClassName(solver.ReadNextString());
+		script_ptr->Deserialize(solver);
 		ent->AddScript(script_ptr);
 	}
 

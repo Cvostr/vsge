@@ -100,7 +100,8 @@ void ImGuiLayer::OnAttach() {
 
     ImGui_ImplVulkan_Init(&init_info, presenter->GetRenderPass()->GetRenderPass());
 #ifdef _WIN32
-    ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 15.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 15.0f, NULL, io.Fonts->GetGlyphRangesCyrillic());
 #endif
 #ifdef __linux__
    // ImFont* font = io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/freefont/FreeSans.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());

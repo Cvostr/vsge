@@ -21,6 +21,10 @@ namespace VSGE {
 			return _value;
 		}
 
+		const String& GetStringValue() {
+			return _str_value;
+		}
+
 		MonoScriptField(MonoClassFieldDesc* desc) {
 			_desc = desc;
 			_value.SetType(desc->GetValueType());
@@ -49,7 +53,10 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		MonoScriptInstance* GetInstance();
-
+		/// <summary>
+		/// Get list of class field instances
+		/// </summary>
+		/// <returns></returns>
 		std::vector<MonoScriptField>& GetFields();
 		/// <summary>
 		/// Creates mono object and call constructor
@@ -67,6 +74,12 @@ namespace VSGE {
 		/// Calls OnUpdate() on script class
 		/// </summary>
 		void OnUpdate();
+
+		void Serialize(YAML::Emitter& e);
+		void Deserialize(YAML::Node& entity);
+
+		void Serialize(ByteSerialize& serializer);
+		void Deserialize(ByteSolver& solver);
 
 		void OnTriggerStay(Entity* entity);
 

@@ -155,13 +155,9 @@ void VulkanUiRenderer::FillBuffers() {
 		}
 		else if (task._type == UI_RENDER_TASK_TYPE_TEXT) {
 			GlyphFontContainer* font = glyph_manager->GetFontByName(task.font);
-			Vec2 average = Vec2(0);
-			for (uint32 i = 0; i < task._text.Length(); i++) {
-				Char sym = task._text[i];
-				CharacterGlyph* glyph = font->GetGlyph(sym);
-				average += glyph->mGlyphSize;
-			}
-			average /= task._text.Length();
+			Vec2i pix_size = font->GetSizeOfString((uint32*)task._text.c_str(), task._text.Length());
+
+			Vec2 mult = Vec2(task.bounds.Size.x / pix_size.x, task.bounds.Size.y / pix_size.y);
 
 			Vec2 drawn = Vec2(0);
 
@@ -170,8 +166,8 @@ void VulkanUiRenderer::FillBuffers() {
 				CharacterGlyph* glyph = font->GetGlyph(sym);
 
 				Rect bounds = task.bounds;
-				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, -glyph->mGlyphBearing.y);
-				bounds.Size = glyph->mGlyphSize;
+				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, -glyph->mGlyphBearing.y) * mult;
+				bounds.Size = glyph->mGlyphSize * mult;
 				//calculate uvs from size
 				Vec2 uv_start = glyph->mGlyphTextureStart / 2048;
 				Vec2 uv_size = glyph->mGlyphSize / 2048;
@@ -185,7 +181,7 @@ void VulkanUiRenderer::FillBuffers() {
 				WriteTexture(written_elements, (VulkanTexture*)font->GetTexture());
 				written_elements++;
 				
-				drawn += Vec2(glyph->mGlyphSize.x + glyph->mGlyphBearing.x, 0);
+				drawn += Vec2(glyph->mGlyphSize.x + glyph->mGlyphBearing.x, 0) * mult;
 			}
 		}
 	}

@@ -45,6 +45,10 @@ void VSGEditor::DrawScriptComponent(VSGE::EntityScriptComponent* esc, uint32 ind
 	DrawScriptPicker("Class name", esc, index);
 
 	for (auto& field : esc->GetFields()) {
-		DrawVariantInput(field.GetDesc()->GetName(), field.GetValue());
+		if(field.GetDesc()->GetValueType() != VALUE_TYPE_STRING)
+			DrawVariantInput(field.GetDesc()->GetName(), field.GetValue());
+		else {
+			//ImGui::InputText(field.GetDesc()->GetName(), field.)
+		}
 	}
 }

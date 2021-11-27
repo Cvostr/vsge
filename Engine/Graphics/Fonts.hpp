@@ -72,8 +72,13 @@ namespace VSGE {
         /// <param name="character"></param>
         /// <returns></returns>
         CharacterGlyph* GetGlyph(uint32 character);
-        
-        uint32 GetWidthOfString(uint32* str, uint32 strlen);
+        /// <summary>
+        /// Get size of string in pixels of this font
+        /// </summary>
+        /// <param name="str">- string</param>
+        /// <param name="strlen">- length of string</param>
+        /// <returns></returns>
+        Vec2i GetSizeOfString(uint32* str, uint32 strlen);
     };
     
     class GlyphManager {
