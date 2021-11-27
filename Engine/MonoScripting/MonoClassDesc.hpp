@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include "MonoClassFieldDesc.hpp"
+#include "MonoEventDesc.hpp"
 
 namespace VSGE {
 
@@ -15,6 +16,7 @@ namespace VSGE {
 		std::string _name;
 		std::string _namespace;
 		std::vector<MonoClassFieldDesc> _fields;
+		std::vector<MonoEventDesc> _events;
 	public:
 
 		MonoClass* GetMonoClass() const;

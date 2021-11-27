@@ -10,7 +10,7 @@ namespace VSGE {
 	private:
 		MonoClassFieldDesc* _desc;
 		Variant _value;
-		String _str_value;
+		std::string _str_value;
 	public:
 
 		MonoClassFieldDesc* GetDesc() {
@@ -21,7 +21,7 @@ namespace VSGE {
 			return _value;
 		}
 
-		const String& GetStringValue() {
+		std::string& GetStringValue() {
 			return _str_value;
 		}
 
@@ -37,11 +37,17 @@ namespace VSGE {
 		std::string _class_name;
 
 		std::vector<MonoScriptField> _fields;
+
+		MonoScriptField* GetFieldByNameType(const std::string& field_name, ValueType type);
 	public:
 		EntityScriptComponent();
 
 		~EntityScriptComponent();
-		
+		/// <summary>
+		/// Set class name to this entity script component
+		/// All mono script fields configurations will be recreated
+		/// </summary>
+		/// <param name="class_name">- name of mono class</param>
 		void SetClassName(const std::string& class_name);
 		/// <summary>
 		/// Get current picked mono script class name

@@ -3,10 +3,28 @@
 using namespace VSGE;
 using namespace YAML;
 
+YAML::Emitter& VSGE::operator<<(YAML::Emitter& out, const MultitypeData& v) {
+	out << YAML::Flow;
+	out << YAML::BeginSeq;
+	for (uint32 i = 0; i < sizeof(MultitypeData); i++) {
+		out << (int)(((char*)(&v))[i]);
+	}
+	out << YAML::EndSeq;
+	
+	return out;
+}
+
 Emitter& VSGE::operator<<(YAML::Emitter& out, const Guid& v)
 {
 	out << YAML::Flow;
 	out << YAML::BeginSeq << v.a << v.b << v.c << v.d << YAML::EndSeq;
+	return out;
+}
+
+YAML::Emitter& VSGE::operator<<(YAML::Emitter& out, const Vec4& v)
+{
+	out << YAML::Flow;
+	out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
 	return out;
 }
 
@@ -35,6 +53,29 @@ Emitter& VSGE::operator<<(YAML::Emitter& out, const Color& v)
 	out << YAML::Flow;
 	out << YAML::BeginSeq << v.r << v.g << v.b << v.a << YAML::EndSeq;
 	return out;
+}
+
+Node YAML::convert<MultitypeData>::encode(const MultitypeData& rhs)
+{
+	Node node;
+	for (uint32 i = 0; i < sizeof(MultitypeData); i++) {
+		node.push_back((int)(((char*)(&rhs))[i]));
+	}
+
+	node.SetStyle(EmitterStyle::Flow);
+	return node;
+}
+
+bool YAML::convert<MultitypeData>::decode(const Node& node, MultitypeData& rhs)
+{
+	if (!node.IsSequence() || node.size() != sizeof(MultitypeData))
+		return false;
+
+	for (uint32 i = 0; i < sizeof(MultitypeData); i++) {
+		((char*)(&rhs))[i] = node[i].as<int>();
+	}
+
+	return true;
 }
 
 Node YAML::convert<Vec2>::encode(const Vec2& rhs)
@@ -74,6 +115,29 @@ bool YAML::convert<Vec3>::decode(const Node& node, Vec3& rhs)
 	rhs.x = node[0].as<float>();
 	rhs.y = node[1].as<float>();
 	rhs.z = node[2].as<float>();
+	return true;
+}
+
+Node YAML::convert<Vec4>::encode(const Vec4& rhs)
+{
+	Node node;
+	node.push_back(rhs.x);
+	node.push_back(rhs.y);
+	node.push_back(rhs.z);
+	node.push_back(rhs.w);
+	node.SetStyle(EmitterStyle::Flow);
+	return node;
+}
+
+bool YAML::convert<Vec4>::decode(const Node& node, Vec4& rhs)
+{
+	if (!node.IsSequence() || node.size() != 4)
+		return false;
+
+	rhs.x = node[0].as<float>();
+	rhs.y = node[1].as<float>();
+	rhs.z = node[2].as<float>();
+	rhs.w = node[3].as<float>();
 	return true;
 }
 

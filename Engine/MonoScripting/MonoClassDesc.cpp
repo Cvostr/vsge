@@ -29,16 +29,23 @@ void MonoClassDesc::Create(MonoClass* mono_class) {
 	_namespace = std::string(mono_class_get_namespace(mono_class));
 	//get field descs
 	MonoClassField* cur_field = nullptr;
-	void* pIterator = 0;
+	void* iterator = nullptr;
 	while (true)
 	{
-		cur_field = mono_class_get_fields(mono_class, &pIterator);
+		cur_field = mono_class_get_fields(mono_class, &iterator);
 		if (cur_field == nullptr)
 		{
 			break;
 		}
 		MonoClassFieldDesc cf_desc(this, cur_field);
 		_fields.push_back(cf_desc);
+	}
+	iterator = nullptr;
+	MonoEvent* event = nullptr;
+	while (event = mono_class_get_events(mono_class, &iterator))
+	{
+		MonoEventDesc ev_desc(this, event);
+		_events.push_back(ev_desc);
 	}
 }
 

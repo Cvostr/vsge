@@ -2,6 +2,7 @@
 #include <InspectorInterfaces/ResourcePicker.hpp>
 #include "../VariantInput.hpp"
 #include <imgui.h>
+#include <imgui_stdlib.h>
 
 void VSGEditor::DrawScriptComponent(VSGE::EntityScriptComponent* esc, uint32 index) {
 	if (!esc->IsActive()) {
@@ -48,7 +49,7 @@ void VSGEditor::DrawScriptComponent(VSGE::EntityScriptComponent* esc, uint32 ind
 		if(field.GetDesc()->GetValueType() != VALUE_TYPE_STRING)
 			DrawVariantInput(field.GetDesc()->GetName(), field.GetValue());
 		else {
-			//ImGui::InputText(field.GetDesc()->GetName(), field.)
+			ImGui::InputText(field.GetDesc()->GetName().c_str(), &field.GetStringValue());
 		}
 	}
 }

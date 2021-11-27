@@ -28,9 +28,22 @@ void MonoScriptingLayer::OnDetach() {
 
 }
 
+MonoScriptBlob* MonoScriptingLayer::GetScriptsBlob() {
+    return _scripts_blob;
+}
+
 MonoDomain* MonoScriptingLayer::GetRootDomain() {
 	return _root_domain;
 }
+
+MonoString* MonoScriptingLayer::CreateMonoString(const std::string& str) {
+    return mono_string_new(_domain, str.c_str());
+}
+
+MonoString* MonoScriptingLayer::CreateMonoString(const String& str) {
+    return mono_string_new_utf32(_domain, str.c_str(), str.Length());
+}
+
 bool MonoScriptingLayer::CreateRootDomain() {
     if (_root_domain)
         return true;

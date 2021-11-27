@@ -45,13 +45,26 @@ std::vector<MonoScriptField>& EntityScriptComponent::GetFields() {
 	return _fields;
 }
 
+MonoScriptField* EntityScriptComponent::GetFieldByNameType(const std::string& field_name, ValueType type) {
+	for (auto& field : _fields) {
+		if (field.GetDesc()->GetName() == field_name && field.GetDesc()->GetValueType() == type)
+			return &field;
+	}
+	return nullptr;
+}
+
 void EntityScriptComponent::Init() {
 	_script_instance->CreateClassByName(_class_name);
 	_script_instance->CallDefaultConstructor();
 	_script_instance->SetValuePtrToField("entity_ptr", &_entity);
 
 	for (auto& field : _fields) {
-		_script_instance->SetValuePtrToField(field.GetDesc()->GetName(), field.GetValue().GetValuePtr());
+		if (field.GetDesc()->GetValueType() != VALUE_TYPE_STRING)
+			_script_instance->SetValuePtrToField(field.GetDesc()->GetName(), field.GetValue().GetValuePtr());
+		else {
+			MonoString* mono_string = MonoScriptingLayer::Get()->CreateMonoString(field.GetStringValue());
+			_script_instance->SetValuePtrToField(field.GetDesc()->GetName(), mono_string);
+		}
 	}
 }
 
@@ -90,7 +103,11 @@ void EntityScriptComponent::Serialize(YAML::Emitter& e) {
 		e << BeginMap;
 		e << Key << "name" << Value << field.GetDesc()->GetName();
 		e << Key << "type" << Value << (int)field.GetDesc()->GetValueType();
-		//e << Key << "value" << Value << field.GetValue().;
+		Variant* variant = &field.GetValue();
+		if (field.GetDesc()->GetValueType() != VALUE_TYPE_STRING)
+			e << Key << "value" << Value << *(MultitypeData*)variant->GetValuePtr();
+		else
+			e << Key << "value" << field.GetStringValue();
 		e << EndMap;
 	}
 
@@ -99,11 +116,50 @@ void EntityScriptComponent::Serialize(YAML::Emitter& e) {
 }
 void EntityScriptComponent::Deserialize(YAML::Node& entity) {
 	SetClassName(entity["class"].as<std::string>());
+	Node fields = entity["fields"];
+	for (auto& field : fields) {
+		std::string name = field["name"].as<std::string>();
+		int type = field["type"].as<int>();
+		MonoScriptField* p_field = GetFieldByNameType(name, (ValueType)type);
+		if (!p_field)
+			continue;
+		if (type != VALUE_TYPE_STRING) {
+			MultitypeData data = field["value"].as<MultitypeData>();
+			p_field->GetValue().SetData((ValueType)type, data);
+		}
+		else {
+			p_field->GetStringValue() = field["value"].as<std::string>();
+		}
+	}
 }
 
 void EntityScriptComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(GetClassName());
+	serializer.Serialize((uint32)_fields.size());
+	for (auto& field : _fields) {
+		serializer.Serialize(field.GetDesc()->GetName());
+		serializer.Serialize(field.GetDesc()->GetValueType());
+		if (field.GetDesc()->GetValueType() != VALUE_TYPE_STRING)
+			serializer.WriteBytes(field.GetValue().GetValuePtr(), sizeof(MultitypeData));
+		else
+			serializer.Serialize(field.GetStringValue());
+	}
 }
 void EntityScriptComponent::Deserialize(ByteSolver& solver) {
 	SetClassName(solver.ReadNextString());
+	uint32 fields_count = solver.GetValue<uint32>();
+	for (uint32 i = 0; i < fields_count; i++) {
+		std::string field_name = solver.ReadNextString();
+		ValueType type = solver.GetValue<ValueType>();
+		MonoScriptField* field = GetFieldByNameType(field_name, type);
+		if (!field)
+			continue;
+		if (type != VALUE_TYPE_STRING) {
+			MultitypeData data = solver.GetValue<MultitypeData>();
+			field->GetValue().SetData(type, data);
+		}
+		else {
+			field->GetStringValue() = solver.ReadNextString();
+		}
+	}
 }

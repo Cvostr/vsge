@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine/ApplicationLayer.hpp>
+#include <Core/VarTypes/String.hpp>
 #include <string>
 //mono headers
 #include <mono/metadata/appdomain.h>
@@ -37,14 +38,15 @@ namespace VSGE {
 			return _this;
 		}
 
-		MonoScriptBlob* GetScriptsBlob() {
-			return _scripts_blob;
-		}
+		MonoScriptBlob* GetScriptsBlob();
 
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
-
+		/// <summary>
+		/// Get root mono domain
+		/// </summary>
+		/// <returns>root mono domain pointer</returns>
 		MonoDomain* GetRootDomain();
 		/// <summary>
 		/// Creates Mono root AppDomain
@@ -55,7 +57,18 @@ namespace VSGE {
 		/// Release root domain, but it can't be initialized again
 		/// </summary>
 		void ReleaseRootDomain();
+		/// <summary>
+		/// Create utf8 mono string object
+		/// </summary>
+		/// <param name="str">- std string input</param>
+		/// <returns>mono script object pointer</returns>
+		MonoString* CreateMonoString(const std::string& str);
 
+		MonoString* CreateMonoString(const String& str);
+		/// <summary>
+		/// Get working mono domain
+		/// </summary>
+		/// <returns></returns>
 		MonoDomain* GetDomain();
 		void CreateDomain();
 		void ReleaseDomain();
