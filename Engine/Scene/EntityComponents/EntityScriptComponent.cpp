@@ -16,20 +16,24 @@ EntityScriptComponent::~EntityScriptComponent() {
 void EntityScriptComponent::SetClassName(const std::string& class_name) {
 	if (_class_name != class_name) {
 		_class_name = class_name;
-		_fields.clear();
+		LoadFields();
+	}
+}
 
-		MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
-		MonoClassDesc* class_desc = blob->GetMonoClassDesc(class_name);
+void EntityScriptComponent::LoadFields() {
+	_fields.clear();
 
-		if (class_desc == nullptr)
-			return;
+	MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
+	MonoClassDesc* class_desc = blob->GetMonoClassDesc(_class_name);
 
-		for (auto& field_desc : class_desc->GetFields()) {
-			if (field_desc.GetVisibility() == FIELD_PRIVATE)
-				continue;
-			MonoScriptField field(&field_desc);
-			_fields.push_back(field);
-		}
+	if (class_desc == nullptr)
+		return;
+
+	for (auto& field_desc : class_desc->GetFields()) {
+		if (field_desc.GetVisibility() == FIELD_PRIVATE)
+			continue;
+		MonoScriptField field(&field_desc);
+		_fields.push_back(field);
 	}
 }
 
@@ -93,6 +97,38 @@ void EntityScriptComponent::OnTriggerEnter(Entity* entity) {
 void EntityScriptComponent::OnTriggerExit(Entity* entity) {
 	if (IsActive())
 		_script_instance->CallOnTriggerExit(entity);
+}
+
+void EntityScriptComponent::OnScriptChanged(int step) {
+	if (step == 0) {
+		for (auto& field : _fields) {
+			MonoClassFieldDesc* temp_desc = new MonoClassFieldDesc(
+				field.GetDesc()->GetName(), 
+				field.GetDesc()->GetValueType());
+			field.SetDesc(temp_desc);
+		}
+	}
+	else {
+		std::vector<MonoScriptField> temp_fields;
+		for (auto& field : _fields) {
+			temp_fields.push_back(field);
+		}
+
+		LoadFields();
+
+		for (auto& field : temp_fields) {
+			//find field with this name and type
+			MonoScriptField* pfield = GetFieldByNameType(field.GetDesc()->GetName(), field.GetDesc()->GetValueType());
+			if (pfield) {
+				pfield->GetValue().SetData(
+					field.GetDesc()->GetValueType(),
+					*((MultitypeData*)field.GetValue().GetValuePtr())
+				);
+				pfield->GetStringValue() = field.GetStringValue();
+			}
+			delete field.GetDesc();
+		}
+	}
 }
 
 void EntityScriptComponent::Serialize(YAML::Emitter& e) {

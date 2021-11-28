@@ -63,14 +63,24 @@ namespace VSGE {
 		/// <param name="str">- std string input</param>
 		/// <returns>mono script object pointer</returns>
 		MonoString* CreateMonoString(const std::string& str);
-
+		/// <summary>
+		/// Create utf32 mono string object
+		/// </summary>
+		/// <param name="str">- VSGE String input</param>
+		/// <returns>mono script object pointer</returns>
 		MonoString* CreateMonoString(const String& str);
 		/// <summary>
 		/// Get working mono domain
 		/// </summary>
 		/// <returns></returns>
 		MonoDomain* GetDomain();
+		/// <summary>
+		/// Create Mono working domain
+		/// </summary>
 		void CreateDomain();
+		/// <summary>
+		/// Release Mono working domain
+		/// </summary>
 		void ReleaseDomain();
 	};
 }

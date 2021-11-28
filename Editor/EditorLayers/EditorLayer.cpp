@@ -470,9 +470,14 @@ void EditorLayer::OnScriptBeginEvent(const VSGE::ScriptCompilationBeginEvent& sc
 
 void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde) {
 	MonoScriptStorage::Get()->SetScriptingReady();
+	SceneLayer::Get()->GetMainScene()->GetRootEntity()->CallOnScriptChanged(0);
+	//Reload scripts dll
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile("mono_temp.dll");
+	//Hide HoldOn window
 	ImGuiLayer::Get()->SetDrawWindows(true);
 	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
+	//Update all script components on scene
+	SceneLayer::Get()->GetMainScene()->GetRootEntity()->CallOnScriptChanged(1);
 }
 
 void EditorLayer::OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe) {

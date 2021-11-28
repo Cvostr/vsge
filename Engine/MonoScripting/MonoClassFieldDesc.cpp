@@ -21,27 +21,29 @@ MonoObject* MonoClassFieldDesc::GetValueMonoObject(MonoObject* object) {
 }
 
 ValueType MonoClassFieldDesc::GetValueType() {
-	std::string type_string = GetTypeName();
+	return _base_value.GetType();
+}
 
-	if (type_string == "Int32")
+ValueType VSGE::ConvertStrToType(const std::string& str_type) {
+	if (str_type == "Int32")
 		return VALUE_TYPE_INT32;
-	else if (type_string == "Boolean")
+	else if (str_type == "Boolean")
 		return VALUE_TYPE_BOOL;
-	else if (type_string == "Float")
+	else if (str_type == "Float")
 		return VALUE_TYPE_FLOAT;
-	else if (type_string == "double")
+	else if (str_type == "double")
 		return VALUE_TYPE_DOUBLE;
-	else if (type_string == "String")
+	else if (str_type == "String")
 		return VALUE_TYPE_STRING;
-	else if (type_string == "Vec3")
+	else if (str_type == "Vec3")
 		return VALUE_TYPE_VEC3F;
-	else if (type_string == "Vec2")
+	else if (str_type == "Vec2")
 		return VALUE_TYPE_VEC2F;
-	else if (type_string == "Vec4")
+	else if (str_type == "Vec4")
 		return VALUE_TYPE_VEC4F;
-	else if (type_string == "Quat")
+	else if (str_type == "Quat")
 		return VALUE_TYPE_QUAT;
-	else if (type_string == "Color")
+	else if (str_type == "Color")
 		return VALUE_TYPE_COLOR;
 
 	return VALUE_TYPE_INT32;
@@ -50,7 +52,7 @@ ValueType MonoClassFieldDesc::GetValueType() {
 Variant MonoClassFieldDesc::GetValue(MonoObject* object) {
 	MonoObject* value = GetValueMonoObject(object);
 
-	ValueType type = GetValueType();
+	ValueType type = ConvertStrToType(GetTypeName());
 	_base_value.SetType(type);
 
 	return _base_value;
@@ -87,6 +89,11 @@ void MonoClassFieldDesc::Create(MonoClassDesc* class_desc, MonoClassField* mono_
 
 MonoClassFieldDesc::MonoClassFieldDesc(MonoClassDesc* class_desc, MonoClassField* mono_field) {
 	Create(class_desc, mono_field);
+}
+
+MonoClassFieldDesc::MonoClassFieldDesc(const std::string& name, ValueType type) {
+	_name = name;
+	_base_value.SetType(type);
 }
 
 const std::string MonoClassFieldDesc::GetTypeName() const {

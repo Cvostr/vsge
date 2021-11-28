@@ -311,6 +311,14 @@ void Entity::CallOnTriggerExit(Entity* entity) {
 		script->OnTriggerExit(entity);
 	}
 }
+void Entity::CallOnScriptChanged(int step) {
+	for (auto script : _scripts) {
+		script->OnScriptChanged(step);
+	}
+	for (auto child : _children) {
+		child->CallOnScriptChanged(step);
+	}
+}
 
 Vec3 Entity::GetAbsolutePosition() const {
 	return _worldTransform.GetPosition();

@@ -353,6 +353,7 @@ namespace VSGE {
 		void CallOnTriggerStay(Entity* entity);
 		void CallOnTriggerEnter(Entity* entity);
 		void CallOnTriggerExit(Entity* entity);
+		void CallOnScriptChanged(int step);
 
 		//-----SKINNING----
 		Entity* GetRootSkinningEntity();

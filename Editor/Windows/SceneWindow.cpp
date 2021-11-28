@@ -209,10 +209,13 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
             memcpy(id.Values, move_from, sizeof(uint32) * 4);
             //Get pointer to moving entity
             Entity* from = scene->GetEntityWithGuid(id);
-            //Remove this entity from parent
-            from->GetParent()->RemoveChild(from);
-            //Add new child to object
-            entity->AddChild(from);
+            //crash fix
+            if (entity->GetParent() != from) {
+                //Remove this entity from parent
+                from->GetParent()->RemoveChild(from);
+                //Add new child to object
+                entity->AddChild(from);
+            }
         }
         ImGui::EndDragDropTarget();
     }

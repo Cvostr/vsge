@@ -17,6 +17,10 @@ namespace VSGE {
 			return _desc;
 		}
 
+		void SetDesc(MonoClassFieldDesc* desc) {
+			_desc = desc;
+		}
+
 		Variant& GetValue() {
 			return _value;
 		}
@@ -39,6 +43,7 @@ namespace VSGE {
 		std::vector<MonoScriptField> _fields;
 
 		MonoScriptField* GetFieldByNameType(const std::string& field_name, ValueType type);
+		void LoadFields();
 	public:
 		EntityScriptComponent();
 
@@ -80,6 +85,8 @@ namespace VSGE {
 		/// Calls OnUpdate() on script class
 		/// </summary>
 		void OnUpdate();
+
+		void OnScriptChanged(int step);
 
 		void Serialize(YAML::Emitter& e);
 		void Deserialize(YAML::Node& entity);

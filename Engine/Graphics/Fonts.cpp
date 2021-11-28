@@ -161,7 +161,7 @@ Vec2i GlyphFontContainer::GetSizeOfString(uint32* str, uint32 strlen) {
         CharacterGlyph* glyph = GetGlyph(str[i]);
         result.x += glyph->mGlyphSize.x;
         if (result.y < glyph->mGlyphSize.y)
-            result.y = glyph->mGlyphSize.x;
+            result.y = glyph->mGlyphSize.y;
     }
     return result;
 }

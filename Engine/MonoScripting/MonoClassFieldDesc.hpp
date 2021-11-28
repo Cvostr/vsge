@@ -16,6 +16,8 @@ namespace VSGE {
 
 	class MonoClassDesc;
 
+	ValueType ConvertStrToType(const std::string& str_type);
+
 	class MonoClassFieldDesc {
 	private:
 		MonoClassDesc* _class;
@@ -57,6 +59,7 @@ namespace VSGE {
 		ValueType GetValueType();
 		Variant GetValue(MonoObject* object);
 
+		MonoClassFieldDesc(const std::string& name, ValueType type);
 		MonoClassFieldDesc(MonoClassDesc* class_desc, MonoClassField* mono_field);
 	};
 }
