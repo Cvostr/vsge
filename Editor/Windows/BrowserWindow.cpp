@@ -1,6 +1,8 @@
 #include "BrowserWindow.hpp"
 #include <filesystem>
 #include <fstream>
+#include <locale>
+#include <codecvt>
 #include <imgui_internal.h>
 #include <Core/FileLoader.hpp>
 #include <SDL2/SDL.h>
@@ -68,7 +70,9 @@ void FileBrowserWindow::UpdateDirectoryContent() {
             continue;
         e.isDir = entry.is_directory();
         e.abs_path = entry.path().string();
-        e.name = entry.path().filename().string();
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+        std::wstring fname_wstr = entry.path().filename().wstring();
+        e.name = convert.to_bytes(fname_wstr);
         e.ext = entry.path().extension().string();
         e.directory = _currentDir;
         //Calculating relative path
@@ -276,13 +280,11 @@ void FileBrowserWindow::OnDrawWindow() {
                
             ImGui::EndPopup();         
         }
-
         
         //if user clicked on file
         if (clicked) {
             if (e->isDir) {
-                std::string newdir = e->name;
-                cd(newdir);
+                cd(e->name);
             }
             else
                 OpenFile(*e);

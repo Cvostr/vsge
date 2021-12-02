@@ -100,11 +100,10 @@ void ImGuiLayer::OnAttach() {
 
     ImGui_ImplVulkan_Init(&init_info, presenter->GetRenderPass()->GetRenderPass());
 #ifdef _WIN32
-    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 15.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 15.0f, NULL, io.Fonts->GetGlyphRangesCyrillic());
+    AddImGuiFont("c:\\Windows\\Fonts\\Arial.ttf");
 #endif
 #ifdef __linux__
-   // ImFont* font = io.Fonts->AddFontFromFileTTF("/usr/share/fonts/truetype/freefont/FreeSans.ttf", 14.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    AddImGuiFont("/usr/share/fonts/truetype/freefont/FreeSans.ttf");
 #endif
     cmdbuf.Begin();
     ImGui_ImplVulkan_CreateFontsTexture(cmdbuf.GetCommandBuffer());
@@ -113,6 +112,24 @@ void ImGuiLayer::OnAttach() {
 
     mHoldOnWindow = new HoldOnWindow;
     mHoldOnWindow->Hide();
+}
+
+void ImGuiLayer::AddImGuiFont(const std::string& path, float size) {
+    static const ImWchar ranges[] =
+    {
+        0x0020, 0x00FF, // Basic Latin + Latin Supplement
+        0x2000, 0x206F, // General Punctuation
+        0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
+        0x2DE0, 0x2DFF, // Cyrillic Extended-A
+        0xA640, 0xA69F, // Cyrillic Extended-B
+        0x0E00, 0x0E7F, // Thai
+        0x3131, 0x3163, // Korean alphabets
+        0xAC00, 0xD7A3, // Korean characters
+        0,
+    };
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF(path.c_str(), size, NULL, ranges);
 }
 
 void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index) {
