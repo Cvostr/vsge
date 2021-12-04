@@ -7,6 +7,7 @@ namespace VSGEditor {
 
 	class ProjectBuildingWindow : public EditorWindow {
 	private:
+
 		ResourcePacker* _packer;
 		bool _building;
 		void Build();

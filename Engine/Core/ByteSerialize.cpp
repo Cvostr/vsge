@@ -16,6 +16,12 @@ ByteSerialize::~ByteSerialize() {
 	SAFE_RELEASE_ARR(mOutputBytes);
 }
 
+void ByteSerialize::Clear() {
+	mAllocatedSize = 0;
+	mSerializedSize = 0;
+	Reallocate(1000);
+}
+
 void ByteSerialize::Reallocate(uint32 newSize) {
 	byte* new_alloc = new byte[newSize];
 	if (mOutputBytes != nullptr) {

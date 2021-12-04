@@ -17,6 +17,11 @@ void Windows_Menu::OnDrawMenu() {
 			ImGuiLayer::Get()->GetWindow<EnvironmentSettingsWindow>()->Show();
 		}
 		if (ImGui::MenuItem("Project settings", NULL)) {
+			ImGuiLayer::Get()->GetWindow<ProjectSettingsWindow>()->SetDrawMode(MODE_PROJECT);
+			ImGuiLayer::Get()->GetWindow<ProjectSettingsWindow>()->Show();
+		}
+		if (ImGui::MenuItem("Application settings", NULL)) {
+			ImGuiLayer::Get()->GetWindow<ProjectSettingsWindow>()->SetDrawMode(MODE_APP);
 			ImGuiLayer::Get()->GetWindow<ProjectSettingsWindow>()->Show();
 		}
 

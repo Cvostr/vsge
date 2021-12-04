@@ -3,7 +3,7 @@
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 #include <Engine/Application.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
-
+#include <Misc/ManifestParser.hpp>
 #include <Resources/ResourceTypes/SceneResource.hpp>
 #include <Scene/SceneSerialization.hpp>
 
@@ -17,7 +17,10 @@ void MainLayer::OnAttach() {
 	std::string app_dir = Application::Get()->GetDescription().application_dir;
 	ResourceCache::Get()->AddResourceBundle(app_dir + "/resources.map");
 
-	SceneResource* sc_res = ResourceCache::Get()->GetResource<SceneResource>("cubes_test");
+	ManifestParser manifest;
+	manifest.ParseFromFile(app_dir + "/app.manifest");
+
+	SceneResource* sc_res = ResourceCache::Get()->GetResource<SceneResource>(manifest.GetMainScene());
 
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");
 

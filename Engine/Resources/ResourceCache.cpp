@@ -191,7 +191,13 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
     stream.close();
 
     ByteSolver solver(data, size);
-
+    //skip initial configuration
+    while (true) {
+        std::string next = solver.ReadNextString();
+        if (next == "__bundles__")
+            break;
+    }
+    //read bundle files names
     std::vector<std::string> bundle_names;
     while (true) {
         std::string next = solver.ReadNextString();
@@ -200,8 +206,9 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
         else
             bundle_names.push_back(next);
     }
+    //get resources count
     uint64 count = solver.GetValue<uint64>();
-
+    //read resources configuration
     for (uint64 i = 0; i < count; i++) {
         std::string name = solver.ReadNextString();
         ResourceType type = solver.GetValue<ResourceType>();

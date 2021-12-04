@@ -44,6 +44,7 @@ void CreateProjectWindow::OnDrawWindow() {
             std::filesystem::create_directory(root_dir);
             std::filesystem::create_directory(root_dir + "/assets");
             std::filesystem::create_directory(root_dir + "/cache");
+            std::filesystem::create_directory(root_dir + "/built");
 
             //Write manifest files
             YAML::Emitter out;
@@ -58,7 +59,9 @@ void CreateProjectWindow::OnDrawWindow() {
 
             YAML::Emitter out_app;
             out_app << YAML::BeginMap;
-            out_app << YAML::Key << "project_name" << YAML::Value << project_name;
+            out_app << YAML::Key << "application_name" << YAML::Value << project_name;
+            out_app << YAML::Key << "version" << YAML::Value << 1;
+            out_app << YAML::Key << "version_str" << YAML::Value << "v1.0";
             out_app << YAML::EndMap;
 
             fout.open(root_dir + "/application.manifest");

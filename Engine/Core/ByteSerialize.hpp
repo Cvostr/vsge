@@ -56,5 +56,7 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		uint32 GetSerializedSize();
+
+		void Clear();
 	};
 }

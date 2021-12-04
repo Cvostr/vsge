@@ -14,7 +14,8 @@ set(SRC_FILES
                 main.cpp
                 Layers/MainLayer.cpp
                 Layers/Graphics/VulkanLayer.cpp
-                Misc/ArgsParser.cpp)
+                Misc/ArgsParser.cpp
+                Misc/ManifestParser.cpp)
 
 set(HEADER_FILES 
               )
