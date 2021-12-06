@@ -12,9 +12,9 @@ void main(void)
     if(pixel.x <= size.x && pixel.y <= size.y){
         vec3 color = texture(world, pixel / size).rgb;
         float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
-        if(brightness <= 1.0)
-            brightness = 0.0;
-
-        imageStore(outputTexture, ivec2(pixel), vec4(brightness, 0, 0, 1));
+        if(brightness > 1.0)
+            imageStore(outputTexture, ivec2(pixel), vec4(color, 1));
+        else
+            imageStore(outputTexture, ivec2(pixel), vec4(0, 0, 0, 1));
     }
 }

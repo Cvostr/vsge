@@ -15,8 +15,6 @@ namespace VSGE {
 		VulkanDescriptorSet* _descr_set;
 		VulkanPipelineLayout* _pp_layout;
 		VulkanComputePipeline* _pipeline;
-
-		Vec2i _output_sizes;
 	public:
 
 		VulkanGammaCorrection();

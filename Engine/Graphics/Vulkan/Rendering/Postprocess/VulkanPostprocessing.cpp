@@ -97,9 +97,11 @@ void VulkanPostprocessing::FillCommandBuffer() {
 		nullptr,
 		VK_IMAGE_LAYOUT_GENERAL);
 
+	_bloom->SetInputTexture(_input_texture);
 	_gamma_correction->SetInputTexture(_input_texture);
 
 	_cmdbuf->Begin();
+	_bloom->FillCommandBuffer(_cmdbuf);
 	_gamma_correction->FillCommandBuffer(_cmdbuf);
 	//UI adding
 	VkImageMemoryBarrier pre_barrier = GetImageBarrier(_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
@@ -139,4 +141,5 @@ void VulkanPostprocessing::ResizeOutput(const Vec2i& new_size) {
 	_ui_descr_set->WriteDescriptorImage(2, _output_texture, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 
 	_gamma_correction->ResizeOutput(new_size);
+	_bloom->ResizeOutput(new_size);
 }

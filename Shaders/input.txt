@@ -40,5 +40,6 @@ shader postprocess/copy.frag
 
 shader postprocess/gamma_correction/gamma_correction.comp
 shader postprocess/hdr_bloom/bloom_bright.comp
+shader postprocess/ssao/ssao.comp
 
 shader editor/mark_gizmo_object.frag

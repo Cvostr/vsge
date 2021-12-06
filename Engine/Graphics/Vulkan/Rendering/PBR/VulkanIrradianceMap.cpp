@@ -69,8 +69,14 @@ VulkanSemaphore* VulkanIrradianceMap::GetBeginSemaphore() {
 }
 
 void VulkanIrradianceMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
-    VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(_irmap_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
-    VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(_irmap_output_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(_irmap_output_texture, 
+        0, VK_ACCESS_SHADER_WRITE_BIT,
+        VK_IMAGE_LAYOUT_UNDEFINED,
+        VK_IMAGE_LAYOUT_GENERAL);
+    VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(_irmap_output_texture,
+        VK_ACCESS_SHADER_WRITE_BIT, 0, 
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     if (_steps_passed == _steps_count)
         _steps_passed = 0;

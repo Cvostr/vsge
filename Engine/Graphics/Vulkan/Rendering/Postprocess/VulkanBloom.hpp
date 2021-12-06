@@ -16,6 +16,8 @@ namespace VSGE {
 		
 		VulkanComputePipeline* _bright_pipeline;
 		VulkanPipelineLayout* _bright_pp_layout;
+
+		VulkanTexture* _bright_texture;
 		
 	public:
 		VulkanBloom();
@@ -26,5 +28,6 @@ namespace VSGE {
 
 		void SetInputTexture(Texture* input);
 		void FillCommandBuffer(VulkanCommandBuffer* cmdbuf);
+		void ResizeOutput(const Vec2i& new_size);
 	};
 }
