@@ -26,12 +26,12 @@ static void SetCenter(ColliderComponent* cc, Vec3 center) {
 }
 
 void VSGE::BindCollider() {
-	mono_add_internal_call("ColliderComponent::i_IsTrigger(ulong)", IsTrigger);
-	mono_add_internal_call("ColliderComponent::i_SetTrigger(ulong,bool)", SetTrigger);
+	MonoScriptingLayer::AddInternalCall("ColliderComponent::i_IsTrigger(ulong)", IsTrigger);
+	MonoScriptingLayer::AddInternalCall("ColliderComponent::i_SetTrigger(ulong,bool)", SetTrigger);
 
-	mono_add_internal_call("ColliderComponent::i_GetSize(ulong)", GetSize);
-	mono_add_internal_call("ColliderComponent::i_SetSize(ulong,Vec3)", SetSize);
+	MonoScriptingLayer::AddInternalCall("ColliderComponent::i_GetSize(ulong)", GetSize);
+	MonoScriptingLayer::AddInternalCall("ColliderComponent::i_SetSize(ulong,Vec3)", SetSize);
 
-	mono_add_internal_call("ColliderComponent::i_GetCenter(ulong)", GetCenter);
-	mono_add_internal_call("ColliderComponent::i_SetCenter(ulong,Vec3)", SetCenter);
+	MonoScriptingLayer::AddInternalCall("ColliderComponent::i_GetCenter(ulong)", GetCenter);
+	MonoScriptingLayer::AddInternalCall("ColliderComponent::i_SetCenter(ulong,Vec3)", SetCenter);
 }

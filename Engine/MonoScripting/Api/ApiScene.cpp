@@ -1,5 +1,6 @@
 #include "ApiBindings.hpp"
 #include <Scene/Scene.hpp>
+#include <MonoScripting/MonoScriptingLayer.hpp>
 
 using namespace VSGE;
 
@@ -16,7 +17,7 @@ static void* AddNewEntity(void* scene, MonoString* name) {
 }
 
 void VSGE::BindSceneApi() {
-	mono_add_internal_call("Scene::i_GetRootNode(ulong)", GetRootEntity);
-	mono_add_internal_call("Scene::i_GetEntity(ulong,string)", GetEntityByName);
-	mono_add_internal_call("Scene::i_AddNewEntity(ulong,string)", AddNewEntity);
+	MonoScriptingLayer::AddInternalCall("Scene::i_GetRootNode(ulong)", GetRootEntity);
+	MonoScriptingLayer::AddInternalCall("Scene::i_GetEntity(ulong,string)", GetEntityByName);
+	MonoScriptingLayer::AddInternalCall("Scene::i_AddNewEntity(ulong,string)", AddNewEntity);
 }

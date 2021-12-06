@@ -82,5 +82,10 @@ namespace VSGE {
 		/// Release Mono working domain
 		/// </summary>
 		void ReleaseDomain();
+
+		template<typename T> 
+		static void AddInternalCall(const std::string& decl, T func){
+			mono_add_internal_call(decl.c_str(), (const void*)func);
+		}
 	};
 }

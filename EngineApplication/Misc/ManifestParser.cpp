@@ -24,6 +24,7 @@ bool ManifestParser::ParseFromFile(const std::string& manifest_file_path) {
 	ByteSolver solver(data, size);
 	_project_name = solver.ReadNextString();
 	_main_scene = solver.ReadNextString();
+	return true;
 }
 
 const std::string& ManifestParser::GetProjectName() {

@@ -1,4 +1,5 @@
 #include "SceneResource.hpp"
+#include <cstring>
 
 using namespace VSGE;
 

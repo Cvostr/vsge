@@ -153,7 +153,7 @@ void EntityScriptComponent::Serialize(YAML::Emitter& e) {
 void EntityScriptComponent::Deserialize(YAML::Node& entity) {
 	SetClassName(entity["class"].as<std::string>());
 	Node fields = entity["fields"];
-	for (auto& field : fields) {
+	for (const auto& field : fields) {
 		std::string name = field["name"].as<std::string>();
 		int type = field["type"].as<int>();
 		MonoScriptField* p_field = GetFieldByNameType(name, (ValueType)type);

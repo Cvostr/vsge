@@ -17,7 +17,7 @@ MonoScriptInstance::~MonoScriptInstance() {
 
 MonoMethodDesc* MonoScriptInstance::GetMethodDesc(const std::string& method) {
     std::string method_str = _class_name + ":" + method;
-    return mono_method_desc_new(method_str.c_str(), NULL);
+    return mono_method_desc_new(method_str.c_str(), false);
 }
 
 MonoMethod* MonoScriptInstance::GetMethod(const std::string& method) {

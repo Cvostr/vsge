@@ -1,5 +1,6 @@
 #include "LightsBuffer.hpp"
 #include <Scene/Entity.hpp>
+#include <cstring>
 
 using namespace VSGE;
 

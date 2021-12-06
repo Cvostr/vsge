@@ -24,8 +24,8 @@ static Resource* GetPtrByName(MonoString* name) {
 }
 
 void VSGE::BindResourcesApi() {
-	mono_add_internal_call("Resource::i_GetName(ulong)", GetName);
-	mono_add_internal_call("Resource::i_GetState(ulong)", GetState);
-	mono_add_internal_call("Resource::i_GetResourceType(ulong)", GetType);
-	mono_add_internal_call("Resource::i_GetPointerByName(string)", GetPtrByName);
+	MonoScriptingLayer::AddInternalCall("Resource::i_GetName(ulong)", GetName);
+	MonoScriptingLayer::AddInternalCall("Resource::i_GetState(ulong)", GetState);
+	MonoScriptingLayer::AddInternalCall("Resource::i_GetResourceType(ulong)", GetType);
+	MonoScriptingLayer::AddInternalCall("Resource::i_GetPointerByName(string)", GetPtrByName);
 }

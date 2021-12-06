@@ -1,5 +1,6 @@
 #include "SceneSerialization.hpp"
 #include <string>
+#include <cstring>
 
 using namespace VSGE;
 

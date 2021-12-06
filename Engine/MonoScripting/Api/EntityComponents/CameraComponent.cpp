@@ -40,18 +40,18 @@ static void SetViewMask(Camera* cam, ViewMask viewmask) {
 }
 
 void VSGE::BindCamera() {
-	mono_add_internal_call("CameraComponent::i_GetNearPlane(ulong)", GetNearPlane);
-	mono_add_internal_call("CameraComponent::i_SetNearPlane(ulong,float)", SetNearPlane);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_GetNearPlane(ulong)", GetNearPlane);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_SetNearPlane(ulong,float)", SetNearPlane);
 
-	mono_add_internal_call("CameraComponent::i_GetFarPlane(ulong)", GetFarPlane);
-	mono_add_internal_call("CameraComponent::i_SetFarPlane(ulong,float)", SetFarPlane);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_GetFarPlane(ulong)", GetFarPlane);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_SetFarPlane(ulong,float)", SetFarPlane);
 
-	mono_add_internal_call("CameraComponent::i_GetFov(ulong)", GetFov);
-	mono_add_internal_call("CameraComponent::i_SetFarPlane(ulong,float)", SetFov);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_GetFov(ulong)", GetFov);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_SetFarPlane(ulong,float)", SetFov);
 
-	mono_add_internal_call("CameraComponent::i_GetAspectRatio(ulong)", GetAspectRatio);
-	mono_add_internal_call("CameraComponent::i_SetAspectRatio(ulong,float)", SetAspectRatio);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_GetAspectRatio(ulong)", GetAspectRatio);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_SetAspectRatio(ulong,float)", SetAspectRatio);
 
-	mono_add_internal_call("CameraComponent::i_GetViewMask(ulong)", GetViewMask);
-	mono_add_internal_call("CameraComponent::i_SetViewMask(ulong,ulong)", SetViewMask);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_GetViewMask(ulong)", GetViewMask);
+	MonoScriptingLayer::AddInternalCall("CameraComponent::i_SetViewMask(ulong,ulong)", SetViewMask);
 }

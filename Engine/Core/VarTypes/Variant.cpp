@@ -24,7 +24,7 @@ Variant::Variant() {
 	memset(&_data, 0, sizeof(MultitypeData));
 }
 
-ValueType Variant::GetType() {
+ValueType Variant::GetType() const {
 	return _type;
 }
 
@@ -36,7 +36,15 @@ void* Variant::GetValuePtr() {
 	return &_data;
 }
 
+const MultitypeData& Variant::GetMultitypeData() const{
+	return _data;
+}
+
 void Variant::SetData(ValueType type, MultitypeData value) {
 	_type = type;
 	_data = value;
+}
+
+void Variant::operator=(const Variant& v){
+	SetData(v.GetType(), v.GetMultitypeData());
 }

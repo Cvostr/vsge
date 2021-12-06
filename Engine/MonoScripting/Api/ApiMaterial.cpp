@@ -20,7 +20,7 @@ static void SetColorValue(Material* mat, MonoString* key, Color value) {
 }
 
 void VSGE::BindMaterialObjectApi() {
-	mono_add_internal_call("Material::i_SetIntValue(ulong,string,single)", SetIntValue);
-	mono_add_internal_call("Material::i_SetFloatValue(ulong,string,single)", SetFloatValue);
-	mono_add_internal_call("Material::i_SetColorValue(ulong,string,Color)", SetColorValue);
+	MonoScriptingLayer::AddInternalCall("Material::i_SetIntValue(ulong,string,single)", SetIntValue);
+	MonoScriptingLayer::AddInternalCall("Material::i_SetFloatValue(ulong,string,single)", SetFloatValue);
+	MonoScriptingLayer::AddInternalCall("Material::i_SetColorValue(ulong,string,Color)", SetColorValue);
 }

@@ -2,10 +2,9 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include <vector>
+#include <Graphics/TextureFormat.hpp>
 
 namespace VSGE {
-
-	enum TextureFormat;
 
 	struct TextureMipLevel {
 		uint32 _mip_width;

@@ -21,9 +21,9 @@ static void SetCastShadows(MaterialComponent* comp, bool cast) {
 }
 
 void VSGE::BindMaterial() {
-	mono_add_internal_call("MaterialComponent::i_SetMaterial(ulong,ulong)", SetMaterial);
-	mono_add_internal_call("MaterialComponent::i_GetMaterialHandle(ulong)", GetMaterial);
+	MonoScriptingLayer::AddInternalCall("MaterialComponent::i_SetMaterial(ulong,ulong)", SetMaterial);
+	MonoScriptingLayer::AddInternalCall("MaterialComponent::i_GetMaterialHandle(ulong)", GetMaterial);
 
-	mono_add_internal_call("MaterialComponent::i_IsCastShadows(ulong)", IsCastShadows);
-	mono_add_internal_call("MaterialComponent::i_SetCastShadows(ulong,bool)", SetCastShadows);
+	MonoScriptingLayer::AddInternalCall("MaterialComponent::i_IsCastShadows(ulong)", IsCastShadows);
+	MonoScriptingLayer::AddInternalCall("MaterialComponent::i_SetCastShadows(ulong,bool)", SetCastShadows);
 }

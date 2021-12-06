@@ -13,6 +13,6 @@ void Move(CharacterControllerComponent* ptr, Vec2 direction) {
 }
 
 void VSGE::BindCharacterController() {
-	mono_add_internal_call("CharacterControllerComponent::i_IsOnGround(ulong)", IsOnGround);
-	mono_add_internal_call("CharacterControllerComponent::i_Move(ulong,Vec2)", Move);
+	MonoScriptingLayer::AddInternalCall("CharacterControllerComponent::i_IsOnGround(ulong)", IsOnGround);
+	MonoScriptingLayer::AddInternalCall("CharacterControllerComponent::i_Move(ulong,Vec2)", Move);
 }

@@ -61,7 +61,7 @@ public:
 
 	Variant();
 
-	ValueType GetType();
+	ValueType GetType() const;
 	void SetType(ValueType type);
 
 	template<typename T>
@@ -71,7 +71,11 @@ public:
 
 	void* GetValuePtr();
 
+	const MultitypeData& GetMultitypeData() const;
+
 	void SetData(ValueType type, MultitypeData value);
+
+	void operator=(const Variant& v);
 
 	Variant(int _int) {
 		_data._int = _int;

@@ -46,19 +46,19 @@ static void SetAudioClip(AudioSourceComponent* ptr, Resource* res) {
 }
 
 void VSGE::BindAudiosource() {
-	mono_add_internal_call("AudioSourceComponent::i_Play(ulong)", Play);
-	mono_add_internal_call("AudioSourceComponent::i_Pause(ulong)", Pause);
-	mono_add_internal_call("AudioSourceComponent::i_Stop(ulong)", Stop);
-	mono_add_internal_call("AudioSourceComponent::i_IsPlaying(ulong)", IsPlaying);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_Play(ulong)", Play);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_Pause(ulong)", Pause);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_Stop(ulong)", Stop);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_IsPlaying(ulong)", IsPlaying);
 
-	mono_add_internal_call("AudioSourceComponent::i_GetVolume(ulong)", GetVolume);
-	mono_add_internal_call("AudioSourceComponent::i_SetVolume(ulong,float)", SetVolume);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_GetVolume(ulong)", GetVolume);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_SetVolume(ulong,float)", SetVolume);
 
-	mono_add_internal_call("AudioSourceComponent::i_GetPitch(ulong)", GetPitch);
-	mono_add_internal_call("AudioSourceComponent::i_SetPitch(ulong,float)", SetPitch);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_GetPitch(ulong)", GetPitch);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_SetPitch(ulong,float)", SetPitch);
 
-	mono_add_internal_call("AudioSourceComponent::i_IsLooping(ulong)", IsLooping);
-	mono_add_internal_call("AudioSourceComponent::i_SetLooping(ulong,bool)", SetLooping);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_IsLooping(ulong)", IsLooping);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_SetLooping(ulong,bool)", SetLooping);
 
-	mono_add_internal_call("AudioSourceComponent::i_SetAudioClip(ulong,ulong)", SetAudioClip);
+	MonoScriptingLayer::AddInternalCall("AudioSourceComponent::i_SetAudioClip(ulong,ulong)", SetAudioClip);
 }

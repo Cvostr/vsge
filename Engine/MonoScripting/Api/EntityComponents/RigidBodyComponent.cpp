@@ -26,12 +26,12 @@ static void ApplyCentralForce(RigidBodyComponent* rgb, Vec3 force) {
 }
 
 void VSGE::BindRigidbody() {
-	mono_add_internal_call("RigidBodyComponent::i_GetMass(ulong)", GetMass);
-	mono_add_internal_call("RigidBodyComponent::i_SetMass(ulong,float)", SetMass);
+	MonoScriptingLayer::AddInternalCall("RigidBodyComponent::i_GetMass(ulong)", GetMass);
+	MonoScriptingLayer::AddInternalCall("RigidBodyComponent::i_SetMass(ulong,float)", SetMass);
 
-	mono_add_internal_call("RigidBodyComponent::i_GetFriction(ulong)", GetFriction);
-	mono_add_internal_call("RigidBodyComponent::i_SetFriction(ulong,float)", SetFriction);
+	MonoScriptingLayer::AddInternalCall("RigidBodyComponent::i_GetFriction(ulong)", GetFriction);
+	MonoScriptingLayer::AddInternalCall("RigidBodyComponent::i_SetFriction(ulong,float)", SetFriction);
 
-	mono_add_internal_call("RigidBodyComponent::i_ApplyCentralImpulse(ulong,Vec3)", ApplyCentralImpulse);
-	mono_add_internal_call("RigidBodyComponent::i_ApplyCentralForce(ulong,Vec3)", ApplyCentralForce);
+	MonoScriptingLayer::AddInternalCall("RigidBodyComponent::i_ApplyCentralImpulse(ulong,Vec3)", ApplyCentralImpulse);
+	MonoScriptingLayer::AddInternalCall("RigidBodyComponent::i_ApplyCentralForce(ulong,Vec3)", ApplyCentralForce);
 }

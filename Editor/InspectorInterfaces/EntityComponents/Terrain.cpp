@@ -1,8 +1,8 @@
 #include "EntityComponents.hpp"
 #include <imgui.h>
-#include "../Misc/Thumbnails.hpp"
-#include "../Windows/ResourcePickWindow.hpp"
-#include "../EditorLayers/ImGuiLayer.hpp"
+#include <Misc/Thumbnails.hpp>
+#include <Windows/ResourcePickWindow.hpp>
+#include <EditorLayers/ImGuiLayer.hpp>
 #include <ImageBtnText.h>
 #include "../ResourcePicker.hpp"
 

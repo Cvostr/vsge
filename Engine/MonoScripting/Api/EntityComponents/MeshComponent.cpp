@@ -9,5 +9,5 @@ static void SetMesh(MeshComponent* ptr, Resource* res) {
 }
 
 void VSGE::BindMesh() {
-	mono_add_internal_call("MeshComponent::i_SetMesh(ulong,ulong)", SetMesh);
+	MonoScriptingLayer::AddInternalCall("MeshComponent::i_SetMesh(ulong,ulong)", SetMesh);
 }

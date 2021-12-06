@@ -15,5 +15,5 @@ void DrawText(Rect bounds, float rotation, MonoString* text, MonoString* font, C
 }
 
 void VSGE::BindUiRenderList() {
-	mono_add_internal_call("UiRenderList::DrawText(Rect,single,string,string,Color)", DrawText);
+	MonoScriptingLayer::AddInternalCall("UiRenderList::DrawText(Rect,single,string,string,Color)", DrawText);
 }

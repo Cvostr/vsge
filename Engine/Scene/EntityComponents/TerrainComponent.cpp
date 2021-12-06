@@ -455,18 +455,18 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 		float metallic_factor = texture["metallic_factor"].as<float>();
 		float height_factor = texture["height_factor"].as<float>();
 
-		TerrainTexture texture;
-		texture._albedo_reference.SetResource(albedo);
-		texture._normal_reference.SetResource(normal);
-		texture._roughness_reference.SetResource(roughness);
-		texture._metallic_reference.SetResource(metallic);
-		texture._ao_reference.SetResource(ao);
-		texture._height_reference.SetResource(height);
-		texture._roughness_factor = roughness_factor;
-		texture._metallic_factor = metallic_factor;
-		texture._height_factor = height_factor;
+		TerrainTexture terrain_texture;
+		terrain_texture._albedo_reference.SetResource(albedo);
+		terrain_texture._normal_reference.SetResource(normal);
+		terrain_texture._roughness_reference.SetResource(roughness);
+		terrain_texture._metallic_reference.SetResource(metallic);
+		terrain_texture._ao_reference.SetResource(ao);
+		terrain_texture._height_reference.SetResource(height);
+		terrain_texture._roughness_factor = roughness_factor;
+		terrain_texture._metallic_factor = metallic_factor;
+		terrain_texture._height_factor = height_factor;
 
-		_terrain_textures.push_back(texture);
+		_terrain_textures.push_back(terrain_texture);
 	}
 
 	YAML::Node vegetables = entity["vegetables"];

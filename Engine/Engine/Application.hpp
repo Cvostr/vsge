@@ -4,6 +4,7 @@
 #include "Window.hpp"
 #include <string>
 #include <Core/Threading/Mutex.hpp>
+#include <typeinfo>
 
 namespace VSGE {
 

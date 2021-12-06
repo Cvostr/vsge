@@ -45,11 +45,11 @@ bool Thread::Run() {
 #ifdef _WIN32
 	_handle = CreateThread(nullptr, 0, CallThreadFuncton, this, 0, nullptr);
 #elif __linux__
-	mThreadHandle = new pthread_t;
+	_handle = new pthread_t;
 	pthread_attr_t type;
 	pthread_attr_init(&type);
 	pthread_attr_setdetachstate(&type, PTHREAD_CREATE_JOINABLE);
-	pthread_create((pthread_t*)mThreadHandle, &type, CallThreadFuncton, this);
+	pthread_create((pthread_t*)_handle, &type, CallThreadFuncton, this);
 #endif
 	
 	return true;
@@ -84,7 +84,7 @@ void Thread::SetThreadPriority_(int priority) {
 #ifdef _WIN32
 	SetThreadPriority((HANDLE)_handle, priority);
 #elif __linux__
-	pthread_t* thread = (pthread_t*)mThreadHandle;
+	pthread_t* thread = (pthread_t*)_handle;
 	if (thread)
 		pthread_setschedprio(*thread, priority);
 #endif
@@ -99,7 +99,7 @@ void Thread::SetThreadName(const std::string& name) {
 	delete[] thr_name;
 #endif
 #ifdef __linux__
-	pthread_t* thread = (pthread_t*)mThreadHandle;
+	pthread_t* thread = (pthread_t*)_handle;
 	pthread_setname_np(*thread, name.c_str());
 #endif
 }

@@ -46,20 +46,20 @@ void SetCastShadows(LightsourceComponent* ptr, bool cast) {
 }
 
 void VSGE::BindLightsource() {
-	mono_add_internal_call("LightSourceComponent::i_GetIntensity(ulong)", GetIntensity);
-	mono_add_internal_call("LightSourceComponent::i_SetIntensity(ulong,float)", SetIntensity);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_GetIntensity(ulong)", GetIntensity);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_SetIntensity(ulong,float)", SetIntensity);
 
-	mono_add_internal_call("LightSourceComponent::i_GetRange(ulong)", GetRange);
-	mono_add_internal_call("LightSourceComponent::i_SetRange(ulong,float)", SetRange);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_GetRange(ulong)", GetRange);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_SetRange(ulong,float)", SetRange);
 
-	mono_add_internal_call("LightSourceComponent::i_GetSpotAngle(ulong)", GetSpotAngle);
-	mono_add_internal_call("LightSourceComponent::i_SetSpotAngle(ulong,float)", SetSpotAngle);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_GetSpotAngle(ulong)", GetSpotAngle);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_SetSpotAngle(ulong,float)", SetSpotAngle);
 
-	mono_add_internal_call("LightSourceComponent::i_SetColor(ulong,Color)", SetColor);
-	mono_add_internal_call("LightSourceComponent::i_GetColor(ulong)", GetColor);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_SetColor(ulong,Color)", SetColor);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_GetColor(ulong)", GetColor);
 
-	mono_add_internal_call("LightSourceComponent::i_GetDirection(ulong)", GetDirection);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_GetDirection(ulong)", GetDirection);
 
-	mono_add_internal_call("LightSourceComponent::i_IsCastShadows(ulong)", IsCastShadows);
-	mono_add_internal_call("LightSourceComponent::i_SetCastShadows(ulong,bool)", SetCastShadows);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_IsCastShadows(ulong)", IsCastShadows);
+	MonoScriptingLayer::AddInternalCall("LightSourceComponent::i_SetCastShadows(ulong,bool)", SetCastShadows);
 }

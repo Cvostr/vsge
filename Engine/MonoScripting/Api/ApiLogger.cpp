@@ -1,10 +1,6 @@
 #include "ApiBindings.hpp"
 #include <Core/Logger.hpp>
-#include <mono/metadata/appdomain.h>
-#include <mono/jit/jit.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/environment.h>
-#include <mono/metadata/debug-helpers.h>
+#include <MonoScripting/MonoScriptingLayer.hpp>
 
 using namespace VSGE;
 
@@ -14,5 +10,5 @@ static void Log(MonoString* mono_string) {
 }
 
 void VSGE::BindLoggerApi() {
-	mono_add_internal_call("Logger::Log(string)", Log);
+	MonoScriptingLayer::AddInternalCall("Logger::Log(string)", Log);
 }

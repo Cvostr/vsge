@@ -134,25 +134,25 @@ MonoObject* GetScript(Entity* ptr, MonoString* script_class_name) {
 }
 
 void VSGE::BindEntityApi() {
-	mono_add_internal_call("Entity::i_GetParent(ulong)", GetParent);
-	mono_add_internal_call("Entity::i_AddChild(ulong,ulong)", AddChild);
-	mono_add_internal_call("Entity::i_RemoveChild(ulong,ulong)", RemoveChild);
-	mono_add_internal_call("Entity::i_GetChildren(ulong)", GetChildren);
-	mono_add_internal_call("Entity::i_GetScene(ulong)", GetScene);
-	mono_add_internal_call("Entity::i_GetAABB(ulong)", GetAABB);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetParent(ulong)", GetParent);
+	MonoScriptingLayer::AddInternalCall("Entity::i_AddChild(ulong,ulong)", AddChild);
+	MonoScriptingLayer::AddInternalCall("Entity::i_RemoveChild(ulong,ulong)", RemoveChild);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetChildren(ulong)", GetChildren);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetScene(ulong)", GetScene);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetAABB(ulong)", GetAABB);
 
-	mono_add_internal_call("Entity::i_SetActive(ulong,bool)", SetActive);
-	mono_add_internal_call("Entity::i_IsActive(ulong)", IsActive);
-	mono_add_internal_call("Entity::i_SetName(ulong,string)", SetName);
-	mono_add_internal_call("Entity::i_GetName(ulong)", GetName);
+	MonoScriptingLayer::AddInternalCall("Entity::i_SetActive(ulong,bool)", SetActive);
+	MonoScriptingLayer::AddInternalCall("Entity::i_IsActive(ulong)", IsActive);
+	MonoScriptingLayer::AddInternalCall("Entity::i_SetName(ulong,string)", SetName);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetName(ulong)", GetName);
 
-	mono_add_internal_call("Entity::i_SetPosition(ulong,Vec3)", SetPosition);
-	mono_add_internal_call("Entity::i_GetPosition(ulong)", GetPosition);
-	mono_add_internal_call("Entity::i_SetScale(ulong,Vec3)", SetScale);
-	mono_add_internal_call("Entity::i_GetScale(ulong)", GetScale);
-	mono_add_internal_call("Entity::i_SetRotation(ulong,Quat)", SetRotation);
-	mono_add_internal_call("Entity::i_GetRotation(ulong)", GetRotation);
+	MonoScriptingLayer::AddInternalCall("Entity::i_SetPosition(ulong,Vec3)", SetPosition);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetPosition(ulong)", GetPosition);
+	MonoScriptingLayer::AddInternalCall("Entity::i_SetScale(ulong,Vec3)", SetScale);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetScale(ulong)", GetScale);
+	MonoScriptingLayer::AddInternalCall("Entity::i_SetRotation(ulong,Quat)", SetRotation);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetRotation(ulong)", GetRotation);
 
-	mono_add_internal_call("Entity::WComponent(ulong,int,int)", WComponent);
-	mono_add_internal_call("Entity::i_GetScript(ulong,string)", GetScript);
+	MonoScriptingLayer::AddInternalCall("Entity::WComponent(ulong,int,int)", WComponent);
+	MonoScriptingLayer::AddInternalCall("Entity::i_GetScript(ulong,string)", GetScript);
 }
