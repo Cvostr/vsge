@@ -61,11 +61,11 @@ void VulkanBloom::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 		VK_IMAGE_LAYOUT_GENERAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	VkImageMemoryBarrier pre_barrier_bright = GetImageBarrier((VulkanTexture*)_output,
+	VkImageMemoryBarrier pre_barrier_bright = GetImageBarrier((VulkanTexture*)_bright_texture,
 		0, VK_ACCESS_SHADER_WRITE_BIT, 
 		VK_IMAGE_LAYOUT_UNDEFINED, 
 		VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_barrier_bright = GetImageBarrier((VulkanTexture*)_output, 
+	VkImageMemoryBarrier post_barrier_bright = GetImageBarrier((VulkanTexture*)_bright_texture,
 		VK_ACCESS_SHADER_WRITE_BIT, 0,
 		VK_IMAGE_LAYOUT_GENERAL, 
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -91,5 +91,4 @@ void VulkanBloom::ResizeOutput(const Vec2i& new_size) {
 
 	_bright_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_bright_texture,
 		nullptr, VK_IMAGE_LAYOUT_GENERAL);
-
 }

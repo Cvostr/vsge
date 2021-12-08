@@ -1,5 +1,5 @@
 #include "SceneResource.hpp"
-#include <cstring>
+#include <Core/Memory.hpp>
 
 using namespace VSGE;
 
@@ -22,7 +22,7 @@ void SceneResource::Prepare() {
 		SceneLayer::Get()->LoadSceneBinary(_loadedData, _description.size, _load_slot);
 	if (is_yaml) {
 		byte* terminated = new byte[_description.size + 1];
-		memcpy(terminated, _loadedData, _description.size);
+		Memcpy(terminated, _loadedData, _description.size);
 		terminated[_description.size] = 0;
 		SceneLayer::Get()->LoadSceneYAML(terminated, _load_slot);
 		delete[] terminated;

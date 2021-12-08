@@ -188,13 +188,13 @@ void VulkanRenderer::SetupRenderer() {
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_postprocessing = new VulkanPostprocessing;
+	_postprocessing->Create();
 	_postprocessing->SetInputTextures(
 		_main_render_target->GetDeferredOutput(),
 		_main_render_target->GetGBufferDepthAttachment(),
 		_main_render_target->GetGBufferNormalsAttachment(),
 		_main_render_target->GetGBufferPositionsAttachment(),
 		_ui_renderer->GetOutputTexture());
-	_postprocessing->Create();
 	_postprocessing->ResizeOutput(GetOutputSizes());
 
 	mOutput = _postprocessing->GetOutputTexture();
@@ -505,13 +505,13 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 
 	_ui_renderer->ResizeOutput(width, height);
 
-	_postprocessing->ResizeOutput(GetOutputSizes());
 	_postprocessing->SetInputTextures(
 		_main_render_target->GetDeferredOutput(),
 		_main_render_target->GetGBufferDepthAttachment(),
 		_main_render_target->GetGBufferNormalsAttachment(),
 		_main_render_target->GetGBufferPositionsAttachment(),
 		_ui_renderer->GetOutputTexture());
+	_postprocessing->ResizeOutput(GetOutputSizes());
 
 	mOutput = _postprocessing->GetOutputTexture();
 }

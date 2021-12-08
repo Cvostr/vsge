@@ -16,6 +16,7 @@ set(SRC_FILES
 				Core/Logger.cpp
 				Core/Random.cpp
 				Core/Time.cpp
+				Core/Memory.cpp
 				Core/YamlHelper.cpp
 				Core/Threading/Mutex.cpp
 				Core/Threading/Thread.cpp

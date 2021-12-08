@@ -1,6 +1,6 @@
 #include "SceneSerialization.hpp"
 #include <string>
-#include <cstring>
+#include <Core/Memory.hpp>
 
 using namespace VSGE;
 
@@ -27,7 +27,7 @@ void SceneSerializer::SerializeBinary(byte** data, uint32& size) {
 
 	size = serializer.GetSerializedSize();
 	*data = new byte[size];
-	memcpy(*data, serializer.GetBytes(), size);
+	Memcpy(*data, serializer.GetBytes(), size);
 }
 
 void SceneSerializer::SerializeEntityBinary(Entity* ent, ByteSerialize& serializer) {

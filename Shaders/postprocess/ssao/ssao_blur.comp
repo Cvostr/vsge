@@ -1,0 +1,24 @@
+#version 450
+
+layout(set=0, binding=0, rgba8) readonly uniform image2D ssaoInput;
+layout(set=0, binding=1, rgba8) restrict writeonly uniform image2D ssaoBlur;
+
+layout(local_size_x=32, local_size_y=32) in;
+void main(void)
+{
+    ivec2 size = ivec2(imageSize(ssaoBlur));
+	ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+
+    if(pixel.x <= size.x && pixel.y <= size.y){
+        float result = 0.0;
+
+        for (int x = -2; x < 2; ++x) {
+            for (int y = -2; y < 2; ++y) {
+                ivec2 offset = ivec2(x, y);
+                result += imageLoad(ssaoInput, pixel + offset).r;
+            }
+        }
+
+        imageStore(ssaoBlur, pixel, vec4(result, 0, 0, 0));
+    }
+}

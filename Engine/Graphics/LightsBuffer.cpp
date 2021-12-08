@@ -1,6 +1,6 @@
 #include "LightsBuffer.hpp"
 #include <Scene/Entity.hpp>
-#include <cstring>
+#include <Core/Memory.hpp>
 
 using namespace VSGE;
 
@@ -34,11 +34,11 @@ void LightsBuffer::UpdateGpuBuffer() {
 }
 
 void LightsBuffer::SetLightsCount(uint32 lights_count) {
-	memcpy(_cpu_buffer + 12, &lights_count, sizeof(uint32));
+	Memcpy(_cpu_buffer + 12, &lights_count, sizeof(uint32));
 }
 
 void LightsBuffer::SetAmbientColor(const Color& color) {
-	memcpy(_cpu_buffer, &color.r, 12);
+	Memcpy(_cpu_buffer, &color.r, 12);
 }
 
 void LightsBuffer::SetLight(uint32 light_index, LightsourceComponent* light) {
@@ -53,13 +53,13 @@ void LightsBuffer::SetLight(uint32 light_index, LightsourceComponent* light) {
 }
 
 void LightsBuffer::SetLight(uint32 light_index, int type, float intensity, float range, float spot_angle, const Vec3& pos, const Vec3& dir, const Color& color) {
-	memcpy(_cpu_buffer + 16 + light_index * 64, &type, sizeof(int));
-	memcpy(_cpu_buffer + 16 + light_index * 64 + 4, &intensity, sizeof(float));
-	memcpy(_cpu_buffer + 16 + light_index * 64 + 8, &range, sizeof(float));
-	memcpy(_cpu_buffer + 16 + light_index * 64 + 12, &spot_angle, sizeof(float));
-	memcpy(_cpu_buffer + 16 + light_index * 64 + 16, &pos, sizeof(Vec3));
-	memcpy(_cpu_buffer + 16 + light_index * 64 + 32, &dir, sizeof(Vec3));
-	memcpy(_cpu_buffer + 16 + light_index * 64 + 48, &color, sizeof(Color));
+	Memcpy(_cpu_buffer + 16 + light_index * 64, &type, sizeof(int));
+	Memcpy(_cpu_buffer + 16 + light_index * 64 + 4, &intensity, sizeof(float));
+	Memcpy(_cpu_buffer + 16 + light_index * 64 + 8, &range, sizeof(float));
+	Memcpy(_cpu_buffer + 16 + light_index * 64 + 12, &spot_angle, sizeof(float));
+	Memcpy(_cpu_buffer + 16 + light_index * 64 + 16, &pos, sizeof(Vec3));
+	Memcpy(_cpu_buffer + 16 + light_index * 64 + 32, &dir, sizeof(Vec3));
+	Memcpy(_cpu_buffer + 16 + light_index * 64 + 48, &color, sizeof(Color));
 }
 
 GpuBuffer* LightsBuffer::GetLightsGpuBuffer() {
