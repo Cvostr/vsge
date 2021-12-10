@@ -106,15 +106,24 @@ void VulkanSSAO::Create() {
     _ssao_texture->SetStorage(true);
     _ssao_texture->Create(1280, 720, FORMAT_RGBA);
 
+    _ssao_blur_texture = new VulkanTexture;
+    _ssao_blur_texture->SetStorage(true);
+    _ssao_blur_texture->Create(1280, 720, FORMAT_RGBA);
+
     //output texture
-    _output = new VulkanTexture;
-    _output->SetStorage(true);
-    _output->Create(1280, 720, FORMAT_RGBA, 1, 1);
+    //_output = new VulkanTexture;
+    //_output->SetStorage(true);
+    //_output->Create(1280, 720, FORMAT_RGBA, 1, 1);
 
     _ssao_descr_set->WriteDescriptorImage(2, _ssao_noise,
         VulkanRenderer::Get()->GetAttachmentSampler());
     _ssao_descr_set->WriteDescriptorBuffer(3, _ssao_kernel);
     _ssao_descr_set->WriteDescriptorImage(4, _ssao_texture, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+
+    _ssao_blur_descr_set->WriteDescriptorImage(0, _ssao_texture, nullptr, 
+        VK_IMAGE_LAYOUT_GENERAL);
+    _ssao_blur_descr_set->WriteDescriptorImage(1, _ssao_blur_texture, nullptr,
+        VK_IMAGE_LAYOUT_GENERAL);
 }
 
 void VulkanSSAO::Destroy() {
@@ -146,25 +155,44 @@ void VulkanSSAO::SetInputTextures(
         VulkanRenderer::Get()->GetAttachmentSampler());
 }
 
+VulkanTexture* VulkanSSAO::GetBlurredSSAO() {
+    return _ssao_blur_texture;
+}
+
 void VulkanSSAO::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
     UpdateProjectionMatrix();
-    VkImageMemoryBarrier pre_barrier_bright = GetImageBarrier(_ssao_texture,
+    VkImageMemoryBarrier pre_barrier_ssao = GetImageBarrier(_ssao_texture,
         0, VK_ACCESS_SHADER_WRITE_BIT,
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
         VK_IMAGE_LAYOUT_GENERAL);
-    VkImageMemoryBarrier post_barrier_bright = GetImageBarrier(_ssao_texture,
+    VkImageMemoryBarrier post_barrier_ssao = GetImageBarrier(_ssao_texture,
+        VK_ACCESS_SHADER_WRITE_BIT, 0,
+        VK_IMAGE_LAYOUT_GENERAL,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    VkImageMemoryBarrier pre_barrier_blur = GetImageBarrier(_ssao_blur_texture,
+        0, VK_ACCESS_SHADER_WRITE_BIT,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        VK_IMAGE_LAYOUT_GENERAL);
+    VkImageMemoryBarrier post_barrier_blur = GetImageBarrier(_ssao_blur_texture,
         VK_ACCESS_SHADER_WRITE_BIT, 0,
         VK_IMAGE_LAYOUT_GENERAL,
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-        VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_barrier_bright});
+        VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_barrier_ssao, pre_barrier_blur });
     cmdbuf->BindComputePipeline(*_ssao_pipeline);
     cmdbuf->BindDescriptorSets(*_ssao_pp_layout, 0, 1, _ssao_descr_set, 0,
         nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
-    cmdbuf->Dispatch(_output_size.x / 32 + 1, _output_size.y / 32 + 1, 1);
+    cmdbuf->Dispatch(_output_size.x / 16 + 1, _output_size.y / 16 + 1, 1);
+    //blur SSAO texture
+    cmdbuf->BindComputePipeline(*_ssao_blur_pipeline);
+    cmdbuf->BindDescriptorSets(*_ssao_blur_pp_layout, 0, 1, _ssao_blur_descr_set, 0,
+        nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
+    cmdbuf->Dispatch(_output_size.x / 16 + 1, _output_size.y / 16 + 1, 1);
+
     cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_barrier_bright });
+        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_barrier_ssao, post_barrier_blur });
 
 }
 
@@ -173,9 +201,16 @@ void VulkanSSAO::ResizeOutput(const Vec2i& new_size) {
         return;
 
     _output_size = new_size;
-    _output->Resize(new_size.x, new_size.y);
+    //_output->Resize(new_size.x, new_size.y);
 
     _ssao_texture->Resize(new_size.x, new_size.y);
     _ssao_descr_set->WriteDescriptorImage(4, _ssao_texture, 
         nullptr, VK_IMAGE_LAYOUT_GENERAL);
+
+    _ssao_blur_texture->Resize(new_size.x, new_size.y);
+
+    _ssao_blur_descr_set->WriteDescriptorImage(0, _ssao_texture, nullptr,
+        VK_IMAGE_LAYOUT_GENERAL);
+    _ssao_blur_descr_set->WriteDescriptorImage(1, _ssao_blur_texture, nullptr,
+        VK_IMAGE_LAYOUT_GENERAL);
 }

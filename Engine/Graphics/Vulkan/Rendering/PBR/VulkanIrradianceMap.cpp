@@ -89,7 +89,7 @@ void VulkanIrradianceMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
     cmdbuffer->BindDescriptorSets(*_irmap_pipeline_layout, 0, 1, _irmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
     
     cmdbuffer->PushConstants(*_irmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &passed);
-    cmdbuffer->Dispatch(_irmap_size / 32, _irmap_size / 32, per_time);
+    cmdbuffer->Dispatch(_irmap_size / 2, _irmap_size / 2, per_time);
     _steps_passed++;
 
     cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_irmap_arrier });

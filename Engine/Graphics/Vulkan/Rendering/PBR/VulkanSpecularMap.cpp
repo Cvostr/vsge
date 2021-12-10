@@ -136,7 +136,7 @@ void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
 	uint32 passed = _steps_passed * per_time;
 
 	for (uint32_t level = 1, size = MAX_MAP_SIZE / 2; level < mip_map_levels; ++level, size /= 2) {
-		const uint32_t numGroups = std::max<uint32_t>(1, size / 32);
+		const uint32_t numGroups = std::max<uint32_t>(1, size / 8);
 
 		int32 pc_level = level - 1;
 		float roughness = level * deltaRoughness;

@@ -81,6 +81,14 @@ void VulkanPostprocessing::Create() {
 	_ui_add_pipeline = new VulkanComputePipeline;
 	_ui_add_pipeline->Create(_ui_add_shader, _ui_add_pl_layout);
 }
+
+VulkanBloom* VulkanPostprocessing::GetBloom() {
+	return _bloom;
+}
+VulkanSSAO* VulkanPostprocessing::GetSSAO() {
+	return _ssao;
+}
+
 void VulkanPostprocessing::Destroy() {
 	SAFE_RELEASE(_begin_semaphore)
 	SAFE_RELEASE(_cmdbuf);
@@ -105,7 +113,7 @@ void VulkanPostprocessing::FillCommandBuffer() {
 	_gamma_correction->SetInputTexture(_input_texture);
 
 	_cmdbuf->Begin();
-	_ssao->FillCommandBuffer(_cmdbuf);
+	//_ssao->FillCommandBuffer(_cmdbuf);
 	//_bloom->FillCommandBuffer(_cmdbuf);
 	_gamma_correction->FillCommandBuffer(_cmdbuf);
 	//UI adding

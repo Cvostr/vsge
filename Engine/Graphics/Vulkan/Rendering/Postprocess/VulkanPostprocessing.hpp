@@ -62,6 +62,9 @@ namespace VSGE {
 		VulkanSemaphore* GetBeginSemaphore();
 		void Execute(VulkanSemaphore* end_semaphore);
 
+		VulkanBloom* GetBloom();
+		VulkanSSAO* GetSSAO();
+
 		void Create();
 		void Destroy();
 	};

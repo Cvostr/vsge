@@ -3,7 +3,7 @@
 layout(set=0, binding=0, rgba8) readonly uniform image2D ssaoInput;
 layout(set=0, binding=1, rgba8) restrict writeonly uniform image2D ssaoBlur;
 
-layout(local_size_x=32, local_size_y=32) in;
+layout(local_size_x=16, local_size_y=16) in;
 void main(void)
 {
     ivec2 size = ivec2(imageSize(ssaoBlur));
@@ -19,6 +19,6 @@ void main(void)
             }
         }
 
-        imageStore(ssaoBlur, pixel, vec4(result, 0, 0, 0));
+        imageStore(ssaoBlur, pixel, vec4(result / 16.f, 0, 0, 0));
     }
 }

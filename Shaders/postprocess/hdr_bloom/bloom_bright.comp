@@ -3,7 +3,7 @@
 layout(set=0, binding=0) uniform sampler2D world;
 layout(set=0, binding=1, rgba16f) restrict writeonly uniform image2D outputTexture;
 
-layout(local_size_x=32, local_size_y=32, local_size_z=1) in;
+layout(local_size_x=16, local_size_y=16, local_size_z=1) in;
 void main(void)
 {
     vec2 size = imageSize(outputTexture);

@@ -45,5 +45,6 @@ namespace VSGE {
 			Texture* input_normals);
 		void FillCommandBuffer(VulkanCommandBuffer* cmdbuf);
 		void ResizeOutput(const Vec2i& new_size);
+		VulkanTexture* GetBlurredSSAO();
 	};
 }
