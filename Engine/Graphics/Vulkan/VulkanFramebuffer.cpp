@@ -27,8 +27,8 @@ void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers, bool 
 	VulkanTexture* new_attachment = new VulkanTexture;
 	new_attachment->SetCubemap(cubemap);
 	new_attachment->SetRenderTargetFlag(true);
-	if(_storage)
-		new_attachment->SetStorage(true);
+	//if(_storage)
+	//	new_attachment->SetStorage(true);
 	new_attachment->Create(_width, _height, Format, layers, 1);
 	
 	AddAttachment(new_attachment);

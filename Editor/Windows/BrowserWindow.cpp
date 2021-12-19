@@ -397,7 +397,7 @@ VSGE::ByteSerialize* FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType
     if (res_type == RESOURCE_TYPE_TEXTURE) {
         int size = 256;
         int layers = 1;
-        TextureFormat fmt = FORMAT_RGBA16F;
+        TextureFormat fmt = FORMAT_RGBA;
 
         serializer->WriteBytes("VSTX", 4);
         serializer->Serialize(size);

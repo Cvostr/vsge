@@ -2,6 +2,7 @@
 
 #include "VulkanGBufferRenderer.hpp"
 #include "VulkanDeferredLight.hpp"
+#include "Postprocess/VulkanGammaCorrection.hpp"
 #include "PBR/VulkanIBL.hpp"
 
 namespace VSGE {
@@ -9,6 +10,8 @@ namespace VSGE {
 	private:
 		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanDeferredLight* _deferred_renderer;
+
+		VulkanGammaCorrection* _gamma_correction;
 
 		VulkanTexture* _output;
 
@@ -39,6 +42,7 @@ namespace VSGE {
 		void RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer);
 
 		VulkanTexture* GetDeferredOutput();
+		VulkanTexture* GetGammaCorrectedOutput();
 		VulkanTexture* GetGBufferNormalsAttachment();
 		VulkanTexture* GetGBufferPositionsAttachment();
 		VulkanTexture* GetGBufferDepthAttachment();

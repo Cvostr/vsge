@@ -167,6 +167,10 @@ void Camera::OnPreRender() {
 	SetFront(front.GetNormalized());
 }
 
+PostEffectsParams& Camera::GetPostEffectParams() {
+	return _post_effects_params;
+}
+
 void Camera::Serialize(YAML::Emitter& e) {
 	e << Key << "fov" << Value << _fov;
 	e << Key << "znear" << Value << _nearPlane;

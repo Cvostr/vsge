@@ -17,6 +17,8 @@ namespace VSGE{
 
         VulkanCommandPool* _brdf_cmdpool;
         VulkanCommandBuffer* _brdf_cmdbuffer;
+
+        bool _brdf_lut_calculated;
     public:
         Vulkan_BRDF_LUT();
 
@@ -26,8 +28,12 @@ namespace VSGE{
 
         void Destroy();
 
-        void CreateBrdfLut();
-
         VulkanTexture* GetTextureLut();
+
+        void RecordCmdbuffer(VulkanCommandBuffer* cmdbuf);
+
+        bool IsCalculated();
+
+        void SetCalculated();
     };
 }

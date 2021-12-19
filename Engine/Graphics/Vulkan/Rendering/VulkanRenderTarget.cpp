@@ -29,6 +29,8 @@ void VulkanRenderTarget::Create() {
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
+
+	_gamma_correction = new VulkanGammaCorrection();
 }
 void VulkanRenderTarget::Destroy() {
 	SAFE_RELEASE(_deferred_renderer);
@@ -65,12 +67,18 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	_gbuffer_renderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
+
+	_gamma_correction->SetInputTexture(_deferred_renderer->GetOutputTexture());
+	_gamma_correction->ResizeOutput(Vec2i(width, height));
 }
 void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
 	_output = output_texture;
 }
 VulkanTexture* VulkanRenderTarget::GetDeferredOutput() {
 	return _deferred_renderer->GetOutputTexture();
+}
+VulkanTexture* VulkanRenderTarget::GetGammaCorrectedOutput() {
+	return _gamma_correction->GetOutputTexture();
 }
 VulkanTexture* VulkanRenderTarget::GetGBufferNormalsAttachment() {
 	return _gbuffer_renderer->GetNormalAttachment();
@@ -97,6 +105,9 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
 	}
 	_deferred_renderer->RecordCmdbuf(cmdbuffer);
+	
+	_gamma_correction->FillCommandBuffer(cmdbuffer);
+
 	if (_output) {
 		if (_output->IsCreated()) {
 			CopyDeferredToOutput(cmdbuffer);
@@ -130,9 +141,9 @@ void VulkanRenderTarget::CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf) {
 	copy.dstOffset = offset;
 	copy.extent = { _output->GetWidth(), _output->GetHeight(), 1 };
 
-	GetDeferredOutput()->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	GetGammaCorrectedOutput()->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-	VkImage image = GetDeferredOutput()->GetImage();
+	VkImage image = GetGammaCorrectedOutput()->GetImage();
 	vkCmdCopyImage(
 		cmdbuf->GetCommandBuffer(),
 		image,
@@ -142,7 +153,7 @@ void VulkanRenderTarget::CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf) {
 		1,
 		&copy);
 
-	GetDeferredOutput()->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	GetGammaCorrectedOutput()->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	_output->CmdChangeLayout(cmdbuf, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }

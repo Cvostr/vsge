@@ -3,93 +3,96 @@
 
 using namespace VSGE;
 
-VulkanGammaCorrection::VulkanGammaCorrection() {
-	_shader = nullptr;
-	_descr_pool = nullptr;
-	_descr_set = nullptr;
-	_pp_layout = nullptr;
-	_pipeline = nullptr;
+VulkanShader* gamma_shader = nullptr;
+VulkanPipelineLayout* gamma_pl_layout = nullptr;
+VulkanPipeline* gamma_pipeline = nullptr;
 
+VulkanGammaCorrection::VulkanGammaCorrection() {
 	_output_size = Vec2i(1280, 720);
+	Create();
 }
 VulkanGammaCorrection::~VulkanGammaCorrection() {
 	Destroy();
 }
 
-void VulkanGammaCorrection::Create() {
-	_shader = new VulkanShader;
-	_shader->AddShaderFromFile("gamma_correction.comp", SHADER_STAGE_COMPUTE);
+void VulkanGammaCorrection::CreateConstants() {
+	if (!gamma_shader) {
+		gamma_shader = new VulkanShader;
+		gamma_shader->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
+		gamma_shader->AddShaderFromFile("gamma_correction.frag", SHADER_STAGE_FRAGMENT);
+	}
+	CreateDescriptors();
+	if (!gamma_pl_layout) {
+		gamma_pl_layout = new VulkanPipelineLayout;
+		gamma_pl_layout->PushDescriptorSet(_descr_set);
+		gamma_pl_layout->Create();
+	}
+	if (!gamma_pipeline) {
+		VulkanRenderPass* gamma_rp = new VulkanRenderPass;
+		gamma_rp->PushColorAttachment(FORMAT_RGBA);
+		gamma_rp->SetAttachmentClearOnLoad(0, false);
+		gamma_rp->SetClearSize(10, 10);
+		gamma_rp->Create();
 
-	_descr_pool = new VulkanDescriptorPool();
-	_descr_pool->SetDescriptorSetsCount(1);
-	_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 2);
-	_descr_pool->Create();
+		VertexLayout _vertexLayout;
+		_vertexLayout.AddBinding(sizeof(Vertex));
+		_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+		_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 
-	_descr_set = new VulkanDescriptorSet();
-	_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, VK_SHADER_STAGE_COMPUTE_BIT);
-	_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT);
-	_descr_set->SetDescriptorPool(_descr_pool);
+		gamma_pipeline = new VulkanPipeline;
+		gamma_pipeline->SetDynamicCullMode(false);
+		gamma_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+		gamma_pipeline->Create(gamma_shader, gamma_rp, _vertexLayout, gamma_pl_layout);
+	}
+}
+
+void VulkanGammaCorrection::CreateDescriptors() {
+	_pool = new VulkanDescriptorPool;
+
+	_descr_set = new VulkanDescriptorSet(_pool);
+	_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_pool->Create();
 	_descr_set->Create();
+}
 
-	_pp_layout = new VulkanPipelineLayout;
-	_pp_layout->PushDescriptorSet(_descr_set);
-	_pp_layout->Create();
+void VulkanGammaCorrection::Create() {
+	CreateConstants();
 
-	_pipeline = new VulkanComputePipeline;
-	_pipeline->Create(_shader, _pp_layout);
-	//Create output texture
-	_output = new VulkanTexture;
-	_output->SetStorage(true);
-	_output->Create(1280, 720, FORMAT_RGBA, 1, 1);
+	_rp = new VulkanRenderPass;
+	_rp->PushColorAttachment(FORMAT_RGBA);
+	_rp->SetAttachmentClearOnLoad(0, false);
+	_rp->SetClearSize(10, 10);
+	_rp->Create();
 
-	_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_output, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+	_fb = new VulkanFramebuffer;
+	_fb->SetSize(_output_size.x, _output_size.y);
+	_fb->AddAttachment();
+	_fb->Create(_rp);
 }
 void VulkanGammaCorrection::Destroy() {
-	SAFE_RELEASE(_pipeline);
-	SAFE_RELEASE(_pp_layout);
-	SAFE_RELEASE(_descr_set);
-	SAFE_RELEASE(_descr_pool);
-	SAFE_RELEASE(_shader);
+	_fb->Destroy();
 }
+void VulkanGammaCorrection::SetInputTexture(Texture * input) {
+	_input = input;
 
-void VulkanGammaCorrection::SetInputTexture(Texture* input) {
-	PostprocessEffect::SetInputTexture(input);
-	
-	_descr_set->WriteDescriptorImage(0, (VulkanTexture*)input, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+	_descr_set->WriteDescriptorImage(0, (VulkanTexture*)input,
+		VulkanRenderer::Get()->GetAttachmentSampler());
 }
-
+VulkanTexture* VulkanGammaCorrection::GetOutputTexture() {
+	return (VulkanTexture*)_fb->GetColorAttachments()[0];
+}
 void VulkanGammaCorrection::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
-	VkImageMemoryBarrier pre_barrier_in = GetImageBarrier((VulkanTexture*)_input,
-		0, VK_ACCESS_SHADER_WRITE_BIT,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_barrier_in = GetImageBarrier((VulkanTexture*)_input, 
-		VK_ACCESS_SHADER_WRITE_BIT, 0,
-		VK_IMAGE_LAYOUT_GENERAL, 
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	VkImageMemoryBarrier pre_barrier = GetImageBarrier((VulkanTexture*)_output, 
-		0, VK_ACCESS_SHADER_WRITE_BIT, 
-		VK_IMAGE_LAYOUT_UNDEFINED, 
-		VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_barrier = GetImageBarrier((VulkanTexture*)_output, 
-		VK_ACCESS_SHADER_WRITE_BIT, 0, 
-		VK_IMAGE_LAYOUT_GENERAL, 
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_barrier_in, pre_barrier });
-	cmdbuf->BindComputePipeline(*_pipeline);
-	cmdbuf->BindDescriptorSets(*_pp_layout, 0, 1, _descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
-	cmdbuf->Dispatch(_output_size.x / 16 + 1, _output_size.y / 16 + 1, 1);
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_barrier, post_barrier_in });
+	_rp->CmdBegin(*cmdbuf, *_fb);
+	cmdbuf->BindPipeline(*gamma_pipeline);
+	cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
+	cmdbuf->SetViewport(0, 0, (float)_output_size.x, (float)_output_size.y);
+	cmdbuf->BindDescriptorSets(*gamma_pl_layout, 0, 1, _descr_set, 0);
+	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+	cmdbuf->DrawIndexed(6);
+	cmdbuf->EndRenderPass();
 }
-
 void VulkanGammaCorrection::ResizeOutput(const Vec2i& new_size) {
-	if (_output_size == new_size)
-		return;
-
 	_output_size = new_size;
-	_output->Resize(new_size.x, new_size.y);
-
-	_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_output, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+	_rp->SetClearSize(new_size.x, new_size.y);
+	_fb->Resize(new_size.x, new_size.y);
 }

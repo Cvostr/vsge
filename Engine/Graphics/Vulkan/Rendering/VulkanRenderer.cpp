@@ -23,12 +23,12 @@ void VulkanRenderer::SetupRenderer() {
 	ShaderCache::Get()->AddShader(pbr, "PBR");
 
 	VulkanShader* deferred_light = new VulkanShader;
-	deferred_light->AddShaderFromFile("deferred.vert", SHADER_STAGE_VERTEX);
+	deferred_light->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
 	deferred_light->AddShaderFromFile("deferred_pbr.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(deferred_light, "Deferred");
 
 	VulkanShader* deferred_light_envmap = new VulkanShader;
-	deferred_light_envmap->AddShaderFromFile("deferred.vert", SHADER_STAGE_VERTEX);
+	deferred_light_envmap->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
 	deferred_light_envmap->AddShaderFromFile("deferred_pbr_envmap.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(deferred_light_envmap, "Deferred_envmap");
 
@@ -187,17 +187,7 @@ void VulkanRenderer::SetupRenderer() {
 		mEmptyOneTexture);
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
-	_postprocessing = new VulkanPostprocessing;
-	_postprocessing->Create();
-	_postprocessing->SetInputTextures(
-		_main_render_target->GetDeferredOutput(),
-		_main_render_target->GetGBufferDepthAttachment(),
-		_main_render_target->GetGBufferNormalsAttachment(),
-		_main_render_target->GetGBufferPositionsAttachment(),
-		_ui_renderer->GetOutputTexture());
-	_postprocessing->ResizeOutput(GetOutputSizes());
-
-	mOutput = _postprocessing->GetOutputTexture();
+	mOutput = _main_render_target->GetDeferredOutput();
 
 	_shadowmapper = new VulkanShadowmapping(
 		&gbuffer->GetVertexDescriptorSets(),
@@ -289,7 +279,6 @@ void VulkanRenderer::DestroyRenderer() {
 
 	SAFE_RELEASE(_ibl_map)
 	SAFE_RELEASE(_ui_renderer)
-	SAFE_RELEASE(_postprocessing)
 }
 
 void VulkanRenderer::StoreWorldObjects(Camera* cam) {
@@ -418,7 +407,6 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 	_ui_renderer->RecordCommandBuffer(_render_targets_cmdbuf);
 	_render_targets_cmdbuf->End();
 
-	_postprocessing->FillCommandBuffer();
 	_ibl_map->RecordCmdBufs();
 }
 
@@ -488,9 +476,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 
 	VulkanGraphicsSubmit(*_render_targets_cmdbuf, *mBeginSemaphore, *_ibl_map->GetBeginSemaphore());
 
-	_ibl_map->Execute(_postprocessing->GetBeginSemaphore());
-
-	_postprocessing->Execute(mEndSemaphore);
+	_ibl_map->Execute(mEndSemaphore);
 }
 
 void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
@@ -505,15 +491,8 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 
 	_ui_renderer->ResizeOutput(width, height);
 
-	_postprocessing->SetInputTextures(
-		_main_render_target->GetDeferredOutput(),
-		_main_render_target->GetGBufferDepthAttachment(),
-		_main_render_target->GetGBufferNormalsAttachment(),
-		_main_render_target->GetGBufferPositionsAttachment(),
-		_ui_renderer->GetOutputTexture());
-	_postprocessing->ResizeOutput(GetOutputSizes());
 
-	mOutput = _postprocessing->GetOutputTexture();
+	mOutput = _main_render_target->GetGammaCorrectedOutput();
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {

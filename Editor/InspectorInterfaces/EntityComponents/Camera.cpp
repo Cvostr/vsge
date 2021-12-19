@@ -24,4 +24,14 @@ void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	cac->SetViewMask(current_view_mask);
 
 	DrawResourcePicker(std::string("Render Target"), cac->GetTargetReference(), true);
+
+	PostEffectsParams& params = cac->GetPostEffectParams();
+
+	bool bloom_enabled = params._bloom_enabled;
+	ImGui::Checkbox("Bloom", &bloom_enabled);
+	params._bloom_enabled = bloom_enabled;
+
+	bool ssao_enabled = params._ssao_enabled;
+	ImGui::Checkbox("SSAO", &ssao_enabled);
+	params._ssao_enabled = ssao_enabled;
 }

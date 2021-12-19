@@ -23,10 +23,6 @@ void VulkanBloom::Create() {
 
 	CreateBright();
 	CreateBlur();
-
-	_output = new VulkanTexture;
-	_output->SetStorage(true);
-	_output->Create(1280, 720, FORMAT_RGBA16F, 1, 1);
 }
 
 void VulkanBloom::CreateBright() {
@@ -174,7 +170,6 @@ void VulkanBloom::ResizeOutput(const Vec2i& new_size) {
 	_output_size = new_size;
 	_bright_texture->Resize(new_size.x, new_size.y);
 	_temp_texture->Resize(new_size.x, new_size.y);
-	_output->Resize(new_size.x, new_size.y);
 
 	_bright_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_bright_texture,
 		nullptr, VK_IMAGE_LAYOUT_GENERAL);

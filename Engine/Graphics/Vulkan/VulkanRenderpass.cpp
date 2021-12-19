@@ -163,6 +163,11 @@ void VulkanRenderPass::PushDepthAttachment(VkFormat format){
     mHasDepthAttachment = true;
 }
 
+void VulkanRenderPass::SetAttachmentClearOnLoad(uint32 attachment, bool clear) {
+    mAttachmentDescriptions[attachment].loadOp =
+        (clear) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+}
+
 void VulkanRenderPass::SetClearSize(uint32 width, uint32 height) {
     ClearExtent.width = width;
     ClearExtent.height = height;

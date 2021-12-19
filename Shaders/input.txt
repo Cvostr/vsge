@@ -13,7 +13,7 @@ shader terrain/terrain.frag
 shader particle/particle.vert
 shader particle/particle.frag
 
-shader DeferredLight/deferred.vert
+shader postprocess/postprocess.vert
 shader DeferredLight/deferred_pbr.frag
 shader DeferredLight/deferred_pbr_envmap.frag
 
@@ -35,10 +35,8 @@ shader ui/ui.vert
 shader ui/ui.frag
 shader ui/ui_add.comp
 
-shader postprocess/copy.vert
-shader postprocess/copy.frag
-
-shader postprocess/gamma_correction/gamma_correction.comp
+shader postprocess/gamma_correction/gamma_correction.frag
+#shader postprocess/gamma_correction/gamma_correction.comp
 
 shader postprocess/hdr_bloom/bloom_bright.comp
 shader postprocess/hdr_bloom/bloom_blur_v.comp

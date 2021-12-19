@@ -67,6 +67,7 @@ namespace VSGE {
 		/// <param name="framebuffer"></param>
 		void CmdBegin(VulkanCommandBuffer& cmdbuf, VulkanFramebuffer& framebuffer);
 
+		void SetAttachmentClearOnLoad(uint32 attachment, bool clear = true);
 		void SetClearSize(uint32 width, uint32 height);
 		void SetClearColor(uint32 attachment_id, const Color& color);
 

@@ -17,6 +17,25 @@ namespace VSGE {
 		CAM_ORIENTATION_Y_UP
 	};
 
+	class PostEffectsParams {
+	public:
+		bool _bloom_enabled;
+		uint32 _bloom_iterations;
+
+		bool _ssao_enabled;
+		float _ssao_radius;
+		uint32 _ssao_samples;
+
+		PostEffectsParams() {
+			_bloom_enabled = false;
+			_bloom_iterations = 3;
+			
+			_ssao_enabled = false;
+			_ssao_radius = 0.5f;
+			_ssao_samples = 32;
+		}
+	};
+
 	class Camera : public IEntityComponent {
 	private:
 		DefaultOrientation _defaultOrientation;
@@ -37,6 +56,8 @@ namespace VSGE {
 		Frustum _frustum;
 
 		ResourceReference _target_texture;
+
+		PostEffectsParams _post_effects_params;
 	public:
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_CAMERA, "Camera")
@@ -44,7 +65,7 @@ namespace VSGE {
 		Camera();
 
 		ResourceReference& GetTargetReference();
-
+		//Get render target texture resource pointer
 		TextureResource* GetTargetResource();
 		/// <summary>
 		/// Recalculate projection, view matrices and update frustum
@@ -181,6 +202,8 @@ namespace VSGE {
 		/// <param name=""></param>
 		/// <returns></returns>
 		Mat4 ComputeOrthoProjectionMatrix(float near, float far);
+
+		PostEffectsParams& GetPostEffectParams();
 
 		void OnPreRender();
 

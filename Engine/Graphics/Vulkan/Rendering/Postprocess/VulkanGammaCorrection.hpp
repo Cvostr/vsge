@@ -1,20 +1,24 @@
 #pragma once
 
 #include "../../../PostprocessEffect.hpp"
-#include "../../VulkanComputePipeline.hpp"
+#include "../../VulkanPipeline.hpp"
 #include "../../VulkanDescriptors.hpp"
+#include "../../VulkanFramebuffer.hpp"
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Math/Vec2.hpp>
 
 namespace VSGE {
+
 	class VulkanGammaCorrection : public PostprocessEffect {
 	private:
-		VulkanShader* _shader;
-		
-		VulkanDescriptorPool* _descr_pool;
+		VulkanRenderPass* _rp;
+		VulkanFramebuffer* _fb;
+
+		VulkanDescriptorPool* _pool;
 		VulkanDescriptorSet* _descr_set;
-		VulkanPipelineLayout* _pp_layout;
-		VulkanComputePipeline* _pipeline;
+
+		void CreateConstants();
+		void CreateDescriptors();
 	public:
 
 		VulkanGammaCorrection();
@@ -25,5 +29,6 @@ namespace VSGE {
 		void SetInputTexture(Texture* input);
 		void FillCommandBuffer(VulkanCommandBuffer* cmdbuf);
 		void ResizeOutput(const Vec2i& new_size);
+		VulkanTexture* GetOutputTexture();
 	};
 }
