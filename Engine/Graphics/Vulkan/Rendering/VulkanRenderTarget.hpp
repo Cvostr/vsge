@@ -3,6 +3,7 @@
 #include "VulkanGBufferRenderer.hpp"
 #include "VulkanDeferredLight.hpp"
 #include "Postprocess/VulkanGammaCorrection.hpp"
+#include "Postprocess/VulkanBloom.hpp"
 #include "PBR/VulkanIBL.hpp"
 
 namespace VSGE {
@@ -12,6 +13,7 @@ namespace VSGE {
 		VulkanDeferredLight* _deferred_renderer;
 
 		VulkanGammaCorrection* _gamma_correction;
+		VulkanBloom* _bloom;
 
 		VulkanTexture* _output;
 

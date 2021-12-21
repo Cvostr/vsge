@@ -30,8 +30,6 @@ void VulkanGammaCorrection::CreateConstants() {
 	if (!gamma_pipeline) {
 		VulkanRenderPass* gamma_rp = new VulkanRenderPass;
 		gamma_rp->PushColorAttachment(FORMAT_RGBA);
-		gamma_rp->SetAttachmentClearOnLoad(0, false);
-		gamma_rp->SetClearSize(10, 10);
 		gamma_rp->Create();
 
 		VertexLayout _vertexLayout;
@@ -41,8 +39,10 @@ void VulkanGammaCorrection::CreateConstants() {
 
 		gamma_pipeline = new VulkanPipeline;
 		gamma_pipeline->SetDynamicCullMode(false);
-		gamma_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+		gamma_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 		gamma_pipeline->Create(gamma_shader, gamma_rp, _vertexLayout, gamma_pl_layout);
+	
+		gamma_rp->Destroy();
 	}
 }
 
@@ -51,8 +51,11 @@ void VulkanGammaCorrection::CreateDescriptors() {
 
 	_descr_set = new VulkanDescriptorSet(_pool);
 	_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_pool->Create();
 	_descr_set->Create();
+
+	SetInputBloomTexture(nullptr);
 }
 
 void VulkanGammaCorrection::Create() {
@@ -72,10 +75,16 @@ void VulkanGammaCorrection::Create() {
 void VulkanGammaCorrection::Destroy() {
 	_fb->Destroy();
 }
-void VulkanGammaCorrection::SetInputTexture(Texture * input) {
+void VulkanGammaCorrection::SetInputTexture(VulkanTexture * input) {
 	_input = input;
 
-	_descr_set->WriteDescriptorImage(0, (VulkanTexture*)input,
+	_descr_set->WriteDescriptorImage(0, input,
+		VulkanRenderer::Get()->GetAttachmentSampler());
+}
+void VulkanGammaCorrection::SetInputBloomTexture(VulkanTexture* input) {
+	if (!input)
+		input = VulkanRenderer::Get()->GetBlackTexture();
+	_descr_set->WriteDescriptorImage(1, input,
 		VulkanRenderer::Get()->GetAttachmentSampler());
 }
 VulkanTexture* VulkanGammaCorrection::GetOutputTexture() {
@@ -84,7 +93,6 @@ VulkanTexture* VulkanGammaCorrection::GetOutputTexture() {
 void VulkanGammaCorrection::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	_rp->CmdBegin(*cmdbuf, *_fb);
 	cmdbuf->BindPipeline(*gamma_pipeline);
-	cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
 	cmdbuf->SetViewport(0, 0, (float)_output_size.x, (float)_output_size.y);
 	cmdbuf->BindDescriptorSets(*gamma_pl_layout, 0, 1, _descr_set, 0);
 	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);

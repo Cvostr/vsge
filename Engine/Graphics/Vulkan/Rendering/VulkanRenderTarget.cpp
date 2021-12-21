@@ -5,7 +5,8 @@ using namespace VSGE;
 
 VulkanRenderTarget::VulkanRenderTarget():
 	_output(nullptr),
-	_shadowmapper(nullptr)
+	_shadowmapper(nullptr),
+	_bloom(nullptr)
 {
 	Create();
 }
@@ -31,10 +32,14 @@ void VulkanRenderTarget::Create() {
 	_deferred_renderer->UnsetIBL();
 
 	_gamma_correction = new VulkanGammaCorrection();
+
+	_bloom = new VulkanBloom;
+	_bloom->Create();
 }
 void VulkanRenderTarget::Destroy() {
 	SAFE_RELEASE(_deferred_renderer);
 	SAFE_RELEASE(_gbuffer_renderer);
+	SAFE_RELEASE(_gamma_correction);
 }
 void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) {
 	_gbuffer_renderer->SetCameraIndex(camera_index);
@@ -70,6 +75,11 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 
 	_gamma_correction->SetInputTexture(_deferred_renderer->GetOutputTexture());
 	_gamma_correction->ResizeOutput(Vec2i(width, height));
+
+	_bloom->SetInputTextureHDR(_deferred_renderer->GetOutputTexture());
+	_bloom->ResizeOutput(Vec2i(width, height));
+
+	_gamma_correction->SetInputBloomTexture(_bloom->GetBlurredBloomTextureHDR());
 }
 void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
 	_output = output_texture;
@@ -106,7 +116,10 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 	}
 	_deferred_renderer->RecordCmdbuf(cmdbuffer);
 	
+	_bloom->RecordCommandBuffer(cmdbuffer);
+
 	_gamma_correction->FillCommandBuffer(cmdbuffer);
+	
 
 	if (_output) {
 		if (_output->IsCreated()) {

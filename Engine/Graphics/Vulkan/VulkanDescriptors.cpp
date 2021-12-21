@@ -196,7 +196,7 @@ void VulkanDescriptorSet::WriteDescriptorImages(
     vkUpdateDescriptorSets(device->getVkDevice(), 1, &descriptorWrite, 0, nullptr);
 }
 
-bool VulkanDescriptorSet::Create() {
+bool VulkanDescriptorSet::CreateLayout() {
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();
 
@@ -209,6 +209,15 @@ bool VulkanDescriptorSet::Create() {
     if (vkCreateDescriptorSetLayout(device->getVkDevice(), &cr_info, nullptr, &_layout) != VK_SUCCESS) {
         return false;
     }
+    return true;
+}
+
+bool VulkanDescriptorSet::Create() {
+    VulkanRAPI* vulkan = VulkanRAPI::Get();
+    VulkanDevice* device = vulkan->GetDevice();
+
+    if (!CreateLayout())
+        return false;
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

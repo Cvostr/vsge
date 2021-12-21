@@ -80,7 +80,6 @@ void VkMaterialsThumbnails::Create() {
     _gbuffer->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _light = new VulkanDeferredLight;
-    _light->SetOutputFormat8();
     _light->CreateFramebuffer();
     _light->CreateDescriptorSet();
     _light->CreatePipeline();
@@ -101,11 +100,17 @@ void VkMaterialsThumbnails::Create() {
 
     _sampler = new VulkanSampler();
     _sampler->Create();
+
+    _gamma_correction = new VulkanGammaCorrection();
+    _gamma_correction->ResizeOutput(Vec2i(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE));
+    VulkanTexture* src = (VulkanTexture*)_light->GetFramebuffer()->GetColorAttachments()[0];
+    _gamma_correction->SetInputTexture(src);
 }
 
 void VkMaterialsThumbnails::Destroy() {
     SAFE_RELEASE(_light)
     SAFE_RELEASE(_gbuffer)
+    SAFE_RELEASE(_gamma_correction)
 }
 
 void VkMaterialsThumbnails::RecreateAll() {
@@ -154,8 +159,12 @@ VkMaterialThumbnail* VkMaterialsThumbnails::GetPlace(const std::string& name) {
 }
 
 void VkMaterialsThumbnails::RecordCmdBuffer() {
-
     _cmdbuf->Begin();
+    RecordCmdBuffer(_cmdbuf);
+    _cmdbuf->End();    
+}
+
+void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
     if (_queued.size() > 0) {
         MaterialComponent* material_component = _thumb_entity->GetComponent<MaterialComponent>();
         material_component->SetMaterialName(_queued[0]);
@@ -167,10 +176,11 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
 
         _gbuffer->RecordCmdBuffer(_cmdbuf);
         _light->RecordCmdbuf(_cmdbuf);
+        _gamma_correction->FillCommandBuffer(_cmdbuf);
 
         VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
         thumb->material_name = _queued[0];
-        VulkanTexture* src = (VulkanTexture*)_light->GetFramebuffer()->GetColorAttachments()[0];
+        VulkanTexture* src = _gamma_correction->GetOutputTexture();
         VulkanTexture* dst = thumb->texture;
 
         src->CmdCopyTexture(_cmdbuf, dst, 0, 1);
@@ -181,8 +191,6 @@ void VkMaterialsThumbnails::RecordCmdBuffer() {
         }
         _queued.pop_back();
     }
-    _cmdbuf->End();
-    
 }
 void VkMaterialsThumbnails::CmdExecute(VulkanSemaphore* end) {
     VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end);

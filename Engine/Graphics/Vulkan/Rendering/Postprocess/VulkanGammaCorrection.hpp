@@ -26,7 +26,8 @@ namespace VSGE {
 
 		void Create();
 		void Destroy();
-		void SetInputTexture(Texture* input);
+		void SetInputTexture(VulkanTexture* input);
+		void SetInputBloomTexture(VulkanTexture* input);
 		void FillCommandBuffer(VulkanCommandBuffer* cmdbuf);
 		void ResizeOutput(const Vec2i& new_size);
 		VulkanTexture* GetOutputTexture();

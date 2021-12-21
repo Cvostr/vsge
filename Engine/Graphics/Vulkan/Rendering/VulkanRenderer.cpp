@@ -187,8 +187,6 @@ void VulkanRenderer::SetupRenderer() {
 		mEmptyOneTexture);
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
-	mOutput = _main_render_target->GetDeferredOutput();
-
 	_shadowmapper = new VulkanShadowmapping(
 		&gbuffer->GetVertexDescriptorSets(),
 		gbuffer->GetAnimationsDescriptorSet(),
@@ -490,7 +488,6 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_main_render_target->SetShadowmapper(_shadowmapper);
 
 	_ui_renderer->ResizeOutput(width, height);
-
 
 	mOutput = _main_render_target->GetGammaCorrectedOutput();
 }

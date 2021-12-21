@@ -1,185 +1,184 @@
 #include "VulkanBloom.hpp"
-#include "../VulkanRenderer.hpp"
+#include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 
 using namespace VSGE;
 
-VulkanBloom::VulkanBloom() {
-	_output_size = Vec2i(1280, 720);
+VulkanBloomBase* base = nullptr;
+
+VulkanBloomBase::VulkanBloomBase() {
+	Create();
 }
-VulkanBloom::~VulkanBloom() {
+VulkanBloomBase::~VulkanBloomBase() {
 	Destroy();
 }
-
-void VulkanBloom::Create() {
-	
-
-	
-
-	_descr_pool = new VulkanDescriptorPool;
-	_descr_pool->SetDescriptorSetsCount(3);
-	_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2);
-	_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 6);
-	_descr_pool->Create();
-
-	CreateBright();
-	CreateBlur();
-}
-
-void VulkanBloom::CreateBright() {
+void VulkanBloomBase::Create(){
 	_bloom_bright_shader = new VulkanShader;
-	_bloom_bright_shader->AddShaderFromFile("bloom_bright.comp", SHADER_STAGE_COMPUTE);
+	_bloom_bright_shader->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
+	_bloom_bright_shader->AddShaderFromFile("bloom_bright.frag", SHADER_STAGE_FRAGMENT);
 
-	_bright_descr_set = new VulkanDescriptorSet;
-	_bright_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_COMPUTE_BIT);
-	_bright_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT);
-	_bright_descr_set->SetDescriptorPool(_descr_pool);
-	_bright_descr_set->Create();
-
-	_bright_pp_layout = new VulkanPipelineLayout;
-	_bright_pp_layout->PushDescriptorSet(_bright_descr_set);
-	_bright_pp_layout->Create();
-
-	_bright_pipeline = new VulkanComputePipeline;
-	_bright_pipeline->Create(_bloom_bright_shader, _bright_pp_layout);
-
-	_bright_texture = new VulkanTexture;
-	_bright_texture->SetStorage(true);
-	_bright_texture->Create(1280, 720, FORMAT_RGBA16F, 1, 1);
-}
-void VulkanBloom::CreateBlur() {
 	_bloom_blur_v_shader = new VulkanShader;
-	_bloom_blur_v_shader->AddShaderFromFile("bloom_blur_v.comp", SHADER_STAGE_COMPUTE);
+	_bloom_blur_v_shader->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
+	_bloom_blur_v_shader->AddShaderFromFile("bloom_blur_v.frag", SHADER_STAGE_FRAGMENT);
 
 	_bloom_blur_h_shader = new VulkanShader;
-	_bloom_blur_h_shader->AddShaderFromFile("bloom_blur_h.comp", SHADER_STAGE_COMPUTE);
+	_bloom_blur_h_shader->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
+	_bloom_blur_h_shader->AddShaderFromFile("bloom_blur_h.frag", SHADER_STAGE_FRAGMENT);
 
-	_blur_1_descr_set = new VulkanDescriptorSet;
-	_blur_1_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, VK_SHADER_STAGE_COMPUTE_BIT);
-	_blur_1_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT);
-	_blur_1_descr_set->SetDescriptorPool(_descr_pool);
-	_blur_1_descr_set->Create();
 
-	_blur_2_descr_set = new VulkanDescriptorSet;
-	_blur_2_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, VK_SHADER_STAGE_COMPUTE_BIT);
-	_blur_2_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT);
-	_blur_2_descr_set->SetDescriptorPool(_descr_pool);
-	_blur_2_descr_set->Create();
+	VulkanDescriptorSet* base_set = new VulkanDescriptorSet;
+	base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	base_set->CreateLayout();
 
-	_blur_pp_layout = new VulkanPipelineLayout;
-	_blur_pp_layout->PushDescriptorSet(_blur_1_descr_set);
-	_blur_pp_layout->Create();
+	_bloom_bright_playout = new VulkanPipelineLayout;
+	_bloom_bright_playout->PushDescriptorSet(base_set);
+	_bloom_bright_playout->Create();
 
-	_blur_v_pipeline = new VulkanComputePipeline;
-	_blur_v_pipeline->Create(_bloom_blur_v_shader, _blur_pp_layout);
-	_blur_h_pipeline = new VulkanComputePipeline;
-	_blur_h_pipeline->Create(_bloom_blur_h_shader, _blur_pp_layout);
+	VertexLayout _vertexLayout;
+	_vertexLayout.AddBinding(sizeof(Vertex));
+	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 
-	_temp_texture = new VulkanTexture;
-	_temp_texture->SetStorage(true);
-	_temp_texture->Create(1280, 720, FORMAT_RGBA16F);
+	VulkanRenderPass* bright_rp = CreateBrightRenderpass();
 
-	_blur_1_descr_set->WriteDescriptorImage(0, _bright_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
-	_blur_1_descr_set->WriteDescriptorImage(1, _temp_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
-	_blur_2_descr_set->WriteDescriptorImage(0, _temp_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
-	_blur_2_descr_set->WriteDescriptorImage(1, _bright_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
+	_bloom_bright_pipeline = new VulkanPipeline;
+	_bloom_bright_pipeline->SetDynamicCullMode(false);
+	_bloom_bright_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+	_bloom_bright_pipeline->Create(_bloom_bright_shader, bright_rp, _vertexLayout, _bloom_bright_playout);
+	
+	_bloom_blur_v_pipeline = new VulkanPipeline;
+	_bloom_blur_v_pipeline->SetDynamicCullMode(false);
+	_bloom_blur_v_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+	_bloom_blur_v_pipeline->Create(_bloom_blur_v_shader, bright_rp, _vertexLayout, _bloom_bright_playout);
+
+	_bloom_blur_h_pipeline = new VulkanPipeline;
+	_bloom_blur_h_pipeline->SetDynamicCullMode(false);
+	_bloom_blur_h_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+	_bloom_blur_h_pipeline->Create(_bloom_blur_h_shader, bright_rp, _vertexLayout, _bloom_bright_playout);
+
+	delete bright_rp;
 }
 
+VulkanRenderPass* VulkanBloomBase::CreateBrightRenderpass() {
+	VulkanRenderPass* bright_rp = new VulkanRenderPass;
+	bright_rp->PushColorAttachment(FORMAT_RGBA16F);
+	bright_rp->Create();
+	return bright_rp;
+}
+
+VulkanPipeline* VulkanBloomBase::GetBrightnessPipeline() {
+	return _bloom_bright_pipeline;
+}
+VulkanPipeline* VulkanBloomBase::GetBlurVPipeline() {
+	return _bloom_blur_v_pipeline;
+}
+VulkanPipeline* VulkanBloomBase::GetBlurHPipeline() {
+	return _bloom_blur_h_pipeline;
+}
+VulkanPipelineLayout* VulkanBloomBase::GetBrightnessPipelineLayout() {
+	return _bloom_bright_playout;
+}
+
+void VulkanBloomBase::Destroy() {
+	SAFE_RELEASE(_bloom_blur_h_pipeline);
+	SAFE_RELEASE(_bloom_blur_v_pipeline);
+	SAFE_RELEASE(_bloom_bright_pipeline);
+}
+
+
+VulkanBloom::VulkanBloom() {
+
+}
+VulkanBloom::~VulkanBloom() {
+
+}
+void VulkanBloom::Create() {
+	if(!base)
+		base = new VulkanBloomBase();
+
+	_descr_pool = new VulkanDescriptorPool;
+
+	_bright_descr_set = new VulkanDescriptorSet(_descr_pool);
+	_bright_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	
+	_blur_1_descr_set = new VulkanDescriptorSet(_descr_pool);
+	_blur_1_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	_blur_2_descr_set = new VulkanDescriptorSet(_descr_pool);
+	_blur_2_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	
+	_descr_pool->Create();
+	_bright_descr_set->Create();
+	_blur_1_descr_set->Create();
+	_blur_2_descr_set->Create();
+
+	_rpass = base->CreateBrightRenderpass();
+	_rpass->SetClearSize(1280, 720);
+
+	_fb_bright = new VulkanFramebuffer;
+	_fb_bright->SetSize(1280, 720);
+	_fb_bright->AddAttachment(FORMAT_RGBA16F);
+	_fb_bright->Create(_rpass);
+
+	_fb_1 = new VulkanFramebuffer;
+	_fb_1->SetSize(1280, 720);
+	_fb_1->AddAttachment(FORMAT_RGBA16F);
+	_fb_1->Create(_rpass);
+
+	_fb_2 = new VulkanFramebuffer;
+	_fb_2->SetSize(1280, 720);
+	_fb_2->AddAttachment(FORMAT_RGBA16F);
+	_fb_2->Create(_rpass);
+}
 void VulkanBloom::Destroy() {
 
 }
-
-void VulkanBloom::SetInputTexture(Texture* input) {
-	PostprocessEffect::SetInputTexture(input);
-
-	_bright_descr_set->WriteDescriptorImage(0, (VulkanTexture*)input, VulkanRenderer::Get()->GetAttachmentSampler());
-	_bright_descr_set->WriteDescriptorImage(1, _bright_texture, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+void VulkanBloom::SetInputTextureHDR(VulkanTexture* input) {
+	_input_texture = input;
+	_bright_descr_set->WriteDescriptorImage(0, input, 
+		VulkanRenderer::Get()->GetAttachmentSampler());
 }
-void VulkanBloom::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
-	VkImageMemoryBarrier pre_barrier_in = GetImageBarrier((VulkanTexture*)_input,
-		0, VK_ACCESS_SHADER_WRITE_BIT,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_barrier_in = GetImageBarrier((VulkanTexture*)_input, 
-		VK_ACCESS_SHADER_WRITE_BIT, 0, 
-		VK_IMAGE_LAYOUT_GENERAL,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	VkImageMemoryBarrier pre_barrier_bright = GetImageBarrier((VulkanTexture*)_bright_texture,
-		0, VK_ACCESS_SHADER_WRITE_BIT, 
-		VK_IMAGE_LAYOUT_UNDEFINED, 
-		VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_barrier_bright = GetImageBarrier((VulkanTexture*)_bright_texture,
-		VK_ACCESS_SHADER_WRITE_BIT, 0,
-		VK_IMAGE_LAYOUT_GENERAL, 
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	VkImageMemoryBarrier pre_barrier_temp = GetImageBarrier((VulkanTexture*)_temp_texture,
-		0, VK_ACCESS_SHADER_WRITE_BIT,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_barrier_temp = GetImageBarrier((VulkanTexture*)_temp_texture,
-		VK_ACCESS_SHADER_WRITE_BIT, 0,
-		VK_IMAGE_LAYOUT_GENERAL,
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 
-		VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { 
-			pre_barrier_in, 
-		post_barrier_bright,
-		pre_barrier_temp });
-	cmdbuf->BindComputePipeline(*_bright_pipeline);
-	cmdbuf->BindDescriptorSets(*_bright_pp_layout, 0, 1, _bright_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
-	cmdbuf->Dispatch(_output_size.x / 16 + 1, _output_size.y / 16 + 1, 1);
-
-	VulkanComputePipeline* pipelines[2] = { _blur_v_pipeline, _blur_h_pipeline };
-	for (int i = 0; i < 2; i++) {
-		cmdbuf->BindComputePipeline(*(pipelines[i]));
-		int prev = 2;
-		for (int j = 0; j < 3; j++) {
-			VulkanDescriptorSet* set = _blur_1_descr_set;
-			if (prev == 1) {
-				prev = 2;
-				set = _blur_2_descr_set;
-			}
-			else
-				prev = 1;
-
-			cmdbuf->BindDescriptorSets(*_blur_pp_layout, 0, 1, set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
-			cmdbuf->Dispatch(_output_size.x / 8 + 1, _output_size.y / 8 + 1, 1);
-		}
-	}
-
-	cmdbuf->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { 
-		post_barrier_bright, 
-		post_barrier_in,
-		post_barrier_temp 
-		});
-
+VulkanTexture* VulkanBloom::GetBlurredBloomTextureHDR() {
+	return (VulkanTexture*)_fb_2->GetColorAttachments()[0];
 }
+void VulkanBloom::RecordCommandBuffer(VulkanCommandBuffer* cmdbuf) {
+	_rpass->CmdBegin(*cmdbuf, *_fb_bright);
+	cmdbuf->BindPipeline(*base->GetBrightnessPipeline());
+	cmdbuf->SetViewport(0, 0, (float)_output_size.x, (float)_output_size.y);
+	cmdbuf->BindDescriptorSets(*base->GetBrightnessPipelineLayout(), 0, 1,
+		_bright_descr_set);
+	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+	cmdbuf->DrawIndexed(6);
+	cmdbuf->EndRenderPass();
 
+	_rpass->CmdBegin(*cmdbuf, *_fb_1);
+	cmdbuf->BindPipeline(*base->GetBlurVPipeline());
+	cmdbuf->BindDescriptorSets(*base->GetBrightnessPipelineLayout(), 0, 1,
+		_blur_1_descr_set);
+	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+	cmdbuf->DrawIndexed(6);
+	cmdbuf->EndRenderPass();
+
+	_rpass->CmdBegin(*cmdbuf, *_fb_2);
+	cmdbuf->BindPipeline(*base->GetBlurHPipeline());
+	cmdbuf->BindDescriptorSets(*base->GetBrightnessPipelineLayout(), 0, 1,
+		_blur_2_descr_set);
+	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+	cmdbuf->DrawIndexed(6);
+	cmdbuf->EndRenderPass();
+}
 void VulkanBloom::ResizeOutput(const Vec2i& new_size) {
-	if (_output_size == new_size)
-		return;
-
 	_output_size = new_size;
-	_bright_texture->Resize(new_size.x, new_size.y);
-	_temp_texture->Resize(new_size.x, new_size.y);
+	_rpass->SetClearSize(new_size.x, new_size.y);
 
-	_bright_descr_set->WriteDescriptorImage(1, (VulkanTexture*)_bright_texture,
-		nullptr, VK_IMAGE_LAYOUT_GENERAL);
+	_fb_bright->Resize(new_size.x, new_size.y);
+	_fb_1->Resize(new_size.x, new_size.y);
+	_fb_2->Resize(new_size.x, new_size.y);
 
-	_blur_1_descr_set->WriteDescriptorImage(0, _bright_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
-	_blur_1_descr_set->WriteDescriptorImage(1, _temp_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
-	_blur_2_descr_set->WriteDescriptorImage(0, _temp_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
-	_blur_2_descr_set->WriteDescriptorImage(1, _bright_texture, nullptr,
-		VK_IMAGE_LAYOUT_GENERAL);
+	_blur_1_descr_set->WriteDescriptorImage(0,
+		(VulkanTexture*)_fb_bright->GetColorAttachments()[0],
+		VulkanRenderer::Get()->GetAttachmentSampler());
+
+	_blur_2_descr_set->WriteDescriptorImage(0,
+		(VulkanTexture*)_fb_1->GetColorAttachments()[0],
+		VulkanRenderer::Get()->GetAttachmentSampler());
 }

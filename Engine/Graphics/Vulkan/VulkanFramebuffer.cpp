@@ -7,8 +7,7 @@ using namespace VSGE;
 VulkanFramebuffer::VulkanFramebuffer() :
 	_framebuffer(VK_NULL_HANDLE),
 	_renderpass(nullptr),
-	_layers(1),
-	_storage(false)
+	_layers(1)
 {}
 
 
@@ -27,8 +26,6 @@ void VulkanFramebuffer::AddAttachment(TextureFormat Format, uint32 layers, bool 
 	VulkanTexture* new_attachment = new VulkanTexture;
 	new_attachment->SetCubemap(cubemap);
 	new_attachment->SetRenderTargetFlag(true);
-	//if(_storage)
-	//	new_attachment->SetStorage(true);
 	new_attachment->Create(_width, _height, Format, layers, 1);
 	
 	AddAttachment(new_attachment);
@@ -89,9 +86,6 @@ void VulkanFramebuffer::SetLayersCount(uint32 layers) {
 
 uint32 VulkanFramebuffer::GetLayersCount() {
 	return _layers;
-}
-void VulkanFramebuffer::SetStorage(bool storage) {
-	_storage = storage;
 }
 bool VulkanFramebuffer::Create(VulkanRenderPass* renderpass) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();

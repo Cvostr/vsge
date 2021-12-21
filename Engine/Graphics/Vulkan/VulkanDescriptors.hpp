@@ -112,6 +112,7 @@ namespace VSGE {
 			uint32 first_texture = 0);
 
 		bool Create();
+		bool CreateLayout();
 		void Destroy();
 
 	};

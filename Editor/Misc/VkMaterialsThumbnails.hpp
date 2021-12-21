@@ -2,6 +2,7 @@
 
 #include <Graphics/Vulkan/Rendering/VulkanGBufferRenderer.hpp>
 #include <Graphics/Vulkan/Rendering/VulkanDeferredLight.hpp>
+#include <Graphics/Vulkan/Rendering/Postprocess/VulkanGammaCorrection.hpp>
 #include <Graphics/LightsBuffer.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
@@ -44,6 +45,8 @@ private:
 	VSGE::VulkanCommandBuffer* _cmdbuf;
 	VSGE::VulkanSemaphore* _begin_semaphore;
 
+	VSGE::VulkanGammaCorrection* _gamma_correction;
+
 	std::vector<VkMaterialThumbnail*> _thumbnails;
 	std::vector<std::string> _queued;
 
@@ -67,6 +70,7 @@ public:
 	ImTextureID GetMaterialThumbnailTexture(const std::string& material_name);
 
 	void RecordCmdBuffer();
+	void RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf);
 	void CmdExecute(VSGE::VulkanSemaphore* end);
 	VSGE::VulkanSemaphore* GetBeginSemaphore();
 };

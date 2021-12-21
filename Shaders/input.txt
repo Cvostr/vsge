@@ -36,13 +36,13 @@ shader ui/ui.frag
 shader ui/ui_add.comp
 
 shader postprocess/gamma_correction/gamma_correction.frag
-#shader postprocess/gamma_correction/gamma_correction.comp
+shader postprocess/copy.frag
 
-shader postprocess/hdr_bloom/bloom_bright.comp
-shader postprocess/hdr_bloom/bloom_blur_v.comp
-shader postprocess/hdr_bloom/bloom_blur_h.comp
+shader postprocess/hdr_bloom/bloom_bright.frag
+shader postprocess/hdr_bloom/bloom_blur_v.frag
+shader postprocess/hdr_bloom/bloom_blur_h.frag
 
-shader postprocess/ssao/ssao.comp
+shader postprocess/ssao/ssao.frag
 shader postprocess/ssao/ssao_blur.comp
 
 shader editor/mark_gizmo_object.frag

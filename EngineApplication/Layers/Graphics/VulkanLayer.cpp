@@ -20,7 +20,7 @@ void VulkanLayer::OnAttach() {
     _presentBegin->Create();
 
     _copy_shader = new VulkanShader;
-    _copy_shader->AddShaderFromFile("copy.vert", SHADER_STAGE_VERTEX);
+    _copy_shader->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
     _copy_shader->AddShaderFromFile("copy.frag", SHADER_STAGE_FRAGMENT);
 
     _presenter = new VulkanPresenter;
@@ -48,7 +48,10 @@ void VulkanLayer::OnAttach() {
     output_pipeline->SetDepthTest(false);
     output_pipeline->Create(_copy_shader, _presenter->GetRenderPass(), _vertexLayout, _output_pipeline_layout);
 
+    VulkanSwapChain* swc = vk->GetSwapChain();
+    VkExtent2D extent = swc->GetExtent();
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+    renderer->ResizeOutput(extent.width, extent.height);
 
     _set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetOutputTexture(), renderer->GetAttachmentSampler());
 
@@ -93,7 +96,6 @@ void VulkanLayer::RecordCmdbuf(uint32 index) {
     VulkanSwapChain* swc = vk->GetSwapChain();
     VkExtent2D extent = swc->GetExtent();
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
-    VulkanTexture* output = (VulkanTexture*)renderer->GetOutputTexture();
 
     VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
