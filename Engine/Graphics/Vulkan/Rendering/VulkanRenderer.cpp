@@ -191,9 +191,7 @@ void VulkanRenderer::SetupRenderer() {
 		&gbuffer->GetVertexDescriptorSets(),
 		gbuffer->GetAnimationsDescriptorSet(),
 		_cameras_buffer->GetCamerasBuffer(),
-		mSpriteMesh,
-		gbuffer->GetPositionAttachment(),
-		mAttachmentSampler);
+		gbuffer->GetPositionAttachment());
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
 	_shadowmapper->SetTerrainsToRender(&_terrains);
 
@@ -412,7 +410,6 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	//TEMPORARY
 	//if(mScene)
 	//	mScene->UpdateSceneTree();
-	_shadowmapper->SetScene(mScene);
 	_ibl_map->SetScene(mScene);
 	//---------------------
 	CreateRenderList();
@@ -482,10 +479,6 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputHeight = height;
 
 	_main_render_target->ResizeOutput(width, height);
-	
-	_shadowmapper->ResizeOutput(width, height);
-	_shadowmapper->SetGbufferPositionsAttachment(_main_render_target->GetGBufferPositionsAttachment());
-	_main_render_target->SetShadowmapper(_shadowmapper);
 
 	_ui_renderer->ResizeOutput(width, height);
 

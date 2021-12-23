@@ -69,10 +69,18 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	_width = width;
 	_height = height;
 
+	//resize gbuffer and deferred buffer
 	_gbuffer_renderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
+	//update shadowmapper (if exists)
+	if (_shadowmapper) {
+		_shadowmapper->ResizeOutput(width, height);
+		_shadowmapper->SetGbufferPositionsAttachment(GetGBufferPositionsAttachment());
+		_deferred_renderer->SetShadowmapper(_shadowmapper);
+	}
 
+	//resize posteffects
 	_gamma_correction->SetInputTexture(_deferred_renderer->GetOutputTexture());
 	_gamma_correction->ResizeOutput(Vec2i(width, height));
 

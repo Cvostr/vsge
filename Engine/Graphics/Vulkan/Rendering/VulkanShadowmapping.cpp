@@ -14,21 +14,18 @@ VulkanShadowmapping::VulkanShadowmapping(
 	std::vector<VulkanDescriptorSet*>* vertexDescrSets,
 	VulkanDescriptorSet* animsDescrSet,
 	VulkanBuffer* cam_buffer,
-	VulkanMesh* screenPlane,
-	VulkanTexture* pos,
-	VulkanSampler* gbuffer_sampler)
-{
+	VulkanTexture* pos
+){
 	_added_casters = 0;
 	this->_vertexDescrSets = vertexDescrSets;
 	this->animsDescrSet = animsDescrSet;
 	_gbuffer_pos = pos;
-	_gbuffer_sampler = gbuffer_sampler;
-	_screenPlane = screenPlane;
 
 	_outputWidth = 1280;
 	_outputHeight = 720;
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
+	VulkanRenderer* renderer = VulkanRenderer::Get();
 
 	_shadowmapRenderPass = new VulkanRenderPass;
 	_shadowmapRenderPass->SetClearSize(MAP_SIZE, MAP_SIZE);
@@ -89,7 +86,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowrenderer_descrSet->Create();
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
-	_shadowrenderer_descrSet->WriteDescriptorImage(1, _gbuffer_pos, _gbuffer_sampler);
+	_shadowrenderer_descrSet->WriteDescriptorImage(1, _gbuffer_pos, renderer->GetAttachmentSampler());
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
@@ -152,6 +149,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowprocess_layout->Create();
 
 	_shadowprocess_pipeline = new VulkanPipeline;
+	_shadowprocess_pipeline->SetDynamicCullMode(false);
+	_shadowprocess_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowprocess_pipeline->Create(_shadowprocess_shader, _shadowprocessRenderPass, _shadowprocess_vertex_layout, _shadowprocess_layout);
 
 	_shadowmap_sampler = new VulkanSampler;
@@ -170,12 +169,21 @@ VulkanShadowmapping::VulkanShadowmapping(
 	}
 }
 VulkanShadowmapping::~VulkanShadowmapping() {
-	SAFE_RELEASE(_shadowcasters_buffer)
-	SAFE_RELEASE(_shadowprocess_buffer)
+	SAFE_RELEASE(_shadowcasters_buffer);
+	SAFE_RELEASE(_shadowprocess_buffer);
+	SAFE_RELEASE(_cascadeinfo_buffer);
 
 	//Destroy renderpasses
-	SAFE_RELEASE(_shadowmapRenderPass)
-	SAFE_RELEASE(_shadowmap_point_RenderPass)
+	SAFE_RELEASE(_shadowmapRenderPass);
+	SAFE_RELEASE(_shadowmap_point_RenderPass);
+	SAFE_RELEASE(_shadowprocessRenderPass);
+
+	SAFE_RELEASE(_shadowprocess_framebuffer)
+	//Release all casters
+	for (auto& caster : _casters) {
+		SAFE_RELEASE(caster);
+	}
+	_casters.clear();
 }
 
 uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 caster_type) {
@@ -187,7 +195,18 @@ uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 ca
 	return pcaster_index;
 }
 
+void VulkanShadowmapping::SetCamera(Camera* cam) {
+	this->cam = cam;
+}
+void VulkanShadowmapping::SetEntitiesToRender(tEntityList* entities) {
+	_entitiesToRender = entities;
+}
+void VulkanShadowmapping::SetTerrainsToRender(tEntityList* terrains) {
+	_terrainsToRender = terrains;
+}
+
 void VulkanShadowmapping::AddEntity(Entity* entity) {
+	Scene* scene = VulkanRenderer::Get()->GetScene();
 	LightsourceComponent* light = entity->GetComponent<LightsourceComponent>();
 	LightType caster_type = light->GetLightType();
 
@@ -203,7 +222,7 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 
 	uint32 image_layers_count = 6;
 	if (caster_type == LIGHT_TYPE_DIRECTIONAL) {
-		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+		SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 		image_layers_count = env_settings.GetShadowCascadesCount();
 	}
 	else if (caster_type == LIGHT_TYPE_SPOT)
@@ -271,7 +290,8 @@ void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
 }
 
 void VulkanShadowmapping::SetGbufferPositionsAttachment(VulkanTexture* gpos) {
-	_shadowrenderer_descrSet->WriteDescriptorImage(1, gpos, _gbuffer_sampler);
+	_shadowrenderer_descrSet->WriteDescriptorImage(1, gpos,
+		VulkanRenderer::Get()->GetAttachmentSampler());
 }
 
 VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
@@ -289,6 +309,7 @@ void VulkanShadowmapping::ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer) {
 }
 
 void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf) {
+	Scene* scene = VulkanRenderer::Get()->GetScene();
 	VulkanShadowCaster* caster = _casters[casterIndex];
 	uint32 cascades = caster->_framebuffer->GetLayersCount();
 
@@ -302,7 +323,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 	Frustum* _dir_caster_frustums = nullptr;
 	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
-		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+		SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 		_dir_caster_frustums = new Frustum[env_settings.GetShadowCascadesCount()];
 		Mat4* cascades_projections = caster->_lightsource->GetShadowcastMatrices(cam);
 		for (uint32 c_i = 0; c_i < env_settings.GetShadowCascadesCount(); c_i++) {
@@ -335,7 +356,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
 			AABB bbox = entity->GetAABB();
-			SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 			int first = -1;
 			int last = -1;
 			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) {
@@ -410,7 +431,8 @@ void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdb
 	cmdbuf->BindPipeline(*_shadowprocess_pipeline);
 	cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
 	cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet);
-	cmdbuf->BindMesh(*_screenPlane);
+	VulkanMesh* screenPlane = VulkanRenderer::Get()->GetScreenMesh();
+	cmdbuf->BindMesh(*screenPlane);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
 }
@@ -447,8 +469,9 @@ void VulkanShadowmapping::UpdateShadowrenderingDescriptors() {
 	);
 	_shadowprocess_buffer->WriteData(SHADOWPROCESS_SHADOWCOUNT_OFFSET, 4, &_added_casters);
 
-	if (_scene) {
-		SceneEnvironmentSettings& env_settings = _scene->GetEnvironmentSettings();
+	Scene* scene = VulkanRenderer::Get()->GetScene();
+	if (scene) {
+		SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 		uint32 cascades_count = env_settings.GetShadowCascadesCount();
 		for (uint32 cascade = 0; cascade < cascades_count; cascade++) {
 			float cascade_depth = env_settings.GetCascadeDepths()[cascade];

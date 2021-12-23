@@ -24,40 +24,31 @@ namespace VSGE {
 
 		bool loadBufferWAV(byte* buffer);
 
-		uint32 GetBuffer() {
-			return _audio_buffer;
-		}
+		uint32 GetBuffer();
 		/// <summary>
 		/// Get sample rate of clip
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetFrequency() {
-			return _frequency;
-		}
+		uint32 GetFrequency();
 		/// <summary>
 		/// Get pits per sample value of clip
 		/// </summary>
 		/// <returns></returns>
-		int GetBitsPerSample() {
-			return _bitsPerSample;
-		}
+		int GetBitsPerSample();
 		/// <summary>
 		/// Get channel count of clip
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetChannels() {
-			return _channels;
-		}
+		uint32 GetChannels();
 		/// <summary>
 		/// Get duration of clip in milliseconds
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetDuration() {
-			return _duration;
-		}
-
-		uint32 GetBitRate() {
-			return _bitRate;
-		}
+		uint32 GetDuration();
+		/// <summary>
+		/// Get bitrate of clip
+		/// </summary>
+		/// <returns></returns>
+		uint32 GetBitRate();
 	};
 }

@@ -286,6 +286,13 @@ void ImGuiLayer::RegroupWindows() {
     }
 }
 
+void ImGuiLayer::SetTabWindowCurrent(const std::string& window_title) {
+    ImGuiWindow* window = ImGui::FindWindowByName(window_title.c_str());
+    if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)
+        return;
+    window->DockNode->TabBar->NextSelectedTabId = window->ID;
+}
+
 void ImGuiLayer::DrawDockWindow() {
     const auto window_flags =
         ImGuiWindowFlags_MenuBar |
@@ -342,6 +349,7 @@ void ImGuiLayer::DrawDockWindow() {
             ImGui::DockBuilderDockWindow("Console", dock_down_id);
             ImGui::DockBuilderDockWindow("File Browser", dock_down_id);
             ImGui::DockBuilderDockWindow("World view", dock_main_id);
+            ImGui::DockBuilderDockWindow("Player view", dock_main_id);
 
             ImGui::DockBuilderFinish(dock_main_id);
         }

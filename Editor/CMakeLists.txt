@@ -57,6 +57,7 @@ set(SRC_FILES
                 Windows/EnvironmentSettingsWindow.cpp
                 Windows/ResourcePickWindow.cpp
                 Windows/SceneViewWindow.cpp
+                Windows/PlayerViewWindow.cpp
                 Windows/SceneWindow.cpp
                 Windows/StartWindow.cpp
                 Windows/ToolbarWindow.cpp

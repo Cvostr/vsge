@@ -35,6 +35,30 @@ void AudioBuffer::Destroy() {
 	}
 }
 
+uint32 AudioBuffer::GetBuffer() {
+    return _audio_buffer;
+}
+
+uint32 AudioBuffer::GetFrequency() {
+    return _frequency;
+}
+
+int AudioBuffer::GetBitsPerSample() {
+    return _bitsPerSample;
+}
+
+uint32 AudioBuffer::GetChannels() {
+    return _channels;
+}
+
+uint32 AudioBuffer::GetDuration() {
+    return _duration;
+}
+
+uint32 AudioBuffer::GetBitRate() {
+    return _bitRate;
+}
+
 bool AudioBuffer::loadBufferWAV(byte* buffer) {
 	Create();
 

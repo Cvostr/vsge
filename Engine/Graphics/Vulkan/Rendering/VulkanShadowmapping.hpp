@@ -75,12 +75,9 @@ namespace VSGE {
 		VulkanDescriptorSet* animsDescrSet;
 
 		Camera* cam;
-		Scene* _scene;
 		tEntityList* _entitiesToRender;
 		tEntityList* _terrainsToRender;
 		VulkanTexture* _gbuffer_pos;
-		VulkanSampler* _gbuffer_sampler;
-		VulkanMesh* _screenPlane;
 		VulkanSampler* _shadowmap_sampler;
 
 		uint32 _writtenBones;
@@ -95,23 +92,12 @@ namespace VSGE {
 		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets,
 			VulkanDescriptorSet* animsDescrSet, 
 			VulkanBuffer* cam_buffer,
-			VulkanMesh* screenPlane,
-			VulkanTexture* pos, 
-			VulkanSampler* gbuffer_sampler);
+			VulkanTexture* pos);
 		~VulkanShadowmapping();
 	
-		void SetCamera(Camera* cam) {
-			this->cam = cam;
-		}
-		void SetScene(Scene* scene){
-			_scene = scene;
-		}
-		void SetEntitiesToRender(tEntityList* entities) {
-			_entitiesToRender = entities;
-		}
-		void SetTerrainsToRender(tEntityList* terrains) {
-			_terrainsToRender = terrains;
-		}
+		void SetCamera(Camera* cam);
+		void SetEntitiesToRender(tEntityList* entities);
+		void SetTerrainsToRender(tEntityList* terrains);
 		void SetGbufferPositionsAttachment(VulkanTexture* gpos);
 
 		void ResizeOutput(uint32 width, uint32 height);

@@ -105,6 +105,10 @@ void VulkanUiRenderer::Destroy() {
 	SAFE_RELEASE(_ui_sprite_mesh)
 	SAFE_RELEASE(_ui_pipeline)
 	SAFE_RELEASE(_ui_pll)
+	SAFE_RELEASE(_ui_rp)
+	SAFE_RELEASE(_ui_framebuffer)
+	SAFE_RELEASE(_transforms_buffer)
+	SAFE_RELEASE(_frag_buffer)
 }
 void VulkanUiRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_fb_width = width;

@@ -10,6 +10,7 @@
 #include "../Windows/InspectorWindow.hpp"
 #include "../Windows/BrowserWindow.hpp"
 #include "../Windows/SceneViewWindow.hpp"
+#include "../Windows/PlayerViewWindow.hpp"
 #include "../Windows/ToolbarWindow.hpp"
 #include "../Windows/ConsoleWindow.hpp"
 #include "../Windows/EditorSettingsWindow.hpp"
@@ -103,6 +104,7 @@ bool EditorLayer::OpenProject(const Project& project) {
 	ImGuiLayer::Get()->AddWindow(new ConsoleWindow);
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(project.GetAssetsDirectory()));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
+	ImGuiLayer::Get()->AddWindow(new PlayerViewWindow);
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
 
 	EditorSettingsWindow* settings = new EditorSettingsWindow;

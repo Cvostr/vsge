@@ -63,8 +63,6 @@ void VulkanGammaCorrection::Create() {
 
 	_rp = new VulkanRenderPass;
 	_rp->PushColorAttachment(FORMAT_RGBA);
-	_rp->SetAttachmentClearOnLoad(0, false);
-	_rp->SetClearSize(10, 10);
 	_rp->Create();
 
 	_fb = new VulkanFramebuffer;

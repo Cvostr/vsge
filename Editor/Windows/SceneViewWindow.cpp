@@ -7,6 +7,15 @@
 
 using namespace VSGEditor;
 
+SceneViewWindow::SceneViewWindow() {
+    _transform_gizmo_used = false;
+    texture = VK_NULL_HANDLE;
+}
+
+bool SceneViewWindow::IsTransformGizmoUsed() {
+    return _transform_gizmo_used;
+}
+
 void SceneViewWindow::OnDrawWindow() {
     EditorLayer* editor_layer = EditorLayer::Get();
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
