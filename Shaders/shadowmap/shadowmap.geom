@@ -9,6 +9,7 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
     mat4 projections[10];
     vec3 pos;
     int type;
+	float range;
 };
 
 layout (std140, set = 1, binding = 1) uniform CascadesDir{

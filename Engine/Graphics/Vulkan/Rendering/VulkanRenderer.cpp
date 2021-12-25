@@ -182,9 +182,8 @@ void VulkanRenderer::SetupRenderer() {
 	_terrain_renderer = new VulkanTerrainRenderer;
 	_terrain_renderer->Create(
 		_main_render_target->GetGBufferRenderer()->GetRenderPass(),
-		_main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets(),
-		mEmptyZeroTexture,
-		mEmptyOneTexture);
+		_main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets()
+	);
 	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_shadowmapper = new VulkanShadowmapping(
@@ -512,6 +511,10 @@ VulkanSampler* VulkanRenderer::GetSpecularIBLSampler() {
 
 VulkanTexture* VulkanRenderer::GetBlackTexture() {
 	return mEmptyZeroTexture;
+}
+
+VulkanTexture* VulkanRenderer::GetWhiteTexture() {
+	return mEmptyOneTexture;
 }
 
 VulkanTexture* VulkanRenderer::GetBlackCubeTexture() {

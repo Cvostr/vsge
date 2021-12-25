@@ -106,6 +106,7 @@ namespace VSGE {
 		VulkanSampler* GetSpecularIBLSampler();
 
 		VulkanTexture* GetBlackTexture();
+		VulkanTexture* GetWhiteTexture();
 
 		VulkanTexture* GetBlackCubeTexture();
 		VulkanTexture* GetBlack2dArrayTexture();

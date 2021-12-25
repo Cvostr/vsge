@@ -61,7 +61,7 @@ bool MonoScriptingLayer::CreateRootDomain() {
     }
     mono_thread_set_main(mono_thread_current());
     Logger::Log(LogType::LOG_TYPE_INFO) << "Mono Domain initialized\n";
-
+    
     CreateDomain();
 
     //bind API

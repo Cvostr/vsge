@@ -95,10 +95,19 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
 	_shadowmap_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
 
+	_shadowmap_terrain_shader = new VulkanShader;
+	_shadowmap_terrain_shader->AddShaderFromFile("shadowmap_terrain.vert", SHADER_STAGE_VERTEX);
+	_shadowmap_terrain_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
+
 	_shadowmap_point_shader = new VulkanShader;
 	_shadowmap_point_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
 	_shadowmap_point_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
 	_shadowmap_point_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
+
+	_shadowmap_terrain_point_shader = new VulkanShader;
+	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap_terrain.vert", SHADER_STAGE_VERTEX);
+	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
+	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
 
 	_shadowmap_layout = new VulkanPipelineLayout;
 	_shadowmap_layout->PushDescriptorSet(vertexDescrSets->at(0));
@@ -107,19 +116,23 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_layout->AddPushConstantRange(0, 8, VK_SHADER_STAGE_GEOMETRY_BIT);
 	_shadowmap_layout->Create();
 
-	_shadowmapPipeline = new VulkanPipeline;
-	_shadowmapPipeline->SetDepthTest(true);
-	_shadowmapPipeline->SetDepthClamp(true);
-	_shadowmapPipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
-	_shadowmapPipeline->SetDynamicCullMode(false);
-	_shadowmapPipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
-	_shadowmapPipeline->Create(_shadowmap_shader, _shadowmapRenderPass, shadowmap_vertex_layout, _shadowmap_layout);
+	_shadowmap_pipeline = new VulkanPipeline;
+	_shadowmap_pipeline->SetDepthTest(true);
+	_shadowmap_pipeline->SetDepthClamp(true);
+	_shadowmap_pipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
+	_shadowmap_pipeline->SetDynamicCullMode(false);
+	_shadowmap_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+	_shadowmap_pipeline->Create(
+		_shadowmap_shader, 
+		_shadowmapRenderPass,
+		shadowmap_vertex_layout,
+		_shadowmap_layout);
 
-	_shadowmap_point_Pipeline = new VulkanPipeline;
-	_shadowmap_point_Pipeline->SetDepthTest(false);
-	_shadowmap_point_Pipeline->SetDynamicCullMode(false);
-	_shadowmap_point_Pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
-	_shadowmap_point_Pipeline->Create(
+	_shadowmap_point_pipeline = new VulkanPipeline;
+	_shadowmap_point_pipeline->SetDepthTest(false);
+	_shadowmap_point_pipeline->SetDynamicCullMode(false);
+	_shadowmap_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+	_shadowmap_point_pipeline->Create(
 		_shadowmap_point_shader,
 		_shadowmap_point_RenderPass,
 		shadowmap_vertex_layout,
@@ -278,6 +291,7 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 
 	_shadowcasters_buffer->WriteData(offset_casters, 12, &pos);
 	_shadowcasters_buffer->WriteData(offset_casters + 12, 4, &type);
+	_shadowcasters_buffer->WriteData(offset_casters + 16, 4, &range);
 
 	_added_casters++;
 }
@@ -335,12 +349,12 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL 
 		|| caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
 		_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
-		cmdbuf->BindPipeline(*_shadowmapPipeline);
+		cmdbuf->BindPipeline(*_shadowmap_pipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
 	}else if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT) {
 		_shadowmap_point_RenderPass->CmdBegin(*cmdbuf, *fb);
-		cmdbuf->BindPipeline(*_shadowmap_point_Pipeline);
+		cmdbuf->BindPipeline(*_shadowmap_point_pipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
 	}

@@ -47,11 +47,17 @@ namespace VSGE {
 
 		//-----------------Shadow Pipeline------------
 		VertexLayout shadowmap_vertex_layout;
+
 		VulkanShader* _shadowmap_shader;
 		VulkanShader* _shadowmap_point_shader;
+		VulkanShader* _shadowmap_terrain_shader;
+		VulkanShader* _shadowmap_terrain_point_shader;
+
 		VulkanPipelineLayout* _shadowmap_layout;
-		VulkanPipeline* _shadowmapPipeline;
-		VulkanPipeline* _shadowmap_point_Pipeline;
+		VulkanPipeline* _shadowmap_pipeline;
+		VulkanPipeline* _shadowmap_point_pipeline;
+		VulkanPipeline* _shadowmap_terrain_pipeline;
+		VulkanPipeline* _shadowmap_terrain_point_Pipeline;
 		//-----------------Shadowprocess pipeline
 		VertexLayout _shadowprocess_vertex_layout;
 		VulkanShader* _shadowprocess_shader;

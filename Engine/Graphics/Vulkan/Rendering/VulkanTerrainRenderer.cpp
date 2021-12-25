@@ -36,9 +36,9 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 	if (texture_res == nullptr) {
 		//if no texture bound, then bind default texture
 
-		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
+		VulkanTexture* default_texture = VulkanRenderer::Get()->GetBlackTexture();
 		if(texture_type == 2 || texture_type == 3 || texture_type == 4)
-			default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyWhiteTexture();
+			default_texture = VulkanRenderer::Get()->GetWhiteTexture();
 
 		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
 			default_texture,
@@ -70,7 +70,7 @@ void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetabl
 	VulkanDescriptorSet* grass_set = _grass_descriptor_sets[vegetable_index]._descr_set;
 	if (texture_res == nullptr) {
 		//if no texture bound, then bind default texture
-		VulkanTexture* default_texture = VulkanRenderer::Get()->GetTerrainRenderer()->GetEmptyZeroTexture();
+		VulkanTexture* default_texture = VulkanRenderer::Get()->GetBlackTexture();
 		grass_set->WriteDescriptorImage(1,
 			default_texture,
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),
@@ -241,14 +241,10 @@ VulkanTerrainRenderer::~VulkanTerrainRenderer() {
 
 void VulkanTerrainRenderer::Create(
 	VulkanRenderPass* gbuffer_renderpass,
-	std::vector<VulkanDescriptorSet*>& descr_set,
-	VulkanTexture* emptyTexture,
-	VulkanTexture* emptyOneTexture
+	std::vector<VulkanDescriptorSet*>& descr_set
 ) {
 	this->_gbuffer_renderpass = gbuffer_renderpass;
 	this->_entity_descr_set = &descr_set;
-	this->_emptyZeroTexture = emptyTexture;
-	_emptyOneTexture = emptyOneTexture;
 	
 	//terrains descriptor pool
 	_terrains_descr_pool = new VulkanDescriptorPool;
@@ -385,14 +381,6 @@ VulkanSampler* VulkanTerrainRenderer::GetTerrainMasksTextureSampler() {
 
 VulkanSampler* VulkanTerrainRenderer::GetTerrainTextureSampler() {
 	return _terrain_textures_sampler;
-}
-
-VulkanTexture* VulkanTerrainRenderer::GetEmptyZeroTexture() {
-	return _emptyZeroTexture;
-}
-
-VulkanTexture* VulkanTerrainRenderer::GetEmptyWhiteTexture() {
-	return _emptyOneTexture;
 }
 
 VulkanDescriptorPool* VulkanTerrainRenderer::GetTerrainDescriptorPool() {

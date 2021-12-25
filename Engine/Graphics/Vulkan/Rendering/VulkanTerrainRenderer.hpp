@@ -54,8 +54,6 @@ namespace VSGE{
         VulkanMesh* _grass_mesh;
 
         VulkanRenderPass* _gbuffer_renderpass;
-        VulkanTexture* _emptyZeroTexture;
-        VulkanTexture* _emptyOneTexture;
         std::vector<VulkanDescriptorSet*>* _entity_descr_set;
 
         VulkanDescriptorPool* _terrains_descr_pool;
@@ -75,9 +73,7 @@ namespace VSGE{
 
         void Create(
             VulkanRenderPass* gbuffer_renderpass,
-            std::vector<VulkanDescriptorSet*>& descr_set,
-            VulkanTexture* emptyZeroTexture,
-            VulkanTexture* emptyOneTexture);
+            std::vector<VulkanDescriptorSet*>& descr_set);
         void ProcessTerrain(Entity* terrain);
         void ResetProcessedTerrains();
         void DrawTerrain(VulkanCommandBuffer* cmdbuffer, uint32 terrain_index, uint32 draw_index);
@@ -85,8 +81,6 @@ namespace VSGE{
         void SetCameraIndex(uint32 camera_index);
         VulkanSampler* GetTerrainMasksTextureSampler();
         VulkanSampler* GetTerrainTextureSampler();
-        VulkanTexture* GetEmptyZeroTexture();
-        VulkanTexture* GetEmptyWhiteTexture();
         VulkanDescriptorPool* GetTerrainDescriptorPool();
         VulkanDescriptorPool* GetGrassDescriptorPool();
         VulkanBuffer* GetGrassTransformsBuffer();
