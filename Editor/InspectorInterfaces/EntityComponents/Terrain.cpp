@@ -118,6 +118,10 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	tc->SetWidth(width);
 	tc->SetHeight(height);
 
+	bool cast_shadows = tc->IsShadowCastEnabled();
+	ImGui::Checkbox("Cast shadows", &cast_shadows);
+	tc->SetShadowCastEnabled(cast_shadows);
+
 	ImGui::Separator();
 	if (ImGui::Button("Clear terrain", ImVec2(ImGui::GetWindowWidth(), 0))) {
 		tc->Flat(0);

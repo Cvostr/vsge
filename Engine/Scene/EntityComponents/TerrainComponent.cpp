@@ -9,6 +9,9 @@ using namespace YAML;
 
 TerrainTexturesFactors::TerrainTexturesFactors() {
 	_textures_masks = nullptr;
+	height = 0;
+	width = 0;
+	layers = 0;
 }
 void TerrainTexturesFactors::Allocate(uint32 width, uint32 height, uint32 layers_count) {
 	this->height = height;
@@ -86,6 +89,8 @@ TerrainComponent::TerrainComponent() {
 	_physics_enabled = true;
 	_physical_shape = nullptr;
 	_rigidbody = nullptr;
+
+	_cast_shadows = true;
 
 	Flat(0);
 	QueueGraphicsUpdate();
@@ -392,9 +397,17 @@ void TerrainComponent::AddNewGrass() {
 	_terrain_grass.push_back(tgrass);
 }
 
+bool TerrainComponent::IsShadowCastEnabled() {
+	return _cast_shadows;
+}
+void TerrainComponent::SetShadowCastEnabled(bool cast) {
+	_cast_shadows = cast;
+}
+
 void TerrainComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "width" << Value << _width;
 	e << Key << "height" << Value << _height;
+	e << Key << "cast_shadows" << Value << _cast_shadows;
 
 	e << YAML::Key << "textures" << YAML::Value << YAML::BeginSeq;
 	for (auto& texture : _terrain_textures) {
@@ -440,6 +453,7 @@ void TerrainComponent::Serialize(YAML::Emitter& e) {
 void TerrainComponent::Deserialize(YAML::Node& entity) {
 	_width = entity["width"].as<uint32>();
 	_height = entity["height"].as<uint32>();
+	_cast_shadows = entity["cast_shadows"].as<bool>();
 
 	Flat(0);
 
@@ -503,6 +517,7 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_width);
 	serializer.Serialize(_height);
+	serializer.Serialize(_cast_shadows);
 
 	uint32 textures_count = _terrain_textures.size();
 	uint32 vegetables_count = _terrain_grass.size();
@@ -530,7 +545,7 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	}
 
 	for (uint32 i = 0; i < GetVerticesCount(); i++) {
-		serializer.Serialize(_heightmap[i]);
+		serializer.Serialize(_heightmap[i].pos.y);
 
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
 			serializer.Serialize(_texture_factors.get(i, texture_i));
@@ -542,6 +557,7 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 void TerrainComponent::Deserialize(ByteSolver& solver) {
 	_width = solver.GetValue<uint32>();
 	_height = solver.GetValue<uint32>();
+	_cast_shadows = solver.GetValue<bool>();
 
 	Flat(0);
 

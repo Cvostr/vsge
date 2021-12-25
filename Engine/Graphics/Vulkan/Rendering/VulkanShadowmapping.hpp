@@ -58,6 +58,8 @@ namespace VSGE {
 		VulkanPipeline* _shadowmap_point_pipeline;
 		VulkanPipeline* _shadowmap_terrain_pipeline;
 		VulkanPipeline* _shadowmap_terrain_point_pipeline;
+
+		VulkanPipeline* _bound_pipeline;
 		//-----------------Shadowprocess pipeline
 		VertexLayout _shadowprocess_vertex_layout;
 		VulkanShader* _shadowprocess_shader;
@@ -93,6 +95,8 @@ namespace VSGE {
 		uint32 _outputHeight;
 
 		uint32 GetShadowTextureIndex(uint32 caster_index, uint32 caster_type);
+
+		void BindPipeline(VulkanCommandBuffer* cmdbuffer, LightType light_type, int mesh_type, uint32 dyn_offset);
 	public:
 
 		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets,

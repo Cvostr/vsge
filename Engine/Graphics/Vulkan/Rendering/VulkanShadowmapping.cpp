@@ -16,6 +16,9 @@ VulkanShadowmapping::VulkanShadowmapping(
 	VulkanBuffer* cam_buffer,
 	VulkanTexture* pos
 ){
+	_bound_pipeline = nullptr;
+	_writtenBones = 0;
+	_writtenParticleTransforms = 0;
 	_added_casters = 0;
 	this->_vertexDescrSets = vertexDescrSets;
 	this->animsDescrSet = animsDescrSet;
@@ -336,10 +339,30 @@ void VulkanShadowmapping::ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer) {
 	}
 }
 
+void VulkanShadowmapping::BindPipeline(VulkanCommandBuffer* cmdbuffer, LightType light_type, int mesh_type, uint32 dyn_offset) {
+	VulkanPipeline* pipeline = _shadowmap_pipeline;
+	if (mesh_type == 1)
+		pipeline = _shadowmap_terrain_pipeline;
+
+	if (light_type == LIGHT_TYPE_POINT) {
+		pipeline = _shadowmap_point_pipeline;
+		if (mesh_type == 1)
+			pipeline = _shadowmap_terrain_point_pipeline;
+	}
+	
+	if (_bound_pipeline != pipeline) {
+		cmdbuffer->BindPipeline(*pipeline);
+		cmdbuffer->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
+		cmdbuffer->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &dyn_offset);
+		_bound_pipeline = pipeline;
+	}
+}
+
 void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf) {
 	Scene* scene = VulkanRenderer::Get()->GetScene();
 	VulkanShadowCaster* caster = _casters[casterIndex];
 	uint32 cascades = caster->_framebuffer->GetLayersCount();
+	LightType light_type = caster->_lightsource->GetLightType();
 
 	VulkanFramebuffer* fb = caster->_framebuffer;
 
@@ -360,18 +383,8 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		SAFE_RELEASE_ARR(cascades_projections)
 	}
 	
-	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL 
-		|| caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
-		_shadowmap_render_pass->CmdBegin(*cmdbuf, *fb);
-		cmdbuf->BindPipeline(*_shadowmap_pipeline);
-		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
-		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
-	}else if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT) {
-		_shadowmap_render_pass->CmdBegin(*cmdbuf, *fb);
-		cmdbuf->BindPipeline(*_shadowmap_point_pipeline);
-		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
-		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
-	}
+	_bound_pipeline = nullptr;
+	_shadowmap_render_pass->CmdBegin(*cmdbuf, *fb);
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
 		Entity* entity = _entitiesToRender->at(e_i);
@@ -380,6 +393,30 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		if (material_comp) {
 			if (!material_comp->IsCastShadows())
 				continue;
+		}
+
+		
+		VulkanMesh* mesh = nullptr;
+
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		if (mesh_component) {
+			MeshResource* mesh_resource = mesh_component->GetMeshResource();
+			if (!mesh_resource)
+				continue;
+
+			if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+				//Mark mesh resource used in this frame
+				mesh_resource->Use();
+				mesh = (VulkanMesh*)mesh_resource->GetMesh();
+				BindPipeline(cmdbuf, light_type, 0, shadowmap_offset);
+			}
+		}
+		else {
+			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
+			if (terrain->IsShadowCastEnabled()) {
+				mesh = (VulkanMesh*)terrain->GetTerrainMesh();
+				BindPipeline(cmdbuf, light_type, 1, shadowmap_offset);
+			}
 		}
 
 		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
@@ -405,24 +442,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 			pconstants[0] = first;
 			pconstants[1] = last - 1;
 			cmdbuf->PushConstants(*_shadowmap_layout, VK_SHADER_STAGE_GEOMETRY_BIT, 0, 8, pconstants);
-		}
-		VulkanMesh* mesh = nullptr;
-
-		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
-		if (mesh_component) {
-			MeshResource* mesh_resource = mesh_component->GetMeshResource();
-			if (!mesh_resource)
-				continue;
-
-			if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
-				//Mark mesh resource used in this frame
-				mesh_resource->Use();
-				mesh = (VulkanMesh*)mesh_resource->GetMesh();
-			}
-		}
-		else {
-			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
-			//mesh = (VulkanMesh*)terrain->GetTerrainMesh();
 		}
 
 		//Check distance

@@ -120,6 +120,7 @@ namespace VSGE{
 			Vertex* _heightmap;
 			uint32* indices;
 			std::vector<GrassIdTransforms> _grass_transforms;
+			bool _cast_shadows;
 			//physics
 			bool _physics_enabled;
 			btBvhTriangleMeshShape* _physical_shape;
@@ -171,6 +172,9 @@ namespace VSGE{
 			std::vector<GrassIdTransforms>& GetGrassTransforms();
 			const AABB GetBoundingBox();
 			void CreatePhysics();
+
+			bool IsShadowCastEnabled();
+			void SetShadowCastEnabled(bool cast);
 
 			void OnPreRender();
 			void OnUpdate();
