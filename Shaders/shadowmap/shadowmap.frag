@@ -1,7 +1,5 @@
 #version 450
 
-layout (location = 0) out float tColor;
-
 layout(location = 0) in vec3 FragPos;
 
 layout (std140, set = 1, binding = 0) uniform ShadowData{
@@ -14,5 +12,5 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
 void main()
 {
     float lightDistance = length(FragPos - pos);
-    tColor = lightDistance / range;
+    gl_FragDepth = lightDistance / range;
 }

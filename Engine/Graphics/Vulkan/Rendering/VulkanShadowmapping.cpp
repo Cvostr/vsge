@@ -27,15 +27,10 @@ VulkanShadowmapping::VulkanShadowmapping(
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 	VulkanRenderer* renderer = VulkanRenderer::Get();
 
-	_shadowmapRenderPass = new VulkanRenderPass;
-	_shadowmapRenderPass->SetClearSize(MAP_SIZE, MAP_SIZE);
-	_shadowmapRenderPass->PushDepthAttachment(FORMAT_DEPTH_32);
-	_shadowmapRenderPass->Create();
-
-	_shadowmap_point_RenderPass = new VulkanRenderPass;
-	_shadowmap_point_RenderPass->SetClearSize(MAP_SIZE, MAP_SIZE);
-	_shadowmap_point_RenderPass->PushColorAttachment(FORMAT_R32F);
-	_shadowmap_point_RenderPass->Create();
+	_shadowmap_render_pass = new VulkanRenderPass;
+	_shadowmap_render_pass->SetClearSize(MAP_SIZE, MAP_SIZE);
+	_shadowmap_render_pass->PushDepthAttachment(FORMAT_DEPTH_32);
+	_shadowmap_render_pass->Create();
 
 	shadowmap_vertex_layout.AddBinding(sizeof(Vertex));
 	shadowmap_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
@@ -49,6 +44,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 	shadowmap_vertex_layout.AddItem(10, offsetof(VertexSkinningData, weights[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
 	shadowmap_vertex_layout.AddItem(11, offsetof(VertexSkinningData, bones_num), VertexLayoutFormat::VL_FORMAT_R32_UINT, 1);
 
+	shadowmap_terrain_vertex_layout.AddBinding(sizeof(Vertex));
+	shadowmap_terrain_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
 	_shadowcasters_buffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 	_shadowcasters_buffer->Create(65536);
@@ -124,18 +121,40 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmap_pipeline->Create(
 		_shadowmap_shader, 
-		_shadowmapRenderPass,
+		_shadowmap_render_pass,
 		shadowmap_vertex_layout,
 		_shadowmap_layout);
 
 	_shadowmap_point_pipeline = new VulkanPipeline;
-	_shadowmap_point_pipeline->SetDepthTest(false);
+	_shadowmap_point_pipeline->SetDepthTest(true);
 	_shadowmap_point_pipeline->SetDynamicCullMode(false);
 	_shadowmap_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
 	_shadowmap_point_pipeline->Create(
 		_shadowmap_point_shader,
-		_shadowmap_point_RenderPass,
+		_shadowmap_render_pass,
 		shadowmap_vertex_layout,
+		_shadowmap_layout);
+
+	_shadowmap_terrain_pipeline = new VulkanPipeline;
+	_shadowmap_terrain_pipeline->SetDepthTest(true);
+	_shadowmap_terrain_pipeline->SetDepthClamp(true);
+	_shadowmap_terrain_pipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
+	_shadowmap_terrain_pipeline->SetDynamicCullMode(false);
+	_shadowmap_terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+	_shadowmap_terrain_pipeline->Create(
+		_shadowmap_terrain_shader,
+		_shadowmap_render_pass,
+		shadowmap_terrain_vertex_layout,
+		_shadowmap_layout);
+
+	_shadowmap_terrain_point_pipeline = new VulkanPipeline;
+	_shadowmap_terrain_point_pipeline->SetDepthTest(true);
+	_shadowmap_terrain_point_pipeline->SetDynamicCullMode(false);
+	_shadowmap_terrain_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+	_shadowmap_terrain_point_pipeline->Create(
+		_shadowmap_terrain_point_shader,
+		_shadowmap_render_pass,
+		shadowmap_terrain_vertex_layout,
 		_shadowmap_layout);
 
 	//-------------------------SHADOW PROCESS -----------------------------
@@ -187,8 +206,7 @@ VulkanShadowmapping::~VulkanShadowmapping() {
 	SAFE_RELEASE(_cascadeinfo_buffer);
 
 	//Destroy renderpasses
-	SAFE_RELEASE(_shadowmapRenderPass);
-	SAFE_RELEASE(_shadowmap_point_RenderPass);
+	SAFE_RELEASE(_shadowmap_render_pass);
 	SAFE_RELEASE(_shadowprocessRenderPass);
 
 	SAFE_RELEASE(_shadowprocess_framebuffer)
@@ -249,16 +267,12 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		caster->_framebuffer->SetSize(MAP_SIZE, MAP_SIZE);
 		caster->_framebuffer->SetLayersCount(image_layers_count);
 		if (is_point) {
-			caster->_framebuffer->AddAttachment(FORMAT_R32F, image_layers_count, true);
-			caster->_framebuffer->Create(_shadowmap_point_RenderPass);
-		}
-		else if (is_spot) {
-			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count, false);
-			caster->_framebuffer->Create(_shadowmapRenderPass);
+			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count, true);
+			caster->_framebuffer->Create(_shadowmap_render_pass);
 		}
 		else {
 			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count);
-			caster->_framebuffer->Create(_shadowmapRenderPass);
+			caster->_framebuffer->Create(_shadowmap_render_pass);
 		}
 	}
 
@@ -348,12 +362,12 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	
 	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL 
 		|| caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
-		_shadowmapRenderPass->CmdBegin(*cmdbuf, *fb);
+		_shadowmap_render_pass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmap_pipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
 	}else if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT) {
-		_shadowmap_point_RenderPass->CmdBegin(*cmdbuf, *fb);
+		_shadowmap_render_pass->CmdBegin(*cmdbuf, *fb);
 		cmdbuf->BindPipeline(*_shadowmap_point_pipeline);
 		cmdbuf->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuf->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &shadowmap_offset);
@@ -458,7 +472,7 @@ void VulkanShadowmapping::UpdateShadowrenderingDescriptors() {
 	std::vector<VulkanTexture*> shadowmaps_spot;
 	for (auto caster : _casters) {
 		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT)
-			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetColorAttachments()[0]);
+			shadowmaps_point.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 		else if (caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT)
 			shadowmaps_spot.push_back((VulkanTexture*)caster->_framebuffer->GetDepthAttachment());
 
