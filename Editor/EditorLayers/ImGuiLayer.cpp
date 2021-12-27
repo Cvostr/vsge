@@ -139,9 +139,10 @@ void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index) {
     ImGui_ImplVulkan_RenderDrawData(draw_data, cmdbuf.GetCommandBuffer());
 
     cmdbuf.EndRenderPass();
-    cmdbuf.End();
 
-    VkMaterialsThumbnails::Get()->RecordCmdBuffer();
+    VkMaterialsThumbnails::Get()->RecordCmdBuffer(&cmdbuf);
+
+    cmdbuf.End();
 }
 
 uint32 ImGuiLayer::VulkanRender(ImDrawData* draw_data, VSGE::VulkanSemaphore* endSemaphore) {
@@ -196,8 +197,7 @@ void ImGuiLayer::OnUpdate() {
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 
-    uint32 img_index = VulkanRender(draw_data, VkMaterialsThumbnails::Get()->GetBeginSemaphore());
-    VkMaterialsThumbnails::Get()->CmdExecute(renderer->GetBeginSemaphore());
+    uint32 img_index = VulkanRender(draw_data, renderer->GetBeginSemaphore());
 
     if(presenter->IsRecreated()){
        return;

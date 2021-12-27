@@ -67,10 +67,6 @@ namespace VSGE {
 		std::vector<VulkanRenderTarget*> _render_targets;
 		VulkanRenderTarget* _main_render_target;
 
-		MaterialTemplate* pbr_template;
-		MaterialTemplate* particle_template;
-		MaterialTemplate* skybox_template;
-
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 
 		VulkanMaterial* CreateVulkanMaterial(Material* material);

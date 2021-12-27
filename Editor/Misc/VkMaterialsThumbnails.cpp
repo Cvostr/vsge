@@ -89,15 +89,6 @@ void VkMaterialsThumbnails::Create() {
     _light->SetCameraIndex(99);
     _light->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
-    _cmdpool = new VulkanCommandPool;
-    _cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
-
-    _cmdbuf = new VulkanCommandBuffer;
-    _cmdbuf->Create(_cmdpool);
-
-    _begin_semaphore = new VulkanSemaphore();
-    _begin_semaphore->Create();
-
     _sampler = new VulkanSampler();
     _sampler->Create();
 
@@ -158,12 +149,6 @@ VkMaterialThumbnail* VkMaterialsThumbnails::GetPlace(const std::string& name) {
     return _thumbnails[_thumbnails.size() - 1];
 }
 
-void VkMaterialsThumbnails::RecordCmdBuffer() {
-    _cmdbuf->Begin();
-    RecordCmdBuffer(_cmdbuf);
-    _cmdbuf->End();    
-}
-
 void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
     if (_queued.size() > 0) {
         MaterialComponent* material_component = _thumb_entity->GetComponent<MaterialComponent>();
@@ -174,16 +159,16 @@ void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
         if (resource->GetState() == RESOURCE_STATE_READY)
             VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
 
-        _gbuffer->RecordCmdBuffer(_cmdbuf);
-        _light->RecordCmdbuf(_cmdbuf);
-        _gamma_correction->FillCommandBuffer(_cmdbuf);
+        _gbuffer->RecordCmdBuffer(cmdbuf);
+        _light->RecordCmdbuf(cmdbuf);
+        _gamma_correction->FillCommandBuffer(cmdbuf);
 
         VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
         thumb->material_name = _queued[0];
         VulkanTexture* src = _gamma_correction->GetOutputTexture();
         VulkanTexture* dst = thumb->texture;
 
-        src->CmdCopyTexture(_cmdbuf, dst, 0, 1);
+        src->CmdCopyTexture(cmdbuf, dst, 0, 1);
 
         //shrink array to left
         for (uint32 q_i = 1; q_i < _queued.size(); q_i++) {
@@ -191,10 +176,4 @@ void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
         }
         _queued.pop_back();
     }
-}
-void VkMaterialsThumbnails::CmdExecute(VulkanSemaphore* end) {
-    VulkanGraphicsSubmit(*_cmdbuf, *_begin_semaphore, *end);
-}
-VulkanSemaphore* VkMaterialsThumbnails::GetBeginSemaphore() {
-    return _begin_semaphore;
 }

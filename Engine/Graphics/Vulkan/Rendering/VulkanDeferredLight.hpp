@@ -28,6 +28,7 @@ namespace VSGE {
 
 		void DrawSkybox(VulkanCommandBuffer* cmdbuf);
 		void DrawParticles(VulkanCommandBuffer* cmdbuf);
+		void DrawEntities(VulkanCommandBuffer* cmdbuf);
 	public:
 		VulkanDeferredLight();
 		~VulkanDeferredLight();
@@ -51,7 +52,6 @@ namespace VSGE {
 		void RecordCmdbuf(VulkanCommandBuffer* cmdbuf);
 		void Resize(uint32 width, uint32 height);
 		void SetEnvmap(bool envmap);
-		void SetOutputFormat8();
 		TextureFormat GetOutputFormat();
 	};
 }

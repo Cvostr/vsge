@@ -22,6 +22,11 @@ void VulkanRenderer::SetupRenderer() {
 	pbr->AddShaderFromFile("pbr.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(pbr, "PBR");
 
+	VulkanShader* vegetable = new VulkanShader;
+	vegetable->AddShaderFromFile("vegetable.vert", SHADER_STAGE_VERTEX);
+	vegetable->AddShaderFromFile("vegetable.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(vegetable, "Vegetable");
+
 	VulkanShader* deferred_light = new VulkanShader;
 	deferred_light->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
 	deferred_light->AddShaderFromFile("deferred_pbr.frag", SHADER_STAGE_FRAGMENT);
@@ -201,8 +206,8 @@ void VulkanRenderer::SetupRenderer() {
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 
-	//---Material test ----
-	pbr_template = new MaterialTemplate;
+	
+	MaterialTemplate* pbr_template = new MaterialTemplate;
 	pbr_template->SetName("default_pbr");
 	pbr_template->SetShader("PBR");
 	pbr_template->AddTexture("Albedo", 1);
@@ -225,7 +230,7 @@ void VulkanRenderer::SetupRenderer() {
 	particle_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 
 
-	particle_template = new MaterialTemplate;
+	MaterialTemplate* particle_template = new MaterialTemplate;
 	particle_template->SetName("default_particle");
 	particle_template->SetDepthTest(false);
 	particle_template->SetRenderStage(RENDER_STAGE_POST);
@@ -240,7 +245,26 @@ void VulkanRenderer::SetupRenderer() {
 	CreatePipelineFromMaterialTemplate(particle_template);
 
 
-	skybox_template = new MaterialTemplate;
+	MaterialTemplate* vegetable_template = new MaterialTemplate;
+	vegetable_template->SetRenderStage(RENDER_STAGE_POST);
+	vegetable_template->SetName("default_vegetable");
+	vegetable_template->SetShader("Vegetable");
+	vegetable_template->AddTexture("Albedo", 1);
+	vegetable_template->AddTexture("Normal", 2);
+	vegetable_template->AddTexture("Roughness", 3);
+	vegetable_template->AddTexture("Metallic", 4);
+	vegetable_template->AddTexture("Occlusion", 5);
+	vegetable_template->AddTexture("Emission", 6);
+	vegetable_template->AddParameter("Color", Color(1, 1, 1, 1));
+	vegetable_template->AddParameter("Roughness factor", 1.f);
+	vegetable_template->AddParameter("Metallic factor", 0.5f);
+	vegetable_template->AddParameter("Height factor", 1.f);
+	vegetable_template->SetBlendingAttachmentDesc(0, particle_blend_desc);
+	MaterialTemplateCache::Get()->AddTemplate(vegetable_template);
+	CreatePipelineFromMaterialTemplate(vegetable_template);
+
+
+	MaterialTemplate* skybox_template = new MaterialTemplate;
 	skybox_template->SetName("default_skybox");
 	skybox_template->SetRenderStage(RENDER_STAGE_POST);
 	skybox_template->SetVertexLayout(_vertexLayout);

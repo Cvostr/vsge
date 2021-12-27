@@ -5,6 +5,18 @@
 
 using namespace VSGE;
 
+VulkanSwapChain::VulkanSwapChain() :
+    mSwapChain(VK_NULL_HANDLE)
+{
+    chosenSurfaceFormat = {};
+    chosenPresentMode = {};
+    swap_extend = {};
+}
+
+VulkanSwapChain::~VulkanSwapChain() {
+    Destroy();
+}
+
 VkImageView VulkanSwapChain::GetImageViewAtIndex(uint32 index) {
     if (index > this->mSwapChainImageViews.size())
         index = static_cast<uint32_t>(mSwapChainImageViews.size());
@@ -139,7 +151,7 @@ void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR Chos
 
     this->mSwapChainImageViews.resize(swc_images);
     //Iterate over all swapchain images and create image views
-    for (unsigned int sw_i = 0; sw_i < swc_images; sw_i++) {
+    for (uint32 sw_i = 0; sw_i < swc_images; sw_i++) {
         VkImageViewCreateInfo img_view_create_info;
         img_view_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         img_view_create_info.pNext = nullptr;
@@ -161,10 +173,4 @@ void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR Chos
 
         vkCreateImageView(Device->getVkDevice(), &img_view_create_info, nullptr, &mSwapChainImageViews[sw_i]);
     }
-}
-
-VulkanSwapChain::VulkanSwapChain() :
-    mSwapChain(VK_NULL_HANDLE)
-{
-
 }

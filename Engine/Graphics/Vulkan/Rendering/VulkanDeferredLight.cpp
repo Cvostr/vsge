@@ -159,6 +159,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->BindMesh(*mesh, 0);
 	cmdbuf->DrawIndexed(6);
 
+	DrawEntities(cmdbuf);
 	DrawParticles(cmdbuf);
 
 	cmdbuf->EndRenderPass();
@@ -251,6 +252,61 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf) {
 	}
 }
 
+void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf) {
+	for (uint32 e_i = 0; e_i < _gbuffer->GetEntitiesToRender()->size(); e_i++) {
+		Entity* entity = (*_gbuffer->GetEntitiesToRender())[e_i];
+		AABB bounding_box = entity->GetAABB();
+		
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		if (!mesh_component)
+			continue;
+		
+		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
+
+		MaterialResource* mat_resource = material_component->GetMaterialResource();
+
+		//bind material
+		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
+		Material* mat = mat_resource->GetMaterial();
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+
+		if (templ->GetRenderStage() != RENDER_STAGE_POST)
+			continue;
+
+		MeshResource* mesh_resource = mesh_component->GetMeshResource();
+
+		int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
+
+		cmdbuf->BindPipeline(*pipl);
+		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+		cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
+		VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
+
+		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+			//Mark mesh resource used in this frame
+			mesh_resource->Use();
+			//Mark material resource used in this frame
+			mat_resource->Use();
+
+			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
+			uint32 offset2 = 0;
+
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[vertexDescriptorID], 2, offsets1);
+			cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _gbuffer->GetAnimationsDescriptorSet(), 1, &offset2);
+			cmdbuf->BindDescriptorSets(*ppl, 3, 1, _deferred_descriptor, 1, offsets1);
+			cmdbuf->BindMesh(*mesh);
+			
+			if (mesh->GetIndexCount() > 0)
+				cmdbuf->DrawIndexed(mesh->GetIndexCount());
+			else
+				cmdbuf->Draw(mesh->GetVerticesCount());
+		}
+	}
+}
+
 void VulkanDeferredLight::Resize(uint32 width, uint32 height) {
 	_fb_width = width;
 	_fb_height = height;
@@ -265,10 +321,6 @@ void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {
 
 void VulkanDeferredLight::SetEnvmap(bool envmap) {
 	_is_envmap = envmap;
-}
-
-void VulkanDeferredLight::SetOutputFormat8() {
-	_outputFormat = FORMAT_RGBA;
 }
 
 VulkanFramebuffer* VulkanDeferredLight::GetFramebuffer() {

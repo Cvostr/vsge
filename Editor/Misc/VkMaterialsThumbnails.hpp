@@ -41,10 +41,6 @@ private:
 	VSGE::LightsBuffer* _lights_buffer;
 	VSGE::VulkanSampler* _sampler;
 
-	VSGE::VulkanCommandPool* _cmdpool;
-	VSGE::VulkanCommandBuffer* _cmdbuf;
-	VSGE::VulkanSemaphore* _begin_semaphore;
-
 	VSGE::VulkanGammaCorrection* _gamma_correction;
 
 	std::vector<VkMaterialThumbnail*> _thumbnails;
@@ -69,8 +65,5 @@ public:
 	VkMaterialThumbnail* GetMaterialThumbnail(const std::string& material_name);
 	ImTextureID GetMaterialThumbnailTexture(const std::string& material_name);
 
-	void RecordCmdBuffer();
 	void RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf);
-	void CmdExecute(VSGE::VulkanSemaphore* end);
-	VSGE::VulkanSemaphore* GetBeginSemaphore();
 };

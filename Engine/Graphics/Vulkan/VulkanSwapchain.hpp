@@ -49,9 +49,7 @@ namespace VSGE {
 
         VulkanSwapChain();
 
-        ~VulkanSwapChain() {
-            Destroy();
-        }
+        ~VulkanSwapChain();
     };
 
 }
