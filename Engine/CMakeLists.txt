@@ -74,6 +74,7 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/VulkanTerrainRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanCamerasBuffer.cpp
 				Graphics/Vulkan/Rendering/VulkanUiRenderer.cpp
+				Graphics/Vulkan/Rendering/VulkanFinalPass.cpp
 				Graphics/Vulkan/Rendering/PBR/Vulkan_BRDF_LUT.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanIrradianceMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanSpecularMap.cpp

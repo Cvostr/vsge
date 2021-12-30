@@ -201,6 +201,9 @@ void VulkanRenderer::SetupRenderer() {
 
 	_main_render_target->SetShadowmapper(_shadowmapper);
 
+	_final_pass = new VulkanFinalPass;
+	_final_pass->Create();
+
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);

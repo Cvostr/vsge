@@ -15,6 +15,14 @@ VulkanFramebuffer::~VulkanFramebuffer() {
 	Destroy();
 }
 
+VkFramebuffer VulkanFramebuffer::GetFramebuffer() {
+	return _framebuffer; 
+}
+
+VulkanRenderPass* VulkanFramebuffer::GetRenderPass() {
+	return _renderpass;
+}
+
 void VulkanFramebuffer::AddAttachment(Texture* attachment) {
 	if (attachment->IsRenderTarget()) {
 		_attachments.push_back(attachment);

@@ -13,8 +13,16 @@ VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_height = 720;
 	_camera_index = 0;
 	_is_envmap = false;
-	_outputFormat = FORMAT_RGBA16F;
 	_gbuffer = nullptr;
+
+	_deferred_fb = nullptr;
+	_deferred_rp = nullptr;
+
+	_deferred_pipeline = nullptr;
+	_deferred_pipeline_layout = nullptr;
+
+	_deferred_pool = nullptr;
+	_deferred_descriptor = nullptr;
 }
 
 VulkanDeferredLight::~VulkanDeferredLight() {
@@ -31,12 +39,12 @@ VulkanDeferredLight::~VulkanDeferredLight() {
 void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_rp = new VulkanRenderPass;
 	_deferred_rp->SetClearSize(_fb_width, _fb_height);
-	_deferred_rp->PushColorAttachment(_outputFormat);
+	_deferred_rp->PushColorAttachment(FORMAT_RGBA16F);
 	_deferred_rp->Create();
 
 	_deferred_fb = new VulkanFramebuffer;
 	_deferred_fb->SetSize(_fb_width, _fb_height);
-	_deferred_fb->AddAttachment(_outputFormat);
+	_deferred_fb->AddAttachment(FORMAT_RGBA16F);
 	_deferred_fb->Create(_deferred_rp);
 }
 
@@ -332,7 +340,7 @@ VulkanRenderPass* VulkanDeferredLight::GetRenderPass() {
 }
 
 TextureFormat VulkanDeferredLight::GetOutputFormat() {
-	return _outputFormat;
+	return FORMAT_RGBA16F;
 }
 
 VulkanTexture* VulkanDeferredLight::GetOutputTexture() {

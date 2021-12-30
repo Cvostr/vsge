@@ -17,7 +17,9 @@ namespace VSGE {
 
 		~VulkanFramebuffer();
 
-		VkFramebuffer GetFramebuffer() { return _framebuffer; }
+		VkFramebuffer GetFramebuffer();
+
+		VulkanRenderPass* GetRenderPass();
 
 		void PushOutputAttachment(uint32_t Index);
 		/// <summary>

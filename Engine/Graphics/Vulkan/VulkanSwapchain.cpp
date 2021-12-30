@@ -83,7 +83,7 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
     swc_create_info.imageColorSpace = chosenSurfaceFormat.colorSpace;
 
     swc_create_info.imageArrayLayers = 1;
-    swc_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; //we'll render directly to images
+    swc_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     swc_create_info.queueFamilyIndexCount = 2;
     uint32 queueFamilyIndices[] = { 

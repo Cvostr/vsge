@@ -24,7 +24,6 @@ namespace VSGE {
 		uint32 _fb_height;
 		uint32 _camera_index;
 		bool _is_envmap;
-		TextureFormat _outputFormat;
 
 		void DrawSkybox(VulkanCommandBuffer* cmdbuf);
 		void DrawParticles(VulkanCommandBuffer* cmdbuf);
