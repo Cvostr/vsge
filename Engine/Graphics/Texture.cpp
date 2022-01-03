@@ -39,6 +39,14 @@ bool Texture::IsStorage(){
     return _flags & TEXTURE_FLAG_IS_STORAGE;
 }
 
+void Texture::SetSwapchain(bool swapchain) {
+    _flags |= swapchain * TEXTURE_FLAG_IS_SWAPCHAIN;
+}
+
+bool Texture::IsSwapchain() {
+    return _flags & TEXTURE_FLAG_IS_SWAPCHAIN;
+}
+
 void Texture::SetFlags(uint32 flags){
     _flags = flags;
 }

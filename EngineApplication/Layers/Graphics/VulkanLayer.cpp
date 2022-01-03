@@ -26,14 +26,19 @@ void VulkanLayer::OnAttach() {
     _presenter = new VulkanPresenter;
 
     _pool = new VulkanDescriptorPool;
-    _pool->SetDescriptorSetsCount(1);
-    _pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1);
+    _pool->SetDescriptorSetsCount(2);
+    _pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2);
     _pool->Create();
 
     _set = new VulkanDescriptorSet;
     _set->SetDescriptorPool(_pool);
     _set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
     _set->Create();
+
+    _ui_set = new VulkanDescriptorSet;
+    _ui_set->SetDescriptorPool(_pool);
+    _ui_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _ui_set->Create();
 
     _output_pipeline_layout = new VulkanPipelineLayout;
     _output_pipeline_layout->PushDescriptorSet(_set);
@@ -44,8 +49,14 @@ void VulkanLayer::OnAttach() {
     _vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
     _vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 
+    BlendAttachmentDesc particle_blend_desc;
+    particle_blend_desc._blending = true;
+    particle_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
+    particle_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+
     output_pipeline = new VulkanPipeline;
     output_pipeline->SetDepthTest(false);
+    output_pipeline->SetBlendingAttachmentDesc(0, particle_blend_desc);
     output_pipeline->Create(_copy_shader, _presenter->GetRenderPass(), _vertexLayout, _output_pipeline_layout);
 
     VulkanSwapChain* swc = vk->GetSwapChain();
@@ -54,6 +65,7 @@ void VulkanLayer::OnAttach() {
     renderer->ResizeOutput(extent.width, extent.height);
 
     _set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetOutputTexture(), renderer->GetAttachmentSampler());
+    _ui_set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetUiRenderer()->GetOutputTexture(), renderer->GetAttachmentSampler());
 
     renderer->SetBeginSemaphore(_imageAvailable);
 }
@@ -89,6 +101,7 @@ void VulkanLayer::UpdatePresentingTexture() {
     renderer->ResizeOutput(new_extent.width, new_extent.height);
 
     _set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetOutputTexture(), renderer->GetAttachmentSampler());
+    _ui_set->WriteDescriptorImage(0, (VulkanTexture*)renderer->GetUiRenderer()->GetOutputTexture(), renderer->GetAttachmentSampler());
 }
 
 void VulkanLayer::RecordCmdbuf(uint32 index) {
@@ -106,6 +119,12 @@ void VulkanLayer::RecordCmdbuf(uint32 index) {
     _cmdbuf->BindDescriptorSets(*_output_pipeline_layout, 0, 1, _set);
     _cmdbuf->BindMesh(*mesh, 0);
     _cmdbuf->DrawIndexed(6);
+
+
+    _cmdbuf->BindDescriptorSets(*_output_pipeline_layout, 0, 1, _ui_set);
+    _cmdbuf->DrawIndexed(6);
+
     _cmdbuf->EndRenderPass();
+    
     _cmdbuf->End();
 }

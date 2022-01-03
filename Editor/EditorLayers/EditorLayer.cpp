@@ -104,7 +104,7 @@ bool EditorLayer::OpenProject(const Project& project) {
 	ImGuiLayer::Get()->AddWindow(new ConsoleWindow);
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(project.GetAssetsDirectory()));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
-	ImGuiLayer::Get()->AddWindow(new PlayerViewWindow);
+	//ImGuiLayer::Get()->AddWindow(new PlayerViewWindow);
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
 
 	EditorSettingsWindow* settings = new EditorSettingsWindow;

@@ -21,6 +21,7 @@ namespace VSGE {
 
 		VulkanDescriptorPool* _pool;
 		VulkanDescriptorSet* _set;
+		VulkanDescriptorSet* _ui_set;
 
 		VulkanSemaphore* _imageAvailable;
 		VulkanSemaphore* _presentBegin;

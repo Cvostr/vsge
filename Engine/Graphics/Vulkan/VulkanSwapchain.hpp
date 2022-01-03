@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include "VulkanDevice.hpp"
+#include "VulkanTexture.hpp"
 #include "../GpuObject.hpp"
 
 namespace VSGE {
@@ -23,8 +24,7 @@ namespace VSGE {
         VkSwapchainKHR mSwapChain;
         SwapChainSupportDetails SW_Details;
         //Images, created from swapchain images
-        std::vector<VkImage> mSwapChainImages;
-        std::vector<VkImageView> mSwapChainImageViews;
+        std::vector<VulkanTexture*> _swapchain_images;
         //Surface format of created images
         VkSurfaceFormatKHR chosenSurfaceFormat;
         VkPresentModeKHR chosenPresentMode;
@@ -39,12 +39,9 @@ namespace VSGE {
 
         void Destroy();
 
-        VkSwapchainKHR GetSwapChain() { return mSwapChain; }
-        uint32_t GetSwapChainImagesCount() { 
-            return static_cast<uint32_t>(mSwapChainImages.size()); 
-        }
-        VkImage GetImageAtIndex(uint32 index);
-        VkImageView GetImageViewAtIndex(uint32 index);
+        VkSwapchainKHR GetSwapChain();
+        uint32 GetSwapChainImagesCount();
+        VulkanTexture* GetImageAtIndex(uint32 index);
         VkExtent2D GetExtent() { return swap_extend; }
 
         VulkanSwapChain();

@@ -15,23 +15,8 @@ namespace VSGE {
 
 		VulkanShader* _ssao_shader;
 		VulkanShader* _ssao_blur_shader;
-		
-		VulkanDescriptorPool* _descr_pool;
-		VulkanDescriptorSet* _ssao_descr_set;
-		VulkanDescriptorSet* _ssao_blur_descr_set;
-
-		VulkanComputePipeline* _ssao_pipeline;
-		VulkanPipelineLayout* _ssao_pp_layout;
-
-		VulkanComputePipeline* _ssao_blur_pipeline;
-		VulkanPipelineLayout* _ssao_blur_pp_layout;
-
-		VulkanTexture* _ssao_texture;
-		VulkanTexture* _ssao_blur_texture;
 
 		void CreatePrecomputedSSAO();
-
-		void UpdateProjectionMatrix(uint32 cam_index = 0);
 	public:
 		VulkanSSAO();
 		~VulkanSSAO();

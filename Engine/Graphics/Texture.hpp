@@ -15,6 +15,7 @@ namespace VSGE {
     #define TEXTURE_FLAG_IS_RENDER_TARGET 0b1
     #define TEXTURE_FLAG_IS_CUBEMAP 0b10
     #define TEXTURE_FLAG_IS_STORAGE 0b100
+    #define TEXTURE_FLAG_IS_SWAPCHAIN 0b1000
 
 	class Texture : public IGpuObject{
     protected:
@@ -29,7 +30,7 @@ namespace VSGE {
 
         Texture();
 
-        ~Texture();
+        virtual ~Texture();
 
         TextureFormat GetFormat() { return _format; }
         uint32 GetMipsCount() { return _mipLevels; }
@@ -45,6 +46,9 @@ namespace VSGE {
 
         void SetStorage(bool storage);
         bool IsStorage();
+
+        void SetSwapchain(bool swapchain);
+        bool IsSwapchain();
 
         void SetFlags(uint32 flags);
 

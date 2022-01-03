@@ -57,7 +57,7 @@ void VulkanFramebuffer::PushOutputAttachment(uint32_t Index) {
 
 	Framebuffer::SetSize(swapchain->GetExtent().width, swapchain->GetExtent().height);
 	
-	_views.push_back(vulkan_rapi->GetSwapChain()->GetImageViewAtIndex(Index));
+	_views.push_back(vulkan_rapi->GetSwapChain()->GetImageAtIndex(Index)->GetImageView());
 }
 
 void VulkanFramebuffer::Resize(uint32 width, uint32 height) {

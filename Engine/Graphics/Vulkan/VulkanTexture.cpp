@@ -94,14 +94,50 @@ TextureFormat VSGE::GetTextureFormat(VkFormat format){
 	return _format;
 }
 
+VulkanTexture::VulkanTexture() :
+	Texture(),
+	_imageView(VK_NULL_HANDLE),
+	_usage(VK_IMAGE_USAGE_SAMPLED_BIT),
+	_layout(VK_IMAGE_LAYOUT_UNDEFINED)
+{}
+
+VulkanTexture::VulkanTexture(
+	VkImage image,
+	void* allocation,
+	VkImageView imageView,
+	uint32 width,
+	uint32 height,
+	uint32 layers,
+	uint32 mips,
+	VkImageUsageFlags usage,
+	VkImageLayout layout)
+{
+	_image.Image = image;
+	_image._allocation = allocation;
+	_imageView = imageView;
+	_maxWidth = width;
+	_maxHeight = height;
+	_layers = layers;
+	_mipLevels = mips;
+	_format = FORMAT_RGBA;
+	_usage = usage;
+	_layout = layout;
+}
+
+VulkanTexture::~VulkanTexture() {
+	Destroy();
+}
+
 void VulkanTexture::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan->GetDevice();
 		VulkanMA* ma = vulkan->GetAllocator();
-
+		//Destroy Image View
 		vkDestroyImageView(device->getVkDevice(), _imageView, nullptr);
-		ma->destroyImage(&_image);
+		//Destroy image if it isn't swapchain image
+		if(!IsSwapchain())
+			ma->destroyImage(&_image);
 
 		_layout = VK_IMAGE_LAYOUT_UNDEFINED;
 		_usage = VK_IMAGE_USAGE_SAMPLED_BIT;

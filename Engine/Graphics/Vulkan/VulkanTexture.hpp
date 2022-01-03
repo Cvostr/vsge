@@ -22,17 +22,25 @@ namespace VSGE {
         void Transition(VmaVkBuffer& buffer, uint32 MipLevel, uint32 layer, uint32 Width, uint32 Height);
 
     public:
-
-        VulkanTexture() : 
-            Texture(),
-            _imageView(VK_NULL_HANDLE),
-            _usage(VK_IMAGE_USAGE_SAMPLED_BIT),
-            _layout(VK_IMAGE_LAYOUT_UNDEFINED)
-        {}
-
-        ~VulkanTexture() {
-            Destroy();
-        }
+        /// <summary>
+        /// Base constructor
+        /// </summary>
+        VulkanTexture();
+        /// <summary>
+        /// Alternate constructor for custom textures (e.g swapchain images)
+        /// </summary>
+        VulkanTexture(
+            VkImage image,
+            void* allocation,
+            VkImageView imageView, 
+            uint32 width, 
+            uint32 height, 
+            uint32 layers, 
+            uint32 mips,
+            VkImageUsageFlags usage,
+            VkImageLayout layout);
+        
+        ~VulkanTexture();
 
         /// <summary>
         /// Get vulkan image

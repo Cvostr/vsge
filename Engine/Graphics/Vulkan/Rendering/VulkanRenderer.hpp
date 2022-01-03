@@ -16,7 +16,6 @@
 #include "VulkanCamerasBuffer.hpp"
 #include "PBR/VulkanIrradianceMap.hpp"
 #include "VulkanRenderTarget.hpp"
-#include "VulkanFinalPass.hpp"
 
 #include "PBR/VulkanIBL.hpp"
 
@@ -67,7 +66,6 @@ namespace VSGE {
 		VulkanIBL* _ibl_map;
 		std::vector<VulkanRenderTarget*> _render_targets;
 		VulkanRenderTarget* _main_render_target;
-		VulkanFinalPass* _final_pass;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 
@@ -116,6 +114,8 @@ namespace VSGE {
 		VulkanCamerasBuffer* GetCamerasBuffer();
 
 		Vulkan_BRDF_LUT* GetBRDF();
+
+		VulkanUiRenderer* GetUiRenderer();
 
 		LightsBuffer* GetLightsBuffer();
 

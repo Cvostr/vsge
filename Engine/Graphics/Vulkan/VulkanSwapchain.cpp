@@ -5,6 +5,8 @@
 
 using namespace VSGE;
 
+const VkImageUsageFlags usage_flags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
 VulkanSwapChain::VulkanSwapChain() :
     mSwapChain(VK_NULL_HANDLE)
 {
@@ -17,16 +19,10 @@ VulkanSwapChain::~VulkanSwapChain() {
     Destroy();
 }
 
-VkImageView VulkanSwapChain::GetImageViewAtIndex(uint32 index) {
-    if (index > this->mSwapChainImageViews.size())
-        index = static_cast<uint32_t>(mSwapChainImageViews.size());
-    return mSwapChainImageViews[index];
-}
-
-VkImage VulkanSwapChain::GetImageAtIndex(uint32 index) {
-    if (index > this->mSwapChainImages.size())
-        index = static_cast<uint32_t>(mSwapChainImages.size());
-    return mSwapChainImages[index];
+VulkanTexture* VulkanSwapChain::GetImageAtIndex(uint32 index) {
+    if (index > _swapchain_images.size())
+        index = static_cast<uint32_t>(_swapchain_images.size());
+    return _swapchain_images[index];
 }
 
 bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
@@ -83,7 +79,7 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
     swc_create_info.imageColorSpace = chosenSurfaceFormat.colorSpace;
 
     swc_create_info.imageArrayLayers = 1;
-    swc_create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swc_create_info.imageUsage = usage_flags;
 
     swc_create_info.queueFamilyIndexCount = 2;
     uint32 queueFamilyIndices[] = { 
@@ -129,11 +125,11 @@ void VulkanSwapChain::Destroy() {
     if (mCreated) {
         //Destroy created image views
         for (uint32_t img_i = 0; img_i < GetSwapChainImagesCount(); img_i++) {
-            vkDestroyImageView(device, mSwapChainImageViews[img_i], nullptr);
+            vkDestroyImageView(device, _swapchain_images[img_i]->GetImageView(), nullptr);
+            delete _swapchain_images[img_i];
         }
         //Clear image view array
-        mSwapChainImageViews.clear();
-        mSwapChainImages.clear();
+        _swapchain_images.clear();
         SW_Details.Clear();
         //Destroy Swapchain
         vkDestroySwapchainKHR(device, mSwapChain, nullptr);
@@ -142,21 +138,28 @@ void VulkanSwapChain::Destroy() {
     }
 }
 
+VkSwapchainKHR VulkanSwapChain::GetSwapChain() {
+    return mSwapChain; 
+}
+
+uint32 VulkanSwapChain::GetSwapChainImagesCount() {
+    return static_cast<uint32>(_swapchain_images.size());
+}
+
 void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) {
     uint32_t swc_images;
-
+    std::vector<VkImage> swapchain_images;
     vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, nullptr);
-    mSwapChainImages.resize(swc_images);
-    vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, mSwapChainImages.data());
+    swapchain_images.resize(swc_images);
+    vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, swapchain_images.data());
 
-    this->mSwapChainImageViews.resize(swc_images);
     //Iterate over all swapchain images and create image views
     for (uint32 sw_i = 0; sw_i < swc_images; sw_i++) {
         VkImageViewCreateInfo img_view_create_info;
         img_view_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         img_view_create_info.pNext = nullptr;
         img_view_create_info.flags = 0;
-        img_view_create_info.image = mSwapChainImages[sw_i];
+        img_view_create_info.image = swapchain_images[sw_i];
         img_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
         img_view_create_info.format = ChosenSurfaceFormat.format;
 
@@ -171,6 +174,20 @@ void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR Chos
         img_view_create_info.subresourceRange.baseArrayLayer = 0;
         img_view_create_info.subresourceRange.layerCount = 1;
 
-        vkCreateImageView(Device->getVkDevice(), &img_view_create_info, nullptr, &mSwapChainImageViews[sw_i]);
+        VkImageView imageView = VK_NULL_HANDLE;
+        vkCreateImageView(Device->getVkDevice(), &img_view_create_info, nullptr, &imageView);
+
+        VulkanTexture* texture = new VulkanTexture(
+            swapchain_images[sw_i],
+            nullptr,
+            imageView,
+            swap_extend.width,
+            swap_extend.height,
+            1,
+            1,
+            usage_flags,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+        texture->SetSwapchain(true);
+        _swapchain_images.push_back(texture);
     }
 }

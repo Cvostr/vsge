@@ -96,6 +96,7 @@ void VkMaterialsThumbnails::Create() {
     _gamma_correction->ResizeOutput(Vec2i(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE));
     VulkanTexture* src = (VulkanTexture*)_light->GetFramebuffer()->GetColorAttachments()[0];
     _gamma_correction->SetInputTexture(src);
+    _gamma_correction->SetKeepAlpha(true);
 }
 
 void VkMaterialsThumbnails::Destroy() {

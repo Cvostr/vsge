@@ -349,7 +349,7 @@ void ImGuiLayer::DrawDockWindow() {
             ImGui::DockBuilderDockWindow("Console", dock_down_id);
             ImGui::DockBuilderDockWindow("File Browser", dock_down_id);
             ImGui::DockBuilderDockWindow("World view", dock_main_id);
-            ImGui::DockBuilderDockWindow("Player view", dock_main_id);
+            //ImGui::DockBuilderDockWindow("Player view", dock_main_id);
 
             ImGui::DockBuilderFinish(dock_main_id);
         }

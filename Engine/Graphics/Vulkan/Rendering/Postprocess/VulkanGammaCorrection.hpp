@@ -19,6 +19,8 @@ namespace VSGE {
 
 		void CreateConstants();
 		void CreateDescriptors();
+
+		VulkanPipeline* _pipeline;
 	public:
 
 		VulkanGammaCorrection();
@@ -30,6 +32,7 @@ namespace VSGE {
 		void SetInputBloomTexture(VulkanTexture* input);
 		void FillCommandBuffer(VulkanCommandBuffer* cmdbuf);
 		void ResizeOutput(const Vec2i& new_size);
+		void SetKeepAlpha(bool keepAlpha);
 		VulkanTexture* GetOutputTexture();
 	};
 }
