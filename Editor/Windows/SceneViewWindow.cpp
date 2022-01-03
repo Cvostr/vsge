@@ -27,7 +27,8 @@ void SceneViewWindow::OnDrawWindow() {
 
         if (texture == nullptr) {
             VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
-            VSGE::VulkanTexture* out = (VSGE::VulkanTexture*)renderer->GetOutputTexture();
+            //VSGE::VulkanTexture* out = (VSGE::VulkanTexture*)renderer->GetOutputTexture();
+            VSGE::VulkanTexture* out = (VSGE::VulkanTexture*)renderer->GetFinalPass()->GetFramebuffer()->GetColorAttachments()[0];
             texture = ImGui_ImplVulkan_AddTexture(renderer->GetAttachmentSampler()->GetSampler(),
                 out->GetImageView(),
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -94,6 +95,8 @@ void SceneViewWindow::OnWindowResize() {
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
     renderer->ResizeOutput((uint32)_size.x, (uint32)_size.y);
+
+    renderer->GetFinalPass()->Resize((uint32)_size.x, (uint32)_size.y);
 
     if(texture != nullptr){
         //ImGui_ImplVulkan_DestroyTexture(texture);

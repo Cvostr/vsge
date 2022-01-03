@@ -20,9 +20,13 @@ namespace VSGE {
 
 		VulkanDescriptorPool* _pool;
 		VulkanDescriptorSet* _world_descr;
-		VulkanDescriptorSet* _ui_descr;
+		//VulkanDescriptorSet* _ui_descr;
 
 		bool _render_to_swapchain;
+		bool _draw_ui;
+
+		uint32 _width;
+		uint32 _height;
 	public:
 
 		VulkanFinalPass();
@@ -30,9 +34,12 @@ namespace VSGE {
 
 		void Create();
 		void Destroy();
+		void CreateFramebuffer();
 		void SetRenderToSwapchain(bool sw);
 		void SetAttachments(VulkanTexture* world, VulkanTexture* ui);
 		void SetFramebuffer(VulkanFramebuffer* fb);
+		VulkanFramebuffer* GetFramebuffer();
 		void RecordCmdbuffer(VulkanCommandBuffer* cmdbuffer);
+		void Resize(uint32 width, uint32 height);
 	};
 }

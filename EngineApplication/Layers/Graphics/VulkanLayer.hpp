@@ -11,23 +11,11 @@
 namespace VSGE {
 	class VulkanLayer : public IApplicationLayer {
 	private:
-		VulkanCommandPool* _cmdpool;
-		VulkanCommandBuffer* _cmdbuf;
-
-		VulkanShader* _copy_shader;
 		VulkanPresenter* _presenter;
-		VulkanPipelineLayout* _output_pipeline_layout;
-		VulkanPipeline* output_pipeline;
-
-		VulkanDescriptorPool* _pool;
-		VulkanDescriptorSet* _set;
-		VulkanDescriptorSet* _ui_set;
 
 		VulkanSemaphore* _imageAvailable;
-		VulkanSemaphore* _presentBegin;
 
 		void UpdatePresentingTexture();
-		void RecordCmdbuf(uint32 index);
 	public:
 		void OnAttach();
 		void OnUpdate();

@@ -39,6 +39,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 		VulkanRAPI* vk = new VulkanRAPI;
 		vk->Create(&app->GetWindow());
 		VulkanRenderer* renderer = new VulkanRenderer;
+		renderer->GetFinalPass()->SetRenderToSwapchain(true);
+		renderer->GetFinalPass()->Create();
 		app->SetRenderer(renderer);
 
 		AddDefaultMaterial();

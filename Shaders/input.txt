@@ -41,6 +41,7 @@ shader ui/ui_add.comp
 shader postprocess/gamma_correction/gamma_correction.frag
 shader postprocess/gamma_correction/gamma_correction_alpha.frag
 shader postprocess/copy.frag
+shader postprocess/ui_combine.frag
 
 shader postprocess/hdr_bloom/bloom_bright.frag
 shader postprocess/hdr_bloom/bloom_blur_v.frag

@@ -14,6 +14,15 @@ using namespace VSGE;
 
 VulkanRenderer* VulkanRenderer::_this = nullptr;
 
+VulkanRenderer::VulkanRenderer() : IRenderer() {
+	_this = this;
+	SetupRenderer();
+}
+
+VulkanRenderer::~VulkanRenderer() {
+	DestroyRenderer();
+}
+
 void VulkanRenderer::SetupRenderer() {
 	//--------------------Shaders-----------------------
 	ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
@@ -200,6 +209,8 @@ void VulkanRenderer::SetupRenderer() {
 	_shadowmapper->SetTerrainsToRender(&_terrains);
 
 	_main_render_target->SetShadowmapper(_shadowmapper);
+
+	_final_pass = new VulkanFinalPass;
 
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
@@ -424,6 +435,9 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 		render_target->RecordCommandBuffers(_render_targets_cmdbuf);
 	}
 	_ui_renderer->RecordCommandBuffer(_render_targets_cmdbuf);
+
+	_final_pass->RecordCmdbuffer(_render_targets_cmdbuf);
+
 	_render_targets_cmdbuf->End();
 
 	_ibl_map->RecordCmdBufs();
@@ -506,6 +520,9 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	_ui_renderer->ResizeOutput(width, height);
 
 	mOutput = _main_render_target->GetGammaCorrectedOutput();
+
+	GetFinalPass()->Resize(width, height);
+	GetFinalPass()->SetAttachments(_main_render_target->GetGammaCorrectedOutput(), GetUiAttachment());
 }
 
 VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
@@ -567,6 +584,14 @@ Vulkan_BRDF_LUT* VulkanRenderer::GetBRDF() {
 
 VulkanUiRenderer* VulkanRenderer::GetUiRenderer() {
 	return _ui_renderer;
+}
+
+VulkanFinalPass* VulkanRenderer::GetFinalPass() {
+	return _final_pass;
+}
+
+VulkanTexture* VulkanRenderer::GetUiAttachment() {
+	return _ui_renderer->GetOutputTexture();
 }
 
 LightsBuffer* VulkanRenderer::GetLightsBuffer() {

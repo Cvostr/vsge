@@ -43,6 +43,9 @@ Application* VSGEMain(int argc, char* argv[]) {
 	app->AddLayer(new SceneLayer);
 
 	VulkanRenderer* renderer = new VulkanRenderer;
+	renderer->GetFinalPass()->SetRenderToSwapchain(false);
+	renderer->GetFinalPass()->Create();
+	renderer->GetFinalPass()->CreateFramebuffer();
 	app->SetRenderer(renderer);
 
 	app->AddLayer(new EditorLayer);
