@@ -48,14 +48,8 @@ void VulkanFinalPass::Create() {
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
 
-	BlendAttachmentDesc particle_blend_desc;
-	particle_blend_desc._blending = true;
-	particle_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
-	particle_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-
 	_copy_pipeline = new VulkanPipeline;
 	_copy_pipeline->SetDepthTest(false);
-	_copy_pipeline->SetBlendingAttachmentDesc(0, particle_blend_desc);
 	_copy_pipeline->Create(_copy_shader, _rp, _vertexLayout, _copy_pl);
 }
 

@@ -56,6 +56,7 @@ void VulkanBloomBase::Create(){
 	_bloom_blur_h_pipeline->Create(_bloom_blur_h_shader, bright_rp, _vertexLayout, _bloom_bright_playout);
 
 	delete bright_rp;
+	delete base_set;
 }
 
 VulkanRenderPass* VulkanBloomBase::CreateBrightRenderpass() {

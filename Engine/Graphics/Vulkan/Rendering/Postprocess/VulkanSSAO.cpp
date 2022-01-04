@@ -7,22 +7,18 @@
 
 using namespace VSGE;
 
+VulkanSSAOBase* ssao_base = nullptr;
+
 #define KERNEL_COUNT 64
 
-VulkanSSAO::VulkanSSAO() {
-    _output_size = Vec2i(1280, 720);
-
-    _ssao_noise = nullptr;
-    _ssao_kernel = nullptr;
-
-    _ssao_shader = nullptr;
-    _ssao_blur_shader = nullptr;
+VulkanSSAOBase::VulkanSSAOBase() {
+    Create();
 }
-VulkanSSAO::~VulkanSSAO() {
+VulkanSSAOBase::~VulkanSSAOBase() {
     Destroy();
 }
 
-void VulkanSSAO::CreatePrecomputedSSAO() {
+void VulkanSSAOBase::CreatePrecomputedSSAO() {
     std::uniform_real_distribution<float> randomFloats(0.0, 1.0); // random floats between [0.0, 1.0]
     std::default_random_engine generator;
     //generate SSAO kernel
@@ -63,7 +59,7 @@ void VulkanSSAO::CreatePrecomputedSSAO() {
         4, 4, 0, 0);
     _ssao_noise->SetReadyToUseInShaders();
 }
-void VulkanSSAO::Create() {
+void VulkanSSAOBase::Create() {
     CreatePrecomputedSSAO();
 
     _ssao_shader = new VulkanShader;
@@ -74,8 +70,85 @@ void VulkanSSAO::Create() {
     _ssao_blur_shader->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
     _ssao_blur_shader->AddShaderFromFile("ssao_blur.frag", SHADER_STAGE_FRAGMENT);
 
+    VulkanDescriptorSet* ssao_base_set = new VulkanDescriptorSet;
+    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_base_set->CreateLayout();
+    
+    VulkanDescriptorSet* ssao_blur_base_set = new VulkanDescriptorSet;
+    ssao_blur_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_blur_base_set->CreateLayout();
+
+    _ssao_playout = new VulkanPipelineLayout;
+    _ssao_playout->PushDescriptorSet(ssao_base_set);
+    _ssao_playout->Create();
+
+    _ssao_blur_playout = new VulkanPipelineLayout;
+    _ssao_blur_playout->PushDescriptorSet(ssao_blur_base_set);
+    _ssao_blur_playout->Create();
+
+    VertexLayout _vertexLayout;
+    _vertexLayout.AddBinding(sizeof(Vertex));
+    _vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+    _vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
+
+    VulkanRenderPass* rp = CreateSSAORenderPass();
+
+    _ssao_pipeline = new VulkanPipeline;
+    _ssao_pipeline->SetDynamicCullMode(false);
+    _ssao_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+    _ssao_pipeline->Create(_ssao_shader, rp, _vertexLayout, _ssao_playout);
+
+    _ssao_blur_pipeline = new VulkanPipeline;
+    _ssao_blur_pipeline->SetDynamicCullMode(false);
+    _ssao_blur_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+    _ssao_blur_pipeline->Create(_ssao_blur_shader, rp, _vertexLayout, _ssao_blur_playout);
+
 }
 
+VulkanRenderPass* VulkanSSAOBase::CreateSSAORenderPass() {
+    VulkanRenderPass* rp = new VulkanRenderPass;
+    rp->PushColorAttachment(FORMAT_RGBA);
+    rp->Create();
+    return rp;
+}
+
+void VulkanSSAOBase::Destroy() {
+
+}
+
+
+VulkanSSAO::VulkanSSAO() {
+
+}
+VulkanSSAO::~VulkanSSAO() {
+    Destroy();
+}
+
+void VulkanSSAO::Create() {
+    if (!ssao_base)
+        ssao_base = new VulkanSSAOBase; 
+    
+    _descr_pool = new VulkanDescriptorPool;
+
+    _ssao_descr_set = new VulkanDescriptorSet(_descr_pool);
+    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    _ssao_blur_descr_set = new VulkanDescriptorSet(_descr_pool);
+    _ssao_blur_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    _descr_pool->Create();
+
+    _ssao_descr_set->Create();
+    _ssao_blur_descr_set->Create();
+
+    _rpass = ssao_base->CreateSSAORenderPass();
+}
 void VulkanSSAO::Destroy() {
 
 }

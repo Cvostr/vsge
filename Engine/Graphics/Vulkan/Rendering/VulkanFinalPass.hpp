@@ -20,7 +20,6 @@ namespace VSGE {
 
 		VulkanDescriptorPool* _pool;
 		VulkanDescriptorSet* _world_descr;
-		//VulkanDescriptorSet* _ui_descr;
 
 		bool _render_to_swapchain;
 		bool _draw_ui;
