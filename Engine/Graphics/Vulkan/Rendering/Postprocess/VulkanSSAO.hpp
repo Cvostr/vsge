@@ -31,7 +31,12 @@ namespace VSGE {
 		void Create();
 		void Destroy();
 
+		VulkanBuffer* GetKernelBuffer();
+		VulkanTexture* GetNoiseTexture();
 		VulkanRenderPass* CreateSSAORenderPass();
+
+		VulkanPipeline* GetSSAOPipeline();
+		VulkanPipeline* GetSSAOBlurPipeline();
 	};
 
 	class VulkanSSAO : public PostprocessEffect {
@@ -42,8 +47,10 @@ namespace VSGE {
 		VulkanDescriptorSet* _ssao_blur_descr_set;
 
 		VulkanRenderPass* _rpass;
-		VulkanFramebuffer* _fb_bright;
-		VulkanFramebuffer* _fb_1;
+		VulkanFramebuffer* _fb_ssao;
+		VulkanFramebuffer* _fb_ssao_blur;
+
+		uint32 _camera_index;
 	public:
 		VulkanSSAO();
 		~VulkanSSAO();
@@ -51,6 +58,7 @@ namespace VSGE {
 		void Create();
 		void Destroy();
 
+		void SetCameraIndex(uint32 camera_index);
 		void SetInputTexture(Texture* input);
 		void SetInputTextures(
 			Texture* input_positions, 

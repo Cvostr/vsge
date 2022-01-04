@@ -4,6 +4,7 @@
 #include "VulkanDeferredLight.hpp"
 #include "Postprocess/VulkanGammaCorrection.hpp"
 #include "Postprocess/VulkanBloom.hpp"
+#include "Postprocess/VulkanSSAO.hpp"
 #include "PBR/VulkanIBL.hpp"
 
 namespace VSGE {
@@ -14,6 +15,7 @@ namespace VSGE {
 
 		VulkanGammaCorrection* _gamma_correction;
 		VulkanBloom* _bloom;
+		VulkanSSAO* _ssao;
 
 		VulkanTexture* _output;
 

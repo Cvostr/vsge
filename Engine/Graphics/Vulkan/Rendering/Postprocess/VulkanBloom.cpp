@@ -155,7 +155,6 @@ void VulkanBloom::RecordCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->BindPipeline(*base->GetBlurVPipeline());
 	cmdbuf->BindDescriptorSets(*base->GetBrightnessPipelineLayout(), 0, 1,
 		_blur_1_descr_set);
-	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
 
@@ -163,7 +162,6 @@ void VulkanBloom::RecordCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->BindPipeline(*base->GetBlurHPipeline());
 	cmdbuf->BindDescriptorSets(*base->GetBrightnessPipelineLayout(), 0, 1,
 		_blur_2_descr_set);
-	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
 }

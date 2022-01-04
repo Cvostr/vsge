@@ -37,7 +37,8 @@ void SceneLayer::OnDetach() {
 }
 
 void SceneLayer::OnUpdate() {
-	_scenes[0]->Update();
+	for(auto& scene : _scenes)
+		scene->Update();
 }
 
 void SceneLayer::StartScene(uint32 index) {

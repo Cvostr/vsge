@@ -10,8 +10,13 @@ layout(set=0, binding=2) uniform sampler2D noise;
 
 layout (std140, set = 0, binding = 3) uniform Buffer{
     vec3 samples[64];
-    mat4 view;
-    mat4 projection;
+};
+
+layout (std140, binding = 4) uniform CamMatrices{
+    mat4 cam_view_projection;
+    mat4 cam_view;
+    mat4 cam_projection;
+    vec3 cam_position;
 };
 
 void main() {
@@ -21,7 +26,7 @@ void main() {
         discard;
     }
     vec3 fragPos = pos.xyz;
-    fragPos = (view * vec4(fragPos, 1)).xyz;
+    fragPos = (cam_view * vec4(fragPos, 1)).xyz;
     vec3 normal = normalize(texture(normals, UVCoord).rgb);
     vec3 randomVec = texture(noise, UVCoord * noise_uv_scale).xyz;  
 
@@ -38,10 +43,10 @@ void main() {
         vec3 samplePos = TBN * samples[i]; // from tangent to view-space
         samplePos = fragPos + samplePos * radius; 
         vec4 offset = vec4(samplePos, 1.0);
-        offset      = projection * offset;    
+        offset      = cam_projection * offset;    
         offset.xyz /= offset.w;               
         offset.xyz  = offset.xyz * 0.5 + 0.5;
-        float sampleDepth = (view * vec4(texture(positions, offset.xy).rgb, 1)).z;  
+        float sampleDepth = (cam_view * vec4(texture(positions, offset.xy).rgb, 1)).z;  
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;       
     }

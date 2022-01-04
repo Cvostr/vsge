@@ -35,6 +35,9 @@ void VulkanRenderTarget::Create() {
 
 	_bloom = new VulkanBloom;
 	_bloom->Create();
+
+	_ssao = new VulkanSSAO;
+	_ssao->Create();
 }
 void VulkanRenderTarget::Destroy() {
 	SAFE_RELEASE(_deferred_renderer);
@@ -87,6 +90,9 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	_bloom->SetInputTextureHDR(_deferred_renderer->GetOutputTexture());
 	_bloom->ResizeOutput(Vec2i(width, height));
 
+	_ssao->SetInputTextures(GetGBufferPositionsAttachment(), GetGBufferNormalsAttachment());
+	_ssao->ResizeOutput(Vec2i(width, height));
+
 	_gamma_correction->SetInputBloomTexture(_bloom->GetBlurredBloomTextureHDR());
 }
 void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
@@ -125,6 +131,8 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 	_deferred_renderer->RecordCmdbuf(cmdbuffer);
 	
 	_bloom->RecordCommandBuffer(cmdbuffer);
+
+	_ssao->FillCommandBuffer(cmdbuffer);
 
 	_gamma_correction->FillCommandBuffer(cmdbuffer);
 	

@@ -74,7 +74,8 @@ void VulkanSSAOBase::Create() {
     ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
     ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
     ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
-    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ssao_base_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
     ssao_base_set->CreateLayout();
     
     VulkanDescriptorSet* ssao_blur_base_set = new VulkanDescriptorSet;
@@ -106,21 +107,55 @@ void VulkanSSAOBase::Create() {
     _ssao_blur_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
     _ssao_blur_pipeline->Create(_ssao_blur_shader, rp, _vertexLayout, _ssao_blur_playout);
 
+    delete ssao_base_set;
+    delete ssao_blur_base_set;
+    delete rp;
+}
+
+VulkanBuffer* VulkanSSAOBase::GetKernelBuffer() {
+    return _ssao_kernel;
+}
+
+VulkanTexture* VulkanSSAOBase::GetNoiseTexture() {
+    return _ssao_noise;
+}
+
+VulkanPipeline* VulkanSSAOBase::GetSSAOPipeline() {
+    return _ssao_pipeline;
+}
+VulkanPipeline* VulkanSSAOBase::GetSSAOBlurPipeline() {
+    return _ssao_blur_pipeline;
 }
 
 VulkanRenderPass* VulkanSSAOBase::CreateSSAORenderPass() {
     VulkanRenderPass* rp = new VulkanRenderPass;
+    rp->SetClearSize(1280, 720);
     rp->PushColorAttachment(FORMAT_RGBA);
     rp->Create();
     return rp;
 }
 
 void VulkanSSAOBase::Destroy() {
+    SAFE_RELEASE(_ssao_blur_pipeline);
+    SAFE_RELEASE(_ssao_pipeline);
 
+    SAFE_RELEASE(_ssao_blur_playout);
+    SAFE_RELEASE(_ssao_playout);
+
+    SAFE_RELEASE(_ssao_blur_shader);
+    SAFE_RELEASE(_ssao_shader);
 }
 
 
-VulkanSSAO::VulkanSSAO() {
+VulkanSSAO::VulkanSSAO():
+    _camera_index(0),
+    _descr_pool(nullptr),
+    _ssao_descr_set(nullptr),
+    _ssao_blur_descr_set(nullptr),
+    _rpass(nullptr),
+    _fb_ssao(nullptr),
+    _fb_ssao_blur(nullptr)
+{
 
 }
 VulkanSSAO::~VulkanSSAO() {
@@ -137,7 +172,8 @@ void VulkanSSAO::Create() {
     _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
     _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
     _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
-    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+    _ssao_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
 
     _ssao_blur_descr_set = new VulkanDescriptorSet(_descr_pool);
     _ssao_blur_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -147,10 +183,33 @@ void VulkanSSAO::Create() {
     _ssao_descr_set->Create();
     _ssao_blur_descr_set->Create();
 
+    //write images and buffers to ssao descriptor set
+    {
+        _ssao_descr_set->WriteDescriptorImage(2, ssao_base->GetNoiseTexture(),
+            VulkanRenderer::Get()->GetAttachmentSampler());
+
+        _ssao_descr_set->WriteDescriptorBuffer(3, ssao_base->GetKernelBuffer());
+
+        _ssao_descr_set->WriteDescriptorBuffer(4,
+            VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
+    }
+
     _rpass = ssao_base->CreateSSAORenderPass();
+
+    _fb_ssao = new VulkanFramebuffer;
+    _fb_ssao->SetSize(1280, 720);
+    _fb_ssao->AddAttachment(FORMAT_RGBA);
+    _fb_ssao->Create(_rpass);
+
+    _fb_ssao_blur = new VulkanFramebuffer;
+    _fb_ssao_blur->SetSize(1280, 720);
+    _fb_ssao_blur->AddAttachment(FORMAT_RGBA);
+    _fb_ssao_blur->Create(_rpass);
 }
 void VulkanSSAO::Destroy() {
-
+    SAFE_RELEASE(_fb_ssao_blur);
+    SAFE_RELEASE(_fb_ssao);
+    SAFE_RELEASE(_rpass);
 }
 
 void VulkanSSAO::SetInputTexture(Texture* input) {
@@ -160,21 +219,52 @@ void VulkanSSAO::SetInputTexture(Texture* input) {
 
 void VulkanSSAO::SetInputTextures(
     Texture* input_positions,
-    Texture* input_normals) {
+    Texture* input_normals)
+{
+    _ssao_descr_set->WriteDescriptorImage(0, (VulkanTexture*)input_positions,
+        VulkanRenderer::Get()->GetAttachmentSampler());
 
+    _ssao_descr_set->WriteDescriptorImage(1, (VulkanTexture*)input_normals,
+        VulkanRenderer::Get()->GetAttachmentSampler());
 }
 
 VulkanTexture* VulkanSSAO::GetBlurredSSAO() {
-    return nullptr;
+    return (VulkanTexture*)_fb_ssao_blur->GetColorAttachments()[0];
 }
 
 void VulkanSSAO::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
+    _rpass->CmdBegin(*cmdbuf, *_fb_ssao);
+    cmdbuf->BindPipeline(*ssao_base->GetSSAOPipeline());
+    cmdbuf->SetViewport(0, 0, (float)_output_size.x, (float)_output_size.y);
+    uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
+    cmdbuf->BindDescriptorSets(*ssao_base->GetSSAOPipeline()->GetPipelineLayout(), 0, 1,
+        _ssao_descr_set, 1, &cam_offset);
+    cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+    cmdbuf->DrawIndexed(6);
+    cmdbuf->EndRenderPass();
 
+    _rpass->CmdBegin(*cmdbuf, *_fb_ssao_blur);
+    cmdbuf->BindPipeline(*ssao_base->GetSSAOBlurPipeline());
+    cmdbuf->BindDescriptorSets(*ssao_base->GetSSAOBlurPipeline()->GetPipelineLayout(), 0, 1,
+        _ssao_blur_descr_set);
+    cmdbuf->DrawIndexed(6);
+    cmdbuf->EndRenderPass();
+}
+
+void VulkanSSAO::SetCameraIndex(uint32 camera_index) {
+    _camera_index = camera_index;
 }
 
 void VulkanSSAO::ResizeOutput(const Vec2i& new_size) {
     if (_output_size == new_size)
-        return;
+       return;
 
     _output_size = new_size;
+    _rpass->SetClearSize(new_size.x, new_size.y);
+    _fb_ssao->Resize(new_size.x, new_size.y);
+    _fb_ssao_blur->Resize(new_size.x, new_size.y);
+
+    _ssao_blur_descr_set->WriteDescriptorImage(0, (VulkanTexture*)_fb_ssao->GetColorAttachments()[0],
+        VulkanRenderer::Get()->GetAttachmentSampler());
+
 }

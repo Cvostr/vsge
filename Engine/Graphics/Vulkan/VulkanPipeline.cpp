@@ -38,6 +38,10 @@ VulkanPipeline::VulkanPipeline() :
 	_dynamic_cull_mode(true)
 {}
 
+VulkanPipeline::~VulkanPipeline() {
+	Destroy();
+}
+
 VkPipeline VulkanPipeline::GetPipeline() { 
 	return _pipeline; 
 }
@@ -262,5 +266,6 @@ void VulkanPipeline::Destroy() {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();
 		VulkanDevice* device = vulkan->GetDevice();
 		vkDestroyPipeline(device->getVkDevice(), _pipeline, nullptr);
+		mCreated = false;
 	}
 }

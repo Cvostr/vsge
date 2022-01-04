@@ -17,5 +17,5 @@ void main() {
         }
     }
 
-    tColor = vec4(result, 0, 0, 1);    
+    tColor = vec4(result / 16.0, 0, 0, 1);    
 }

@@ -18,6 +18,8 @@ namespace VSGE {
 
 		VulkanPipeline();
 
+		~VulkanPipeline();
+
 		VkPipeline GetPipeline();
 
 		VulkanPipelineLayout* GetPipelineLayout();
@@ -27,9 +29,5 @@ namespace VSGE {
 		bool Create(VulkanShader* shader, VulkanRenderPass* rpass, VertexLayout& vl, VulkanPipelineLayout* layout);
 
 		void Destroy();
-
-		~VulkanPipeline() {
-				Destroy();
-		}
 	};
 }
