@@ -174,6 +174,8 @@ namespace VSGE {
 		/// <param name="name"></param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithName(const std::string& name);
+
+		void GetEntitiesWithName(const std::string& name, std::vector<Entity*>& vec);
 		/// <summary>
 		/// Tries to find the entity with the given Guid in this entity hierarchy
 		/// </summary>

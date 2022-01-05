@@ -61,28 +61,28 @@ static MonoString* GetName(Entity* ptr) {
 	return mono_string_new(layer->GetDomain(), ptr->GetName().c_str());
 }
 
-static void SetPosition(void* ptr, Vec3 position) {
-	((Entity*)ptr)->SetPosition(position);
+static void SetPosition(Entity* ptr, Vec3 position) {
+	ptr->SetPosition(position);
 }
 
-static Vec3 GetPosition(void* ptr) {
-	return ((Entity*)ptr)->GetPosition();
+static Vec3 GetPosition(Entity* ptr) {
+	return ptr->GetPosition();
 }
 
-static void SetScale(void* ptr, Vec3 scale) {
-	((Entity*)ptr)->SetScale(scale);
+static void SetScale(Entity* ptr, Vec3 scale) {
+	ptr->SetScale(scale);
 }
 
-static Vec3 GetScale(void* ptr) {
-	return ((Entity*)ptr)->GetScale();
+static Vec3 GetScale(Entity* ptr) {
+	return ptr->GetScale();
 }
 
-static void SetRotation(void* ptr, Quat rotation) {
-	((Entity*)ptr)->SetRotation(rotation);
+static void SetRotation(Entity* ptr, Quat rotation) {
+	ptr->SetRotation(rotation);
 }
 
-static Quat GetRotation(void* ptr) {
-	return ((Entity*)ptr)->GetRotation();
+static Quat GetRotation(Entity* ptr) {
+	return ptr->GetRotation();
 }
 
 static void* WComponent(void* ptr, int type, int action) {

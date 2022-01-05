@@ -45,6 +45,12 @@ Entity* Scene::GetEntityWithName(const std::string& name) const {
 	return _rootEntity->GetEntityWithName(name);
 }
 
+std::vector<Entity*> Scene::GetAllEntitiesWithName(const std::string& name) const {
+	std::vector<Entity*> result;
+	_rootEntity->GetEntitiesWithName(name, result);
+	return result;
+}
+
 Entity* Scene::GetEntityWithGuid(const Guid& id) {
 	return _rootEntity->GetEntityWithGuid(id);
 }

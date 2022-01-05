@@ -20,9 +20,16 @@ public class Scene : InternalObject {
         return new Entity(i_GetEntity(handle, name));
     }
 
-    //public Entity[] GetAllEntitiesByName(string name){
+    public Entity[] GetAllEntitiesByName(string name){
+        ulong[] pointers = i_GetAllEntitiesByName(handle, name);
+        Entity[] result = new Entity[pointers.Length];
 
-    //} 
+        for(uint i = 0; i < result.Length; i ++){
+            result[i] = new Entity(pointers[i]);
+        }
+
+        return result;
+    } 
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetRootNode(ulong handle);
@@ -32,5 +39,8 @@ public class Scene : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_AddNewEntity(ulong handle, string name);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong[] i_GetAllEntitiesByName(ulong handle, string name);
 
 }

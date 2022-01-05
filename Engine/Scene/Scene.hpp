@@ -48,6 +48,8 @@ namespace VSGE {
 		/// <param name="name"></param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithName(const std::string& name) const;
+
+		std::vector<Entity*> GetAllEntitiesWithName(const std::string& name) const;
 		/// <summary>
 		/// Tries to find the entity with the given Guid in this entity hierarchy
 		/// </summary>

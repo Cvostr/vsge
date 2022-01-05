@@ -4,7 +4,7 @@
 
 using namespace VSGE;
 
-void DrawSprite(Rect bounds, float rotation) {
+void DrawSprite(Rect bounds, float rotation, Resource* sprite, Vec2 uv_min, Vec2 uv_max) {
 
 }
 
@@ -16,4 +16,5 @@ void DrawText(Rect bounds, float rotation, MonoString* text, MonoString* font, C
 
 void VSGE::BindUiRenderList() {
 	MonoScriptingLayer::AddInternalCall("UiRenderList::DrawText(Rect,single,string,string,Color)", DrawText);
+	MonoScriptingLayer::AddInternalCall("UiRenderList::DrawText(Rect,single,ulong,Vec2,Vec2)", DrawSprite);
 }

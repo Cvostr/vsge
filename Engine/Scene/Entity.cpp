@@ -136,6 +136,14 @@ Entity* Entity::GetEntityWithName(const std::string& name) {
 	return nullptr;
 }
 
+void Entity::GetEntitiesWithName(const std::string& name, std::vector<Entity*>& vec) {
+	for (auto child : _children) {
+		if (child->GetName() == name)
+			vec.push_back(child);
+		child->GetEntitiesWithName(name, vec);
+	}
+}
+
 Entity* Entity::GetEntityWithGuid(const Guid& id) {
 	if (_id == id)
 		return this;
