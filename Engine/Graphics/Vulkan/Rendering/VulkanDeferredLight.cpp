@@ -69,6 +69,8 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10, VK_SHADER_STAGE_FRAGMENT_BIT);
 	//irradiance env map
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 11, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//ssao map
+	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 12, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	_deferred_pool->Create();
 	_deferred_descriptor->Create();
@@ -79,6 +81,7 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderer::Get()->GetBlackTexture(), attachment_sampler);
 	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)VulkanRenderer::Get()->GetLightsBuffer()->GetLightsGpuBuffer());
 	_deferred_descriptor->WriteDescriptorImage(9, VulkanRenderer::Get()->GetBRDF()->GetTextureLut(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(12, VulkanRenderer::Get()->GetWhiteTexture(), attachment_sampler);
 
 	UnsetIBL();
 }
@@ -140,6 +143,15 @@ void VulkanDeferredLight::SetIBL(VulkanTexture* specular, VulkanTexture* irradia
 
 	SetTexture(10, specular, VulkanRenderer::Get()->GetSpecularIBLSampler());
 	SetTexture(11, irradiance);
+}
+
+void VulkanDeferredLight::SetSSAO(VulkanTexture* ssao_map) {
+	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	if(ssao_map)
+		_deferred_descriptor->WriteDescriptorImage(12, ssao_map, attachment_sampler);
+	else
+		_deferred_descriptor->WriteDescriptorImage(12, 
+			VulkanRenderer::Get()->GetWhiteTexture(), attachment_sampler);
 }
 
 void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler) {

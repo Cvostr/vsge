@@ -45,6 +45,7 @@ void VulkanRenderTarget::Destroy() {
 	SAFE_RELEASE(_gamma_correction);
 }
 void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) {
+	_camera_index = camera_index;
 	_gbuffer_renderer->SetCameraIndex(camera_index);
 	_deferred_renderer->SetCameraIndex(camera_index);
 }
@@ -92,8 +93,6 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 
 	_ssao->SetInputTextures(GetGBufferPositionsAttachment(), GetGBufferNormalsAttachment());
 	_ssao->ResizeOutput(Vec2i(width, height));
-
-	_gamma_correction->SetInputBloomTexture(_bloom->GetBlurredBloomTextureHDR());
 }
 void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
 	_output = output_texture;
@@ -119,7 +118,18 @@ VulkanGBufferRenderer* VulkanRenderTarget::GetGBufferRenderer() {
 VulkanDeferredLight* VulkanRenderTarget::GetDeferredLightRenderer() {
 	return _deferred_renderer;
 }
+
+Camera* VulkanRenderTarget::GetCamera() {
+	return VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
+}
+
 void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
+	Camera* cam = GetCamera();
+	if (!cam)
+		return;
+
+	PostEffectsParams& params = cam->GetPostEffectParams();
+
 	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
 	_gbuffer_renderer->SetScene(vk_renderer->GetScene());
 
@@ -128,14 +138,30 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 		_shadowmapper->UpdateShadowrenderingDescriptors();
 		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
 	}
+
+
+	if (params._ssao_enabled) {
+		_ssao->SetCameraIndex(_camera_index);
+		_ssao->FillCommandBuffer(cmdbuffer);
+		_deferred_renderer->SetSSAO(_ssao->GetBlurredSSAO());
+	}
+	else
+		_deferred_renderer->SetSSAO(nullptr);
+
+
+
 	_deferred_renderer->RecordCmdbuf(cmdbuffer);
 	
-	_bloom->RecordCommandBuffer(cmdbuffer);
+	if (params._bloom_enabled) {
+		_bloom->RecordCommandBuffer(cmdbuffer);
+		_gamma_correction->SetInputBloomTexture(_bloom->GetBlurredBloomTextureHDR());
+	}
+	else
+		_gamma_correction->SetInputBloomTexture(nullptr);
 
-	_ssao->FillCommandBuffer(cmdbuffer);
+
 
 	_gamma_correction->FillCommandBuffer(cmdbuffer);
-	
 
 	if (_output) {
 		if (_output->IsCreated()) {

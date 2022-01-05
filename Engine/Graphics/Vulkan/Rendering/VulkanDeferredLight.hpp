@@ -43,6 +43,7 @@ namespace VSGE {
 		void SetCameraIndex(uint32 camera_index);
 		void UnsetIBL();
 		void SetIBL(VulkanTexture* specular, VulkanTexture* irradiance);
+		void SetSSAO(VulkanTexture* ssao_map);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();

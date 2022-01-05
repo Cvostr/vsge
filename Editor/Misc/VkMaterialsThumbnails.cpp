@@ -151,6 +151,7 @@ VkMaterialThumbnail* VkMaterialsThumbnails::GetPlace(const std::string& name) {
 }
 
 void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
+    VulkanRenderer::Get()->GetCamerasBuffer()->SetCamera(99, _camera);
     if (_queued.size() > 0) {
         MaterialComponent* material_component = _thumb_entity->GetComponent<MaterialComponent>();
         material_component->SetMaterialName(_queued[0]);

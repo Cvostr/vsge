@@ -25,6 +25,7 @@ namespace VSGE {
 		void Destroy();
 		void SetEnvmapCameras(const Vec3& position, float far_plane);
 		void SetCamera(uint32 camera_index, Camera* camera);
+		void SetAllCamerasNull();
 		uint32 GetCameraId(Camera* camera);
 		uint32 GetCamerasCount();
 		Camera* GetCameraByIndex(uint32 index);

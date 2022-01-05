@@ -23,6 +23,7 @@ namespace VSGE {
 
 		uint32 _width;
 		uint32 _height;
+		uint32 _camera_index;
 
 		void CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf);
 	public:
@@ -44,6 +45,8 @@ namespace VSGE {
 		void SetOutput(VulkanTexture* output_texture);
 
 		void RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer);
+
+		Camera* GetCamera();
 
 		VulkanTexture* GetDeferredOutput();
 		VulkanTexture* GetGammaCorrectedOutput();

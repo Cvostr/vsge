@@ -13,6 +13,7 @@ layout(binding = 8) uniform sampler2D depth;
 layout(binding = 9) uniform sampler2D brdf_lut;
 layout(binding = 10) uniform samplerCube env_cube;
 layout(binding = 11) uniform samplerCube env_cube_irradiance;
+layout(binding = 12) uniform sampler2D ssao_map;
 
 #define LIGHTSOURCE_DIR 0
 #define LIGHTSOURCE_POINT 1
@@ -44,8 +45,6 @@ layout (std140, binding = 2) uniform Lights{
 };
 
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0);
-
-
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -200,12 +199,13 @@ void main() {
         vec3 pos = texture(pos, UVCoord).rgb;
         vec4 material = texture(material, UVCoord);
         float shadow = texture(shadows, UVCoord).r;
+        float ssao = texture(ssao_map, UVCoord).r;
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
         float roughness = material.r;
         float metallic = material.g;
         float emission = material.b;
-        float ao = material.a;
+        float ao = material.a * ssao;
 
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, albedo, metallic);

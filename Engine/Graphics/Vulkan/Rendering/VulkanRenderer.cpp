@@ -450,6 +450,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 	_ibl_map->SetScene(mScene);
 	//---------------------
 	CreateRenderList();
+	_cameras_buffer->SetAllCamerasNull();
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
 		Camera* camera = _cameras[camera_i]->GetComponent<Camera>();
 		_cameras_buffer->SetCamera(camera_i, camera);
