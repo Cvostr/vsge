@@ -19,6 +19,10 @@ std::vector<MonoClassFieldDesc>& MonoClassDesc::GetFields() {
 	return _fields;
 }
 
+std::vector<MonoEventDesc>& MonoClassDesc::GetEvents() {
+	return _events;
+}
+
 MonoClassDesc::MonoClassDesc() {
 	_class = nullptr;
 }

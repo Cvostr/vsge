@@ -156,6 +156,10 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/CharacterControllerComponent.cpp
 				MonoScripting/Api/EntityComponents/ParticleEmitterComponent.cpp
 				MonoScripting/Api/UI/UiRenderList.cpp
+				Networking/NetworkingLayer.cpp
+				Networking/Server.cpp
+				Networking/Client.cpp
+				Networking/NetworkMessage.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp

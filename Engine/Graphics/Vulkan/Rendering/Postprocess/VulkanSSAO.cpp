@@ -130,6 +130,7 @@ VulkanPipeline* VulkanSSAOBase::GetSSAOBlurPipeline() {
 VulkanRenderPass* VulkanSSAOBase::CreateSSAORenderPass() {
     VulkanRenderPass* rp = new VulkanRenderPass;
     rp->SetClearSize(1280, 720);
+    rp->SetClearColor(0, Color(0, 0, 0, 0));
     rp->PushColorAttachment(FORMAT_RGBA);
     rp->Create();
     return rp;

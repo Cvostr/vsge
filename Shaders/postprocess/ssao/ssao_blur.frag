@@ -13,7 +13,13 @@ void main() {
     for (int x = -2; x < 2; ++x) {
         for (int y = -2; y < 2; ++y) {
             vec2 offset = vec2(x, y) / size;
-            result += texture(ssao_input, UVCoord + offset).r;
+            vec4 color = texture(ssao_input, UVCoord + offset);
+            result += color.r;
+            if(x == 0 && y == 0 && color.a == 0){
+                result = 0;
+                break;
+            }
+
         }
     }
 

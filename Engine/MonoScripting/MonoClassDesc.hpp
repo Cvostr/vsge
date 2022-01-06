@@ -27,6 +27,8 @@ namespace VSGE {
 
 		std::vector<MonoClassFieldDesc>& GetFields();
 
+		std::vector<MonoEventDesc>& GetEvents();
+
 		void Create(MonoClass* mono_class);
 
 		MonoObject* CreateObjectInstance();
