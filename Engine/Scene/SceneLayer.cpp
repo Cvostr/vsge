@@ -93,7 +93,7 @@ void SceneLayer::LoadSceneYAML(byte* data, uint32 index) {
 	ss.SetScene(dest_scene);
 	ss.Deserialize(data);
 
-	SceneLoadedEvent* loaded_event = new SceneLoadedEvent;
+	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(dest_scene);
 	Application::Get()->QueueEvent(loaded_event);
 }
 
@@ -111,6 +111,15 @@ void SceneLayer::LoadSceneBinary(byte* data, uint32 size, uint32 index) {
 	ss.SetScene(dest_scene);
 	ss.DeserializeBinary(data, size);
 
-	SceneLoadedEvent* loaded_event = new SceneLoadedEvent;
+	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(dest_scene);
 	Application::Get()->QueueEvent(loaded_event);
+}
+
+void SceneLayer::OnEvent(const VSGE::IEvent& event) {
+	DispatchEvent<VSGE::SceneLoadedEvent>(event, EVENT_FUNC(SceneLayer::OnSceneLoadedEvent));
+}
+
+void SceneLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& event) {
+	if (event.GetScene()->IsDelayedRun())
+		event.GetScene()->Run();
 }

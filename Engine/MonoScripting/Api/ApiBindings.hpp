@@ -5,6 +5,7 @@ namespace VSGE {
 	void BindApplicationApi();
 	void BindEntityApi();
 	void BindSceneApi();
+	void BindScenesApi();
 	void BindResourcesApi();
 	void BindInputApi();
 	void BindEntityComponentsApi();

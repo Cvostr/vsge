@@ -8,7 +8,8 @@ using namespace VSGE;
 Scene::Scene() :
 	_rootEntity(nullptr) ,
 	_running(false),
-	_paused(false)
+	_paused(false),
+	_delayed_run(false)
 {}
 
 Scene::~Scene() {
@@ -162,10 +163,19 @@ void Scene::Run() {
 
 	_running = true;
 	_paused = false;
+	_delayed_run = false;
 
 	if (!was_paused) {
 		CallOnStart(GetRootEntity());
 	}
+}
+
+void Scene::RunOnLoad() {
+	_delayed_run = true;
+}
+
+bool Scene::IsDelayedRun() {
+	return _delayed_run;
 }
 
 void Scene::Pause() {

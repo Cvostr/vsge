@@ -31,6 +31,26 @@ public class Scene : InternalObject {
         return result;
     } 
 
+    public void Run(){
+        i_Run(handle);
+    }
+
+    public void Pause(){
+        i_Pause(handle);
+    }
+
+    public void Stop(){
+        i_Stop(handle);
+    }
+
+    bool IsRunning(){
+        return i_IsRunning(handle);
+    }
+
+    bool IsPaused(){
+        return i_IsPaused(handle);
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetRootNode(ulong handle);
 
@@ -42,5 +62,20 @@ public class Scene : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong[] i_GetAllEntitiesByName(ulong handle, string name);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_Run(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_Pause(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_Stop(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern bool i_IsRunning(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern bool i_IsPaused(ulong handle);
 
 }

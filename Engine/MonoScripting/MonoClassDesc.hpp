@@ -7,6 +7,7 @@
 #include <string>
 #include "MonoClassFieldDesc.hpp"
 #include "MonoEventDesc.hpp"
+#include "MonoMethodDesc.hpp"
 
 namespace VSGE {
 
@@ -17,6 +18,7 @@ namespace VSGE {
 		std::string _namespace;
 		std::vector<MonoClassFieldDesc> _fields;
 		std::vector<MonoEventDesc> _events;
+		std::vector<MonoMethodDescr> _methods;
 	public:
 
 		MonoClass* GetMonoClass() const;
@@ -28,6 +30,8 @@ namespace VSGE {
 		std::vector<MonoClassFieldDesc>& GetFields();
 
 		std::vector<MonoEventDesc>& GetEvents();
+
+		std::vector<MonoMethodDescr>& GetMethods();
 
 		void Create(MonoClass* mono_class);
 

@@ -25,6 +25,7 @@ void MainLayer::OnAttach() {
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");
 
 	sc_res->LoadAsync(0);
+	Application::Get()->GetLayer<SceneLayer>()->GetMainScene()->RunOnLoad();
 }
 
 void MainLayer::OnEvent(const VSGE::IEvent& event) {
@@ -40,7 +41,6 @@ void MainLayer::OnUpdate() {
 		Scene* scene = SceneLayer::Get()->GetMainScene();
 		if (VulkanRenderer::Get())
 			VulkanRenderer::Get()->SetScene(scene);
-		Application::Get()->GetLayer<SceneLayer>()->StartScene();
 		_scene_ready = false;
 	}
 }

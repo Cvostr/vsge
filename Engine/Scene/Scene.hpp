@@ -15,6 +15,7 @@ namespace VSGE {
 		SceneEnvironmentSettings _environment_settings;
 		std::map<AABB, std::vector<Entity*>> _scene_tree;
 
+		bool _delayed_run;
 		bool _running;
 		bool _paused;
 
@@ -48,7 +49,11 @@ namespace VSGE {
 		/// <param name="name"></param>
 		/// <returns>pointer to entity</returns>
 		Entity* GetEntityWithName(const std::string& name) const;
-
+		/// <summary>
+		/// Tries to find all entities with the given name in this entity hierarchy
+		/// </summary>
+		/// <param name="name">name to find</param>
+		/// <returns>vector of entities</returns>
 		std::vector<Entity*> GetAllEntitiesWithName(const std::string& name) const;
 		/// <summary>
 		/// Tries to find the entity with the given Guid in this entity hierarchy
@@ -73,6 +78,10 @@ namespace VSGE {
 		AABB GetSceneBoundingBox();
 
 		void Run();
+
+		void RunOnLoad();
+
+		bool IsDelayedRun();
 
 		void Pause();
 

@@ -138,11 +138,13 @@ set(SRC_FILES
 				MonoScripting/MonoClassDesc.cpp
 				MonoScripting/MonoClassFieldDesc.cpp
 				MonoScripting/MonoEventDesc.cpp
+				MonoScripting/MonoMethodDesc.cpp
 				MonoScripting/Api/ApiLogger.cpp
 				MonoScripting/Api/ApiApplication.cpp
 				MonoScripting/Api/ApiMaterial.cpp
 				MonoScripting/Api/ApiEntity.cpp
 				MonoScripting/Api/ApiScene.cpp
+				MonoScripting/Api/ApiScenes.cpp
 				MonoScripting/Api/ApiResource.cpp
 				MonoScripting/Api/ApiInput.cpp
 				MonoScripting/Api/ApiEntityComponentsApi.cpp

@@ -6,9 +6,14 @@
 namespace VSGE {
 
 	class SceneLoadedEvent : public IEvent {
+	private:
+		Scene* scene;
 	public:
 		EVENT_CLASS_TYPE(EventType::EventSceneLoaded)
-		SceneLoadedEvent(){}
+		SceneLoadedEvent(Scene* scene) :
+			scene(scene)
+		{}
+		Scene* GetScene() const { return scene; }
 	};
 
 	class SceneLoadBeginEvent : public IEvent {
@@ -37,7 +42,9 @@ namespace VSGE {
 		static SceneLayer* Get() {
 			return _this;
 		}
-
+		/// <summary>
+		/// Create new empty scene and add it to working list
+		/// </summary>
 		void AddScene();
 		/// <summary>
 		/// Get vector of all created scenes
@@ -76,5 +83,8 @@ namespace VSGE {
 
 		void LoadSceneYAML(byte* data, uint32 index = 0);
 		void LoadSceneBinary(byte* data, uint32 size, uint32 index = 0);
+
+		void OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& event);
+		void OnEvent(const VSGE::IEvent& event);
 	};
 }

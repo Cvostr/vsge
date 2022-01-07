@@ -23,6 +23,10 @@ std::vector<MonoEventDesc>& MonoClassDesc::GetEvents() {
 	return _events;
 }
 
+std::vector<MonoMethodDescr>& MonoClassDesc::GetMethods() {
+	return _methods;
+}
+
 MonoClassDesc::MonoClassDesc() {
 	_class = nullptr;
 }
@@ -50,6 +54,14 @@ void MonoClassDesc::Create(MonoClass* mono_class) {
 	{
 		MonoEventDesc ev_desc(this, event);
 		_events.push_back(ev_desc);
+	}
+
+	iterator = nullptr;
+	MonoMethod* method = nullptr;
+	while (method = mono_class_get_methods(mono_class, &iterator)) 
+	{
+		MonoMethodDescr m_desc(this, method);
+		_methods.push_back(m_desc);
 	}
 }
 
