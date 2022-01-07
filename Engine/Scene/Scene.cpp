@@ -9,23 +9,31 @@ Scene::Scene() :
 	_rootEntity(nullptr) ,
 	_running(false),
 	_paused(false),
-	_delayed_run(false)
+	_delayed_run(false),
+	_physics_world(false)
 {}
 
 Scene::~Scene() {
+	Destroy();
+}
+
+void Scene::Destroy() {
 	if (_rootEntity) {
 		_rootEntity->Destroy();
 	}
+	if (_physics_world)
+		SAFE_RELEASE(_physics_world)
 }
 
 void Scene::NewScene() {
-	if (_rootEntity) {
-		_rootEntity->Destroy();
-	}
+	Destroy();
 	_rootEntity = new Entity;
 	_rootEntity->SetScene(this);
 	_rootEntity->SetName("Root");
 	_rootEntity->SetGuid(Guid(0, 0, 0, 0));
+
+	_physics_world = new PhysicsWorld;
+	_physics_world->Create();
 }
 
 Entity* Scene::GetRootEntity() {
@@ -243,4 +251,8 @@ void Scene::GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, E
 
 SceneEnvironmentSettings& Scene::GetEnvironmentSettings(){
 	return _environment_settings;
+}
+
+PhysicsWorld* Scene::GetPhysicalWorld() {
+	return _physics_world;
 }

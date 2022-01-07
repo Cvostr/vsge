@@ -33,7 +33,10 @@ void MainLayer::OnEvent(const VSGE::IEvent& event) {
 }
 
 void MainLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle) {
-	_scene_ready = true;
+	//_scene_ready = true;
+	Scene* scene = SceneLayer::Get()->GetMainScene();
+	if (VulkanRenderer::Get())
+		VulkanRenderer::Get()->SetScene(scene);
 }
 
 void MainLayer::OnUpdate() {

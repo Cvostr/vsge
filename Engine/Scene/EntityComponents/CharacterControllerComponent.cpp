@@ -1,5 +1,6 @@
 #include "CharacterControllerComponent.hpp"
 #include <Scene/Entity.hpp>
+#include <Scene/Scene.hpp>
 #include <bullet/BulletCollision/CollisionShapes/btCapsuleShape.h>
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <Physics/PhysicsLayer.hpp>
@@ -93,7 +94,7 @@ void CharacterControllerComponent::AddToWorld() {
 	_character->setUserPointer(_entity);
 	_character->setGravity(GRAVITY);
 
-	PhysicsLayer::Get()->AddRigidbody(_character);
+	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_character);
 }
 
 void CharacterControllerComponent::OnUpdate() {
@@ -117,7 +118,7 @@ void CharacterControllerComponent::OnUpdate() {
 }
 void CharacterControllerComponent::OnDestroy() {
 	if (_character) {
-		PhysicsLayer::Get()->RemoveRigidbody(_character);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_character);
 		SAFE_RELEASE(_character)
 	}
 	SAFE_RELEASE(_character_collision)
@@ -139,12 +140,12 @@ void CharacterControllerComponent::Deactivate() {
 
 void CharacterControllerComponent::OnActivate() {
 	if (_character) {
-		PhysicsLayer::Get()->AddRigidbody(_character);
+		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_character);
 	}
 }
 void CharacterControllerComponent::OnDeactivate() {
 	if (_character) {
-		PhysicsLayer::Get()->RemoveRigidbody(_character);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_character);
 	}
 }
 

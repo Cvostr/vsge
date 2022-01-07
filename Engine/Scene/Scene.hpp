@@ -3,6 +3,7 @@
 #include "Entity.hpp"
 #include "EntityComponents/AudioListenerComponent.hpp"
 #include "SceneEnvironment.hpp"
+#include "Physics/PhysicsWorld.hpp"
 #include <map>
 
 namespace VSGE {
@@ -14,6 +15,7 @@ namespace VSGE {
 		Entity* _rootEntity;
 		SceneEnvironmentSettings _environment_settings;
 		std::map<AABB, std::vector<Entity*>> _scene_tree;
+		PhysicsWorld* _physics_world;
 
 		bool _delayed_run;
 		bool _running;
@@ -22,6 +24,7 @@ namespace VSGE {
 		void CallOnStart(Entity* entity);
 		void CallOnUpdate(Entity* entity);
 		void CallOnStop(Entity* entity);
+		void Destroy();
 	public:
 		/// <summary>
 		/// Clear all objects and setup new empty scene
@@ -67,18 +70,29 @@ namespace VSGE {
 		/// <param name="data">- prefab data</param>
 		/// <param name="size">- prefab data size</param>
 		void AddFromPrefab(byte* data, uint32 size);
-
+		/// <summary>
+		/// Get AudioListener
+		/// </summary>
+		/// <param name="ent"></param>
+		/// <returns></returns>
 		AudioListenerComponent* GetAudioListener(Entity* ent = nullptr);
-		
+		/// <summary>
+		/// Get environment settings of this scene
+		/// </summary>
+		/// <returns></returns>
 		SceneEnvironmentSettings& GetEnvironmentSettings();
+
+		PhysicsWorld* GetPhysicalWorld();
 		/// <summary>
 		/// Get all scene AABB
 		/// </summary>
 		/// <returns></returns>
 		AABB GetSceneBoundingBox();
-
+		/// <summary>
+		/// Run this scene
+		/// </summary>
 		void Run();
-
+		
 		void RunOnLoad();
 
 		bool IsDelayedRun();

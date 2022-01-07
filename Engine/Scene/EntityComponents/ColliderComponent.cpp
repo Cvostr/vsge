@@ -1,5 +1,6 @@
 #include "ColliderComponent.hpp"
 #include <Scene/Entity.hpp>
+#include <Scene/Scene.hpp>
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
@@ -51,9 +52,9 @@ void ColliderComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
 	if(_rigidbody)
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
 	if (_trigger)
-		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveCollisionObject(_trigger);
 
 	//release old collider shape
 	SAFE_RELEASE(_collision_shape);
@@ -79,7 +80,7 @@ void ColliderComponent::AddToWorld() {
 		//apply gravity
 		_rigidbody->setGravity(btVector3(0, 0, 0));
 		//add rigidbody to world
-		PhysicsLayer::Get()->AddRigidbody(_rigidbody);
+		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
 	}
 	else {
 		_trigger = new btGhostObject();
@@ -87,7 +88,7 @@ void ColliderComponent::AddToWorld() {
 		_trigger->setCollisionShape(_collision_shape);
 		_trigger->setUserPointer(_entity);
 		_trigger->setWorldTransform(startTransform);
-		PhysicsLayer::Get()->AddCollisionObject(_trigger);
+		_entity->GetScene()->GetPhysicalWorld()->AddCollisionObject(_trigger);
 	}
 }
 
@@ -151,11 +152,11 @@ void ColliderComponent::OnUpdate() {
 
 void ColliderComponent::OnDestroy() {
 	if (_rigidbody) {
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
 		SAFE_RELEASE(_rigidbody)
 	}
 	if (_trigger) {
-		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveCollisionObject(_trigger);
 		SAFE_RELEASE(_trigger)
 	}
 	SAFE_RELEASE(_collision_shape)
@@ -163,19 +164,19 @@ void ColliderComponent::OnDestroy() {
 
 void ColliderComponent::OnActivate() {
 	if (_rigidbody) {
-		PhysicsLayer::Get()->AddRigidbody(_rigidbody);
+		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
 	}
 	if (_trigger) {
-		PhysicsLayer::Get()->AddCollisionObject(_trigger);
+		_entity->GetScene()->GetPhysicalWorld()->AddCollisionObject(_trigger);
 	}
 }
 
 void ColliderComponent::OnDeactivate() {
 	if (_rigidbody) {
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
 	}
 	if (_trigger) {
-		PhysicsLayer::Get()->RemoveCollisionObject(_trigger);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveCollisionObject(_trigger);
 	}
 }
 

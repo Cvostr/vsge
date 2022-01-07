@@ -31,6 +31,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");
 
+	PhysicsLayer* phys_layer = new PhysicsLayer;
+
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);
 	app->AddLayer(new SceneLayer);
@@ -47,7 +49,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 		AddDefaultMeshes();
 	}
 
-	app->AddLayer(new PhysicsLayer);
+	app->AddLayer(phys_layer);
 
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);

@@ -3,6 +3,7 @@
 #include <Core/Logger.hpp>
 #include <Core/Time.hpp>
 #include <Scene/SceneLayer.hpp>
+#include <algorithm>
 
 #include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
@@ -20,33 +21,23 @@ PhysicsLayer::PhysicsLayer() {
 
 	_collision_configuration = new btSoftBodyRigidBodyCollisionConfiguration();
 	_collision_dispatcher = new btCollisionDispatcher(_collision_configuration);
-	_world = new btSoftRigidDynamicsWorld(_collision_dispatcher, _broadphase, _constraint_solver, _collision_configuration);
-
-    _world_info = new btSoftBodyWorldInfo();
-    _world_info->m_sparsesdf.Initialize();
-    _world->getDispatchInfo().m_enableSPU = true;
-    _world_info->m_dispatcher = _collision_dispatcher;
-    _world_info->m_broadphase = _broadphase;
-    _world_info->air_density = (btScalar)1.2;
-    _world_info->water_density = 0;
-    _world_info->water_offset = 0;
-    _world_info->water_normal = btVector3(0, 0, 0);
-    _world_info->m_gravity = btVector3(_gravity.x, _gravity.y, _gravity.z);
 
     _ghost_callback = new btGhostPairCallback();
-    _world->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(_ghost_callback);
 
     Logger::Log() << "Physics initialized\n";
 }
 
 PhysicsLayer::~PhysicsLayer() {
-    SAFE_RELEASE(_ghost_callback)
-    SAFE_RELEASE(_world)
-    SAFE_RELEASE(_constraint_solver)
-    SAFE_RELEASE(_collision_dispatcher)
-    SAFE_RELEASE(_collision_configuration)
-    SAFE_RELEASE(_broadphase)
-    SAFE_RELEASE(_world_info)
+    SAFE_RELEASE(_ghost_callback);
+    SAFE_RELEASE(_constraint_solver);
+    SAFE_RELEASE(_collision_dispatcher);
+    SAFE_RELEASE(_collision_configuration);
+    SAFE_RELEASE(_broadphase);
+
+    for (auto& world : _worlds) {
+        SAFE_RELEASE(world);
+    }
+    _worlds.clear();
 }
 
 void PhysicsLayer::OnAttach() {
@@ -55,8 +46,10 @@ void PhysicsLayer::OnAttach() {
 void PhysicsLayer::OnUpdate() {
     if (SceneLayer::Get()->IsSceneRunning()) {
         float delta_time = TimePerf::Get()->GetDeltaTime();
+        for (auto& world : _worlds) {
+            world->StepSimulation(delta_time);
+        }
         //uint32 pre = TimePerf::Get()->GetTicks();
-        _world->stepSimulation(delta_time);
         //uint32 diff = TimePerf::Get()->GetTicks() - pre;
         //Logger::Log() << "DIFF " << diff;
     }
@@ -65,60 +58,25 @@ void PhysicsLayer::OnDetach() {
 
 }
 
-void PhysicsLayer::AddRigidbody(btRigidBody* rigidbody) {
-    if (!_world || !rigidbody)
-        return;
-
-    _world->addRigidBody(rigidbody);
+btCollisionDispatcher* PhysicsLayer::GetCollisionDispatcher() {
+    return _collision_dispatcher;
 }
-void PhysicsLayer::RemoveRigidbody(btRigidBody* rigidbody) {
-    if (!_world || !rigidbody)
-        return;
-
-    _world->removeRigidBody(rigidbody);
+btBroadphaseInterface* PhysicsLayer::GetBroadphase() {
+    return _broadphase;
 }
-void PhysicsLayer::AddSoftBody(btSoftBody* softbody) {
-    if (!_world || !softbody)
-        return;
-
-    _world->addSoftBody(softbody);
+btSequentialImpulseConstraintSolver* PhysicsLayer::GetConstraintSolver() {
+    return _constraint_solver;
 }
-void PhysicsLayer::RemoveSoftBody(btSoftBody* softbody) {
-    if (!_world || !softbody)
-        return;
-
-    _world->removeSoftBody(softbody);
+btDefaultCollisionConfiguration* PhysicsLayer::GetCollisionConfiguration() {
+    return _collision_configuration;
 }
-void PhysicsLayer::AddCollisionObject(btCollisionObject* object) {
-    if (!_world || !object)
-        return;
-
-    _world->addCollisionObject(object);
+btGhostPairCallback* PhysicsLayer::GetGhostPairCallback() {
+    return _ghost_callback;
 }
-void PhysicsLayer::RemoveCollisionObject(btCollisionObject* object) {
-    if (!_world || !object)
-        return;
-
-    _world->removeCollisionObject(object);
+void PhysicsLayer::AddWorld(PhysicsWorld* world) {
+    _worlds.push_back(world);
 }
-
-Entity* PhysicsLayer::RayTestFirstEntity(const Vec3& position, const Vec3& direction, float far) {
-    Vec3 dir = direction.GetNormalized();
-    btVector3 from = btVector3(position.x, position.y, position.z);
-    btVector3 to = btVector3(dir.x * far, dir.y * far, dir.z * far) + from;
-
-    btCollisionWorld::ClosestRayResultCallback  allResults(from, to);
-    allResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
-
-    _world->rayTest(from, to, allResults);
-    if (allResults.hasHit())
-        return (Entity*)(allResults.m_collisionObject->getUserPointer());
-    else
-        return nullptr;
-}
-
-void PhysicsLayer::RayTest(const Vec3& position, const Vec3& direction, btCollisionWorld::RayResultCallback& callback) {
-    btVector3 bvpos = btVector3(position.x, position.y, position.z);
-    btVector3 bvdir = btVector3(direction.x, direction.y, direction.z);
-    _world->rayTest(bvpos, bvdir, callback);
+void PhysicsLayer::RemoveWorld(PhysicsWorld* world) {
+    std::remove(_worlds.begin(), _worlds.end(), world);
+    _worlds.pop_back();
 }

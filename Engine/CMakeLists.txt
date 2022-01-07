@@ -96,6 +96,7 @@ set(SRC_FILES
 				Math/Vertex.cpp
 				Math/Rect.cpp
 				Physics/PhysicsLayer.cpp
+				Physics/PhysicsWorld.cpp
 				Resources/AnimationParser.cpp
 				Resources/TextureProcessor.cpp
 				Resources/AsyncLoader.cpp

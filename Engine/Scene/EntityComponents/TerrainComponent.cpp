@@ -3,6 +3,7 @@
 #include <Math/MatrixTransform.hpp>
 #include <Core/Random.hpp>
 #include <Physics/PhysicsLayer.hpp>
+#include <Scene/Scene.hpp>
 
 using namespace VSGE;
 using namespace YAML;
@@ -651,7 +652,7 @@ void TerrainComponent::AddPhysicsToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
 	if (_rigidbody)
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidbody);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
 
 	//release old collider shape
 	SAFE_RELEASE(_physical_shape);
@@ -674,7 +675,7 @@ void TerrainComponent::AddPhysicsToWorld() {
 	//apply gravity
 	_rigidbody->setGravity(btVector3(0, 0, 0));
 	//add rigidbody to world
-	PhysicsLayer::Get()->AddRigidbody(_rigidbody);
+	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
 }
 btBvhTriangleMeshShape* TerrainComponent::GetPhysicalShape() {
 	int numFaces = (_width - 1) * (_height - 1) * 2;

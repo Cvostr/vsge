@@ -7,6 +7,7 @@
 #include <Physics/PhysicsLayer.hpp>
 #include <Math/MatrixTransform.hpp>
 #include "../Entity.hpp"
+#include <Scene/Scene.hpp>
 
 using namespace YAML;
 using namespace VSGE;
@@ -193,7 +194,7 @@ void RigidBodyComponent::AddToWorld() {
 	_rigidBody->setUserPointer(_entity);
 	_rigidBody->setGravity(btVector3(_gravity.x, _gravity.y, _gravity.z));
 
-	PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidBody);
 }
 
 void RigidBodyComponent::OnUpdate() {
@@ -221,7 +222,7 @@ void RigidBodyComponent::OnUpdate() {
 void RigidBodyComponent::OnDestroy() {
 	
 	if (_rigidBody) {
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidBody);
 		SAFE_RELEASE(_rigidBody)
 	}
 	SAFE_RELEASE(_collision_shape)
@@ -229,12 +230,12 @@ void RigidBodyComponent::OnDestroy() {
 
 void RigidBodyComponent::OnActivate() {
 	if (_rigidBody) {
-		PhysicsLayer::Get()->AddRigidbody(_rigidBody);
+		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidBody);
 	}
 }
 
 void RigidBodyComponent::OnDeactivate() {
 	if (_rigidBody) {
-		PhysicsLayer::Get()->RemoveRigidbody(_rigidBody);
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidBody);
 	}
 }
