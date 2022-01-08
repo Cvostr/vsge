@@ -26,8 +26,22 @@ static void LoadScene(MonoString* scene_resource_name, uint32 slot) {
 	scn->RunOnLoad();
 }
 
+static MonoArray* GetScenes() {
+	std::vector<Scene*>& scenes = SceneLayer::Get()->GetScenes();
+	MonoArray* result = mono_array_new(MonoScriptingLayer::Get()->GetDomain(),
+		mono_get_uint64_class(), scenes.size());
+
+	for (uint32 c_i = 0; c_i < scenes.size(); c_i++) {
+		uint64 pointer = (uint64)scenes[c_i];
+		mono_array_set(result, uint64, c_i, pointer);
+	}
+
+	return result;
+}
+
 void VSGE::BindScenesApi() {
 	MonoScriptingLayer::AddInternalCall("Scenes::AddScene()", AddScene);
 	MonoScriptingLayer::AddInternalCall("Scenes::i_GetMainScene()", GetMainScene);
 	MonoScriptingLayer::AddInternalCall("Scenes::LoadScene(string,uint)", LoadScene);
+	MonoScriptingLayer::AddInternalCall("Scenes::i_GetScenes()", GetScenes);
 }

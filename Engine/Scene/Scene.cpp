@@ -173,6 +173,8 @@ void Scene::Run() {
 	_paused = false;
 	_delayed_run = false;
 
+	_physics_world->SetActive(true);
+
 	if (!was_paused) {
 		CallOnStart(GetRootEntity());
 	}
@@ -192,6 +194,8 @@ void Scene::Pause() {
 
 	_running = false;
 	_paused = true;
+
+	_physics_world->SetActive(false);
 }
 
 void Scene::Stop() {
@@ -200,6 +204,8 @@ void Scene::Stop() {
 
 	_running = false;
 	_paused = false;
+
+	_physics_world->SetActive(false);
 
 	CallOnStop(GetRootEntity());
 }

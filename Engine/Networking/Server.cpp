@@ -43,6 +43,9 @@ bool Server::StartServer() {
 		Logger::Log() << "Failed to create server at port " << _port << "\n";
 		return false;
 	}
+
+    Logger::Log() << "Successfully started server at port " << _port << "\n";
+
 	return true;
 }
 

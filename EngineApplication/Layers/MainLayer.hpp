@@ -6,7 +6,7 @@
 namespace VSGE {
 	class MainLayer : public IApplicationLayer {
 	private:
-		bool _scene_ready;
+		
 	public:
 		MainLayer();
 

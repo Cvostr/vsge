@@ -10,7 +10,7 @@
 using namespace VSGE;
 
 MainLayer::MainLayer() {
-	_scene_ready = false;
+	
 }
 
 void MainLayer::OnAttach() {
@@ -33,19 +33,13 @@ void MainLayer::OnEvent(const VSGE::IEvent& event) {
 }
 
 void MainLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle) {
-	//_scene_ready = true;
 	Scene* scene = SceneLayer::Get()->GetMainScene();
 	if (VulkanRenderer::Get())
 		VulkanRenderer::Get()->SetScene(scene);
 }
 
 void MainLayer::OnUpdate() {
-	if (_scene_ready) {
-		Scene* scene = SceneLayer::Get()->GetMainScene();
-		if (VulkanRenderer::Get())
-			VulkanRenderer::Get()->SetScene(scene);
-		_scene_ready = false;
-	}
+
 }
 void MainLayer::OnDetach() {
 

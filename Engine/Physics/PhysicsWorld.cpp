@@ -6,6 +6,7 @@ using namespace VSGE;
 
 PhysicsWorld::PhysicsWorld() {
 	_world = nullptr;
+    _active = true;
 }
 PhysicsWorld::~PhysicsWorld() {
 	Destroy();
@@ -33,7 +34,12 @@ btSoftRigidDynamicsWorld* PhysicsWorld::GetWorld() {
 }
 
 void PhysicsWorld::StepSimulation(float timestep) {
-    _world->stepSimulation(timestep);
+    if(_active)
+        _world->stepSimulation(timestep);
+}
+
+void PhysicsWorld::SetActive(bool active){
+    _active = active;
 }
 
 void PhysicsWorld::AddRigidbody(btRigidBody* rigidbody) {

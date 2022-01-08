@@ -9,6 +9,7 @@ namespace VSGE {
 	private:
 		btSoftRigidDynamicsWorld* _world;
 		//btSoftBodyWorldInfo* _world_info;
+		bool _active;
 	public:
 
 		PhysicsWorld();
@@ -18,9 +19,16 @@ namespace VSGE {
 		void Destroy();
 
 		btSoftRigidDynamicsWorld* GetWorld();
-
+		/// <summary>
+		/// Step physics simulation on this world
+		/// </summary>
+		/// <param name="timestep"></param>
 		void StepSimulation(float timestep);
-
+		/// <summary>
+		/// Enable or disable physics simulation on this world
+		/// </summary>
+		/// <param name="active"></param>
+		void SetActive(bool active);
 		/// <summary>
 		/// add created rigidbody to world
 		/// </summary>

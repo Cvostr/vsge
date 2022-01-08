@@ -3,16 +3,6 @@
 #include <Core/VarTypes/Base.hpp>
 
 namespace VSGE {
-	class NetworkMessage {
-	private:
-		byte* _buffer;
-		uint32 _buffer_size;
 
-		uint32 _id;
-	public:
-
-		NetworkMessage();
-		~NetworkMessage();
-
-	};
+	void Enet_SendPacket(void* peer, byte* data, uint32 size);
 }
