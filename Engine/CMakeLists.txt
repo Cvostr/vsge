@@ -151,6 +151,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiEntityComponentsApi.cpp
 				MonoScripting/Api/EntityComponents/LightsourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AudioSourceComponent.cpp
+				MonoScripting/Api/EntityComponents/AnimatorComponent.cpp
 				MonoScripting/Api/EntityComponents/RigidBodyComponent.cpp
 				MonoScripting/Api/EntityComponents/ColliderComponent.cpp
 				MonoScripting/Api/EntityComponents/CameraComponent.cpp

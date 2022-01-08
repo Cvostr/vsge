@@ -34,6 +34,10 @@ void AnimatorComponent::Play() {
 	}
 }
 
+bool AnimatorComponent::IsPlaying() {
+    return _playing;
+}
+
 void AnimatorComponent::Pause() {
 	_playing = false;
 }
@@ -44,9 +48,8 @@ void AnimatorComponent::Stop() {
 
 void AnimatorComponent::UpdateNodeTransform(Entity* child) {
     if (!child && !_playing) return;
-    //Assign base node transform
-    Mat4 abs = child->GetLocalTransform();
     //iterate over all loaded animations
+    uint32 index = 0;
     for (auto animation : _anims_ready) {
         //Time in animation ticks
         double ticks = animation->GetTPS() * _current_time;
@@ -59,7 +62,9 @@ void AnimatorComponent::UpdateNodeTransform(Entity* child) {
             child->SetScale(cha->getScaleInterpolated(animTime));
             child->SetRotation(cha->getRotationInterpolated(animTime).Conjugate());
         }
+        index++;
     }
+
     //Go deeper in tree
     for (uint32 i = 0; i < child->GetChildrenCount(); i++) {
         UpdateNodeTransform(child->GetChildren()[i]);

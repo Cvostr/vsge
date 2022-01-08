@@ -32,9 +32,7 @@ namespace VSGE {
 
 		void AddNewAnimation();
 
-		bool IsPlaying() {
-			return _playing;
-		}
+		bool IsPlaying();
 
 		void Play();
 

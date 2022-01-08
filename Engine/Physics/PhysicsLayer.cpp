@@ -44,15 +44,13 @@ void PhysicsLayer::OnAttach() {
 
 }
 void PhysicsLayer::OnUpdate() {
-    if (SceneLayer::Get()->IsSceneRunning()) {
-        float delta_time = TimePerf::Get()->GetDeltaTime();
-        for (auto& world : _worlds) {
-            world->StepSimulation(delta_time);
-        }
-        //uint32 pre = TimePerf::Get()->GetTicks();
-        //uint32 diff = TimePerf::Get()->GetTicks() - pre;
-        //Logger::Log() << "DIFF " << diff;
+    float delta_time = TimePerf::Get()->GetDeltaTime();
+    for (auto& world : _worlds) {
+        world->StepSimulation(delta_time);
     }
+    //uint32 pre = TimePerf::Get()->GetTicks();
+    //uint32 diff = TimePerf::Get()->GetTicks() - pre;
+    //Logger::Log() << "DIFF " << diff;
 }
 void PhysicsLayer::OnDetach() {
 

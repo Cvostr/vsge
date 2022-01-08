@@ -22,8 +22,16 @@ public class AnimatorComponent : IEntityComponent {
         return i_IsPlaying(handle);
     }
 
-    void SetAnimationFactor(uint anim_index, float factor){
+    void AddAnimation(){
+        i_AddAnimation(handle);
+    }
 
+    void SetAnimationCoeff(uint anim_index, float factor){
+        i_SetAnimationCoeff(handle, anim_index, factor);
+    }
+
+    void SetAnimation(uint anim_index, string anim_resource_str){
+        i_SetAnimation(handle, anim_index, anim_resource_str);
     }
 
     [MethodImpl(MethodImplOptions.InternalCall)]
@@ -32,4 +40,13 @@ public class AnimatorComponent : IEntityComponent {
     private static extern void i_Stop(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern bool i_IsPlaying(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_AddAnimation(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetAnimationCoeff(ulong handle, uint anim_index, float factor);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetAnimation(ulong handle, uint anim_index, string anim_resource_str);
 }
