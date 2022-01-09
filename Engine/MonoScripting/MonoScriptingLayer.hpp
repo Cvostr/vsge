@@ -82,6 +82,11 @@ namespace VSGE {
 		/// Release Mono working domain
 		/// </summary>
 		void ReleaseDomain();
+		/// <summary>
+		/// Register other thread in mono
+		/// Call this function from other thread to register
+		/// </summary>
+		void AttachThread();
 
 		template<typename T> 
 		static void AddInternalCall(const std::string& decl, T func){

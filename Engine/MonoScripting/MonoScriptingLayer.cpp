@@ -103,3 +103,6 @@ void MonoScriptingLayer::ReleaseDomain() {
         _domain = nullptr;
     }
 }
+void MonoScriptingLayer::AttachThread(){
+    mono_thread_attach(mono_get_root_domain());
+}
