@@ -5,7 +5,7 @@
 #include <string>
 
 namespace VSGE {
-	class Client {
+	class EnetClient {
 	private:
 		uint16 _port;
 		std::string _ip;
@@ -13,8 +13,8 @@ namespace VSGE {
 		ENetPeer* _enet_peer;
 	public:
 
-		Client();
-		~Client();
+		EnetClient();
+		~EnetClient();
 
 		bool Connect(const std::string& ip, uint16 port);
 		bool Connect();

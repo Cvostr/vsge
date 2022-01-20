@@ -9,4 +9,20 @@ public class Server : InternalObject {
     {
     }
 
+    public void SetMaxConnections(uint max){
+
+    }
+
+    public void SetPort(ushort port){
+
+    }
+
+    public void Start(){
+
+    }
+
+    public void Stop(){
+
+    }
+
 }

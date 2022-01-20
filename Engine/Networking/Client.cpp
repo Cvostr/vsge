@@ -8,22 +8,22 @@
 
 using namespace VSGE;
 
-Client::Client() {
+EnetClient::EnetClient() {
 	_port = 14683;
 	_ip = "172.0.0.1";
 }
-Client::~Client() {
+EnetClient::~EnetClient() {
 	Disconnect();
 }
 
-bool Client::Connect(const std::string& ip, uint16 port) {
+bool EnetClient::Connect(const std::string& ip, uint16 port) {
 	_ip = ip;
 	_port = port;
 
 	return Connect();
 }
 
-bool Client::Connect() {
+bool EnetClient::Connect() {
 	_enet_client = enet_host_create(nullptr, 1, 2, 0, 0);
 
 	if (!_enet_client) {
@@ -43,7 +43,7 @@ bool Client::Connect() {
 	return true;
 }
 
-void Client::Disconnect() {
+void EnetClient::Disconnect() {
 	if (_enet_peer)
 	{
 		enet_peer_disconnect_now(_enet_peer, 0);

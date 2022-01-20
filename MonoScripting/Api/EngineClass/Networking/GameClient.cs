@@ -9,4 +9,12 @@ public class Client : InternalObject {
     {
     }
 
+    public void Connect(string address, ushort port){
+
+    }
+
+    public void Disconnect(){
+
+    }
+
 }

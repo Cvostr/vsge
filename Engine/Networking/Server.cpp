@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include <Core/Logger.hpp>
 #include "NetworkingEvents.hpp"
+#include <Engine/Application.hpp>
 
 #define ENET_IMPLEMENTATION
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -9,31 +10,31 @@
 
 using namespace VSGE;
 
-Server::Server() {
+EnetGameServer::EnetGameServer() {
 	_port = 54683;
 	_max_connections = 1024;
 	_enet_server = nullptr;
 }
 
-Server::~Server() {
+EnetGameServer::~EnetGameServer() {
 	StopServer();
 }
 
-void Server::SetServerPort(uint16 port) {
+void EnetGameServer::SetServerPort(uint16 port) {
 	_port = port;
 }
 
-void Server::SetMaxConnections(uint32 max_connections) {
+void EnetGameServer::SetMaxConnections(uint32 max_connections) {
 	_max_connections = max_connections;
 }
 
-bool Server::StartServer(uint16 port) {
+bool EnetGameServer::StartServer(uint16 port) {
 	_port = port;
 
 	return StartServer();
 }
 
-bool Server::StartServer() {
+bool EnetGameServer::StartServer() {
 	ENetAddress address;
 	address.host = ENET_HOST_ANY;
 	address.port = _port;
@@ -49,12 +50,20 @@ bool Server::StartServer() {
 	return true;
 }
 
-void Server::StopServer() {
-	if(_enet_server)
-		enet_host_destroy(_enet_server);
+void EnetGameServer::StopServer() {
+    if (_enet_server) {
+        enet_host_destroy(_enet_server);
+        _enet_server = nullptr;
+    }
 }
 
-void Server::ProcessEvents() {
+void EnetGameServer::server_events_loop() {
+    while (_enet_server) {
+        ProcessEvents();
+    }
+}
+
+void EnetGameServer::ProcessEvents() {
     ENetEvent event;
     const int result = enet_host_service(_enet_server, &event, 0);
 
@@ -67,10 +76,18 @@ void Server::ProcessEvents() {
         {
         case ENET_EVENT_TYPE_CONNECT:
 
+            NetworkClientConnectedEvent* connect_event = 
+                new NetworkClientConnectedEvent(connectionId);
+            Application::Get()->QueueEvent(connect_event);
+
             _peers.insert(std::make_pair(connectionId, event.peer));
             break;
 
         case ENET_EVENT_TYPE_DISCONNECT:
+
+            NetworkClientDisconnectedEvent* disconnect_event =
+                new NetworkClientDisconnectedEvent(connectionId);
+            Application::Get()->QueueEvent(disconnect_event);
 
             _peers.erase(connectionId);
             break;
@@ -81,6 +98,12 @@ void Server::ProcessEvents() {
             break;
 
         case ENET_EVENT_TYPE_RECEIVE:
+            NetworkServerDataReceiveEvent* receive_event =
+                new NetworkServerDataReceiveEvent(
+                    event.channelID,
+                    event.packet->data,
+                    event.packet->dataLength);
+            Application::Get()->QueueEvent(receive_event);
 
             break;
 
