@@ -71,9 +71,28 @@ uint8 TerrainTexturesFactors::get(uint32 index, uint32 texture_id) {
 	return *ptr;
 }
 
+TerrainTexture::TerrainTexture() {
+	_albedo_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+	_normal_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+	_roughness_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+	_metallic_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+	_ao_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+	_height_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
+
+	_roughness_factor = 1.f;
+	_metallic_factor = 0.f;
+	_height_factor = 0.2f;
+}
+
+TerrainGrass::TerrainGrass() {
+	_texture_reference.SetResourceType(RESOURCE_TYPE_TEXTURE);
+	_width = 1;
+	_height = 1;
+}
+
 TerrainComponent::TerrainComponent() {
 	_width = 500;
-	_height = 500;
+	_length = 500;
 	_max_terrain_height = 0;
 
 	_mesh_dirty = false;
@@ -109,23 +128,23 @@ TerrainComponent::~TerrainComponent() {
 uint32 TerrainComponent::GetWidth() {
 	return _width;
 }
-uint32 TerrainComponent::GetHeight() {
-	return _height;
+uint32 TerrainComponent::GetLength() {
+	return _length;
 }
 
 void TerrainComponent::SetWidth(uint32 width) {
 	_width = width;
 }
-void TerrainComponent::SetHeight(uint32 height) {
-	_height = height;
+void TerrainComponent::SetLength(uint32 length) {
+	_length = length;
 }
 
 uint32 TerrainComponent::GetVerticesCount() {
-	return _width * _height;
+	return _width * _length;
 }
 
 uint32 TerrainComponent::GetIndicesCount() {
-	return (_width - 1) * (_height - 1) * 2 * 3;
+	return (_width - 1) * (_length - 1) * 2 * 3;
 }
 
 float TerrainComponent::GetMaxTerrainHeight() {
@@ -151,7 +170,7 @@ const AABB TerrainComponent::GetBoundingBox() {
 	AABB result;
 	result.PrepareForExtend();
 	result.Extend(Vec3(0, 0, 0));
-	result.Extend(Vec3(_width, 0, _height));
+	result.Extend(Vec3(_width, 0, _length));
 	return result;
 }
 
@@ -167,7 +186,7 @@ void TerrainComponent::Flat(float height) {
 	uint32 vertices_count = GetVerticesCount();
 
 	CreateVerticesArray();
-	_texture_factors.Allocate(_width, _height, 16);
+	_texture_factors.Allocate(_width, _length, 16);
 	_vegetables_data = new GRASS_ID[vertices_count];
 
 	for (uint32 i = 0; i < vertices_count; i++) {
@@ -175,7 +194,7 @@ void TerrainComponent::Flat(float height) {
 		_vegetables_data[i] = NO_GRASS;
 	}
 	for (int x = 0; x < _width; x++) {
-		for (int y = 0; y < _height; y++) {
+		for (int y = 0; y < _length; y++) {
 			_texture_factors.set(x, y, 0, 255);
 		}
 	}
@@ -187,14 +206,14 @@ void TerrainComponent::Flat(float height) {
 void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) {
 	//Iterate over all pixels
 	for (int y = 0; y < _width; y++) {
-		for (int x = 0; x < _height; x++) {
+		for (int x = 0; x < _length; x++) {
 			//if pixel is in circle
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
 			if (dist <= range) {
 				//calculate modifier
 				float toApply = (height) - static_cast<float>(dist * dist) / (float)range;
 				if (toApply > 0) {
-					_heightmap[y * _height + x].pos.y += (toApply);
+					_heightmap[y * _length + x].pos.y += (toApply);
 				}
 			}
 		}
@@ -205,7 +224,7 @@ void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 
 void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id) {
 	//Iterate over all pixels
 	for (int y = 0; y < _width; y++) {
-		for (int x = 0; x < _height; x++) {
+		for (int x = 0; x < _length; x++) {
 			//if pixel is in circle
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
 			//if vertex is inside circle
@@ -231,11 +250,11 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 void TerrainComponent::ModifyGrass(const Vec2i& position, uint32 range, uint32 grass_id) {
 	//Iterate over all pixels
 	for (int y = 0; y < _width; y++) {
-		for (int x = 0; x < _height; x++) {
+		for (int x = 0; x < _length; x++) {
 			//if pixel is in circle
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
 			if (dist <= range) {
-				_vegetables_data[y * _height + x] = grass_id;
+				_vegetables_data[y * _length + x] = grass_id;
 			}
 		}
 	}
@@ -274,15 +293,15 @@ void TerrainComponent::CreateIndicesArray() {
 	SAFE_RELEASE_ARR(indices);
 	indices = new uint32[GetIndicesCount()];
 	uint32 inds = 0;
-	for (uint32 y = 0; y < _height - 1; y++) {
+	for (uint32 y = 0; y < _length - 1; y++) {
 		for (uint32 x = 0; x < _width - 1; x++) {
-			indices[inds] = static_cast<uint32>(x * _height + y);
-			indices[inds + 2] = static_cast<uint32>(x * _height + _height + y);
-			indices[inds + 1] = static_cast<uint32>(x * _height + _height + y + 1);
+			indices[inds] = static_cast<uint32>(x * _length + y);
+			indices[inds + 2] = static_cast<uint32>(x * _length + _length + y);
+			indices[inds + 1] = static_cast<uint32>(x * _length + _length + y + 1);
 
-			indices[inds + 3] = static_cast<uint32>(x * _height + y);
-			indices[inds + 5] = static_cast<uint32>(x * _height + _height + y + 1);
-			indices[inds + 4] = static_cast<uint32>(x * _height + y + 1);
+			indices[inds + 3] = static_cast<uint32>(x * _length + y);
+			indices[inds + 5] = static_cast<uint32>(x * _length + _length + y + 1);
+			indices[inds + 4] = static_cast<uint32>(x * _length + y + 1);
 			//Add inds 6
 			inds += 6;
 		}
@@ -292,10 +311,10 @@ void TerrainComponent::CreateIndicesArray() {
 void TerrainComponent::CreateVerticesArray() {
 	SAFE_RELEASE_ARR(_heightmap)
 	_heightmap = new Vertex[GetVerticesCount()];
-	for (uint32 y = 0; y < _height; y++) {
+	for (uint32 y = 0; y < _length; y++) {
 		for (uint32 x = 0; x < _width; x++) {
-			_heightmap[x * _height + y].uv = Vec2(static_cast<float>(x) / _width, static_cast<float>(y) / _height);
-			_heightmap[x * _height + y].pos = Vec3(static_cast<float>(x), 0, static_cast<float>(y));
+			_heightmap[x * _length + y].uv = Vec2(static_cast<float>(x) / _width, static_cast<float>(y) / _length);
+			_heightmap[x * _length + y].pos = Vec3(static_cast<float>(x), 0, static_cast<float>(y));
 		}
 	}
 
@@ -307,10 +326,10 @@ void TerrainComponent::CreateVerticesArray() {
 
 void TerrainComponent::UpdateMaxHeight() {
 	_max_terrain_height = -10000;
-	for (uint32 y = 0; y < _height; y++) {
+	for (uint32 y = 0; y < _length; y++) {
 		for (uint32 x = 0; x < _width; x++) {
-			if (_max_terrain_height < _heightmap[x * _height + y].pos.y)
-				_max_terrain_height = _heightmap[x * _height + y].pos.y;
+			if (_max_terrain_height < _heightmap[x * _length + y].pos.y)
+				_max_terrain_height = _heightmap[x * _length + y].pos.y;
 		}
 	}
 }
@@ -333,11 +352,11 @@ void TerrainComponent::UpdateVegetables() {
 	}
 
 	for (float x = 0.f; x < (float)_width; x += step) {
-		for (float y = 0.f; y < (float)_height; y += step) {
+		for (float y = 0.f; y < (float)_length; y += step) {
 			int orig_x = (int)ceil(x);
 			int orig_y = (int)ceil(y);
 
-			GRASS_ID vegetable_id = _vegetables_data[orig_x * _height + orig_y];
+			GRASS_ID vegetable_id = _vegetables_data[orig_x * _length + orig_y];
 			if (vegetable_id == NO_GRASS)
 				continue;
 
@@ -346,10 +365,10 @@ void TerrainComponent::UpdateVegetables() {
 
 			Vec3 rotation = Vec3(0, Random(0, 360), 0);
 			if (_heightmap) {
-				Vec3 normal = _heightmap[orig_x * _height + orig_y].normal;
+				Vec3 normal = _heightmap[orig_x * _length + orig_y].normal;
 			}
 
-			Vec3 position = Vec3(x, _heightmap[orig_x * _height + orig_y].pos.y, y);
+			Vec3 position = Vec3(x, _heightmap[orig_x * _length + orig_y].pos.y, y);
 			Vec3 scale = Vec3(grass._width, grass._height, grass._width);
 
 			Mat4 scale_mat = GetScaleMatrix(scale);
@@ -376,12 +395,12 @@ void TerrainComponent::UpdateGraphicsTextureMasks() {
 	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 	if (!_texture_masks) {
 		_texture_masks = CreateTexture();
-		_texture_masks->Create(_width, _height, FORMAT_RGBA, layers_count, 1);
+		_texture_masks->Create(_width, _length, FORMAT_RGBA, layers_count, 1);
 	}
 
-	uint32 layer_size = _width * _height * 4;
+	uint32 layer_size = _width * _length * 4;
 	for (uint32 layer_i = 0; layer_i < layers_count; layer_i++) {
-		_texture_masks->AddMipLevel(_texture_factors.GetArray() + layer_i * layer_size, layer_size, _width, _height, 0, layer_i);
+		_texture_masks->AddMipLevel(_texture_factors.GetArray() + layer_i * layer_size, layer_size, _width, _length, 0, layer_i);
 	}
 	_texture_masks->SetReadyToUseInShaders();
 }
@@ -407,7 +426,7 @@ void TerrainComponent::SetShadowCastEnabled(bool cast) {
 
 void TerrainComponent::Serialize(YAML::Emitter& e) {
 	e << Key << "width" << Value << _width;
-	e << Key << "height" << Value << _height;
+	e << Key << "height" << Value << _length;
 	e << Key << "cast_shadows" << Value << _cast_shadows;
 
 	e << YAML::Key << "textures" << YAML::Value << YAML::BeginSeq;
@@ -453,7 +472,7 @@ void TerrainComponent::Serialize(YAML::Emitter& e) {
 }
 void TerrainComponent::Deserialize(YAML::Node& entity) {
 	_width = entity["width"].as<uint32>();
-	_height = entity["height"].as<uint32>();
+	_length = entity["height"].as<uint32>();
 	_cast_shadows = entity["cast_shadows"].as<bool>();
 
 	Flat(0);
@@ -517,7 +536,7 @@ void TerrainComponent::Deserialize(YAML::Node& entity) {
 }
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_width);
-	serializer.Serialize(_height);
+	serializer.Serialize(_length);
 	serializer.Serialize(_cast_shadows);
 
 	uint32 textures_count = _terrain_textures.size();
@@ -557,7 +576,7 @@ void TerrainComponent::Serialize(ByteSerialize& serializer) {
 }
 void TerrainComponent::Deserialize(ByteSolver& solver) {
 	_width = solver.GetValue<uint32>();
-	_height = solver.GetValue<uint32>();
+	_length = solver.GetValue<uint32>();
 	_cast_shadows = solver.GetValue<bool>();
 
 	Flat(0);
@@ -678,11 +697,11 @@ void TerrainComponent::AddPhysicsToWorld() {
 	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
 }
 btBvhTriangleMeshShape* TerrainComponent::GetPhysicalShape() {
-	int numFaces = (_width - 1) * (_height - 1) * 2;
+	int numFaces = (_width - 1) * (_length - 1) * 2;
 	int vertStride = sizeof(Vertex);
 	int indexStride = 3 * sizeof(uint32);
 
-	btTriangleIndexVertexArray* va = new btTriangleIndexVertexArray(numFaces, (int*)indices, indexStride, _width * _height, reinterpret_cast<btScalar*>(_heightmap), vertStride);
+	btTriangleIndexVertexArray* va = new btTriangleIndexVertexArray(numFaces, (int*)indices, indexStride, _width * _length, reinterpret_cast<btScalar*>(_heightmap), vertStride);
 	//Allocate Shape with geometry
 	return new btBvhTriangleMeshShape(va, false, true);
 }

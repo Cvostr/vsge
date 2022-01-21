@@ -1,7 +1,13 @@
 #include "Server.hpp"
 #include <Core/Logger.hpp>
 #include "NetworkingEvents.hpp"
+
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 #include <Engine/Application.hpp>
+
 
 #define ENET_IMPLEMENTATION
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -45,6 +51,8 @@ bool EnetGameServer::StartServer() {
 		return false;
 	}
 
+    server_thread = std::thread([this] {server_events_loop(); });
+
     Logger::Log() << "Successfully started server at port " << _port << "\n";
 
 	return true;
@@ -54,6 +62,7 @@ void EnetGameServer::StopServer() {
     if (_enet_server) {
         enet_host_destroy(_enet_server);
         _enet_server = nullptr;
+        server_thread.join();
     }
 }
 
@@ -74,39 +83,47 @@ void EnetGameServer::ProcessEvents() {
 
         switch (event.type)
         {
-        case ENET_EVENT_TYPE_CONNECT:
+        case ENET_EVENT_TYPE_CONNECT: {
 
-            NetworkClientConnectedEvent* connect_event = 
+            NetworkClientConnectedEvent* connect_event =
                 new NetworkClientConnectedEvent(connectionId);
+
+            server_mutex.lock();
             Application::Get()->QueueEvent(connect_event);
-
             _peers.insert(std::make_pair(connectionId, event.peer));
-            break;
+            server_mutex.unlock();
 
-        case ENET_EVENT_TYPE_DISCONNECT:
+            break;
+        }
+        case ENET_EVENT_TYPE_DISCONNECT: {
 
             NetworkClientDisconnectedEvent* disconnect_event =
                 new NetworkClientDisconnectedEvent(connectionId);
+
+            server_mutex.lock();
             Application::Get()->QueueEvent(disconnect_event);
+            _peers.erase(connectionId);
+            server_mutex.unlock();
+            break;
+        }
+        case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT: {
 
             _peers.erase(connectionId);
             break;
-
-        case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
-
-            _peers.erase(connectionId);
-            break;
-
-        case ENET_EVENT_TYPE_RECEIVE:
+        }
+        case ENET_EVENT_TYPE_RECEIVE: {
             NetworkServerDataReceiveEvent* receive_event =
                 new NetworkServerDataReceiveEvent(
                     event.channelID,
                     event.packet->data,
                     event.packet->dataLength);
+
+            server_mutex.lock();
             Application::Get()->QueueEvent(receive_event);
+            server_mutex.unlock();
 
             break;
-
+        }
         default:
             break;
         }

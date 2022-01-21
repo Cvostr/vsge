@@ -110,13 +110,13 @@ bool DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass)
 
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	int width = tc->GetWidth();
-	int height = tc->GetHeight();
+	int length = tc->GetLength();
 
 	ImGui::InputInt("Terrain Width", &width);
-	ImGui::InputInt("Terrain Height", &height);
+	ImGui::InputInt("Terrain Length", &length);
 
 	tc->SetWidth(width);
-	tc->SetHeight(height);
+	tc->SetLength(length);
 
 	bool cast_shadows = tc->IsShadowCastEnabled();
 	ImGui::Checkbox("Cast shadows", &cast_shadows);

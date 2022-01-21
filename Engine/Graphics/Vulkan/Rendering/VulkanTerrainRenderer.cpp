@@ -344,7 +344,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain) {
 	uint32 offset = _terrains_processed * TERRAIN_DATA_ELEM_SIZE;
 
 	float uv_x = (float)terrain_component->GetWidth() / 64;
-	float uv_y = (float)terrain_component->GetHeight() / 64;
+	float uv_y = (float)terrain_component->GetLength() / 64;
 	uint32 textures_count = (uint32)terrain_component->GetTerrainTextures().size();
 
 	_terrains_buffer->WriteData(offset, 4, &uv_x);

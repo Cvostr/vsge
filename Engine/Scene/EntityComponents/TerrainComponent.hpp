@@ -53,18 +53,7 @@ namespace VSGE{
 		float _metallic_factor;
 		float _height_factor;
 
-		TerrainTexture() {
-			_albedo_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-			_normal_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-			_roughness_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-			_metallic_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-			_ao_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-			_height_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-
-			_roughness_factor = 1.f;
-			_metallic_factor = 0.f;
-			_height_factor = 0.2f;
-		}
+		TerrainTexture();
 	};
 
 	class TerrainGrass {
@@ -74,11 +63,7 @@ namespace VSGE{
 		float _width;
 		float _height;
 
-		TerrainGrass() {
-			_texture_reference.SetResourceType(RESOURCE_TYPE_TEXTURE);
-			_width = 1;
-			_height = 1;
-		}
+		TerrainGrass();
 	};
 
 	class GrassIdTransforms {
@@ -102,7 +87,7 @@ namespace VSGE{
 	class TerrainComponent : public IEntityComponent {
 		private:
 			uint32 _width;
-			uint32 _height;
+			uint32 _length;
 			float _max_terrain_height;
 	
 			bool _mesh_dirty;
@@ -141,10 +126,10 @@ namespace VSGE{
 			~TerrainComponent();
 
 			uint32 GetWidth();
-			uint32 GetHeight();
+			uint32 GetLength();
 
 			void SetWidth(uint32 width);
-			void SetHeight(uint32 height);
+			void SetLength(uint32 length);
 
 			uint32 GetVerticesCount();
 			uint32 GetIndicesCount();
