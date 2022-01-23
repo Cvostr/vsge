@@ -36,6 +36,7 @@ layout (std140, set = 1, binding = 0) uniform MaterialData{
     float roughness_factor;
     float metallic_factor;
     float height_factor;
+    float emission_factor;
 };
 
 float CalcLuminance(vec3 color)
@@ -121,7 +122,7 @@ void main() {
     }
 
     if(hasEmission){
-        CalcLuminance(texture(emission_map, uv_coords).rgb);
+        emission = CalcLuminance(texture(emission_map, uv_coords).rgb) * emission_factor;
     }
 
     if(hasOcclusion)
@@ -129,5 +130,5 @@ void main() {
 
     tNormal = normal;
     tPos = FragPos;
-    tMaterial = vec4(roughness, metallic, emission, ao);
+    tMaterial = vec4(roughness, metallic, emission / 10.0, ao);
 }   

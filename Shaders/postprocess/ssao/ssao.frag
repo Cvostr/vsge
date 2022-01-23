@@ -36,7 +36,7 @@ void main() {
 
     int kernelSize = 64;
     float radius = 0.9;
-    float bias = 0.08;
+    float bias = 0.03;
 
     float occlusion = 0.0;
     for(int i = 0; i < kernelSize; ++i){

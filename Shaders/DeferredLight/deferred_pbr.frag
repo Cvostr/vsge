@@ -204,7 +204,7 @@ void main() {
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
         float roughness = material.r;
         float metallic = material.g;
-        float emission = material.b;
+        float emission = material.b * 10.0;
         float ao = material.a * ssao;
 
         vec3 F0 = vec3(0.04); 
@@ -213,8 +213,7 @@ void main() {
         vec3 Lo = normalize(cam_position - pos);
 
         vec3 lightning = CalculateLightning(Lo, albedo, normal, pos, roughness, metallic, F0) * ao;
-        vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
-        
+        vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow) + emission;
         
         float cosLo = max(0.0, dot(normal, Lo));
         vec3 ambient = CalculateIBL(normal, F0, Lo, cosLo, roughness, metallic, albedo);
