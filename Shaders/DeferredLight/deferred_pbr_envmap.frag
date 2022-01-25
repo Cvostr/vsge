@@ -50,15 +50,16 @@ void main() {
         discard;
     else{
         vec3 normal = texture(normal, UVCoord).rgb;
-        vec3 pos = texture(pos, UVCoord).rgb;
+        vec4 pos_map = texture(pos, UVCoord);
+        vec3 pos = pos_map.rgb;
         vec4 material = texture(material, UVCoord);
         float shadow = texture(shadows, UVCoord).r;
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
-        float roughness = material.r;
-        float metallic = material.g;
-        float emission = material.b;
-        float ao = material.a;
+        float roughness = pos_map.a;
+        float metallic = material.a;
+        vec3 emission = material.rgb * 15.0;
+        float ao = diffuse.a;
 
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, albedo, metallic);

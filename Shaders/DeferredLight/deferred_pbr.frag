@@ -196,16 +196,17 @@ void main() {
         discard;
     else{
         vec3 normal = texture(normal, UVCoord).rgb;
-        vec3 pos = texture(pos, UVCoord).rgb;
+        vec4 pos_map = texture(pos, UVCoord);
+        vec3 pos = pos_map.rgb;
         vec4 material = texture(material, UVCoord);
         float shadow = texture(shadows, UVCoord).r;
         float ssao = texture(ssao_map, UVCoord).r;
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
-        float roughness = material.r;
-        float metallic = material.g;
-        float emission = material.b * 10.0;
-        float ao = material.a * ssao;
+        float roughness = pos_map.a;
+        float metallic = material.a;
+        vec3 emission = material.rgb * 15.0;
+        float ao = diffuse.a * ssao;
 
         vec3 F0 = vec3(0.04); 
         F0 = mix(F0, albedo, metallic);
@@ -219,6 +220,6 @@ void main() {
         vec3 ambient = CalculateIBL(normal, F0, Lo, cosLo, roughness, metallic, albedo);
         color += ambient * ambient_light;
 
-        tColor = vec4(color, diffuse.a);
+        tColor = vec4(color, 1);
     }
 }

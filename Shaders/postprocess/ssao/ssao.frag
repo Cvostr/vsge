@@ -22,12 +22,13 @@ layout (std140, binding = 4) uniform CamMatrices{
 void main() {
     vec2 noise_uv_scale = textureSize(positions, 0) / 4.0;
     vec4 pos = texture(positions, UVCoord);
-    if(pos.a == 1.0){
+    vec4 normal_map = texture(normals, UVCoord);
+    if(normal_map.a == 1.0){
         discard;
     }
     vec3 fragPos = pos.xyz;
     fragPos = (cam_view * vec4(fragPos, 1)).xyz;
-    vec3 normal = normalize(texture(normals, UVCoord).rgb);
+    vec3 normal = normalize(normal_map.rgb);
     vec3 randomVec = texture(noise, UVCoord * noise_uv_scale).xyz;  
 
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));

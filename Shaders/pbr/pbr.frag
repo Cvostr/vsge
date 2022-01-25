@@ -1,6 +1,6 @@
 layout (location = 0) out vec4 tColor;
 layout (location = 1) out vec3 tNormal;
-layout (location = 2) out vec3 tPos;
+layout (location = 2) out vec4 tPos;
 layout (location = 3) out vec4 tMaterial;
 
 layout(location = 0) in vec3 FragPos;
@@ -38,11 +38,6 @@ layout (std140, set = 1, binding = 0) uniform MaterialData{
     float height_factor;
     float emission_factor;
 };
-
-float CalcLuminance(vec3 color)
-{
-    return dot(color, vec3(0.299, 0.587, 0.114));
-}
 
 vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir){
     // number of depth layers
@@ -85,7 +80,7 @@ vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir){
 }
 
 void main() {
-    tColor = vec4(color.xyz, 1);
+    vec3 diffuse = color.xyz;
     vec3 normal = InNormal;
     
     vec2 uv_coords = UVCoord;
@@ -100,7 +95,7 @@ void main() {
     }
 
     if(hasAlbedo)
-        tColor *= vec4(texture(albedo, uv_coords).rgb, 1);
+        diffuse *= texture(albedo, uv_coords).rgb;
 
     if(hasNormal){
         normal = texture(normal_map, uv_coords).rgb;
@@ -110,7 +105,7 @@ void main() {
 
     float roughness = roughness_factor;
     float metallic = metallic_factor;
-    float emission = 0.0;
+    vec3 emission = vec3(0.0);
     float ao = 1.0;
 
     if(hasRoughness){
@@ -122,13 +117,14 @@ void main() {
     }
 
     if(hasEmission){
-        emission = CalcLuminance(texture(emission_map, uv_coords).rgb) * emission_factor;
+        emission = texture(emission_map, uv_coords).rgb * emission_factor / 15.0;
     }
 
     if(hasOcclusion)
         ao = texture(occlusion_map, uv_coords).r;
 
+    tColor = vec4(diffuse, ao);
     tNormal = normal;
-    tPos = FragPos;
-    tMaterial = vec4(roughness, metallic, emission / 10.0, ao);
+    tPos = vec4(FragPos, roughness);
+    tMaterial = vec4(emission, metallic);
 }   
