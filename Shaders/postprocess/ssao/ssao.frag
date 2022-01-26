@@ -23,7 +23,7 @@ void main() {
     vec2 noise_uv_scale = textureSize(positions, 0) / 4.0;
     vec4 pos = texture(positions, UVCoord);
     vec4 normal_map = texture(normals, UVCoord);
-    if(normal_map.a == 1.0){
+    if(pos.a == 1.0){
         discard;
     }
     vec3 fragPos = pos.xyz;

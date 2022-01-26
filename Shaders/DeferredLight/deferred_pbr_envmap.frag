@@ -49,14 +49,14 @@ void main() {
     if(depth == 1.0)
         discard;
     else{
-        vec3 normal = texture(normal, UVCoord).rgb;
-        vec4 pos_map = texture(pos, UVCoord);
-        vec3 pos = pos_map.rgb;
+        vec4 normal_map = texture(normal, UVCoord);
+        vec3 normal = normal_map.rgb;
+        vec3 pos = texture(pos, UVCoord).rgb;
         vec4 material = texture(material, UVCoord);
         float shadow = texture(shadows, UVCoord).r;
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
-        float roughness = pos_map.a;
+        float roughness = normal_map.a;
         float metallic = material.a;
         vec3 emission = material.rgb * 15.0;
         float ao = diffuse.a;

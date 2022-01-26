@@ -1,8 +1,8 @@
 #version 450
 
 layout (location = 0) out vec4 tColor;
-layout (location = 1) out vec3 tNormal;
-layout (location = 2) out vec4 tPos;
+layout (location = 1) out vec4 tNormal;
+layout (location = 2) out vec3 tPos;
 layout (location = 3) out vec4 tMaterial;
 
 layout(location = 0) in vec3 FragPos;
@@ -17,7 +17,7 @@ void main() {
         discard;
 
     tColor = vec4(color.rgb, 1);
-    tNormal = Normal;
-    tPos = vec4(FragPos, 0.3);
+    tNormal = vec4(Normal, 0.3);
+    tPos = FragPos;
     tMaterial = vec4(0, 0, 0, 0);
 }

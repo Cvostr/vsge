@@ -1,7 +1,7 @@
 #version 450
 
 layout (location = 0) out vec4 tColor;
-layout (location = 1) out vec3 tNormal;
+layout (location = 1) out vec4 tNormal;
 layout (location = 2) out vec3 tPos;
 layout (location = 3) out vec4 tMaterial;
 
@@ -164,8 +164,8 @@ void CalculateTextures(vec2 uv){
 
 void main() {
     CalculateTextures(UVCoord);
-    tColor = vec4(result_albedo, 1);
-    tNormal = result_normal;
+    tColor = vec4(result_albedo, result_ao);
+    tNormal = vec4(result_normal, result_roughness);
     tPos = FragPos;
-    tMaterial = vec4(result_roughness, result_metallic, 0, result_ao);
+    tMaterial = vec4(0, 0, 0, result_metallic);
 }

@@ -1,6 +1,6 @@
 layout (location = 0) out vec4 tColor;
-layout (location = 1) out vec3 tNormal;
-layout (location = 2) out vec4 tPos;
+layout (location = 1) out vec4 tNormal;
+layout (location = 2) out vec3 tPos;
 layout (location = 3) out vec4 tMaterial;
 
 layout(location = 0) in vec3 FragPos;
@@ -124,7 +124,7 @@ void main() {
         ao = texture(occlusion_map, uv_coords).r;
 
     tColor = vec4(diffuse, ao);
-    tNormal = normal;
-    tPos = vec4(FragPos, roughness);
+    tNormal = vec4(normal, roughness);
+    tPos = FragPos;
     tMaterial = vec4(emission, metallic);
 }   
