@@ -27,6 +27,8 @@ namespace VSGE {
 		VulkanBuffer* _particles_buffer;
 		VulkanBuffer* _lights_buffer;
 
+		bool _draw_entities;
+		bool _update_queued;
 		bool _enabled;
 		bool _alternately;
 		int _prev_step; //1 - spmap, 2 - irmap
@@ -43,6 +45,12 @@ namespace VSGE {
 			VulkanBuffer* lights);
 		void SetSpmapIrmapAlternately(bool alternately);
 		void SetEnabled(bool enabled);
+		void Update();
+
+		void SetEnvmapStepsCount(uint32 steps);
+		void SetIrmapStepsCount(uint32 steps);
+		void SetSpmapStepsCount(uint32 steps);
+
 		void Create();
 		void Destroy();
 

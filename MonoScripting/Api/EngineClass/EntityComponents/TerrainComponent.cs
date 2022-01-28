@@ -19,6 +19,10 @@ public class TerrainComponent : IEntityComponent {
         return i_GetLength(handle);
     }
 
+    float GetMaxTerrainHeight(){
+        return i_GetMaxTerrainHeight(handle);
+    }
+
     void Flat(float height){
         i_Flat(handle, height);
     }
@@ -31,4 +35,7 @@ public class TerrainComponent : IEntityComponent {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern uint i_GetLength(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern float i_GetMaxTerrainHeight(ulong handle);
 }

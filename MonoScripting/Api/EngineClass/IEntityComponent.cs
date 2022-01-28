@@ -47,6 +47,8 @@ public class IEntityComponent : InternalObject {
             return 8;
         if(typeof(T).Equals(typeof(ColliderComponent)))
             return 9;
+        if(typeof(T).Equals(typeof(TerrainComponent)))
+            return 11;
         if(typeof(T).Equals(typeof(CharacterControllerComponent)))
             return 13;
         

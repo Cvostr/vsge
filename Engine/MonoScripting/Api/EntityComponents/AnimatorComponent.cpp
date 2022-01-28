@@ -25,6 +25,11 @@ static void SetAnimationCoeff(AnimatorComponent* anim, uint32 index, float coeff
 	coeffs[index].coeff = coeff;
 }
 
+static void SetAnimation(AnimatorComponent* anim, uint32 index, Resource* res) {
+	std::vector<AnimationCoeff>& coeffs = anim->GetAnimations();
+	coeffs[index]._animResource.SetResource(res->GetName());
+}
+
 void VSGE::BindAnimator() {
 	MonoScriptingLayer::AddInternalCall("AnimatorComponent::i_Play(ulong)", Play);
 	MonoScriptingLayer::AddInternalCall("AnimatorComponent::i_Stop(ulong)", Stop);
@@ -32,4 +37,5 @@ void VSGE::BindAnimator() {
 
 	MonoScriptingLayer::AddInternalCall("AnimatorComponent::i_AddAnimation(ulong)", AddAnimation);
 	MonoScriptingLayer::AddInternalCall("AnimatorComponent::i_SetAnimationCoeff(ulong,single)", SetAnimationCoeff);
+	MonoScriptingLayer::AddInternalCall("AnimatorComponent::i_SetAnimation(ulong,uint,string)", SetAnimation);
 }

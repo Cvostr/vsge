@@ -48,6 +48,15 @@ static void SetParticleLifetime(ParticleEmitterComponent* pec, float lifetime) {
 	pec->SetParticleLifetime(lifetime);
 }
 
+static unsigned int GetMaxParticlesCount(ParticleEmitterComponent* pec) {
+	return pec->GetMaxParticlesCount();
+}
+
+static void GetMaxParticlesCount(ParticleEmitterComponent* pec, unsigned int particles) {
+	pec->SetMaxParticlesCount(particles);
+}
+
+
 void VSGE::BindParticleEmitter() {
 	MonoScriptingLayer::AddInternalCall("ParticleEmitterComponent::i_StartSimulation(ulong)", StartSimulation);
 	MonoScriptingLayer::AddInternalCall("ParticleEmitterComponent::i_StopSimulation(ulong)", StopSimulation);

@@ -10,6 +10,8 @@ VulkanIBL::VulkanIBL() {
 	_alternately = false;
 	_prev_step = 2;
 	_enabled = true;
+	_update_queued = false;
+	_draw_entities = true;
 }
 VulkanIBL::~VulkanIBL() {
 	Destroy();
@@ -36,6 +38,20 @@ void VulkanIBL::SetSpmapIrmapAlternately(bool alternately) {
 
 void VulkanIBL::SetEnabled(bool enabled) {
 	_enabled = enabled;
+}
+
+void VulkanIBL::Update() {
+	_update_queued = true;
+}
+
+void VulkanIBL::SetEnvmapStepsCount(uint32 steps) {
+	_envmap->SetStepsCount(steps);
+}
+void VulkanIBL::SetIrmapStepsCount(uint32 steps) {
+	_irmap->SetStepsCount(steps);
+}
+void VulkanIBL::SetSpmapStepsCount(uint32 steps) {
+	_spmap->SetStepsCount(steps);
 }
 
 void VulkanIBL::SetScene(Scene* scene) {
@@ -91,14 +107,15 @@ void VulkanIBL::Destroy() {
 }
 
 void VulkanIBL::RecordCmdBufs() {
-	
+	bool is_update = _update_queued || _enabled;
+
 	_env_cmdbuf->Begin();
-	if (_enabled)
+	if (is_update && _draw_entities)
 		_envmap->RecordCmdbuffer(_env_cmdbuf);
 	_env_cmdbuf->End();
 
 	_maps_cmdbuf->Begin();
-	if (_enabled) {
+	if (is_update) {
 		if (_alternately) {
 			if (_prev_step == 1) {
 				_irmap->RecordCommandBuffer(_maps_cmdbuf);
@@ -115,6 +132,9 @@ void VulkanIBL::RecordCmdBufs() {
 		}
 	}
 	_maps_cmdbuf->End();
+	//if IBL update was queued, then unset flag
+	if (_update_queued)
+		_update_queued = false;
 }
 
 void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {

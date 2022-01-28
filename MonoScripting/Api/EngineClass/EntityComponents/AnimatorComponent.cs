@@ -30,8 +30,8 @@ public class AnimatorComponent : IEntityComponent {
         i_SetAnimationCoeff(handle, anim_index, factor);
     }
 
-    void SetAnimation(uint anim_index, string anim_resource_str){
-        i_SetAnimation(handle, anim_index, anim_resource_str);
+    void SetAnimation(uint anim_index, Resource anim_resource){
+        i_SetAnimation(handle, anim_index, anim_resource);
     }
 
     [MethodImpl(MethodImplOptions.InternalCall)]
@@ -48,5 +48,5 @@ public class AnimatorComponent : IEntityComponent {
     private static extern void i_SetAnimationCoeff(ulong handle, uint anim_index, float factor);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    private static extern void i_SetAnimation(ulong handle, uint anim_index, string anim_resource_str);
+    private static extern void i_SetAnimation(ulong handle, uint anim_index, Resource anim_resource);
 }
