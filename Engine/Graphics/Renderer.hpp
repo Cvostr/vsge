@@ -28,12 +28,7 @@ namespace VSGE {
 
 	public:
 
-		IRenderer() : 
-			mScene(nullptr),
-			mOutput(nullptr),
-			mOutputWidth(1280),
-			mOutputHeight(720)
-		{}
+		IRenderer();
 
 		void SetScene(Scene* scene);
 		Scene* GetScene();

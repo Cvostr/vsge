@@ -56,6 +56,10 @@ public class ParticleEmitterComponent : IEntityComponent {
         i_SetMaxParticlesCount(handle, max_particles);
     }
 
+    public void SetEmissionRate(int min, int max){
+
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_StartSimulation(ulong handle);
     [MethodImpl(MethodImplOptions.InternalCall)]

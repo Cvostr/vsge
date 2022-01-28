@@ -24,6 +24,7 @@ namespace VSGE {
 		uint32 _fb_height;
 		uint32 _camera_index;
 		bool _is_envmap;
+		bool _draw_world;
 
 		void DrawSkybox(VulkanCommandBuffer* cmdbuf);
 		void DrawParticles(VulkanCommandBuffer* cmdbuf);
@@ -44,6 +45,7 @@ namespace VSGE {
 		void UnsetIBL();
 		void SetIBL(VulkanTexture* specular, VulkanTexture* irradiance);
 		void SetSSAO(VulkanTexture* ssao_map);
+		void SetDrawWorld(bool draw_world);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();

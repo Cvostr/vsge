@@ -6,9 +6,10 @@
 #include "Postprocess/VulkanBloom.hpp"
 #include "Postprocess/VulkanSSAO.hpp"
 #include "PBR/VulkanIBL.hpp"
+#include <Graphics/RenderTarget.hpp>
 
 namespace VSGE {
-	class VulkanRenderTarget {
+	class VulkanRenderTarget : public RenderTarget {
 	private:
 		VulkanGBufferRenderer* _gbuffer_renderer;
 		VulkanDeferredLight* _deferred_renderer;
@@ -20,10 +21,6 @@ namespace VSGE {
 		VulkanTexture* _output;
 
 		VulkanShadowmapping* _shadowmapper;
-
-		uint32 _width;
-		uint32 _height;
-		uint32 _camera_index;
 
 		void CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf);
 	public:

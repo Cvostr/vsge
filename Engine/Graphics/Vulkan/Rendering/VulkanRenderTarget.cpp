@@ -3,7 +3,7 @@
 
 using namespace VSGE;
 
-VulkanRenderTarget::VulkanRenderTarget():
+VulkanRenderTarget::VulkanRenderTarget() : RenderTarget(),
 	_output(nullptr),
 	_shadowmapper(nullptr),
 	_bloom(nullptr)

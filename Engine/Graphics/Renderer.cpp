@@ -10,6 +10,12 @@
 
 using namespace VSGE;
 
+IRenderer::IRenderer() :
+	mScene(nullptr),
+	mOutput(nullptr),
+	mOutputWidth(1280),
+	mOutputHeight(720)
+{}
 void IRenderer::CreateRenderList() {
 	_entitiesToRender.clear();
 	_lightsources.clear();

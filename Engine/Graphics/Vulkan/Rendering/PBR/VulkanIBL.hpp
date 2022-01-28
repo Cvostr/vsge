@@ -50,6 +50,7 @@ namespace VSGE {
 		void SetEnvmapStepsCount(uint32 steps);
 		void SetIrmapStepsCount(uint32 steps);
 		void SetSpmapStepsCount(uint32 steps);
+		void SetDrawEntities(bool draw);
 
 		void Create();
 		void Destroy();

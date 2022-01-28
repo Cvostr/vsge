@@ -13,6 +13,7 @@ VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_height = 720;
 	_camera_index = 0;
 	_is_envmap = false;
+	_draw_world = true;
 	_gbuffer = nullptr;
 
 	_deferred_fb = nullptr;
@@ -154,6 +155,10 @@ void VulkanDeferredLight::SetSSAO(VulkanTexture* ssao_map) {
 			VulkanRenderer::Get()->GetWhiteTexture(), attachment_sampler);
 }
 
+void VulkanDeferredLight::SetDrawWorld(bool draw_world) {
+	_draw_world = draw_world;
+}
+
 void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler) {
 	if (!_deferred_descriptor)
 		return;
@@ -168,19 +173,23 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
 	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
-
+	//draw skybox
 	DrawSkybox(cmdbuf);
 
-	cmdbuf->BindPipeline(*_deferred_pipeline);
-	cmdbuf->SetCullMode(VK_CULL_MODE_FRONT_BIT);
-	cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
-	uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
-	cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
-	cmdbuf->BindMesh(*mesh, 0);
-	cmdbuf->DrawIndexed(6);
-
-	DrawEntities(cmdbuf);
-	DrawParticles(cmdbuf);
+	if (_draw_world) {
+		//draw gbuffer world
+		cmdbuf->BindPipeline(*_deferred_pipeline);
+		cmdbuf->SetCullMode(VK_CULL_MODE_FRONT_BIT);
+		cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
+		uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
+		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
+		cmdbuf->BindMesh(*mesh, 0);
+		cmdbuf->DrawIndexed(6);
+		//draw entities with deferred materials
+		DrawEntities(cmdbuf);
+		//draw particles
+		DrawParticles(cmdbuf);
+	}
 
 	cmdbuf->EndRenderPass();
 }

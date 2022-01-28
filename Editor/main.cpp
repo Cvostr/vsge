@@ -16,6 +16,7 @@
 #include "Windows/StartWindow.hpp"
 #include <Windows/CreateProjectWindow.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
+#include <Misc/VkGizmos.hpp>
 
 #include <Resources/DefaultResources.hpp>
 #include <Graphics/Fonts.hpp>
@@ -63,8 +64,12 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	AddDefaultMaterial();
 	AddDefaultMeshes();
+
 	VkMaterialsThumbnails* thumbs = new VkMaterialsThumbnails;
 	thumbs->Create();
+
+	VkGizmos* editor_gizmos = new VkGizmos;
+	editor_gizmos->Create();
 
 	app->GetWindow().SetPosition(settings->_windowPosX, settings->_windowPosY);
 

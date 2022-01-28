@@ -1,4 +1,6 @@
 #include "HoldOnWindow.hpp"
+#include <Engine/Application.hpp>
+#include <Engine/Window.hpp>
 
 using namespace VSGEditor;
 
@@ -14,7 +16,12 @@ void HoldOnWindow::OnDrawWindow() {
 
 		ImGui::Text(_task_description.c_str());
 
+		VSGE::Window& win = VSGE::Application::Get()->GetWindow();
+		uint32 window_width = win.GetWindowWidth() / 2 - 150;
+		uint32 window_height = win.GetWindowHeight() / 2 - 50;
+
 		SetSize(300, 100);
+		SetPos(window_width, window_height);
 
 		ImGui::End();
 	}

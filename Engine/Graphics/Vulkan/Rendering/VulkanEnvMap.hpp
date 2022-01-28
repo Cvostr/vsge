@@ -54,5 +54,6 @@ namespace VSGE {
 			VulkanBuffer* lights);
 		void SetScene(Scene* scene);
 		void SetStepsCount(uint32 steps);
+		void SetDrawWorld(bool draw);
 	};
 }

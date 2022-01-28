@@ -54,6 +54,11 @@ void VulkanIBL::SetSpmapStepsCount(uint32 steps) {
 	_spmap->SetStepsCount(steps);
 }
 
+void VulkanIBL::SetDrawEntities(bool draw) {
+	_draw_entities = draw;
+	_envmap->SetDrawWorld(draw);
+}
+
 void VulkanIBL::SetScene(Scene* scene) {
 	_envmap->SetScene(scene);
 }
