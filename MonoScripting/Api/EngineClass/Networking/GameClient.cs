@@ -9,12 +9,25 @@ public class Client : InternalObject {
     {
     }
 
-    public void Connect(string address, ushort port){
+    public Client(GameNetworkingDriver driver)
+    {
+        handle = i_Create(driver);
+    }
 
+    public bool Connect(string address, ushort port){
+        return i_Connect(handle, address, port);
     }
 
     public void Disconnect(){
-
+        i_Disconnect(handle);
     }
 
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_Create(GameNetworkingDriver driver);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern bool i_Connect(ulong handle, string address, ushort port);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_Disconnect(ulong handle);
 }

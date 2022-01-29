@@ -77,6 +77,8 @@ bool MonoScriptingLayer::CreateRootDomain() {
 
     BindUiRenderList();
 
+    BindNetworking();
+
     return true;
 }
 
@@ -107,4 +109,25 @@ void MonoScriptingLayer::ReleaseDomain() {
 }
 void MonoScriptingLayer::AttachThread(){
     mono_thread_attach(mono_get_root_domain());
+}
+void MonoScriptingLayer::OnEvent(const VSGE::IEvent& event) {
+    for (auto& sub : subs_events) {
+        if (sub.event_type == event.GetEventType()) {
+            mono_runtime_invoke(sub.method_descr->GetMethod(),
+                sub.mono_object, nullptr, nullptr);
+        }
+    }
+}
+
+void MonoScriptingLayer::SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name) {
+    MonoClass* mono_class = mono_object_get_class(obj);
+    std::string class_name = mono_class_get_name(mono_class);
+    
+    MonoClassDesc* class_desc = _scripts_blob->GetMonoClassDesc(class_name);
+
+    MonoEventSubscription sub;
+    sub.event_type = event_type;
+    sub.mono_object = obj;
+    sub.method_descr = class_desc->GetMethodDescByName(method_name);
+    subs_events.push_back(sub);
 }

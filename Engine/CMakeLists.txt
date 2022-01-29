@@ -149,6 +149,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiResource.cpp
 				MonoScripting/Api/ApiInput.cpp
 				MonoScripting/Api/ApiEntityComponentsApi.cpp
+				MonoScripting/Api/ApiGameNetworking.cpp
 				MonoScripting/Api/EntityComponents/LightsourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AudioSourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AnimatorComponent.cpp

@@ -16,6 +16,8 @@ namespace VSGE {
 	public:
 		MonoMethodDescr(MonoClassDesc* class_desc, MonoMethod* mono_method);
 
-		const std::string& GetName();
+		const std::string& GetName() const;
+
+		MonoMethod* GetMethod() const;
 	};
 }

@@ -66,6 +66,20 @@ void EnetGameServer::StopServer() {
     }
 }
 
+void EnetGameServer::DisconnectClient(uint32 client_id) {
+    server_mutex.lock();
+    auto it = _peers.find(client_id);
+    if (it != _peers.end()) {
+        //client exists
+        ENetPeer* peer = _peers.at(client_id);
+        //disconnect peer gently
+        enet_peer_disconnect(peer, 0);
+        //remove from peer list
+        _peers.erase(client_id);
+    }
+    server_mutex.unlock();
+}
+
 void EnetGameServer::server_events_loop() {
     while (_enet_server) {
         ProcessEvents();

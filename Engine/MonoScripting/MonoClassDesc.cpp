@@ -27,6 +27,15 @@ std::vector<MonoMethodDescr>& MonoClassDesc::GetMethods() {
 	return _methods;
 }
 
+MonoMethodDescr* MonoClassDesc::GetMethodDescByName(const std::string& method_name) {
+	for (auto method_desc : _methods) {
+		if (method_desc.GetName() == method_name) {
+			return &method_desc;
+		}
+	}
+	return nullptr;
+}
+
 MonoClassDesc::MonoClassDesc() {
 	_class = nullptr;
 }

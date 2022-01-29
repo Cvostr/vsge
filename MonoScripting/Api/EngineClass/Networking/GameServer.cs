@@ -3,26 +3,51 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
-public class Server : InternalObject {
+public class GameServer : InternalObject {
 
-    public Server(ulong handle) : base(handle)
+    public GameServer(ulong handle) : base(handle)
     {
     }
 
-    public void SetMaxConnections(uint max){
+    public GameServer(GameNetworkingDriver driver){
+        handle = i_Create(driver);
+    }
 
+    public void SetMaxConnections(uint max){
+        i_SetMaxConnections(handle, max);
     }
 
     public void SetPort(ushort port){
+        i_SetPort(handle, port);
+    }
 
+    public void DisconnectClient(uint client_id){
+        i_DisconnectClient(handle, client_id);
     }
 
     public void Start(){
-
+        i_Start(handle);
     }
 
     public void Stop(){
-
+        i_Stop(handle);
     }
 
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_Create(GameNetworkingDriver driver);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_Start(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_Stop(ulong handle);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetPort(ulong handle, ushort port);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SetMaxConnections(ulong handle, uint max);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_DisconnectClient(ulong handle, uint client_id);
 }

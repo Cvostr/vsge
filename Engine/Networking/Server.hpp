@@ -12,5 +12,7 @@ namespace VSGE {
 		virtual bool StartServer() = 0;
 		virtual bool StartServer(uint16 port) = 0;
 		virtual void StopServer() = 0;
+
+		virtual void DisconnectClient(uint32 client_id) = 0;
 	};
 }

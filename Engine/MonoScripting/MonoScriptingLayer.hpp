@@ -22,6 +22,13 @@
 #define MONO_DOMAIN_NAME "VSGE_MONO"
 
 namespace VSGE {
+
+	struct MonoEventSubscription {
+		EventType event_type;
+		MonoObject* mono_object;
+		MonoMethodDescr* method_descr;
+	};
+
 	class MonoScriptingLayer : public IApplicationLayer {
 	private:
 		static MonoScriptingLayer* _this;
@@ -29,6 +36,8 @@ namespace VSGE {
 		MonoDomain* _root_domain;
 		MonoDomain* _domain;
 		MonoScriptBlob* _scripts_blob;
+
+		std::vector<MonoEventSubscription> subs_events;
 	public:
 
 		MonoScriptingLayer();
@@ -88,6 +97,10 @@ namespace VSGE {
 		/// </summary>
 		void AttachThread();
 
+		void OnEvent(const VSGE::IEvent& event);
+
+		void SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name);
+			
 		template<typename T> 
 		static void AddInternalCall(const std::string& decl, T func){
 			mono_add_internal_call(decl.c_str(), (const void*)func);

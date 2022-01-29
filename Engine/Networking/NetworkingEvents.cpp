@@ -16,8 +16,7 @@ uint32 NetworkClientConnectedEvent::GetConnectionId() {
 	return _connection_id;
 }
 
-
-
+//--------------Client disconnected from server
 
 NetworkClientDisconnectedEvent::NetworkClientDisconnectedEvent(IGameServer* server, uint32 id) :
 	_server(server),
@@ -32,8 +31,7 @@ uint32 NetworkClientDisconnectedEvent::GetConnectionId() {
 	return _connection_id;
 }
 
-
-
+//-----------------Server received data from client
 
 NetworkServerDataReceiveEvent::NetworkServerDataReceiveEvent(IGameServer* server, uint32 id, byte* data, uint32 size) :
 	_server(server),
@@ -65,8 +63,7 @@ NetworkServerDataReceiveEvent::~NetworkServerDataReceiveEvent() {
 	SAFE_RELEASE(_data);
 }
 
-
-
+//-----------------Client received data from server
 
 NetworkClientDataReceive::NetworkClientDataReceive(IGameClient* client, byte* data, uint32 size) :
 	_client(client),

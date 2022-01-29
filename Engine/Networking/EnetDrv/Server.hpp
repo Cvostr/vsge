@@ -25,6 +25,7 @@ namespace VSGE {
 
 		void SetServerPort(uint16 port);
 		void SetMaxConnections(uint32 max_connections);
+		void DisconnectClient(uint32 client_id);
 
 		bool StartServer();
 		bool StartServer(uint16 port);

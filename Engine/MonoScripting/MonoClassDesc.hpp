@@ -33,6 +33,8 @@ namespace VSGE {
 
 		std::vector<MonoMethodDescr>& GetMethods();
 
+		MonoMethodDescr* GetMethodDescByName(const std::string& method_name);
+
 		void Create(MonoClass* mono_class);
 
 		MonoObject* CreateObjectInstance();
