@@ -1,7 +1,7 @@
 #pragma once
 
 #include <list>
-#include "../Base/ImGuiWindow.hpp"
+#include <Base/ImGuiWindow.hpp>
 #include "TextEditWindow.hpp"
 
 namespace VSGEditor {

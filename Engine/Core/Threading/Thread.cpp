@@ -100,7 +100,8 @@ void Thread::SetThreadName(const std::string& name) {
 #endif
 #ifdef __linux__
 	pthread_t* thread = (pthread_t*)_handle;
-	pthread_setname_np(*thread, name.c_str());
+	if(thread)
+		pthread_setname_np(*thread, name.c_str());
 #endif
 }
 

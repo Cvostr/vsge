@@ -98,8 +98,10 @@ void MonoScriptingLayer::CreateDomain() {
 }
 void MonoScriptingLayer::ReleaseDomain() {
     if (_domain) {
-        mono_domain_set(mono_get_root_domain(), 0);
+        mono_domain_set(_root_domain, 0);
+        #ifndef __linux__
         mono_domain_unload(_domain);
+        #endif
         _domain = nullptr;
     }
 }

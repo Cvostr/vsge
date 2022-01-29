@@ -1,4 +1,5 @@
 #include "Memory.hpp"
+#include <cstddef>
 
 void Memcpy(void* dst, const void* src, uint64 size) {
 	byte* dst_ptr = (byte*)dst;

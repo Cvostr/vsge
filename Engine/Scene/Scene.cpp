@@ -10,7 +10,7 @@ Scene::Scene() :
 	_running(false),
 	_paused(false),
 	_delayed_run(false),
-	_physics_world(false)
+	_physics_world(nullptr)
 {}
 
 Scene::~Scene() {

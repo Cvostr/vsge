@@ -29,7 +29,14 @@ std::string MonoScriptCompiler::GetCompilationCmd() {
     if(input.size() > 0)
         input.pop_back(); //remove space
 
-    return "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
+    std::string result; 
+    #ifdef _WIN32
+        result = "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
+    #endif
+    #ifdef __linux__
+        result = "../MonoScripting/MonoBinaries/bin/csc.sh -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
+    #endif
+    return result;
 }
 
 const std::string& MonoScriptCompiler::GetOutputPath() {

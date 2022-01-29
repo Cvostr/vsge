@@ -41,8 +41,8 @@ MonoScriptStorage::MonoScriptStorage() {
 	_this = this;
 	_is_scripting_ready = false;
 	_compiler = new MonoScriptCompiler;
-	_compiler->SetThreadName("mono-compile");
 	_compiler->Run();
+	_compiler->SetThreadName("mono-compile");
 }
 
 std::vector<MonoScript*>& MonoScriptStorage::GetScripts() {
