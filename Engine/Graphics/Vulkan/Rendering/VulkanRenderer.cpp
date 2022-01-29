@@ -592,6 +592,14 @@ VulkanFinalPass* VulkanRenderer::GetFinalPass() {
 	return _final_pass;
 }
 
+VulkanRenderPass* VulkanRenderer::GetMaterialsRenderPass() {
+	return _main_render_target->GetGBufferRenderer()->GetRenderPass();
+}
+
+VulkanRenderTarget* VulkanRenderer::GetMainRenderTarget() {
+	return _main_render_target;
+}
+
 VulkanTexture* VulkanRenderer::GetUiAttachment() {
 	return _ui_renderer->GetOutputTexture();
 }

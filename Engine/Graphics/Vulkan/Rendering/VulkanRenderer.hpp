@@ -112,6 +112,10 @@ namespace VSGE {
 
 		Vulkan_BRDF_LUT* GetBRDF();
 
+		VulkanRenderPass* GetMaterialsRenderPass();
+
+		VulkanRenderTarget* GetMainRenderTarget();
+
 		VulkanUiRenderer* GetUiRenderer();
 
 		VulkanFinalPass* GetFinalPass();

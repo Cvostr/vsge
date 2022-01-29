@@ -25,6 +25,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 	descr.graphicsApi = GRAPHICS_API_VULKAN;
 	descr.headless = parser.IsHeadless();
 	descr.server = parser.IsServer();
+	//descr.headless = true;
+	//descr.server = true;
 	//descr.application_dir = parser.GetApplicationDirPath();
 	descr.application_dir = "D:/DEV/vsge_test_assets/built";
 

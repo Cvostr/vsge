@@ -1,6 +1,6 @@
 #include "Server.hpp"
 #include <Core/Logger.hpp>
-#include "NetworkingEvents.hpp"
+#include "../NetworkingEvents.hpp"
 
 #ifdef CreateWindow
 #undef CreateWindow
@@ -86,7 +86,7 @@ void EnetGameServer::ProcessEvents() {
         case ENET_EVENT_TYPE_CONNECT: {
 
             NetworkClientConnectedEvent* connect_event =
-                new NetworkClientConnectedEvent(connectionId);
+                new NetworkClientConnectedEvent(this, connectionId);
 
             server_mutex.lock();
             Application::Get()->QueueEvent(connect_event);
@@ -98,7 +98,7 @@ void EnetGameServer::ProcessEvents() {
         case ENET_EVENT_TYPE_DISCONNECT: {
 
             NetworkClientDisconnectedEvent* disconnect_event =
-                new NetworkClientDisconnectedEvent(connectionId);
+                new NetworkClientDisconnectedEvent(this, connectionId);
 
             server_mutex.lock();
             Application::Get()->QueueEvent(disconnect_event);
@@ -107,13 +107,15 @@ void EnetGameServer::ProcessEvents() {
             break;
         }
         case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT: {
-
+            server_mutex.lock();
             _peers.erase(connectionId);
+            server_mutex.unlock();
             break;
         }
         case ENET_EVENT_TYPE_RECEIVE: {
             NetworkServerDataReceiveEvent* receive_event =
                 new NetworkServerDataReceiveEvent(
+                    this,
                     event.channelID,
                     event.packet->data,
                     event.packet->dataLength);

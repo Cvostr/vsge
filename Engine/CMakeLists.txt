@@ -161,8 +161,9 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/ParticleEmitterComponent.cpp
 				MonoScripting/Api/UI/UiRenderList.cpp
 				Networking/NetworkingLayer.cpp
-				Networking/Server.cpp
-				Networking/Client.cpp
+				Networking/NetworkingEvents.cpp
+				Networking/EnetDrv/Server.cpp
+				Networking/EnetDrv/Client.cpp
 				Networking/NetworkMessage.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp

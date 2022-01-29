@@ -15,7 +15,7 @@ VulkanMaterial::~VulkanMaterial() {
 }
 
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
-	VulkanRenderPass* renderpass = _main_render_target->GetGBufferRenderer()->GetRenderPass();
+	VulkanRenderPass* renderpass = GetMaterialsRenderPass();
 	if (mat_template->GetRenderStage() != RENDER_STAGE_GBUFFER) {
 		renderpass = _main_render_target->GetDeferredLightRenderer()->GetRenderPass();
 	}
