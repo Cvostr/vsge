@@ -43,19 +43,19 @@ NetworkServerDataReceiveEvent::NetworkServerDataReceiveEvent(IGameServer* server
 	memcpy(_data, data, size);
 }
 
-IGameServer* NetworkServerDataReceiveEvent::GetServer() {
+IGameServer* NetworkServerDataReceiveEvent::GetServer() const{
 	return _server;
 }
 
-uint32 NetworkServerDataReceiveEvent::GetConnectionId() {
+uint32 NetworkServerDataReceiveEvent::GetConnectionId() const{
 	return _client_connection_id;
 }
 
-byte* NetworkServerDataReceiveEvent::GetData() {
+byte* NetworkServerDataReceiveEvent::GetData() const{
 	return _data;
 }
 
-uint32 NetworkServerDataReceiveEvent::GetDataSize() {
+uint32 NetworkServerDataReceiveEvent::GetDataSize() const{
 	return _data_size;
 }
 

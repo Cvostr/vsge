@@ -24,6 +24,9 @@ static void* GetServerHandle() {
 static uint32 GetDataSize() {
 	return MonoScriptingLayer::Get()->GetNetworkEventState().data_size;
 }
+static MonoArray* GetData() {
+	return MonoScriptingLayer::Get()->GetNetworkEventState().data;
+}
 
 static IGameServer* CreateServer(int driver) {
 	if (driver == 0)
@@ -51,6 +54,14 @@ static bool ClientConnect(IGameClient* client, MonoString* address, uint16 port)
 static void ClientDisconnect(IGameClient* client) {
 	return client->Disconnect();
 }
+static void ClientSendPacket(IGameClient* client, MonoArray* mono_array, bool reliable) {
+	uint32 size = mono_array_length(mono_array);
+	byte* cpp_array = new byte[size];
+	for (uint32 i = 0; i < size; i++) {
+		cpp_array[i] = mono_array_get(mono_array, byte, i);
+	}
+	client->SendPacket(cpp_array, size, reliable);
+}
 
 void VSGE::BindNetworking() {
 	MonoScriptingLayer::AddInternalCall(
@@ -65,6 +76,12 @@ void VSGE::BindNetworking() {
 	MonoScriptingLayer::AddInternalCall(
 		"GameNetworking::GetServerHandle()",
 		GetServerHandle);
+	MonoScriptingLayer::AddInternalCall(
+		"GameNetworking::GetDataSize()",
+		GetDataSize);
+	MonoScriptingLayer::AddInternalCall(
+		"GameNetworking::GetData()",
+		GetData);
 
 
 	MonoScriptingLayer::AddInternalCall(
@@ -82,4 +99,6 @@ void VSGE::BindNetworking() {
 		"GameClient::i_Connect(ulong,string,uint16)", ClientConnect);
 	MonoScriptingLayer::AddInternalCall(
 		"GameClient::i_Disconnect()", ClientDisconnect);
+	MonoScriptingLayer::AddInternalCall(
+		"GameClient::i_SendPacket(ulong,byte[],bool)", ClientSendPacket);
 }

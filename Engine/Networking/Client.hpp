@@ -10,5 +10,7 @@ namespace VSGE {
 		virtual bool Connect() = 0;
 
 		virtual void Disconnect() = 0;
+
+		virtual void SendPacket(byte* data, uint32 size, bool reliable = false) = 0;
 	};
 }

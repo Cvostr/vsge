@@ -16,9 +16,9 @@ namespace VSGE {
 		MonoClass* _class;
 		std::string _name;
 		std::string _namespace;
-		std::vector<MonoClassFieldDesc> _fields;
-		std::vector<MonoEventDesc> _events;
-		std::vector<MonoMethodDescr> _methods;
+		std::vector<MonoClassFieldDesc*> _fields;
+		std::vector<MonoEventDesc*> _events;
+		std::vector<MonoMethodDescr*> _methods;
 	public:
 
 		MonoClass* GetMonoClass() const;
@@ -27,11 +27,11 @@ namespace VSGE {
 
 		const std::string& GetNamespace() const;
 
-		std::vector<MonoClassFieldDesc>& GetFields();
+		std::vector<MonoClassFieldDesc*>& GetFields();
 
-		std::vector<MonoEventDesc>& GetEvents();
+		std::vector<MonoEventDesc*>& GetEvents();
 
-		std::vector<MonoMethodDescr>& GetMethods();
+		std::vector<MonoMethodDescr*>& GetMethods();
 
 		MonoMethodDescr* GetMethodDescByName(const std::string& method_name);
 

@@ -36,8 +36,10 @@ namespace VSGE {
 		void* client_ptr;
 		void* server_ptr;
 
-		byte* data;
+		MonoArray* data;
 		uint32 data_size;
+
+		void Create();
 	};
 
 	class MonoScriptingLayer : public IApplicationLayer {
@@ -113,6 +115,7 @@ namespace VSGE {
 
 		void OnClientConnectedToServer(const VSGE::NetworkClientConnectedEvent& event);
 		void OnClientDisonnectedFromServer(const VSGE::NetworkClientDisconnectedEvent& event);
+		void OnServerDataReceive(const VSGE::NetworkServerDataReceiveEvent& event);
 
 		void SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name);
 			

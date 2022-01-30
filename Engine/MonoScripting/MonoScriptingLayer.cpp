@@ -79,6 +79,8 @@ bool MonoScriptingLayer::CreateRootDomain() {
 
     BindNetworking();
 
+    _network_state.Create();
+
     return true;
 }
 
@@ -116,11 +118,18 @@ void MonoScriptingLayer::OnEvent(const VSGE::IEvent& event) {
         (event, EVENT_FUNC(OnClientConnectedToServer));
     DispatchEvent<VSGE::NetworkClientDisconnectedEvent>
         (event, EVENT_FUNC(OnClientDisonnectedFromServer));
+    DispatchEvent<VSGE::NetworkServerDataReceiveEvent>
+        (event, EVENT_FUNC(OnServerDataReceive));
 
-    for (auto& sub : subs_events) {
-        if (sub.event_type == event.GetEventType()) {
-            mono_runtime_invoke(sub.method_descr->GetMethod(),
-                sub.mono_object, nullptr, nullptr);
+    EventType event_type = event.GetEventType();
+
+    if (event_type >= EventType::EventNetworkClientConnected
+        && event_type <= EventType::EventNetworkClientDataReceive) {
+        for (auto& sub : subs_events) {
+            if (sub.event_type == event.GetEventType()) {
+                mono_runtime_invoke(sub.method_descr->GetMethod(),
+                    sub.mono_object, nullptr, nullptr);
+            }
         }
     }
 }
@@ -133,6 +142,16 @@ void MonoScriptingLayer::OnClientConnectedToServer(const VSGE::NetworkClientConn
 void MonoScriptingLayer::OnClientDisonnectedFromServer(const VSGE::NetworkClientDisconnectedEvent& event) {
     _network_state.server_ptr = event.GetServer();
     _network_state._client_id = event.GetConnectionId();
+}
+
+void MonoScriptingLayer::OnServerDataReceive(const VSGE::NetworkServerDataReceiveEvent& event) {
+    _network_state.server_ptr = event.GetServer();
+    _network_state._client_id = event.GetConnectionId();
+    _network_state.data_size = event.GetDataSize();
+
+    for (int32 c_i = 0; c_i < _network_state.data_size; c_i++) {
+        mono_array_set(_network_state.data, byte, c_i, event.GetData()[c_i]);
+    }
 }
 
 void MonoScriptingLayer::SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name) {
@@ -150,4 +169,11 @@ void MonoScriptingLayer::SubscribeToEvent(MonoObject* obj, EventType event_type,
 
 NetworkEventsState& MonoScriptingLayer::GetNetworkEventState() {
     return _network_state;
+}
+
+void NetworkEventsState::Create() {
+    data = mono_array_new(MonoScriptingLayer::Get()->GetDomain(),
+        mono_get_byte_class(),
+        1500);
+
 }

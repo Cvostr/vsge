@@ -41,7 +41,7 @@ bool EnetGameServer::StartServer(uint16 port) {
 }
 
 bool EnetGameServer::StartServer() {
-	ENetAddress address;
+	ENetAddress address = { 0 };
 	address.host = ENET_HOST_ANY;
 	address.port = _port;
 
@@ -130,7 +130,7 @@ void EnetGameServer::ProcessEvents() {
             NetworkServerDataReceiveEvent* receive_event =
                 new NetworkServerDataReceiveEvent(
                     this,
-                    event.channelID,
+                    event.peer->connectID,
                     event.packet->data,
                     event.packet->dataLength);
 

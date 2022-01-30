@@ -46,13 +46,13 @@ namespace VSGE {
 
 		NetworkServerDataReceiveEvent(IGameServer* server, uint32 id, byte* data, uint32 size);
 
-		IGameServer* GetServer();
+		IGameServer* GetServer() const;
 
-		uint32 GetConnectionId();
+		uint32 GetConnectionId() const;
 
-		byte* GetData();
+		byte* GetData() const;
 
-		uint32 GetDataSize();
+		uint32 GetDataSize() const;
 
 		~NetworkServerDataReceiveEvent();
 	};

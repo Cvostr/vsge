@@ -10,6 +10,13 @@ MonoScriptBlob::MonoScriptBlob() :
 
 }
 MonoScriptBlob::~MonoScriptBlob() {
+	ClearDescs();
+}
+
+void MonoScriptBlob::ClearDescs() {
+	for (auto class_desc : _class_descs) {
+		delete class_desc;
+	}
 	_class_descs.clear();
 }
 
@@ -34,8 +41,8 @@ MonoImage* MonoScriptBlob::GetImage() {
 
 MonoClassDesc* MonoScriptBlob::GetMonoClassDesc(const std::string& class_name, const std::string& namespace_name) {
 	for (auto& desc : _class_descs) {
-		if (desc.GetName() == class_name)
-			return &desc;
+		if (desc->GetName() == class_name)
+			return desc;
 	}
 	return nullptr;
 }
@@ -51,7 +58,7 @@ MonoMethod* MonoScriptBlob::GetMethodByDescription(MonoMethodDesc* method_desc) 
 }
 
 void MonoScriptBlob::BuildMonoClassDescsList() {
-	_class_descs.clear();
+	ClearDescs();
 
 	const MonoTableInfo* table_info = mono_image_get_table_info(_image, MONO_TABLE_TYPEDEF);
 
@@ -66,7 +73,7 @@ void MonoScriptBlob::BuildMonoClassDescsList() {
 		const char* name_space = mono_metadata_string_heap(_image, cols[MONO_TYPEDEF_NAMESPACE]);
 		_class = mono_class_from_name(_image, name_space, name);
 		
-		MonoClassDesc desc(_class);
+		MonoClassDesc* desc = new MonoClassDesc(_class);
 		_class_descs.push_back(desc);
 	}
 }

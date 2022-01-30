@@ -16,6 +16,7 @@ namespace VSGE {
 		MonoClassDesc* _class;
 	public:
 		MonoEventDesc(MonoClassDesc* class_desc, MonoEvent* mono_event);
+		~MonoEventDesc(){}
 
 		const std::string& GetName() const;
 		MonoClassDesc* GetClass() const;

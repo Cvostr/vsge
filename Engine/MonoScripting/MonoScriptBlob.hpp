@@ -15,7 +15,8 @@ namespace VSGE {
 	private:
 		MonoAssembly* _assembly;
 		MonoImage* _image;
-		std::vector<MonoClassDesc> _class_descs;
+		std::vector<MonoClassDesc*> _class_descs;
+		void ClearDescs();
 	public:
 
 		MonoScriptBlob();

@@ -61,5 +61,6 @@ namespace VSGE {
 
 		MonoClassFieldDesc(const std::string& name, ValueType type);
 		MonoClassFieldDesc(MonoClassDesc* class_desc, MonoClassField* mono_field);
+		~MonoClassFieldDesc(){}
 	};
 }

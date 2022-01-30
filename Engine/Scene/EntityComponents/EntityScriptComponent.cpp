@@ -30,9 +30,9 @@ void EntityScriptComponent::LoadFields() {
 		return;
 
 	for (auto& field_desc : class_desc->GetFields()) {
-		if (field_desc.GetVisibility() == FIELD_PRIVATE)
+		if (field_desc->GetVisibility() == FIELD_PRIVATE)
 			continue;
-		MonoScriptField field(&field_desc);
+		MonoScriptField field(field_desc);
 		_fields.push_back(field);
 	}
 }

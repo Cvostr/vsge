@@ -59,6 +59,14 @@ void EnetGameClient::Disconnect() {
 	}
 }
 
+void EnetGameClient::SendPacket(byte* data, uint32 size, bool reliable) {
+	ENetPacketFlag flag = ENET_PACKET_FLAG_UNSEQUENCED;
+	if (reliable)
+		flag = ENET_PACKET_FLAG_RELIABLE;
+	ENetPacket* packet = enet_packet_create(data, size, flag);
+	enet_peer_send(_enet_peer, 0, packet);
+}
+
 void EnetGameClient::client_events_loop() {
 	while (_enet_peer) {
 		process_events();
