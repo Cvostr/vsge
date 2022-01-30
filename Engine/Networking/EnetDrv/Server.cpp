@@ -18,7 +18,7 @@ using namespace VSGE;
 
 EnetGameServer::EnetGameServer() {
 	_port = 54683;
-	_max_connections = 1024;
+	_max_connections = 128;
 	_enet_server = nullptr;
 }
 
@@ -47,7 +47,7 @@ bool EnetGameServer::StartServer() {
 
 	_enet_server = enet_host_create(&address, _max_connections, 2, 0, 0);
 	if (!_enet_server) {
-		Logger::Log() << "Failed to create server at port " << _port << "\n";
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Failed to create server at port " << _port << "\n";
 		return false;
 	}
 

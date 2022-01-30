@@ -111,12 +111,28 @@ void MonoScriptingLayer::AttachThread(){
     mono_thread_attach(mono_get_root_domain());
 }
 void MonoScriptingLayer::OnEvent(const VSGE::IEvent& event) {
+    //dispatch events
+    DispatchEvent<VSGE::NetworkClientConnectedEvent>
+        (event, EVENT_FUNC(OnClientConnectedToServer));
+    DispatchEvent<VSGE::NetworkClientDisconnectedEvent>
+        (event, EVENT_FUNC(OnClientDisonnectedFromServer));
+
     for (auto& sub : subs_events) {
         if (sub.event_type == event.GetEventType()) {
             mono_runtime_invoke(sub.method_descr->GetMethod(),
                 sub.mono_object, nullptr, nullptr);
         }
     }
+}
+
+void MonoScriptingLayer::OnClientConnectedToServer(const VSGE::NetworkClientConnectedEvent& event) {
+    _network_state.server_ptr = event.GetServer();
+    _network_state._client_id = event.GetConnectionId();
+}
+
+void MonoScriptingLayer::OnClientDisonnectedFromServer(const VSGE::NetworkClientDisconnectedEvent& event) {
+    _network_state.server_ptr = event.GetServer();
+    _network_state._client_id = event.GetConnectionId();
 }
 
 void MonoScriptingLayer::SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name) {
@@ -130,4 +146,8 @@ void MonoScriptingLayer::SubscribeToEvent(MonoObject* obj, EventType event_type,
     sub.mono_object = obj;
     sub.method_descr = class_desc->GetMethodDescByName(method_name);
     subs_events.push_back(sub);
+}
+
+NetworkEventsState& MonoScriptingLayer::GetNetworkEventState() {
+    return _network_state;
 }

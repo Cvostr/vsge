@@ -16,9 +16,9 @@ namespace VSGE {
 
 		NetworkClientConnectedEvent(IGameServer* server, uint32 id);
 
-		IGameServer* GetServer();
+		IGameServer* GetServer() const;
 
-		uint32 GetConnectionId();
+		uint32 GetConnectionId() const;
 	};
 
 	class NetworkClientDisconnectedEvent : public IEvent {
@@ -30,9 +30,9 @@ namespace VSGE {
 
 		NetworkClientDisconnectedEvent(IGameServer* server, uint32 id);
 
-		IGameServer* GetServer();
+		IGameServer* GetServer() const;
 
-		uint32 GetConnectionId();
+		uint32 GetConnectionId() const;
 	};
 
 	class NetworkServerDataReceiveEvent : public IEvent {

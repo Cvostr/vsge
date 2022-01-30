@@ -8,11 +8,11 @@ NetworkClientConnectedEvent::NetworkClientConnectedEvent(IGameServer* server, ui
 	_connection_id(id)
 {}
 
-IGameServer* NetworkClientConnectedEvent::GetServer() {
+IGameServer* NetworkClientConnectedEvent::GetServer() const{
 	return _server;
 }
 
-uint32 NetworkClientConnectedEvent::GetConnectionId() {
+uint32 NetworkClientConnectedEvent::GetConnectionId() const{
 	return _connection_id;
 }
 
@@ -23,11 +23,11 @@ NetworkClientDisconnectedEvent::NetworkClientDisconnectedEvent(IGameServer* serv
 	_connection_id(id)
 {}
 
-IGameServer* NetworkClientDisconnectedEvent::GetServer() {
+IGameServer* NetworkClientDisconnectedEvent::GetServer() const{
 	return _server;
 }
 
-uint32 NetworkClientDisconnectedEvent::GetConnectionId() {
+uint32 NetworkClientDisconnectedEvent::GetConnectionId() const{
 	return _connection_id;
 }
 

@@ -6,6 +6,10 @@
 #include <thread>
 #include <mutex>
 
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 namespace VSGE {
 	class EnetGameServer : public IGameServer {
 	private:

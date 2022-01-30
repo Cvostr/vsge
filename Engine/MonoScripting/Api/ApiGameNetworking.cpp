@@ -12,6 +12,18 @@ static void SubscribeToNetworkEvent(MonoObject* obj, EventType event_type, MonoS
 	std::string method_name_str = std::string(mono_string_to_utf8(method_name));
 	MonoScriptingLayer::Get()->SubscribeToEvent(obj, event_type, method_name_str);
 }
+static uint32 GetClientId() {
+	return MonoScriptingLayer::Get()->GetNetworkEventState()._client_id;
+}
+static void* GetClientHandle() {
+	return MonoScriptingLayer::Get()->GetNetworkEventState().client_ptr;
+}
+static void* GetServerHandle() {
+	return MonoScriptingLayer::Get()->GetNetworkEventState().server_ptr;
+}
+static uint32 GetDataSize() {
+	return MonoScriptingLayer::Get()->GetNetworkEventState().data_size;
+}
 
 static IGameServer* CreateServer(int driver) {
 	if (driver == 0)
@@ -30,6 +42,7 @@ static void SetServerPort(IGameServer* server, uint16 port) {
 static IGameClient* CreateClient(int driver) {
 	if (driver == 0)
 		return new EnetGameClient;
+	return nullptr;
 }
 static bool ClientConnect(IGameClient* client, MonoString* address, uint16 port) {
 	std::string address_std = std::string(mono_string_to_utf8(address));
@@ -43,6 +56,16 @@ void VSGE::BindNetworking() {
 	MonoScriptingLayer::AddInternalCall(
 		"GameNetworking::SubscribeToNetworkEvent(EntityScript,NetworkEventType,string)",
 		SubscribeToNetworkEvent);
+	MonoScriptingLayer::AddInternalCall(
+		"GameNetworking::GetClientID()",
+		GetClientId);
+	MonoScriptingLayer::AddInternalCall(
+		"GameNetworking::GetClientHandle()",
+		GetClientHandle);
+	MonoScriptingLayer::AddInternalCall(
+		"GameNetworking::GetServerHandle()",
+		GetServerHandle);
+
 
 	MonoScriptingLayer::AddInternalCall(
 		"GameServer::i_Create(GameNetworkingDriver)", CreateServer);
@@ -51,12 +74,12 @@ void VSGE::BindNetworking() {
 	MonoScriptingLayer::AddInternalCall(
 		"GameServer::i_Stop(ulong)", StopServer);
 	MonoScriptingLayer::AddInternalCall(
-		"GameServer::i_SetPort(ulong,ushort)", SetServerPort);
+		"GameServer::i_SetPort(ulong,uint16)", SetServerPort);
 
 	MonoScriptingLayer::AddInternalCall(
 		"GameClient::i_Create(GameNetworkingDriver)", CreateClient);
 	MonoScriptingLayer::AddInternalCall(
-		"GameClient::i_Connect(string,ushort)", ClientConnect);
+		"GameClient::i_Connect(ulong,string,uint16)", ClientConnect);
 	MonoScriptingLayer::AddInternalCall(
 		"GameClient::i_Disconnect()", ClientDisconnect);
 }

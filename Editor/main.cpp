@@ -6,6 +6,7 @@
 #include <Resources/ResourceLayer.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
 #include <Audio/AudioLayer.hpp>
+#include <Networking/NetworkingLayer.hpp>
 #include "EditorLayers/EditorSettingsLayer.hpp"
 #include <Input/InputLayer.hpp>
 #include <UI/UiLayer.hpp>
@@ -40,6 +41,9 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);
+
+	NetworkingLayer* networking_layer = new NetworkingLayer;
+	app->AddLayer(networking_layer);
 
 	PhysicsLayer* phys_layer = new PhysicsLayer;
 

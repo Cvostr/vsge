@@ -3,6 +3,10 @@
 #include <Engine/Application.hpp>
 #include "../NetworkingEvents.hpp"
 
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 #define ENET_IMPLEMENTATION
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <enet/enet.h>

@@ -3,13 +3,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
-public class Client : InternalObject {
+public class GameClient : InternalObject {
 
-    public Client(ulong handle) : base(handle)
+    public GameClient(ulong handle) : base(handle)
     {
     }
 
-    public Client(GameNetworkingDriver driver)
+    public GameClient(GameNetworkingDriver driver)
     {
         handle = i_Create(driver);
     }

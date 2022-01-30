@@ -5,6 +5,10 @@
 #include <thread>
 #include <mutex>
 
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 namespace VSGE {
 	class EnetGameClient : public IGameClient {
 	private:
