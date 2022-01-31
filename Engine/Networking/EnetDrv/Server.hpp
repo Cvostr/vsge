@@ -30,6 +30,8 @@ namespace VSGE {
 		void SetServerPort(uint16 port);
 		void SetMaxConnections(uint32 max_connections);
 		void DisconnectClient(uint32 client_id);
+		uint32 GetConnectedClientsCount();
+		void SendPacketToClient(uint32 client_id, byte* data, uint32 size, bool reliable = false);
 
 		bool StartServer();
 		bool StartServer(uint16 port);

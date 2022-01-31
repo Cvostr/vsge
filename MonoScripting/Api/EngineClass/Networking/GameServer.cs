@@ -33,6 +33,10 @@ public class GameServer : InternalObject {
         i_Stop(handle);
     }
 
+    public void SendPacket(uint client_id, byte[] data, bool reliable){
+        i_SendPacket(handle, client_id, data, reliable);
+    } 
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_Create(GameNetworkingDriver driver);
 
@@ -50,4 +54,7 @@ public class GameServer : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_DisconnectClient(ulong handle, uint client_id);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_SendPacket(ulong handle, uint client_id, byte[] data, bool reliable);
 }

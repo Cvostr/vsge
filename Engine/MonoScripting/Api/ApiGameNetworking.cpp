@@ -41,6 +41,15 @@ static void StopServer(IGameServer* server) {
 static void SetServerPort(IGameServer* server, uint16 port) {
 	server->SetServerPort(port);
 }
+static void ServerSendPacket(IGameServer* server, uint32 dest, MonoArray* mono_array, bool reliable) {
+	uint32 size = mono_array_length(mono_array);
+	byte* cpp_array = new byte[size];
+	for (uint32 i = 0; i < size; i++) {
+		cpp_array[i] = mono_array_get(mono_array, byte, i);
+	}
+	server->SendPacketToClient(dest, cpp_array, size, reliable);
+	delete[] cpp_array;
+}
 
 static IGameClient* CreateClient(int driver) {
 	if (driver == 0)
@@ -61,6 +70,7 @@ static void ClientSendPacket(IGameClient* client, MonoArray* mono_array, bool re
 		cpp_array[i] = mono_array_get(mono_array, byte, i);
 	}
 	client->SendPacket(cpp_array, size, reliable);
+	delete[] cpp_array;
 }
 
 void VSGE::BindNetworking() {
@@ -92,6 +102,8 @@ void VSGE::BindNetworking() {
 		"GameServer::i_Stop(ulong)", StopServer);
 	MonoScriptingLayer::AddInternalCall(
 		"GameServer::i_SetPort(ulong,uint16)", SetServerPort);
+	MonoScriptingLayer::AddInternalCall(
+		"GameServer::i_SendPacket(ulong,uint,byte[],bool)", ServerSendPacket);
 
 	MonoScriptingLayer::AddInternalCall(
 		"GameClient::i_Create(GameNetworkingDriver)", CreateClient);

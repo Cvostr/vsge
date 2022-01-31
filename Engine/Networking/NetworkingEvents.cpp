@@ -65,7 +65,7 @@ NetworkServerDataReceiveEvent::~NetworkServerDataReceiveEvent() {
 
 //-----------------Client received data from server
 
-NetworkClientDataReceive::NetworkClientDataReceive(IGameClient* client, byte* data, uint32 size) :
+NetworkClientDataReceiveEvent::NetworkClientDataReceiveEvent(IGameClient* client, byte* data, uint32 size) :
 	_client(client),
 	_data_size(size)
 {
@@ -74,18 +74,18 @@ NetworkClientDataReceive::NetworkClientDataReceive(IGameClient* client, byte* da
 	memcpy(_data, data, size);
 }
 
-IGameClient* NetworkClientDataReceive::GetClient() {
+IGameClient* NetworkClientDataReceiveEvent::GetClient() const{
 	return _client;
 }
 
-byte* NetworkClientDataReceive::GetData() {
+byte* NetworkClientDataReceiveEvent::GetData() const{
 	return _data;
 }
 
-uint32 NetworkClientDataReceive::GetDataSize() {
+uint32 NetworkClientDataReceiveEvent::GetDataSize() const{
 	return _data_size;
 }
 
-NetworkClientDataReceive::~NetworkClientDataReceive() {
+NetworkClientDataReceiveEvent::~NetworkClientDataReceiveEvent() {
 	SAFE_RELEASE(_data);
 }

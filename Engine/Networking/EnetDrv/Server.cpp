@@ -80,6 +80,29 @@ void EnetGameServer::DisconnectClient(uint32 client_id) {
     server_mutex.unlock();
 }
 
+uint32 EnetGameServer::GetConnectedClientsCount() {
+    server_mutex.lock();
+    uint32 result = static_cast<uint32>(_peers.size());
+    server_mutex.unlock();
+    return result;
+}
+
+void EnetGameServer::SendPacketToClient(uint32 client_id, byte* data, uint32 size, bool reliable) {
+    server_mutex.lock();
+    auto it = _peers.find(client_id);
+    if (it != _peers.end()) {
+        //client exists
+        ENetPeer* peer = _peers.at(client_id);
+        //disconnect peer gently
+        ENetPacketFlag flag = ENET_PACKET_FLAG_UNSEQUENCED;
+        if (reliable)
+            flag = ENET_PACKET_FLAG_RELIABLE;
+        ENetPacket* packet = enet_packet_create(data, size, flag);
+        enet_peer_send(peer, 0, packet);
+    }
+    server_mutex.unlock();
+}
+
 void EnetGameServer::server_events_loop() {
     while (_enet_server) {
         ProcessEvents();

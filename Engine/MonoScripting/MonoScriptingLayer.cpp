@@ -120,6 +120,8 @@ void MonoScriptingLayer::OnEvent(const VSGE::IEvent& event) {
         (event, EVENT_FUNC(OnClientDisonnectedFromServer));
     DispatchEvent<VSGE::NetworkServerDataReceiveEvent>
         (event, EVENT_FUNC(OnServerDataReceive));
+    DispatchEvent<VSGE::NetworkClientDataReceiveEvent>
+        (event, EVENT_FUNC(OnClientDataReceive));
 
     EventType event_type = event.GetEventType();
 
@@ -149,6 +151,14 @@ void MonoScriptingLayer::OnServerDataReceive(const VSGE::NetworkServerDataReceiv
     _network_state._client_id = event.GetConnectionId();
     _network_state.data_size = event.GetDataSize();
 
+    for (int32 c_i = 0; c_i < _network_state.data_size; c_i++) {
+        mono_array_set(_network_state.data, byte, c_i, event.GetData()[c_i]);
+    }
+}
+
+void MonoScriptingLayer::OnClientDataReceive(const VSGE::NetworkClientDataReceiveEvent& event) {
+    _network_state.client_ptr = event.GetClient();
+    _network_state.data_size = event.GetDataSize();
     for (int32 c_i = 0; c_i < _network_state.data_size; c_i++) {
         mono_array_set(_network_state.data, byte, c_i, event.GetData()[c_i]);
     }

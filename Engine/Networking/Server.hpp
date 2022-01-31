@@ -13,6 +13,8 @@ namespace VSGE {
 		virtual bool StartServer(uint16 port) = 0;
 		virtual void StopServer() = 0;
 
+		virtual uint32 GetConnectedClientsCount() = 0;
 		virtual void DisconnectClient(uint32 client_id) = 0;
+		virtual void SendPacketToClient(uint32 client_id, byte* data, uint32 size, bool reliable = false) = 0;
 	};
 }

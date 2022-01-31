@@ -116,6 +116,7 @@ namespace VSGE {
 		void OnClientConnectedToServer(const VSGE::NetworkClientConnectedEvent& event);
 		void OnClientDisonnectedFromServer(const VSGE::NetworkClientDisconnectedEvent& event);
 		void OnServerDataReceive(const VSGE::NetworkServerDataReceiveEvent& event);
+		void OnClientDataReceive(const VSGE::NetworkClientDataReceiveEvent& event);
 
 		void SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name);
 			

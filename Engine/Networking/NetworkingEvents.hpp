@@ -57,7 +57,7 @@ namespace VSGE {
 		~NetworkServerDataReceiveEvent();
 	};
 
-	class NetworkClientDataReceive : public IEvent {
+	class NetworkClientDataReceiveEvent : public IEvent {
 	private:
 		IGameClient* _client;
 		byte* _data;
@@ -65,14 +65,14 @@ namespace VSGE {
 	public:
 		EVENT_CLASS_TYPE(EventType::EventNetworkClientDataReceive);
 
-		NetworkClientDataReceive(IGameClient* client, byte* data, uint32 size);
+		NetworkClientDataReceiveEvent(IGameClient* client, byte* data, uint32 size);
 
-		IGameClient* GetClient();
+		IGameClient* GetClient() const;
 
-		byte* GetData();
+		byte* GetData() const;
 
-		uint32 GetDataSize();
+		uint32 GetDataSize() const;
 
-		~NetworkClientDataReceive();
+		~NetworkClientDataReceiveEvent();
 	};
 }

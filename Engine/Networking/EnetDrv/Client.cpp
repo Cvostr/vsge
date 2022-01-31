@@ -91,8 +91,8 @@ void EnetGameClient::process_events() {
             break;
         }
         case ENET_EVENT_TYPE_RECEIVE: {
-            NetworkClientDataReceive* receive_event =
-                new NetworkClientDataReceive(
+            NetworkClientDataReceiveEvent* receive_event =
+                new NetworkClientDataReceiveEvent(
                     this,
                     event.packet->data,
                     event.packet->dataLength);
