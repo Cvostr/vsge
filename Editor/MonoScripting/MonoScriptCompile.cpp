@@ -55,7 +55,9 @@ void MonoScriptCompiler::THRFunc() {
             //Obtain pointer to LoadRequest
             std::string cmd = GetCompilationCmd();
             _output = ExecuteShellCommand(cmd);
-
+            //disable logger output to stdout
+            Logger::GetOpLogger().SetPrintToStdout(false);
+            //Send logs with each error
             while (_output.find_first_of('\n') != std::string::npos) {
                 uint32 pos = (uint32)_output.find_first_of('\n');
                 std::string message = _output.substr(0, pos);
@@ -65,7 +67,8 @@ void MonoScriptCompiler::THRFunc() {
                 Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << message << "\n";
             }
             _state = COMPILATION_STATE_DONE;
-
+            //enable logger output to stdout
+            Logger::GetOpLogger().SetPrintToStdout(true);
             ScriptCompilationDoneEvent* app_event = new ScriptCompilationDoneEvent;
             Application::Get()->QueueEvent(app_event);
         }

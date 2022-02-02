@@ -75,4 +75,25 @@ namespace VSGE {
 
 		~NetworkClientDataReceiveEvent();
 	};
+
+	enum ClientDisconnectedByServerType {
+		DISCONNECTION_TYPE_GRACEFULLY,
+		DISCONNECTION_TYPE_CONN_RESET
+	};
+
+	class NetworkClientDisconnectedByServerEvent : public IEvent {
+	private:
+		IGameClient* _client;
+		ClientDisconnectedByServerType _disconnection_type;
+	public:
+		EVENT_CLASS_TYPE(EventType::EventClientDisconnectedByServer);
+
+		NetworkClientDisconnectedByServerEvent(IGameClient* client, ClientDisconnectedByServerType disc_type);
+
+		~NetworkClientDisconnectedByServerEvent(){}
+
+		IGameClient* GetClient() const;
+
+		ClientDisconnectedByServerType GetDisconnectionType() const;
+	};
 }

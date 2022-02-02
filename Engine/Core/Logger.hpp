@@ -48,15 +48,18 @@ namespace VSGE {
 	public:
 		static void Log(const std::string& msg, LogType type = LogType::LOG_TYPE_INFO);
 		static OpLogger& Log(LogType type = LogType::LOG_TYPE_INFO);
+		static OpLogger& GetOpLogger();
 	};
 
 	class OpLogger {
 	private:
+		bool _print_to_stdout;
 		MessageEvent* _lastEvent;
 	public:
 		OpLogger();
 
 		void SetEvent(MessageEvent* _event);
+		void SetPrintToStdout(bool print);
 
 		OpLogger& operator<<(int var);
 		OpLogger& operator<<(unsigned int var);

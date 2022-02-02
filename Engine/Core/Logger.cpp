@@ -66,34 +66,47 @@ OpLogger& Logger::Log(LogType type) {
 	return mOpLogger;
 }
 
+OpLogger& Logger::GetOpLogger() {
+	return mOpLogger;
+}
+
 OpLogger::OpLogger() {
 	_lastEvent = nullptr;
+	_print_to_stdout = true;
 }
 void OpLogger::SetEvent(MessageEvent* _event) {
 	_lastEvent = _event;
 }
+void OpLogger::SetPrintToStdout(bool print) {
+	_print_to_stdout = print;
+}
 OpLogger& OpLogger::operator<<(int var) {
-	printf("%i", var);
+	if(_print_to_stdout)
+		printf("%i", var);
 	_lastEvent->GetContent() += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(unsigned int var) {
-	printf("%u", var);
+	if (_print_to_stdout)
+		printf("%u", var);
 	_lastEvent->GetContent() += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(float var) {
-	printf("%f", var);
+	if (_print_to_stdout)
+		printf("%f", var);
 	_lastEvent->GetContent() += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(const char* var) {
-	printf("%s", var);
+	if (_print_to_stdout)
+		printf("%s", var);
 	_lastEvent->GetContent() += std::string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(std::string var) {
-	printf("%s", var.c_str());
+	if (_print_to_stdout)
+		printf("%s", var.c_str());
 	_lastEvent->GetContent() += var;
 	return *this;
 }

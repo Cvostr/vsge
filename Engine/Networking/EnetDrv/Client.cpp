@@ -85,9 +85,21 @@ void EnetGameClient::process_events() {
         switch (event.type)
         {
         case ENET_EVENT_TYPE_DISCONNECT: {
+			NetworkClientDisconnectedByServerEvent* disconnect_event =
+				new NetworkClientDisconnectedByServerEvent(this, DISCONNECTION_TYPE_GRACEFULLY);
+
+			_client_mutex.lock();
+			Application::Get()->QueueEvent(disconnect_event);
+			_client_mutex.unlock();
             break;
         }
         case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT: {
+			NetworkClientDisconnectedByServerEvent* disconnect_event =
+				new NetworkClientDisconnectedByServerEvent(this, DISCONNECTION_TYPE_CONN_RESET);
+
+			_client_mutex.lock();
+			Application::Get()->QueueEvent(disconnect_event);
+			_client_mutex.unlock();
             break;
         }
         case ENET_EVENT_TYPE_RECEIVE: {

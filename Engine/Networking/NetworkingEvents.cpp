@@ -89,3 +89,22 @@ uint32 NetworkClientDataReceiveEvent::GetDataSize() const{
 NetworkClientDataReceiveEvent::~NetworkClientDataReceiveEvent() {
 	SAFE_RELEASE(_data);
 }
+
+
+
+NetworkClientDisconnectedByServerEvent::
+	NetworkClientDisconnectedByServerEvent(
+	IGameClient* client, ClientDisconnectedByServerType disc_type)
+{
+	_client = client;
+	_disconnection_type = disc_type;
+}
+
+
+IGameClient* NetworkClientDisconnectedByServerEvent::GetClient() const {
+	return _client;
+}
+
+ClientDisconnectedByServerType NetworkClientDisconnectedByServerEvent::GetDisconnectionType() const {
+	return _disconnection_type;
+}

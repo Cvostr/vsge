@@ -93,7 +93,7 @@ void EnetGameServer::SendPacketToClient(uint32 client_id, byte* data, uint32 siz
     if (it != _peers.end()) {
         //client exists
         ENetPeer* peer = _peers.at(client_id);
-        //disconnect peer gently
+        //packet flag
         ENetPacketFlag flag = ENET_PACKET_FLAG_UNSEQUENCED;
         if (reliable)
             flag = ENET_PACKET_FLAG_RELIABLE;

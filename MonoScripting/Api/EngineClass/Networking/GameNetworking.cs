@@ -12,7 +12,8 @@ public enum NetworkEventType{
         EventNetworkClientConnected = 21,
 		EventNetworkClientDisconnected = 22,
 		EventNetworkServerDataReceive = 23,
-		EventNetworkClientDataReceive = 24
+		EventNetworkClientDataReceive = 24,
+        EventClientDisconnectedByServer = 25
     };
 
 public class GameNetworking {
