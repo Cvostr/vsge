@@ -66,6 +66,7 @@ set(SRC_FILES
                 Windows/TextEditing/TextEditWindow.cpp
                 MonoScripting/MonoScriptStorage.cpp
                 MonoScripting/MonoScriptCompile.cpp
+                MonoScripting/MonoApiDescriptions.cpp
                 main.cpp)
 
 

@@ -12,6 +12,7 @@
 #include <Scene/SceneLayer.hpp>
 #include <Base/Project.hpp>
 #include <Misc/TerrainThreadedEditor.hpp>
+#include <Math/Ray.hpp>
 
 namespace VSGEditor {
 

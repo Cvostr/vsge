@@ -5,6 +5,7 @@
 #include <Scene/SceneLayer.hpp>
 #include <Resources/ResourceLayer.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <MonoScripting/MonoScriptStorage.hpp>
 #include <Audio/AudioLayer.hpp>
 #include <Networking/NetworkingLayer.hpp>
 #include "EditorLayers/EditorSettingsLayer.hpp"
@@ -41,6 +42,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);
+	MonoScriptStorage::Get()->GetApiDescriptors()->Load();
 
 	NetworkingLayer* networking_layer = new NetworkingLayer;
 	app->AddLayer(networking_layer);

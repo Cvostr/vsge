@@ -19,7 +19,7 @@ namespace VSGEditor {
 
 		void RemoveWindow(TextEditWindow* window);
 
-		void OpenFile(const std::string& file_path);
+		TextEditWindow* OpenFile(const std::string& file_path);
 
 		void OnDrawWindow();
 	};

@@ -7,6 +7,7 @@ namespace VSGEditor {
 	class TextEditWindow {
 	private:
 		std::string _file_path;
+		std::string _win_title;
 		TextEditor* _text_editor;
 		bool _closed;
 
@@ -20,6 +21,8 @@ namespace VSGEditor {
 		const std::string& GetFilePath() const;
 
 		bool IsClosed() const;
+
+		void SetDeclsCS();
 
 		void Draw();
 	};

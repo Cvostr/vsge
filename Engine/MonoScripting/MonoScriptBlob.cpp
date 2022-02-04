@@ -47,6 +47,10 @@ MonoClassDesc* MonoScriptBlob::GetMonoClassDesc(const std::string& class_name, c
 	return nullptr;
 }
 
+const std::vector<MonoClassDesc*>& MonoScriptBlob::GetClassesDescs() const {
+	return _class_descs;
+}
+
 void MonoScriptBlob::LoadFromFile(const std::string& path) {
 	_assembly = mono_domain_assembly_open(MonoScriptingLayer::Get()->GetDomain(), path.c_str());
 	_image = mono_assembly_get_image(_assembly);
@@ -61,7 +65,7 @@ void MonoScriptBlob::BuildMonoClassDescsList() {
 	ClearDescs();
 
 	const MonoTableInfo* table_info = mono_image_get_table_info(_image, MONO_TABLE_TYPEDEF);
-
+	//get count of c# classes
 	int rows = mono_table_info_get_rows(table_info);
 
 	for (int i = 0; i < rows; i++)

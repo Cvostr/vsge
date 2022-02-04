@@ -114,7 +114,8 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         insp->SetShowingResource(resource);
     }
     else if (Entry.ext == ".cs") {
-        ImGuiLayer::Get()->GetWindow<TextEditWindows>()->OpenFile(Entry.abs_path.c_str());
+        TextEditWindow* win = ImGuiLayer::Get()->GetWindow<TextEditWindows>()->OpenFile(Entry.abs_path.c_str());
+        win->SetDeclsCS();
     }else{
 #ifdef _WIN32
         ShellExecute(0, 0, Entry.abs_path.c_str(), 0, 0, SW_SHOW);

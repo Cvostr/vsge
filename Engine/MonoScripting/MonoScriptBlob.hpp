@@ -25,6 +25,7 @@ namespace VSGE {
 		MonoAssembly* GetAssembly();
 		MonoImage* GetImage();
 		MonoClassDesc* GetMonoClassDesc(const std::string& class_name, const std::string& namespace_name = "");
+		const std::vector<MonoClassDesc*>& GetClassesDescs() const;
 
 		void Release();
 

@@ -33,7 +33,6 @@
 #include <MonoScripting/MonoScriptCompile.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
 #include <Input/Input.hpp>
-#include <Math/Ray.hpp>
 #include <ImGuizmo.h>
 
 #define MONEMENT_COEFF 40.3f

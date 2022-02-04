@@ -23,15 +23,16 @@ void TextEditWindows::RemoveWindow(TextEditWindow* window) {
 	text_edit_windows.remove(window);
 }
 
-void TextEditWindows::OpenFile(const std::string& file_path) {
+TextEditWindow* TextEditWindows::OpenFile(const std::string& file_path) {
 	//check, if file already opened
 	for (auto it = text_edit_windows.begin(); it != text_edit_windows.end(); ++it) {
 		if ((*it)->GetFilePath() == file_path)
-			return;
+			return nullptr;
 	}
 	//file isn't opened
 	TextEditWindow* window = new TextEditWindow(file_path);
 	AddWindow(window);
+	return window;
 }
 
 void TextEditWindows::OnDrawWindow() {
