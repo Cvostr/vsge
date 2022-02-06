@@ -3,7 +3,8 @@
 
 #include <Resources/ResourceCache.hpp>
 #include <Resources/ResourceTypes/MaterialResource.hpp>
-
+#include <Engine/Application.hpp>
+#include <Misc/DialogWindows.hpp>
 #include "../Misc/ResourceImporter.hpp"
 #include "../EditorLayers/EditorLayer.hpp"
 #include <Scene/SceneLayer.hpp>
@@ -64,23 +65,36 @@ void File_Menu::OnDrawMenu() {
 
 void File_Menu::OnSave() {
 	EditorLayer* el = EditorLayer::Get();
+	VSGE::Application* app = VSGE::Application::Get();
+	VSGE::SceneLayer* scene_layer = app->GetLayer<VSGE::SceneLayer>();
 
-	if (el->GetOpenedSceneFile().size() == 0)
-		SaveAs();
-	else
-		SaveScene(el->GetOpenedSceneFile());
-	//save all materials
+	if (!scene_layer->IsSceneRunning()) {
 
-	ResourceCache* res_cache = ResourceCache::Get();
-	for (uint32 resource_i = 0; resource_i < res_cache->GetResourcesCount(); resource_i++) {
-		Resource* res = res_cache->GetResources()[resource_i];
-		if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL && !res->IsDefault()) {
-			MaterialResource* mat_res = (MaterialResource*)res;
+		if (el->GetOpenedSceneFile().size() == 0)
+			SaveAs();
+		else
+			SaveScene(el->GetOpenedSceneFile());
+		//save all materials
 
-			std::string dest_path = mat_res->GetDataDescription().file_path;
-			if (dest_path.size() > 0 && mat_res->GetState() == RESOURCE_STATE_READY)
-				mat_res->GetMaterial()->Serialize(dest_path);
+		ResourceCache* res_cache = ResourceCache::Get();
+		for (uint32 resource_i = 0; resource_i < res_cache->GetResourcesCount(); resource_i++) {
+			Resource* res = res_cache->GetResources()[resource_i];
+			if (res->GetResourceType() == RESOURCE_TYPE_MATERIAL && !res->IsDefault()) {
+				MaterialResource* mat_res = (MaterialResource*)res;
+
+				std::string dest_path = mat_res->GetDataDescription().file_path;
+				if (dest_path.size() > 0 && mat_res->GetState() == RESOURCE_STATE_READY)
+					mat_res->GetMaterial()->Serialize(dest_path);
+			}
 		}
+	}
+	else {
+		MessageDialogDesc desc;
+		desc.dialog_title = "Error saving scene!";
+		desc.message = "Unable to save scene in playmode";
+		desc.dialog_type = MessageDialogType::MESSAGE_DIALOG_TYPE_ERROR;
+		DialogUserAction action;
+		MessageDialog(&desc, action);
 	}
 
 }

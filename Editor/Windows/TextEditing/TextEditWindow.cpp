@@ -330,6 +330,25 @@ void TextEditWindow::Draw() {
 
 	_text_editor->Render("ed");
 
+	if (_text_editor->IsTextChanged()) {
+		TextEditor::Coordinates coord = _text_editor->GetCursorPosition();
+		std::string str_line = _text_editor->GetCurrentLineText();
+		for (auto c : str_line) {
+			if (c == '\t')
+				coord.mColumn -= _text_editor->GetTabSize() - 1;
+		}
+		str_line = str_line.substr(0, coord.mColumn);
+		uint32 divider = 0;
+		for (uint32 i = 0; i < str_line.size(); i ++) {
+			char c = str_line[i];
+			if (c == ' ' || c == ',' || c == '\t')
+				divider = i;
+		}
+		
+		divider = str_line.size() - divider;
+		str_line = str_line.substr(divider + _text_editor->GetTabSize() + 1);
+	}
+
 	ImGui::End();
 }
 
