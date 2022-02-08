@@ -124,7 +124,9 @@ bool EditorLayer::OpenProject(const Project& project) {
 	pbw->Hide();
 	ImGuiLayer::Get()->AddWindow(pbw);
 
-	ImGuiLayer::Get()->AddWindow(new TextEditWindows);
+	TextEditWindows* text_edit_windows = new TextEditWindows;
+	text_edit_windows->CreateLangDefinition();
+	ImGuiLayer::Get()->AddWindow(text_edit_windows);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 	ImGuiLayer::Get()->AddMenu(new Edit_Menu);
@@ -482,6 +484,8 @@ void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& 
 	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
 	//Update all script components on scene
 	SceneLayer::Get()->GetMainScene()->GetRootEntity()->CallOnScriptChanged(1);
+
+	TextEditWindows::Get()->CreateLangDefinition();
 }
 
 void EditorLayer::OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe) {

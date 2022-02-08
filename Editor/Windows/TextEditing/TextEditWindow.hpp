@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <TextEditor.h>
 
 namespace VSGEditor {
@@ -12,6 +13,10 @@ namespace VSGEditor {
 		bool _closed;
 
 		void DrawMenu();
+
+		ImVec2 cur_pos;
+		std::string _hint;
+		void DrawHints();
 	public:
 
 		TextEditWindow(const std::string& file_path);
