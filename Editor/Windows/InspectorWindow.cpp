@@ -143,7 +143,7 @@ void InspectorWindow::DrawEntityContents() {
 	mShowingEntity->SetStatic(IsStatic);
 
 	std::string new_name = mShowingEntity->GetName();
-    ImGui::InputText("Entity Name", &new_name);
+	DrawStringControl("Entity Name", new_name);
 	mShowingEntity->SetName(new_name);
 
 	ImGui::Separator();
@@ -157,13 +157,13 @@ void InspectorWindow::DrawEntityContents() {
 	}
     
 	Vec3 translation = mShowingEntity->GetPosition();
-    ImGui::InputFloat3("Translation", (float*)&translation.x);
+	DrawVec3Control("Translation", translation);
 	mShowingEntity->SetPosition(translation);
 	Vec3 scale = mShowingEntity->GetScale();
-    ImGui::InputFloat3("Scale", (float*)&scale.x);
+	DrawVec3Control("Scale", scale);
 	Vec3 rotation_euler = mShowingEntity->GetRotationEuler();
 	mShowingEntity->SetScale(scale);
-    ImGui::InputFloat3("Rotation", &rotation_euler.x);
+	DrawVec3Control("Rotation", rotation_euler);
 	mShowingEntity->SetRotationEuler(rotation_euler);
 
     ImGui::Separator();

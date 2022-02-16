@@ -2,6 +2,7 @@
 #include <Resources/Resource.hpp>
 #include "../ResourcePicker.hpp"
 #include "../MaterialEditor.hpp"
+#include <Base/ImguiHelper.hpp>
 
 using namespace VSGE;
 
@@ -9,7 +10,7 @@ void VSGEditor::DrawMaterialComponent(VSGE::MaterialComponent* mat) {
 	DrawResourcePicker(std::string("Material"), mat->GetResourceReference());
 
 	bool cast_shadows = mat->IsCastShadows();
-	ImGui::Checkbox("Cast shadows", &cast_shadows);
+	DrawCheckboxControl("Cast shadows", cast_shadows);
 	mat->SetCastShadows(cast_shadows);
 
 	if(mat->GetMaterialResource() != nullptr)

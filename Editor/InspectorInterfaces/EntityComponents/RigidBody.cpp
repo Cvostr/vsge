@@ -1,12 +1,12 @@
 #include "EntityComponents.hpp"
-#include <imgui.h>
+#include <Base/ImguiHelper.hpp>
 
 void VSGEditor::DrawRigidbodyComponent(VSGE::RigidBodyComponent* rgbc) {
 	float mass = rgbc->GetMass();
-	ImGui::InputFloat("Mass", &mass);
+	DrawFloatControl("Mass", mass);
 	rgbc->SetMass(mass);
 
 	float friction = rgbc->GetFriction();
-	ImGui::InputFloat("Friction", &friction);
+	DrawFloatControl("Friction", friction);
 	rgbc->SetFriction(friction);
 }

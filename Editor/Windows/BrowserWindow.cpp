@@ -177,6 +177,8 @@ void FileBrowserWindow::OnDrawWindow() {
         }
         else {
             ImGui::SameLine();
+            if (dir_name.empty())
+                dir_name = "/";
             bool btn_clicked = ImGui::Button(dir_name.c_str());
             dir_name.clear();
             if (btn_clicked) {

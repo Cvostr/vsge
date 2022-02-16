@@ -1,5 +1,6 @@
 #include "VariantInput.hpp"
 #include <imgui.h>
+#include <Base/ImguiHelper.hpp>
 
 using namespace VSGEditor;
 using namespace ImGui;
@@ -8,19 +9,19 @@ void VSGEditor::DrawVariantInput(const std::string& label, Variant& value) {
 	const char* label_s = label.c_str();
 	switch (value.GetType()) {
 	case VALUE_TYPE_INT32:
-		InputInt(label_s, &value.GetValue<int>());
+		DrawIntControl(label_s, value.GetValue<int>());
 		break;
 	case VALUE_TYPE_FLOAT:
-		InputFloat(label_s, &value.GetValue<float>());
+		DrawFloatControl(label_s, value.GetValue<float>());
 		break;
 	case VALUE_TYPE_DOUBLE:
 		InputDouble(label_s, &value.GetValue<double>());
 		break;
 	case VALUE_TYPE_BOOL:
-		Checkbox(label_s, &value.GetValue<bool>());
+		DrawCheckboxControl(label_s, value.GetValue<bool>());
 		break;
 	case VALUE_TYPE_VEC3F:
-		InputFloat3(label_s, (float*)&value.GetValue<Vec3>());
+		DrawVec3Control(label_s, value.GetValue<Vec3>());
 		break;
 	case VALUE_TYPE_VEC3I:
 		InputInt3(label_s, (int*)&value.GetValue<Vec3i>());
@@ -38,7 +39,7 @@ void VSGEditor::DrawVariantInput(const std::string& label, Variant& value) {
 		InputInt4(label_s, (int*)&value.GetValue<Vec4i>());
 		break;
 	case VALUE_TYPE_COLOR:
-		ImGui::ColorEdit3(label_s, (float*)&value.GetValue<VSGE::Color>());
+		DrawColorControl(label_s, value.GetValue<VSGE::Color>());
 		break;
 	}
 }

@@ -3,20 +3,21 @@
 #include <imgui.h>
 #include <Resources/Resource.hpp>
 #include "../ResourcePicker.hpp"
+#include <Base/ImguiHelper.hpp>
 
 using namespace VSGE;
 
 void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	float near = cac->GetNearPlane();
-	ImGui::InputFloat("Near plane", &near);
+	DrawFloatControl("Near plane", near);
 	cac->SetNearPlane(near);
 
 	float far = cac->GetFarPlane();
-	ImGui::InputFloat("Far plane", &far);
+	DrawFloatControl("Far plane", far);
 	cac->SetFarPlane(far);
 
 	float fov = cac->GetFOV();
-	ImGui::InputFloat("Field of view", &fov);
+	DrawFloatControl("Field of view", fov);
 	cac->SetFOV(fov);
 
 	ViewMask current_view_mask = cac->GetViewMask();
@@ -28,10 +29,10 @@ void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	PostEffectsParams& params = cac->GetPostEffectParams();
 
 	bool bloom_enabled = params._bloom_enabled;
-	ImGui::Checkbox("Bloom", &bloom_enabled);
+	DrawCheckboxControl("Bloom", bloom_enabled);
 	params._bloom_enabled = bloom_enabled;
 
 	bool ssao_enabled = params._ssao_enabled;
-	ImGui::Checkbox("SSAO", &ssao_enabled);
+	DrawCheckboxControl("SSAO", ssao_enabled);
 	params._ssao_enabled = ssao_enabled;
 }
