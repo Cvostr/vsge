@@ -2,6 +2,7 @@
 #include "../EditorLayers/EditorLayer.hpp"
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include <Scene/SceneLayer.hpp>
+#include <Base/ImguiHelper.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -13,17 +14,17 @@ void EnvironmentSettingsWindow::OnDrawWindow(){
 		SceneEnvironmentSettings& settings = scene->GetEnvironmentSettings();
 
 		Color ambient_color = settings.GetAmbientColor();
-		ImGui::ColorEdit3("Light color", &ambient_color.r);
+		DrawColorControl("Light color", ambient_color);
 		settings.SetAmbientColor(ambient_color);
 
 		DrawResourcePicker("Skybox material", settings._skybox_material);
 
 		float shadows_distance = settings.GetMaxShadowDistance();
-		ImGui::InputFloat("Shadow distance", &shadows_distance);
+		DrawFloatControl("Shadow distance", shadows_distance);
 		settings.SetMaxShadowDistance(shadows_distance);
 
 		int cascades_count = settings.GetShadowCascadesCount();
-		ImGui::InputInt("Shadow cascades", &cascades_count);
+		DrawIntControl("Shadow cascades", cascades_count);
 		settings.SetShadowCascadesCount(cascades_count);
 
 		settings.UpdateShadows();

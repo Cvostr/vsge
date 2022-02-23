@@ -4,6 +4,7 @@
 #include <EditorLayers/EditorLayer.hpp>
 #include <Engine/Application.hpp>
 #include <fstream>
+#include <Base/ImguiHelper.hpp>
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -33,13 +34,13 @@ void ProjectSettingsWindow::OnDrawWindow(){
 }
 
 void ProjectSettingsWindow::DrawProjectSettings() {
-    ImGui::InputText("Project name", &_project_name);
+    DrawStringControl("Project name", _project_name);
     DrawResourcePicker("Start scene", _main_scene);
 }
 void ProjectSettingsWindow::DrawApplicationSettings() {
-    ImGui::InputText("Application name", &_application_name);
-    ImGui::InputInt("Version", &_version);
-    ImGui::InputText("Version string", &_version_string);
+    DrawStringControl("Application name", _application_name);
+    DrawIntControl("Version", _version);
+    DrawStringControl("Version string", _version_string);
 }
 
 void ProjectSettingsWindow::SetDrawMode(DrawMode mode) {
