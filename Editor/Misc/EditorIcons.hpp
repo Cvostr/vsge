@@ -12,6 +12,12 @@ namespace VSGEditor {
 		ImguiVulkanTexture _sceneIcon;
 		ImguiVulkanTexture _scriptIcon;
 		ImguiVulkanTexture _audioIcon;
+		ImguiVulkanTexture _playIcon;
+		ImguiVulkanTexture _pauseIcon;
+		ImguiVulkanTexture _stopIcon;
+		ImguiVulkanTexture _translateIcon;
+		ImguiVulkanTexture _scaleIcon;
+		ImguiVulkanTexture _rotateIcon;
 
 		VSGE::VulkanSampler _sampler;
 
@@ -27,32 +33,30 @@ namespace VSGEditor {
 		void LoadIcons();
 		void FreeIcons();
 
-		void* GetUnknownFileIcon() {
-			return _unknownFile.imtexture;
-		}
+		void* GetUnknownFileIcon();
 
-		void* GetDirIcon() {
-			return _dirIcon.imtexture;
-		}
+		void* GetDirIcon();
 
-		void* GetBackBtnIcon() {
-			return _backBtnIcon.imtexture;
-		}
+		void* GetBackBtnIcon();
 
-		void* GetSceneIcon() {
-			return _sceneIcon.imtexture;
-		}
+		void* GetSceneIcon();
 
-		void* Get3DModelIcon() {
-			return _3DModelIcon.imtexture;
-		}
+		void* Get3DModelIcon();
 
-		void* GetScriptIcon() {
-			return _scriptIcon.imtexture;
-		}
+		void* GetScriptIcon();
 
-		void* GetAudioIcon() {
-			return _audioIcon.imtexture;
-		}
+		void* GetAudioIcon();
+
+		void* GetPlayIcon();
+
+		void* GetPauseIcon();
+
+		void* GetStopIcon();
+
+		void* GetTranslateIcon();
+
+		void* GetScaleIcon();
+
+		void* GetRotateIcon();
 	};
 }

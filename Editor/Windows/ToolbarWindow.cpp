@@ -6,10 +6,11 @@
 #include <Engine/Application.hpp>
 #include <ImGuizmo.h>
 #include <MonoScripting/MonoScriptStorage.hpp>
+#include <Misc/EditorIcons.hpp>
 
 using namespace VSGEditor;
 
-#define BTN_SIZE 35
+#define BTN_SIZE 30
 
 void ToolbarWindow::OnDrawWindow() {
     VSGE::Application* app = VSGE::Application::Get();
@@ -22,32 +23,32 @@ void ToolbarWindow::OnDrawWindow() {
         ImGuiWindowFlags_NoScrollWithMouse
         )) {
         
-        if (ImGui::Button("T", ImVec2(BTN_SIZE, BTN_SIZE))) {
+        if (ImGui::ImageButton(EditorIcons::Get()->GetTranslateIcon(), ImVec2(BTN_SIZE, BTN_SIZE))) {
             EditorLayer::Get()->SetTransformMode(ImGuizmo::OPERATION::TRANSLATE);
         }
         ImGui::SameLine();
-        if (ImGui::Button("S", ImVec2(BTN_SIZE, BTN_SIZE))) {
+        if (ImGui::ImageButton(EditorIcons::Get()->GetScaleIcon(), ImVec2(BTN_SIZE, BTN_SIZE))) {
             EditorLayer::Get()->SetTransformMode(ImGuizmo::OPERATION::SCALE);
         }
         ImGui::SameLine();
-        if (ImGui::Button("R", ImVec2(BTN_SIZE, BTN_SIZE))) {
+        if (ImGui::ImageButton(EditorIcons::Get()->GetRotateIcon(), ImVec2(BTN_SIZE, BTN_SIZE))) {
             EditorLayer::Get()->SetTransformMode(ImGuizmo::OPERATION::ROTATE);
         }
 
         ImGui::SameLine();
         if (!scene_layer->IsSceneRunning()) {
-            ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2, 0));
-            if (ImGui::Button("Play", ImVec2(BTN_SIZE, BTN_SIZE))) {
+            ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2, ImGui::GetCursorPosY()));
+            if (ImGui::ImageButton(EditorIcons::Get()->GetPlayIcon(), ImVec2(BTN_SIZE, BTN_SIZE))) {
                 PlayScene();
             }
         }
         else {
-            ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2 - BTN_SIZE / 2, 0));
-            if (ImGui::Button("Pause", ImVec2(BTN_SIZE, BTN_SIZE))) {
+            ImGui::SetCursorPos(ImVec2(ImGui::GetWindowWidth() / 2 - BTN_SIZE / 2, ImGui::GetCursorPosY()));
+            if (ImGui::ImageButton(EditorIcons::Get()->GetPauseIcon(), ImVec2(BTN_SIZE, BTN_SIZE))) {
                 PauseScene();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Stop", ImVec2(BTN_SIZE, BTN_SIZE))) {
+            if (ImGui::ImageButton(EditorIcons::Get()->GetStopIcon(), ImVec2(BTN_SIZE, BTN_SIZE))) {
                 StopScene();
             }
         }
@@ -55,7 +56,7 @@ void ToolbarWindow::OnDrawWindow() {
         ImGui::End();
     }
     
-    SetSize(app->GetWindow().GetWindowWidth(), 50);
+    SetSize(app->GetWindow().GetWindowWidth(), TOOLBAR_WINDOW_HEIGHT);
 }
 
 void ToolbarWindow::PlayScene() {

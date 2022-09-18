@@ -15,6 +15,8 @@
 #include "../Base/ImGuiWindow.hpp"
 #include "../Base/ImGuiMenu.hpp"
 
+#define TOOLBAR_WINDOW_HEIGHT 55
+
 namespace VSGEditor {
 	class ImGuiLayer : public VSGE::IApplicationLayer {
 	private:

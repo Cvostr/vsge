@@ -305,7 +305,7 @@ void ImGuiLayer::DrawDockWindow() {
         ImGuiWindowFlags_NoNavFocus;
 
     // Set window position and size
-    float offset_y = 50;
+    float offset_y = TOOLBAR_WINDOW_HEIGHT;
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + offset_y));
     ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - offset_y));
