@@ -17,7 +17,6 @@
 #include "../Windows/EnvironmentSettingsWindow.hpp"
 #include "../Windows/ProjectSettingsWindow.hpp"
 #include "../Windows/ProjectBuildingWindow.hpp"
-#include <Windows/TextEditing/TextEditWindows.hpp>
 #include <Misc/DialogWindows.hpp>
 
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
@@ -123,10 +122,6 @@ bool EditorLayer::OpenProject(const Project& project) {
 	ProjectBuildingWindow* pbw = new ProjectBuildingWindow;
 	pbw->Hide();
 	ImGuiLayer::Get()->AddWindow(pbw);
-
-	TextEditWindows* text_edit_windows = new TextEditWindows;
-	text_edit_windows->CreateLangDefinition();
-	ImGuiLayer::Get()->AddWindow(text_edit_windows);
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 	ImGuiLayer::Get()->AddMenu(new Edit_Menu);
@@ -484,8 +479,6 @@ void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& 
 	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
 	//Update all script components on scene
 	SceneLayer::Get()->GetMainScene()->GetRootEntity()->CallOnScriptChanged(1);
-
-	TextEditWindows::Get()->CreateLangDefinition();
 }
 
 void EditorLayer::OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe) {

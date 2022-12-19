@@ -19,7 +19,6 @@
 #include <Misc/EditorIcons.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
-#include <Windows/TextEditing/TextEditWindows.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #include <shellapi.h>
@@ -113,10 +112,7 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
         insp->SetShowingResource(resource);
     }
-    else if (Entry.ext == ".cs") {
-        TextEditWindow* win = ImGuiLayer::Get()->GetWindow<TextEditWindows>()->OpenFile(Entry.abs_path.c_str());
-        win->SetDeclsCS();
-    }else{
+    else{
 #ifdef _WIN32
         ShellExecute(0, 0, Entry.abs_path.c_str(), 0, 0, SW_SHOW);
 #endif

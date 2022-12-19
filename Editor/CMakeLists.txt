@@ -62,8 +62,6 @@ set(SRC_FILES
                 Windows/StartWindow.cpp
                 Windows/ToolbarWindow.cpp
                 Windows/HoldOnWindow.cpp
-                Windows/TextEditing/TextEditWindows.cpp
-                Windows/TextEditing/TextEditWindow.cpp
                 MonoScripting/MonoScriptStorage.cpp
                 MonoScripting/MonoScriptCompile.cpp
                 MonoScripting/MonoApiDescriptions.cpp
