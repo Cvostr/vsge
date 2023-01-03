@@ -57,16 +57,16 @@ add_custom_target(
     shaders
     DEPENDS ${SHADERS_FILES})
 
-IF(UNIX)
-set(COMPILER, "compiler")
-endif()
+add_dependencies(shaders compiler)
 
-if(WIN32)
-set(COMPILER, "compiler.exe")
-endif()
+set(COMPILER ${CMAKE_CURRENT_BINARY_DIR}/../ShadersBuilder/compiler)
+
+set(DEST_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+set(COMPILER_ARGS -ob ${DEST_DIR}/shaders.bundle -om ${DEST_DIR}/shaders.map)
 
 add_custom_command(OUTPUT ${COUTPUT}
-  COMMAND ${COMPILER}
+  COMMAND ${COMPILER} ${COMPILER_ARGS} ${SHADERS_FILES} 
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Shaders
   DEPENDS ${SHADERS_FILES}
   TARGET shaders

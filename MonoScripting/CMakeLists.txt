@@ -38,7 +38,7 @@ set(API_SRC_FILES
     Api/EngineClass/Networking/GameClient.cs
     Api/EngineClass/Networking/GameNetworking.cs)
 
-set(COMPILER_ARGS -target:library -nologo -out:${CMAKE_CURRENT_BINARY_DIR}/../Engine/api.dll)
+set(COMPILER_ARGS -target:library -nologo -out:${CMAKE_CURRENT_BINARY_DIR}/api.dll)
 
 IF(WINDOWS)
 set(COMPILER_CMD "MonoBinaries/bin/csc.bat")

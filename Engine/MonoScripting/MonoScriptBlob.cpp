@@ -1,5 +1,6 @@
 #include "MonoScriptBlob.hpp"
 #include "MonoScriptingLayer.hpp"
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -77,6 +78,12 @@ void MonoScriptBlob::BuildMonoClassDescsList() {
 		const char* name_space = mono_metadata_string_heap(_image, cols[MONO_TYPEDEF_NAMESPACE]);
 		_class = mono_class_from_name(_image, name_space, name);
 		
+		if(_class == nullptr) {
+			Logger::Log(LogType::LOG_TYPE_ERROR) << "Error processing compiled Mono DLL. Class with name " << name << " is NULL\n";
+			Logger::Log(LogType::LOG_TYPE_ERROR) << "Perhaps, api.dll is missing\n";
+			continue;
+		}
+
 		MonoClassDesc* desc = new MonoClassDesc(_class);
 		_class_descs.push_back(desc);
 	}

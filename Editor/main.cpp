@@ -42,7 +42,6 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);
-	MonoScriptStorage::Get()->GetApiDescriptors()->Load();
 
 	NetworkingLayer* networking_layer = new NetworkingLayer;
 	app->AddLayer(networking_layer);

@@ -64,7 +64,6 @@ set(SRC_FILES
                 Windows/HoldOnWindow.cpp
                 MonoScripting/MonoScriptStorage.cpp
                 MonoScripting/MonoScriptCompile.cpp
-                MonoScripting/MonoApiDescriptions.cpp
                 main.cpp)
 
 

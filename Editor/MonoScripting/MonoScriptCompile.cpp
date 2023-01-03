@@ -34,7 +34,7 @@ std::string MonoScriptCompiler::GetCompilationCmd() {
         result = "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
     #endif
     #ifdef __linux__
-        result = "../MonoScripting/MonoBinaries/bin/csc.sh -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
+        result = "sh ../MonoScripting/MonoBinaries/bin/csc.sh -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
     #endif
     return result;
 }

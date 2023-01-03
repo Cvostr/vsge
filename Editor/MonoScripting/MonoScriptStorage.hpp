@@ -4,7 +4,6 @@
 #include <vector>
 #include <Core/VarTypes/Base.hpp>
 #include "MonoScriptCompile.hpp"
-#include "MonoApiDescriptions.hpp"
 
 namespace VSGEditor {
 
@@ -29,7 +28,6 @@ namespace VSGEditor {
 	private:
 		std::vector<MonoScript*> _scripts;
 		VSGE::MonoScriptCompiler* _compiler;
-		MonoApiDescriptions* _api_descrs;
 		static MonoScriptStorage* _this;
 		bool _is_scripting_ready;
 	public:
@@ -40,7 +38,6 @@ namespace VSGEditor {
 			return _this;
 		}
 
-		MonoApiDescriptions* GetApiDescriptors();
 		std::vector<MonoScript*>& GetScripts();
 		const std::string& GetDllOutputPath();
 		const std::string& GetApiDllPath();

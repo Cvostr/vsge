@@ -43,12 +43,6 @@ MonoScriptStorage::MonoScriptStorage() {
 	_compiler = new MonoScriptCompiler;
 	_compiler->Run();
 	_compiler->SetThreadName("mono-compile");
-
-	_api_descrs = new MonoApiDescriptions;
-}
-
-MonoApiDescriptions* MonoScriptStorage::GetApiDescriptors() {
-	return _api_descrs;
 }
 
 std::vector<MonoScript*>& MonoScriptStorage::GetScripts() {
