@@ -182,7 +182,7 @@ file(GLOB_RECURSE HEADER_FILES "*.hpp")
 add_library (Engine ${SRC_FILES} ${HEADER_FILES})
 
 add_dependencies(Engine shaders)
-#add_dependencies(Engine vsge_api)
+add_dependencies(Engine vsge_api)
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
