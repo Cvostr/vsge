@@ -78,6 +78,7 @@ namespace VSGE {
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
 
+		void StoreWorldObjects(Camera* cam);
 	public:
 
 		VulkanRenderer();
@@ -123,8 +124,6 @@ namespace VSGE {
 		VulkanTexture* GetUiAttachment();
 
 		LightsBuffer* GetLightsBuffer();
-
-		void StoreWorldObjects(Camera* cam);
 
 		void SetupRenderer();
 		void DestroyRenderer();

@@ -130,7 +130,7 @@ namespace VSGE {
 		int y;
 	public:
 
-		EVENT_CLASS_TYPE(EventType::EventWindowRestored)
+		EVENT_CLASS_TYPE(EventType::EventWindowResized)
 
 		int GetWidth() const { return x; }
 		int GetHeight() const { return y; }

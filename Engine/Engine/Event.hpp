@@ -30,11 +30,7 @@ namespace VSGE {
 		EventScriptCompilationBegin,
 		EventScriptCompilationDone,
 
-		EventNetworkClientConnected,
-		EventNetworkClientDisconnected,
-		EventNetworkServerDataReceive,
-		EventNetworkClientDataReceive,
-		EventClientDisconnectedByServer
+		EventSceneViewResized
 	};
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return type; } \

@@ -13,6 +13,7 @@
 #include <Base/Project.hpp>
 #include <Misc/TerrainThreadedEditor.hpp>
 #include <Math/Ray.hpp>
+#include <Base/Events.hpp>
 
 namespace VSGEditor {
 
@@ -103,5 +104,6 @@ namespace VSGEditor {
 		void OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde);
 		void OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe);
 		void OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle);
+		void OnSceneViewResizedEvent(const VSGE::EventSceneViewResized& svr);
 	};
 }

@@ -1,6 +1,6 @@
 #include "ApiBindings.hpp"
 #include <Scene/SceneLayer.hpp>
-#include <MonoScripting/MonoScriptingLayer.hpp>]
+#include <MonoScripting/MonoScriptingLayer.hpp>
 #include <Resources/ResourceCache.hpp>
 #include <Resources/ResourceTypes/SceneResource.hpp>
 

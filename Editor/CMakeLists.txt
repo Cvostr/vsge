@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 file(COPY "res" DESTINATION ${CMAKE_BINARY_DIR}/Editor)
 
-file(GLOB_RECURSE HEADER_FILES "*.hpp")
-
 set(SRC_FILES 
                 Base/ImguiHelper.cpp
                 Base/ImGuiWindow.cpp
@@ -57,7 +55,6 @@ set(SRC_FILES
                 Windows/EnvironmentSettingsWindow.cpp
                 Windows/ResourcePickWindow.cpp
                 Windows/SceneViewWindow.cpp
-                Windows/PlayerViewWindow.cpp
                 Windows/SceneWindow.cpp
                 Windows/StartWindow.cpp
                 Windows/ToolbarWindow.cpp
@@ -66,7 +63,58 @@ set(SRC_FILES
                 MonoScripting/MonoScriptCompile.cpp
                 main.cpp)
 
-
+set(HEADER_FILES   Base/Events.hpp
+                    Base/ImguiHelper.hpp
+                    Base/ImGuiMenu.hpp
+                    Base/ImGuiWindow.hpp
+                    Base/ImVulkanTexture.hpp
+                    Base/Project.hpp
+                    
+                    EditorLayers/EditorLayer.hpp
+                    EditorLayers/EditorSettingsLayer.hpp
+                    EditorLayers/ImGuiLayer.hpp
+                    
+                    InspectorInterfaces/EntityComponents/EntityComponents.hpp
+                    InspectorInterfaces/ResourceTypes/InspectorResourceTypes.hpp
+                    
+                    InspectorInterfaces/MaterialEditor.hpp
+                    InspectorInterfaces/ResourcePicker.hpp
+                    InspectorInterfaces/VariantInput.hpp
+                    InspectorInterfaces/ViewMaskEdit.hpp
+                    
+                    Menus/Edit_Menu.hpp
+                    Menus/File_Menu.hpp
+                    Menus/Windows_Menu.hpp
+                    
+                    Misc/AssimpMeshLoader.h
+                    Misc/DialogWindows.hpp
+                    Misc/EditorIcons.hpp
+                    Misc/ResourceImporter.hpp
+                    Misc/SceneExt.hpp
+                    Misc/TerrainThreadedEditor.hpp
+                    Misc/Thumbnails.hpp
+                    Misc/VkGizmos.hpp
+                    Misc/VkMaterialsThumbnails.hpp
+                    
+                    MonoScripting/MonoScriptCompile.hpp
+                    MonoScripting/MonoScriptStorage.hpp
+                    
+                    ProjectBuild/ResourcePacker.hpp
+                    
+                    Windows/BrowserWindow.hpp
+                    Windows/ConsoleWindow.hpp
+                    Windows/CreateProjectWindow.hpp
+                    Windows/EditorSettingsWindow.hpp
+                    Windows/EnvironmentSettingsWindow.hpp
+                    Windows/HoldOnWindow.hpp
+                    Windows/InspectorWindow.hpp
+                    Windows/ProjectBuildingWindow.hpp
+                    Windows/ProjectSettingsWindow.hpp
+                    Windows/ResourcePickWindow.hpp
+                    Windows/SceneViewWindow.hpp
+                    Windows/SceneWindow.hpp
+                    Windows/StartWindow.hpp
+                    Windows/ToolbarWindow.hpp)
 
 include_directories("./" REQUIRED)
 include_directories(../Engine REQUIRED)

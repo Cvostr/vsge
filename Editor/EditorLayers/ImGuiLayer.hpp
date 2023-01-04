@@ -60,8 +60,6 @@ namespace VSGEditor {
 		HoldOnWindow* GetHoldOnWindow();
 		void SetTabWindowCurrent(const std::string& window_title);
 
-		void OnWindowResize(const VSGE::EventWindowResized& wr);
-
 		template<typename T>
 		T* GetWindow() {
 			for (auto window : mWindows) {

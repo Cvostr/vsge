@@ -10,7 +10,6 @@
 #include "../Windows/InspectorWindow.hpp"
 #include "../Windows/BrowserWindow.hpp"
 #include "../Windows/SceneViewWindow.hpp"
-#include "../Windows/PlayerViewWindow.hpp"
 #include "../Windows/ToolbarWindow.hpp"
 #include "../Windows/ConsoleWindow.hpp"
 #include "../Windows/EditorSettingsWindow.hpp"
@@ -156,6 +155,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::ScriptCompilationBeginEvent>(event, EVENT_FUNC(EditorLayer::OnScriptBeginEvent));
 	DispatchEvent<VSGE::SceneLoadBeginEvent>(event, EVENT_FUNC(EditorLayer::OnSceneLoadBeginEvent));
 	DispatchEvent<VSGE::SceneLoadedEvent>(event, EVENT_FUNC(EditorLayer::OnSceneLoadedEvent));
+	DispatchEvent<VSGE::EventSceneViewResized>(event, EVENT_FUNC(EditorLayer::OnSceneViewResizedEvent));
 }
 
 void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
@@ -382,6 +382,16 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 	}
 }
 
+void EditorLayer::OnSceneViewResizedEvent(const VSGE::EventSceneViewResized& svr) {
+	GetCamera()->SetAspectRatio((float)svr.GetSizeX() / svr.GetSizeY());
+
+    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+    renderer->ResizeOutput((uint32)svr.GetSizeX(), (uint32)svr.GetSizeY());
+	renderer->GetCamerasBuffer()->GetCameraByIndex(0)->SetAspectRatio((float)svr.GetSizeX() / svr.GetSizeY());
+
+    renderer->GetFinalPass()->Resize((uint32)svr.GetSizeX(), (uint32)svr.GetSizeY());
+}
+
 void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 	ImGuiLayer::Get()->GetWindow<FileBrowserWindow>()->UpdateDirectoryContent();
 
@@ -393,7 +403,7 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 		//Try to add this file as resource
 		ResourceCache::Get()->AddResourceFile(fce.GetAbsFilePath());
 		String str = String(fce.GetAbsFilePath());
-		if (str.EndsWith(".cs")) {
+		if (str.EndsWith(String(".cs"))) {
 			MonoScriptStorage::Get()->AddScript(fce.GetAbsFilePath());
 			MonoScriptStorage::Get()->Compile();
 		}

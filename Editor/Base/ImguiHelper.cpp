@@ -97,8 +97,9 @@ void VSGEditor::DrawStringControl(const std::string& text, std::string& value) {
 }
 
 bool VSGEditor::DrawComboControl(const std::string& text, const std::string& current) {
-	DrawControlHeader(text);
-	bool result = ImGui::BeginCombo("##v", current.c_str());
-	ImGui::PopID();
+	LabelEx(text.c_str());
+	ImGui::SameLine();
+	std::string id = "##" + text;
+	bool result = ImGui::BeginCombo(id.c_str(), current.c_str());
 	return result;
 }

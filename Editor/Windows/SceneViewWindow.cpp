@@ -4,6 +4,7 @@
 #include <ImGuizmo.h>
 #include "../EditorLayers/EditorLayer.hpp"
 #include <Math/MatrixCamera.hpp>
+#include <Engine/Application.hpp>
 
 using namespace VSGEditor;
 
@@ -90,13 +91,10 @@ void SceneViewWindow::OnDrawWindow() {
 
 void SceneViewWindow::OnWindowResize() {
     ImVec2 c = ImGui::GetCursorPos();
-    EditorLayer* editor_layer = EditorLayer::Get();
-    editor_layer->GetCamera()->SetAspectRatio(_size.x / _size.y);
 
-    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
-    renderer->ResizeOutput((uint32)_size.x, (uint32)_size.y);
-
-    renderer->GetFinalPass()->Resize((uint32)_size.x, (uint32)_size.y);
+    //Отправить событие об изменении размера окна рендеринга
+    VSGE::EventSceneViewResized event((int)_size.x, (int)_size.y);
+    VSGE::Application::Get()->OnEvent(event);
 
     if(texture != nullptr){
         //ImGui_ImplVulkan_DestroyTexture(texture);

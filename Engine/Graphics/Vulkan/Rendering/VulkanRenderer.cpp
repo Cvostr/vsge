@@ -493,6 +493,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 			mParticlesTransformShaderBuffer);
 		TextureResource* resource = camera->GetTargetResource();
 		
+		//Если камере назначен Render Target
 		if (resource) {
 			if (resource->IsUnloaded()) {
 				resource->Load();
@@ -518,8 +519,10 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	mOutputWidth = width;
 	mOutputHeight = height;
 
+	//Изменить размер главного Render target
 	_main_render_target->ResizeOutput(width, height);
 
+	//Изменить размер выходного изображения отрисовщика интерфейса
 	_ui_renderer->ResizeOutput(width, height);
 
 	mOutput = _main_render_target->GetGammaCorrectedOutput();
