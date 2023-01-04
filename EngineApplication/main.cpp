@@ -10,7 +10,6 @@
 #include <Graphics/Fonts.hpp>
 #include <Misc/ArgsParser.hpp>
 #include <Layers/MainLayer.hpp>
-#include <Networking/NetworkingLayer.hpp>
 
 #include <Layers/Graphics/VulkanLayer.hpp>
 
@@ -57,9 +56,6 @@ Application* VSGEMain(int argc, char* argv[]) {
 	app->AddLayer(new ResourceLayer);
 	app->AddLayer(new AudioLayer);
 	app->AddLayer(new InputLayer);
-	
-	NetworkingLayer* networking_layer = new NetworkingLayer;
-	app->AddLayer(networking_layer);
 
 	GlyphManager* glyph_manager = new GlyphManager;
 	glyph_manager->AddFontContainer("c:\\Windows\\Fonts\\Arial.ttf", "arial");

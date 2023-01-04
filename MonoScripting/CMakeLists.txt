@@ -40,7 +40,7 @@ set(API_SRC_FILES
 
 set(COMPILER_ARGS -target:library -nologo -out:${CMAKE_CURRENT_BINARY_DIR}/api.dll)
 
-IF(WINDOWS)
+IF(WIN32)
 set(COMPILER_CMD "MonoBinaries/bin/csc.bat")
 ENDIF()
 

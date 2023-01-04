@@ -23,8 +23,6 @@ IF (WIN32)
 #Static Libs linkage
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/win)
 
-target_link_libraries(compiler ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
-
 if (CMAKE_BUILD_TYPE MATCHES Debug)
 target_link_libraries(compiler ${STATIC_LIBS_DIR}/glslang/dbg/glslangd.lib)
 target_link_libraries(compiler ${STATIC_LIBS_DIR}/glslang/dbg/SPIRVd.lib)
@@ -48,7 +46,6 @@ ENDIF()
 
 IF(UNIX)
 set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
-target_link_libraries(compiler ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 
 target_link_libraries(compiler ${CMAKE_DL_LIBS})
 target_link_libraries(compiler pthread)

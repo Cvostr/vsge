@@ -4,7 +4,6 @@
 #include "Mesh.hpp"
 
 #include "Vulkan/VulkanTexture.hpp"
-#include "D3D12/D3D12Texture.hpp"
 
 #include "Vulkan/VulkanMesh.hpp"
 
@@ -17,8 +16,6 @@ Texture* VSGE::CreateTexture() {
 
 	if (api == GRAPHICS_API_VULKAN)
 		return new VulkanTexture;
-	else if (api == GRAPHICS_API_D3D12)
-		return new D3D12Texture;
 
 	return nullptr;
 }

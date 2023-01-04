@@ -22,6 +22,4 @@ namespace VSGE {
 	void BindMesh();
 	void BindParticleEmitter();
 	void BindCharacterController();
-
-	void BindNetworking();
 }

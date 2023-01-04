@@ -17,30 +17,11 @@
 #include <mono/metadata/exception.h>
 
 #include "MonoScriptBlob.hpp"
-#include <Networking/NetworkingEvents.hpp>
 
 #define MONO_ROOT_DOMAIN_NAME "VSGE_MONO_ROOT"
 #define MONO_DOMAIN_NAME "VSGE_MONO"
 
 namespace VSGE {
-
-	struct MonoEventSubscription {
-		EventType event_type;
-		MonoObject* mono_object;
-		MonoMethodDescr* method_descr;
-	};
-
-	struct NetworkEventsState {
-		uint32 _client_id;
-
-		void* client_ptr;
-		void* server_ptr;
-
-		MonoArray* data;
-		uint32 data_size;
-
-		void Create();
-	};
 
 	class MonoScriptingLayer : public IApplicationLayer {
 	private:
@@ -50,8 +31,6 @@ namespace VSGE {
 		MonoDomain* _domain;
 		MonoScriptBlob* _scripts_blob;
 
-		std::vector<MonoEventSubscription> subs_events;
-		NetworkEventsState _network_state;
 	public:
 
 		MonoScriptingLayer();
@@ -110,18 +89,6 @@ namespace VSGE {
 		/// Call this function from other thread to register
 		/// </summary>
 		void AttachThread();
-
-		void OnEvent(const VSGE::IEvent& event);
-
-		void OnClientConnectedToServer(const VSGE::NetworkClientConnectedEvent& event);
-		void OnClientDisonnectedFromServer(const VSGE::NetworkClientDisconnectedEvent& event);
-		void OnServerDataReceive(const VSGE::NetworkServerDataReceiveEvent& event);
-		void OnClientDataReceive(const VSGE::NetworkClientDataReceiveEvent& event);
-		void OnClientDisconnectedByServer(const VSGE::NetworkClientDisconnectedByServerEvent& event);
-
-		void SubscribeToEvent(MonoObject* obj, EventType event_type, const std::string& method_name);
-			
-		NetworkEventsState& GetNetworkEventState();
 
 		template<typename T> 
 		static void AddInternalCall(const std::string& decl, T func){

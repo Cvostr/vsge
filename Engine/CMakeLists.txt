@@ -37,14 +37,6 @@ set(SRC_FILES
 				Graphics/Shader.cpp
 				Graphics/Texture.cpp
 				Graphics/LightsBuffer.cpp
-				Graphics/D3D12/D3D12Buffer.cpp
-				Graphics/D3D12/D3D12Device.cpp
-				Graphics/D3D12/D3D12Buffer.cpp
-				Graphics/D3D12/D3D12Pipeline.cpp
-				Graphics/D3D12/D3D12RAPI.cpp
-				Graphics/D3D12/D3D12Sampler.cpp
-				Graphics/D3D12/D3D12SwapChain.cpp
-				Graphics/D3D12/D3D12Texture.cpp
 				Graphics/Vulkan/VulkanBuffer.cpp
 				Graphics/Vulkan/VulkanCommandBuffer.cpp
 				Graphics/Vulkan/VulkanDescriptors.cpp
@@ -149,7 +141,6 @@ set(SRC_FILES
 				MonoScripting/Api/ApiResource.cpp
 				MonoScripting/Api/ApiInput.cpp
 				MonoScripting/Api/ApiEntityComponentsApi.cpp
-				MonoScripting/Api/ApiGameNetworking.cpp
 				MonoScripting/Api/EntityComponents/LightsourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AudioSourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AnimatorComponent.cpp
@@ -161,11 +152,6 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/CharacterControllerComponent.cpp
 				MonoScripting/Api/EntityComponents/ParticleEmitterComponent.cpp
 				MonoScripting/Api/UI/UiRenderList.cpp
-				Networking/NetworkingLayer.cpp
-				Networking/NetworkingEvents.cpp
-				Networking/EnetDrv/Server.cpp
-				Networking/EnetDrv/Client.cpp
-				Networking/NetworkMessage.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp
