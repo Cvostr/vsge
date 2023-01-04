@@ -153,7 +153,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
             ImGui::EndPopup();
         }
     }
-    //If user clicked on Item
+    //Пользователь нажал на элемент дерева
     if (ImGui::IsItemClicked() && !isRoot)
     {
         InspectorWindow::Get()->SetShowingEntity(entity);

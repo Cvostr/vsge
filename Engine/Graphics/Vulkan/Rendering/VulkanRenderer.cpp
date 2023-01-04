@@ -9,6 +9,7 @@
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Resources/DefaultResources.hpp>
 #include <Math/MatrixCamera.hpp>
+#include <Graphics/MaterialTemplateCache.hpp>
 
 using namespace VSGE;
 

@@ -71,6 +71,7 @@ namespace VSGE {
 
 		bool IsSceneRunning(uint32 index = 0);
 		bool IsScenePaused(uint32 index = 0);
+		bool IsSceneLoading(uint32 index = 0);
 
 		void OnAttach();
 		void OnDetach();

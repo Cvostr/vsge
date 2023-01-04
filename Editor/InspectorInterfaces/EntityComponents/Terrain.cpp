@@ -4,6 +4,7 @@
 #include <Windows/ResourcePickWindow.hpp>
 #include <EditorLayers/ImGuiLayer.hpp>
 #include <ImageBtnText.h>
+#include <Base/ImguiHelper.hpp>
 #include "../ResourcePicker.hpp"
 
 using namespace VSGEditor;
@@ -67,20 +68,20 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	std::string height_text = "Height factor" + tte;
 
 	float roughness_f = terrain_texture->_roughness_factor;
-	ImGui::InputFloat(roughness_text.c_str(), &roughness_f);
+	DrawFloatControl(roughness_text, roughness_f);
 	if (roughness_f <= 1.f)
 		terrain_texture->_roughness_factor = roughness_f;
 	else
 		terrain_texture->_roughness_factor = 1.f;
 
 	float metallic_f = terrain_texture->_metallic_factor;
-	ImGui::InputFloat(metallic_text.c_str(), &metallic_f);
+	DrawFloatControl(metallic_text, metallic_f);
 	if (metallic_f <= 1.f)
 		terrain_texture->_metallic_factor = metallic_f;
 	else
 		terrain_texture->_metallic_factor = 1.f;
 
-	ImGui::InputFloat(height_text.c_str(), &terrain_texture->_height_factor);
+	DrawFloatControl(height_text, terrain_texture->_height_factor);
 }
 
 bool DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass) {
@@ -98,8 +99,8 @@ bool DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass)
 
 	float width = terrain_grass->_width;
 	float height = terrain_grass->_height;
-	ImGui::InputFloat(width_text.c_str(), &width);
-	ImGui::InputFloat(height_text.c_str(), &height);
+	DrawFloatControl(width_text.c_str(), width);
+	DrawFloatControl(height_text.c_str(), height);
 	if (width != terrain_grass->_width || height != terrain_grass->_height)
 		changed = true;
 	terrain_grass->_width = width;
@@ -112,14 +113,14 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 	int width = tc->GetWidth();
 	int length = tc->GetLength();
 
-	ImGui::InputInt("Terrain Width", &width);
-	ImGui::InputInt("Terrain Length", &length);
+	DrawIntControl("Terrain Width", width);
+	DrawIntControl("Terrain Length", length);
 
 	tc->SetWidth(width);
 	tc->SetLength(length);
 
 	bool cast_shadows = tc->IsShadowCastEnabled();
-	ImGui::Checkbox("Cast shadows", &cast_shadows);
+	DrawCheckboxControl("Cast shadows", cast_shadows);
 	tc->SetShadowCastEnabled(cast_shadows);
 
 	ImGui::Separator();
@@ -129,8 +130,8 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) {
 
 	ImGui::Separator();
 
-	ImGui::InputFloat("Brush size", &brush_size);
-	ImGui::InputFloat("Opacity", &opacity);
+	DrawFloatControl("Brush size", brush_size);
+	DrawFloatControl("Opacity", opacity);
 
 	ImGui::Separator();
 

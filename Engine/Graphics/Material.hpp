@@ -10,176 +10,10 @@
 #include "GpuBuffer.hpp"
 #include <map>
 #include <Resources/ResourceReference.hpp>
+#include "MaterialTemplate.hpp"
+#include "MaterialDescriptor.hpp"
 
 namespace VSGE {
-
-	class MaterialParameter {
-	public:
-		std::string name;
-		Variant value;
-
-		MaterialParameter() {
-
-		}
-	};
-
-	class MaterialTexture {
-	public:
-		std::string _name;
-		ResourceReference _resource;
-		uint32 _binding;
-
-		MaterialTexture() {
-			_binding = 0;
-			_resource.SetResourceType(RESOURCE_TYPE_TEXTURE);
-		}
-	};
-
-	typedef std::vector<MaterialTexture*> tMaterialTexturesList;
-	typedef std::vector<MaterialParameter> tMaterialParamsList;
-
-	enum MaterialRenderStage {
-		RENDER_STAGE_GBUFFER,
-		RENDER_STAGE_POST
-	};
-
-	class MaterialTemplate {
-	private:
-		std::string _name;
-		tMaterialTexturesList _materialTextures;
-		tMaterialParamsList _materialParams;
-
-		Shader* _shader;
-		VertexLayout _vertexLayout;
-		GraphicsPipeline* _pipeline;
-
-		CullMode _cullMode;
-		bool _depthTest;
-		std::map<uint32, BlendAttachmentDesc> _blendDescs;
-		MaterialRenderStage _render_stage;
-
-		void SetupDefaultVertexLayout();
-	public:
-		
-		MaterialTemplate();
-
-		~MaterialTemplate();
-		/// <summary>
-		/// Get name of template
-		/// </summary>
-		/// <returns></returns>
-		const std::string& GetName();
-		/// <summary>
-		/// Set name to material template
-		/// </summary>
-		/// <param name="name">- name of template</param>
-		void SetName(const std::string& name);
-
-		void SetPipeline(GraphicsPipeline* pipeline);
-
-		GraphicsPipeline* GetPipeline();
-		/// <summary>
-		/// Get array of template textures
-		/// </summary>
-		/// <returns></returns>
-		tMaterialTexturesList& GetTextures();
-		/// <summary>
-		/// Get array of template params
-		/// </summary>
-		/// <returns></returns>
-		tMaterialParamsList& GetParams();
-		/// <summary>
-		/// Add new template parameter description
-		/// </summary>
-		/// <param name="name">- name of parameter field</param>
-		/// <param name="baseValue"></param>
-		void AddParameter(const std::string& name, Variant baseValue);
-		/// <summary>
-		/// Add new template texture description
-		/// </summary>
-		/// <param name="name">- name of texture field</param>
-		/// <param name="binding">- binding of texture</param>
-		void AddTexture(const std::string& name, uint32 binding);
-		/// <summary>
-		/// Get shader of material template pointer
-		/// </summary>
-		/// <returns></returns>
-		Shader* GetShader();
-		/// <summary>
-		/// Set shader to material template
-		/// </summary>
-		/// <param name="shader"></param>
-		void SetShader(Shader* shader);
-		/// <summary>
-		/// Set shader to material template
-		/// </summary>
-		/// <param name="shader"></param>
-		void SetShader(const std::string& shader_name);
-		/// <summary>
-		/// Get current face cull mode of template
-		/// </summary>
-		/// <returns></returns>
-		CullMode GetCullMode();
-		/// <summary>
-		/// Set new face cull mode to template
-		/// </summary>
-		/// <param name="mode">- new face cull mode</param>
-		void SetCullMode(CullMode mode);
-		/// <summary>
-		/// Get current depth test parameter
-		/// </summary>
-		bool GetDepthTest();
-		/// <summary>
-		/// Set new depth test parameter
-		/// </summary>
-		/// <param name="depth_test">- depth test parameter</param>
-		void SetDepthTest(bool depth_test);
-
-		void SetRenderStage(MaterialRenderStage stage);
-
-		MaterialRenderStage GetRenderStage();
-
-		void SetVertexLayout(const VertexLayout& vertexLayout);
-
-		void SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc);
-
-		const BlendAttachmentDescsMap& GetBlendingAttachmentDescs() {
-			return _blendDescs;
-		}
-
-		VertexLayout& GetLayout() {
-			return _vertexLayout;
-		}
-	};
-
-	typedef std::vector<MaterialTemplate*> tMaterialTemplateList;
-
-	class MaterialTemplateCache {
-	private:
-
-		static MaterialTemplateCache* _this;
-
-		tMaterialTemplateList _templates;
-	public:
-
-		MaterialTemplateCache() {
-			_this = this;
-		}
-
-		tMaterialTemplateList& GetTemplates() {
-			return _templates;
-		}
-
-		static MaterialTemplateCache* Get() {
-			return _this;
-		}
-
-		void AddTemplate(MaterialTemplate* _template) {
-			_templates.push_back(_template);
-		}
-
-		MaterialTemplate* GetTemplate(const std::string& name);
-	};
 
 	class Material {
 	private:
@@ -187,13 +21,14 @@ namespace VSGE {
 		tMaterialParamsList _materialParams;
 		MaterialTemplate* _template;
 
-		GraphicsApiDependent _descriptors;
+		MaterialDescriptor* _descriptors;
 
 		MaterialTexture* GetTextureByName(const std::string& texture_name);
 		MaterialParameter* GetParameterByName(const std::string& param_name);
 		
 	public:
 
+		bool _templateChanged;
 		bool _paramsDirty;
 		bool _texturesDirty;
 
@@ -234,13 +69,9 @@ namespace VSGE {
 		/// <param name="value"></param>
 		void SetParameter(const std::string& parameter_name, Variant value);
 		
-		void SetDescriptors(GraphicsApiDependent descriptors) {
-			_descriptors = descriptors;
-		}
+		void SetDescriptors(MaterialDescriptor* descriptors);
 
-		GraphicsApiDependent GetDescriptors() {
-			return _descriptors;
-		}
+		MaterialDescriptor* GetDescriptors();
 
 		/// <summary>
 		/// Recreate material with new material template
@@ -262,6 +93,8 @@ namespace VSGE {
 		}
 
 		void Destroy();
+
+		void DestroyDescriptors();
 
 		void Serialize(const std::string& fpath);
 		void Deserialize(byte* data, uint32 size);

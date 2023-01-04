@@ -96,7 +96,7 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
 
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     VSGE::Resource* resource = nullptr;
-    if (Entry.ext == ".scn" && MonoScriptStorage::Get()->IsScriptingReady()) {
+    if (Entry.ext == ".scn" && MonoScriptStorage::Get()->IsScriptingReady() && !SceneLayer::Get()->IsSceneLoading()) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
         insp->SetShowingEntity(nullptr);
 

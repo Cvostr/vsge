@@ -5,156 +5,37 @@
 #include <Core/Logger.hpp>
 #include <fstream>
 #include "string.h"
+#include "MaterialTemplateCache.hpp"
 
 using namespace VSGE;
 
-MaterialTemplateCache* MaterialTemplateCache::_this = nullptr;
-
-MaterialTemplateCache template_cache;
-
-MaterialTemplate::MaterialTemplate() :
-	_shader(nullptr),
-	_pipeline(nullptr),
-	_cullMode(CULL_MODE_FRONT),
-	_depthTest(true),
-	_render_stage(RENDER_STAGE_GBUFFER)
-{
-	SetupDefaultVertexLayout();
-}
-
-MaterialTemplate::~MaterialTemplate() {
-	SAFE_RELEASE(_pipeline);
-}
-
-void MaterialTemplate::SetupDefaultVertexLayout() {
-	_vertexLayout.AddBinding(sizeof(Vertex));
-	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
-	_vertexLayout.AddItem(2, offsetof(Vertex, normal), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	_vertexLayout.AddItem(3, offsetof(Vertex, tangent), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	_vertexLayout.AddItem(4, offsetof(Vertex, bitangent), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-
-	_vertexLayout.AddBinding(sizeof(VertexSkinningData));
-	_vertexLayout.AddItem(5, offsetof(VertexSkinningData, ids), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
-	_vertexLayout.AddItem(6, offsetof(VertexSkinningData, ids[4]), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
-	_vertexLayout.AddItem(7, offsetof(VertexSkinningData, ids[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
-
-	_vertexLayout.AddItem(8, offsetof(VertexSkinningData, weights), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
-	_vertexLayout.AddItem(9, offsetof(VertexSkinningData, weights[4]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
-	_vertexLayout.AddItem(10, offsetof(VertexSkinningData, weights[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
-
-	_vertexLayout.AddItem(11, offsetof(VertexSkinningData, bones_num), VertexLayoutFormat::VL_FORMAT_R32_UINT, 1);
-}
-
-const std::string& MaterialTemplate::GetName() {
-	return _name;
-}
-
-void MaterialTemplate::SetName(const std::string& name) {
-	_name = name;
-}
-
-void MaterialTemplate::SetPipeline(GraphicsPipeline* pipeline) {
-	_pipeline = pipeline;
-}
-
-GraphicsPipeline* MaterialTemplate::GetPipeline() {
-	return _pipeline;
-}
-
-tMaterialTexturesList& MaterialTemplate::GetTextures() {
-	return _materialTextures;
-}
-
-tMaterialParamsList& MaterialTemplate::GetParams() {
-	return _materialParams;
-}
-
-Shader* MaterialTemplate::GetShader() {
-	return _shader;
-}
-
-void MaterialTemplate::SetShader(const std::string& shader_name) {
-	_shader = ShaderCache::Get()->GetShader(shader_name);
-}
-
-void MaterialTemplate::SetShader(Shader* shader) {
-	_shader = shader;
-}
-
-CullMode MaterialTemplate::GetCullMode() {
-	return _cullMode;
-}
-
-void MaterialTemplate::SetCullMode(CullMode mode) {
-	_cullMode = mode;
-}
-
-bool MaterialTemplate::GetDepthTest(){
-	return _depthTest;
-}
-
-void MaterialTemplate::SetDepthTest(bool depth_test){
-	_depthTest = depth_test;
-}
-
-void MaterialTemplate::SetRenderStage(MaterialRenderStage stage) {
-	_render_stage = stage;
-}
-
-MaterialRenderStage MaterialTemplate::GetRenderStage() {
-	return _render_stage;
-}
-
-void MaterialTemplate::SetVertexLayout(const VertexLayout& vertexLayout) {
-	_vertexLayout = vertexLayout;
-}
-
-void MaterialTemplate::SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc) {
-	_blendDescs.insert(std::pair(attachment, desc));
-}
-
-void MaterialTemplate::AddParameter(const std::string& name, Variant baseValue) {
-	MaterialParameter param;
-	param.name = name;
-	param.value = baseValue;
-	_materialParams.push_back(param);
-}
-
-void MaterialTemplate::AddTexture(const std::string& name, uint32 binding) {
-	MaterialTexture* texture = new MaterialTexture;
-	texture->_name = name;
-	texture->_binding = binding;
-	_materialTextures.push_back(texture);
-
-	AddParameter("@has_" + name, false);
-}
-
-MaterialTemplate* MaterialTemplateCache::GetTemplate(const std::string& name) {
-	for (auto _template : _templates) {
-		if (_template->GetName() == name) {
-			return _template;
-		}
-	}
-	return nullptr;
-}
-
 Material::Material() :
-			_template(nullptr),
-			_paramsDirty(true),
-			_texturesDirty(true),
-			_descriptors(nullptr)
-		{}
+	_template(nullptr),
+	_paramsDirty(true),
+	_texturesDirty(true),
+	_templateChanged(true),
+	_descriptors(nullptr)
+{}
 
 Material::~Material() {
-	SAFE_RELEASE(_descriptors);
+	DestroyDescriptors();
 }
+
+void Material::SetDescriptors(MaterialDescriptor* descriptors) {
+	_descriptors = descriptors;
+}
+
+MaterialDescriptor* Material::GetDescriptors() {
+	return _descriptors;
+}
+
 
 void Material::SetTemplate(MaterialTemplate* mat_template) {
 	if (mat_template == nullptr)
 		return;
 
 	this->_template = mat_template;
+	_templateChanged = true;
 
 	//clear params and textures first
 	_materialTextures.clear();
@@ -164,9 +45,9 @@ void Material::SetTemplate(MaterialTemplate* mat_template) {
 		MaterialTexture* mat_texture = new MaterialTexture;
 		mat_texture->_binding = texture->_binding;
 		mat_texture->_name = texture->_name;
-
 		this->_materialTextures.push_back(mat_texture);
 	}
+
 	for (auto& param : mat_template->GetParams()) {
 		this->_materialParams.push_back(param);
 	}
@@ -247,6 +128,10 @@ uint32 Material::CopyParamsToBuffer(char** out) {
 void Material::Destroy() {
 	_materialTextures.clear();
 	_materialParams.clear();
+	DestroyDescriptors();
+}
+
+void Material::DestroyDescriptors() {
 	SAFE_RELEASE(_descriptors);
 }
 

@@ -163,6 +163,14 @@ bool Scene::IsScenePaused() {
 	return _paused;
 }
 
+bool Scene::setLoading(bool loading) {
+	this->_loading = loading;
+}
+
+bool Scene::isLoading() {
+	return _loading;
+}
+
 void Scene::Run() {
 	if (_running)
 		return;

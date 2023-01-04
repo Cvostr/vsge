@@ -31,6 +31,8 @@ set(SRC_FILES
 				Graphics/Fonts.cpp
 				Graphics/GraphicsCreation.cpp
 				Graphics/Material.cpp
+				Graphics/MaterialTemplate.cpp
+				Graphics/MaterialTemplateCache.cpp
 				Graphics/Mesh.cpp
 				Graphics/Renderer.cpp
 				Graphics/Sampler.cpp
@@ -163,9 +165,37 @@ set(SRC_FILES
 				System/Shell.cpp
 				)
 
+set(HEADER1_FILES	Audio/AudioBuffer.hpp
+					Audio/AudioLayer.hpp
+					Engine/Application.hpp
+					Engine/ApplicationLayer.hpp
+					Engine/Event.hpp
+					Engine/Window.hpp
+					Engine/WindowEvent.hpp
+
+					Graphics/Animation.hpp
+					Graphics/Bone.hpp
+					Graphics/Fonts.hpp
+					Graphics/Framebuffer.hpp
+					Graphics/GpuBuffer.hpp
+					Graphics/GpuObject.hpp
+					Graphics/GraphicsPipeline.hpp
+					Graphics/LightsBuffer.hpp
+					Graphics/Material.hpp
+					Graphics/MaterialTemplate.hpp
+					Graphics/MaterialTemplateCache.hpp
+					Graphics/MaterialDescriptor.hpp
+					Graphics/Mesh.hpp
+					Graphics/PostprocessEffect.hpp
+					Graphics/Renderer.hpp
+	
+					Core/VarTypes/Base.hpp
+					Core/VarTypes/String.hpp
+					
+					)
 file(GLOB_RECURSE HEADER_FILES "*.hpp")
 
-add_library (Engine ${SRC_FILES} ${HEADER_FILES})
+add_library (Engine ${SRC_FILES} ${HEADER1_FILES} ${HEADER_FILES})
 
 add_dependencies(Engine shaders)
 add_dependencies(Engine vsge_api)

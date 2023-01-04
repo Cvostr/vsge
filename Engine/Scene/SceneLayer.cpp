@@ -61,6 +61,10 @@ bool SceneLayer::IsScenePaused(uint32 index) {
 	return _scenes[index]->IsScenePaused();
 }
 
+bool SceneLayer::IsSceneLoading(uint32 index) {
+	return _scenes[index]->isLoading();
+}
+
 void SceneLayer::BackupScene() {
 	BackupScene(&_scene_backup_data, _scene_backup_size);
 }
@@ -83,16 +87,19 @@ void SceneLayer::LoadSceneYAML(byte* data, uint32 index) {
 	if (_scenes.size() <= index)
 		return;
 
+	Scene* dest_scene = _scenes[index];
+	dest_scene->setLoading(true);
+
 	SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
 	Application::Get()->QueueEvent(load_event);
 
 	VSGE::SceneSerializer ss;
-	Scene* dest_scene = _scenes[index];
 
 	dest_scene->NewScene();
 	ss.SetScene(dest_scene);
 	ss.Deserialize(data);
 
+	dest_scene->setLoading(false);
 	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(dest_scene);
 	Application::Get()->QueueEvent(loaded_event);
 }
@@ -101,16 +108,19 @@ void SceneLayer::LoadSceneBinary(byte* data, uint32 size, uint32 index) {
 	if (_scenes.size() <= index)
 		return;
 
+	Scene* dest_scene = _scenes[index];
+	dest_scene->setLoading(true);
+
 	SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
 	Application::Get()->QueueEvent(load_event);
 
 	VSGE::SceneSerializer ss;
-	Scene* dest_scene = _scenes[index];
 
 	dest_scene->NewScene();
 	ss.SetScene(dest_scene);
 	ss.DeserializeBinary(data, size);
 
+	dest_scene->setLoading(false);
 	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(dest_scene);
 	Application::Get()->QueueEvent(loaded_event);
 }

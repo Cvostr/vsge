@@ -2,6 +2,7 @@
 #include "VariantInput.hpp"
 #include "ResourcePicker.hpp"
 #include <imgui.h>
+#include <Graphics/MaterialTemplateCache.hpp>
 
 using namespace VSGE;
 

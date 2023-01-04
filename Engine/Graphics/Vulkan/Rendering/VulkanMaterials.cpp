@@ -81,17 +81,24 @@ VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(Mat
 }
 
 void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
+	if(mat->_templateChanged) {
+		mat->DestroyDescriptors();
+		mat->_templateChanged = false;
+	}
+
 	CreateVulkanMaterial(mat);
 
 	VulkanMaterial* vmat = static_cast<VulkanMaterial*>(mat->GetDescriptors());
 
+	//Пометить все текстуры материала как использованные в текущем кадре
 	for (MaterialTexture* tex : mat->GetTextures()) {
 		TextureResource* texture_res = static_cast<TextureResource*>(tex->_resource.GetResource());
 		if (texture_res == nullptr) {
 			continue;
 		}
+
 		if (texture_res->IsReady()) {
-			//Mark texture resource as used in this frame
+			//Пометить ресурс текстуры, как использованный в текущем кадре 
 			texture_res->Use();
 		}else
 			mat->_texturesDirty = true;

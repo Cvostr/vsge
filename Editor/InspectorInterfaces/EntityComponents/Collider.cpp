@@ -1,5 +1,6 @@
 #include "EntityComponents.hpp"
 #include <imgui.h>
+#include <Base/ImguiHelper.hpp>
 
 void VSGEditor::DrawColliderComponent(VSGE::ColliderComponent* clc) {
 
@@ -24,14 +25,14 @@ void VSGEditor::DrawColliderComponent(VSGE::ColliderComponent* clc) {
 	}
 
 	bool is_trigger = clc->IsTrigger();
-	ImGui::Checkbox("Is trigger", &is_trigger);
+	DrawCheckboxControl("Is trigger", is_trigger);
 	clc->SetTrigger(is_trigger);
 
 	Vec3 center = clc->GetCenter();
 	Vec3 size = clc->GetSize();
 
-	ImGui::InputFloat3("Center", &center.x);
-	ImGui::InputFloat3("Size", &size.x);
+	DrawVec3Control("Center", center);
+	DrawVec3Control("Size", size);
 
 	clc->SetCenter(center);
 	clc->SetSize(size);

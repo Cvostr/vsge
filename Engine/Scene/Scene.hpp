@@ -20,6 +20,7 @@ namespace VSGE {
 		bool _delayed_run;
 		bool _running;
 		bool _paused;
+		bool _loading;
 
 		void CallOnStart(Entity* entity);
 		void CallOnUpdate(Entity* entity);
@@ -106,6 +107,10 @@ namespace VSGE {
 		bool IsSceneRunning();
 
 		bool IsScenePaused();
+
+		bool setLoading(bool loading);
+
+		bool isLoading();
 
 		void GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, Entity* first = nullptr);
 
