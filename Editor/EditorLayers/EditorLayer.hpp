@@ -3,17 +3,16 @@
 #include <Engine/ApplicationLayer.hpp>
 #include <Scene/Scene.hpp>
 #include <Scene/Camera.hpp>
-#include <System/FileWatcher.hpp>
 #include <Resources/ResourceCache.hpp>
 #include <Engine/WindowEvent.hpp>
 #include <Core/Logger.hpp>
-#include <System/FileWatcher.hpp>
 #include <MonoScripting/MonoScriptCompile.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Base/Project.hpp>
 #include <Misc/TerrainThreadedEditor.hpp>
 #include <Math/Ray.hpp>
 #include <Base/Events.hpp>
+#include <mpi/Filesystem/FilesystemWatcher.hpp>
 
 namespace VSGEditor {
 
@@ -26,7 +25,7 @@ namespace VSGEditor {
 	private:
 		static EditorLayer* _this;
 		VSGE::Camera* mEditorCamera;
-		VSGE::FileWatcher* mResourcesWatcher;
+		Mpi::FilesystemWatcher* mResourcesWatcher;
 
 		struct {
 			float cam_yaw;
@@ -41,6 +40,8 @@ namespace VSGEditor {
 		TerrainThreadedEditor* _terrain_editor;
 
 		bool GetPickingRay(VSGE::Ray& result);
+
+		
 	public:
 
 		EditorLayer();
@@ -83,6 +84,8 @@ namespace VSGEditor {
 			_camera_mode = mode;
 		}
 
+		void fileEvent(const VSGE::FilesystemEvent& event);
+
 		bool OpenProject(const Project& project);
 		const Project& GetProject();
 
@@ -98,7 +101,6 @@ namespace VSGEditor {
 		void OnWindowClose(const VSGE::EventWindowClose& close);
 		void OnKeyUp(const VSGE::EventKeyButtonUp& kbd);
 		void OnKeyDown(const VSGE::EventKeyButtonDown& kbd);
-		void OnFileEvent(const VSGE::FileChageEvent& fce);
 		void OnMessageEvent(const VSGE::MessageEvent& me);
 		void OnScriptBeginEvent(const VSGE::ScriptCompilationBeginEvent& scbe);
 		void OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde);

@@ -121,6 +121,7 @@ include_directories(../Engine REQUIRED)
 include_directories(../ImGui/src REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("../vendor/headers/" REQUIRED)
+include_directories("../vendor/headers/mpi" REQUIRED)
 
 IF(UNIX)
 FIND_PACKAGE(PkgConfig REQUIRED)
@@ -199,7 +200,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/libBulletDynamics.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/libBulletCollision.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/libLinearMath.a)
 
-
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/libmpi.a)
 
 target_link_libraries(Editor sndio)
 target_link_libraries(Editor ${CMAKE_DL_LIBS})

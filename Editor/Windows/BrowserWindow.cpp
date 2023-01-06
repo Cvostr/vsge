@@ -19,10 +19,7 @@
 #include <Misc/EditorIcons.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
-#ifdef _WIN32
-#include <windows.h>
-#include <shellapi.h>
-#endif
+#include <mpi/Desktop/Desktop.hpp> 
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -113,9 +110,7 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
         insp->SetShowingResource(resource);
     }
     else{
-#ifdef _WIN32
-        ShellExecute(0, 0, Entry.abs_path.c_str(), 0, 0, SW_SHOW);
-#endif
+        Mpi::Desktop::openFile(Mpi::File(Entry.abs_path));
     }
 }
 

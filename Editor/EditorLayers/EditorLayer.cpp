@@ -33,6 +33,8 @@
 #include <Input/Input.hpp>
 #include <ImGuizmo.h>
 
+using namespace Mpi;
+
 #define MONEMENT_COEFF 40.3f
 
 using namespace VSGEditor;
@@ -45,7 +47,6 @@ EditorLayer::EditorLayer() {
 	mEditorCamera = new VSGE::Camera;
 	mEditorCamera->SetFarPlane(5000);
 	_this = this;
-	mResourcesWatcher = new VSGE::FileWatcher;
 
 	CameraState.cam_yaw = 0;
 	CameraState.cam_pitch = 0;
@@ -94,7 +95,13 @@ void EditorLayer::OnDetach() {
 
 bool EditorLayer::OpenProject(const Project& project) {
 	_project = project;
-	mResourcesWatcher->WatchDirectory(project.GetAssetsDirectory());
+
+	mResourcesWatcher = new FilesystemWatcher(File(project.GetAssetsDirectory()), true);
+    mResourcesWatcher->setEventHandler([] (const FilesystemWatcherEvent& event) {
+		FilesystemEvent* fc = new FilesystemEvent (event);
+		Application::Get()->QueueEvent(fc);
+    });
+
 	ResourceCache::Get()->AddResourceDir(project.GetAssetsDirectory());
 
 	ImGuiLayer::Get()->AddWindow(new SceneWindow);
@@ -102,7 +109,6 @@ bool EditorLayer::OpenProject(const Project& project) {
 	ImGuiLayer::Get()->AddWindow(new ConsoleWindow);
 	ImGuiLayer::Get()->AddWindow(new FileBrowserWindow(project.GetAssetsDirectory()));
 	ImGuiLayer::Get()->AddWindow(new SceneViewWindow);
-	//ImGuiLayer::Get()->AddWindow(new PlayerViewWindow);
 	ImGuiLayer::Get()->AddWindow(new ToolbarWindow);
 
 	EditorSettingsWindow* settings = new EditorSettingsWindow;
@@ -149,7 +155,7 @@ void EditorLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::EventMouseButtonUp>(event, EVENT_FUNC(EditorLayer::OnMouseButtonUp));
 	DispatchEvent<VSGE::EventKeyButtonUp>(event, EVENT_FUNC(EditorLayer::OnKeyUp));
 	DispatchEvent<VSGE::EventKeyButtonDown>(event, EVENT_FUNC(EditorLayer::OnKeyDown));
-	DispatchEvent<VSGE::FileChageEvent>(event, EVENT_FUNC(EditorLayer::OnFileEvent));
+	DispatchEvent<VSGE::FilesystemEvent>(event, EVENT_FUNC(EditorLayer::fileEvent));
 	DispatchEvent<VSGE::MessageEvent>(event, EVENT_FUNC(EditorLayer::OnMessageEvent));
 	DispatchEvent<VSGE::ScriptCompilationDoneEvent>(event, EVENT_FUNC(EditorLayer::OnScriptCompiledEvent));
 	DispatchEvent<VSGE::ScriptCompilationBeginEvent>(event, EVENT_FUNC(EditorLayer::OnScriptBeginEvent));
@@ -392,24 +398,26 @@ void EditorLayer::OnSceneViewResizedEvent(const VSGE::EventSceneViewResized& svr
     renderer->GetFinalPass()->Resize((uint32)svr.GetSizeX(), (uint32)svr.GetSizeY());
 }
 
-void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
+void EditorLayer::fileEvent(const FilesystemEvent& event) {
 	ImGuiLayer::Get()->GetWindow<FileBrowserWindow>()->UpdateDirectoryContent();
+	Mpi::FilesystemWatcherEvent fwe = event.getFilesystemWatcherEvent();
+	std::string fileAbsPath = fwe.getFile().getAbsolutePath();
 
-	if (fce.GetActionType() == FCAT_MODIFIED) {
-		if (MonoScriptStorage::Get()->GetScriptWithFilePath(fce.GetAbsFilePath()))
+	if (fwe.getAction() == FILESYSTEM_ACTION_MODIFY) {
+		if (MonoScriptStorage::Get()->GetScriptWithFilePath(fileAbsPath))
 			MonoScriptStorage::Get()->Compile();
 	}
-	if (fce.GetActionType() == FCAT_ADDED) {
+	if (fwe.getAction() == FILESYSTEM_ACTION_CREATE) {
 		//Try to add this file as resource
-		ResourceCache::Get()->AddResourceFile(fce.GetAbsFilePath());
-		String str = String(fce.GetAbsFilePath());
-		if (str.EndsWith(String(".cs"))) {
-			MonoScriptStorage::Get()->AddScript(fce.GetAbsFilePath());
+		ResourceCache::Get()->AddResourceFile(fileAbsPath);
+		std::string fileExt = fwe.getFile().getExtension();
+		if (fileExt == "cs") {
+			MonoScriptStorage::Get()->AddScript(fileAbsPath);
 			MonoScriptStorage::Get()->Compile();
 		}
 	}
-	if (fce.GetActionType() == FCAT_DELETED) {
-		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
+	if (fwe.getAction() == FILESYSTEM_ACTION_DELETE) {
+		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fileAbsPath);
 		if (res) {
 			res->Release();
 			for (uint32 subresource_i = 0; subresource_i < res->GetSubresources().size(); subresource_i++) {
@@ -422,20 +430,20 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 			delete res;
 		}
 		else {
-			String str = String(fce.GetAbsFilePath());
-			if (str.EndsWith(".cs")) {
-				MonoScriptStorage::Get()->RemoveScript(fce.GetAbsFilePath());
+			if (fwe.getFile().getExtension() == "cs") {
+				MonoScriptStorage::Get()->RemoveScript(fileAbsPath);
 				MonoScriptStorage::Get()->Compile();
 			}
 		}
 	}
-	if (fce.GetActionType() == FCAT_RENAMED) {
+	if (fwe.getAction() == FILESYSTEM_ACTION_RENAMED) {
+		std::string oldFileAbsPath = fwe.getOldFile().getAbsolutePath();
 		//Try to find this file as resource
 		//To change resource name
-		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fce.GetAbsFilePath());
+		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(oldFileAbsPath);
 		if (res) {
 			DataDescription res_desc = res->GetDataDescription();
-			res_desc.file_path = fce.GetNewAbsFilePath();
+			res_desc.file_path = fileAbsPath;
 			uint32 filename_pos = 0;
 			uint32 ext_pos = 0;
 
@@ -458,7 +466,7 @@ void EditorLayer::OnFileEvent(const VSGE::FileChageEvent& fce) {
 		}
 		else {
 			//Try to add this file as resource
-			ResourceCache::Get()->AddResourceFile(fce.GetNewAbsFilePath());
+			ResourceCache::Get()->AddResourceFile(fileAbsPath);
 		}
 	}
 }

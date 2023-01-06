@@ -4,6 +4,7 @@ project ("Engine")
 include_directories("../vendor/headers/" REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("./" REQUIRED)
+include_directories("../vendor/headers/mpi" REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -160,7 +161,6 @@ set(SRC_FILES
 				UI/Widgets/Button.cpp
 				UI/Widgets/ImageView.cpp
 				UI/Widgets/TextView.cpp
-				System/FileWatcher.cpp
 				System/PlatformSpecific.cpp
 				System/Shell.cpp
 				)
@@ -188,6 +188,13 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Mesh.hpp
 					Graphics/PostprocessEffect.hpp
 					Graphics/Renderer.hpp
+					Graphics/RenderingAPI.hpp
+					Graphics/RenderTarget.hpp
+					Graphics/Sampler.hpp
+					Graphics/Shader.hpp
+					Graphics/Texture.hpp
+					Graphics/TextureFormat.hpp
+					Graphics/VertexLayout.hpp
 	
 					Core/VarTypes/Base.hpp
 					Core/VarTypes/String.hpp

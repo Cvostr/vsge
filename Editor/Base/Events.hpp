@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine/Event.hpp>
+#include <mpi/Filesystem/FilesystemWatcherEvent.hpp>
 
 namespace VSGE {
 
@@ -18,5 +19,19 @@ namespace VSGE {
 		EventSceneViewResized(int mX, int mY) : 
 			_sizeX(mX), _sizeY(mY) {
 		}
+	};
+
+	class FilesystemEvent : public IEvent {
+		Mpi::FilesystemWatcherEvent event;
+	public:
+		EVENT_CLASS_TYPE(EventType::EventFileChanged)
+
+		const Mpi::FilesystemWatcherEvent& getFilesystemWatcherEvent() const {
+			return event;
+		} 
+
+		FilesystemEvent(const Mpi::FilesystemWatcherEvent& event) :
+			event(event)
+		{}
 	};
 }
