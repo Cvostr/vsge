@@ -10,7 +10,8 @@ Scene::Scene() :
 	_running(false),
 	_paused(false),
 	_delayed_run(false),
-	_physics_world(nullptr)
+	_physics_world(nullptr),
+	_loading(false)
 {}
 
 Scene::~Scene() {
@@ -163,7 +164,7 @@ bool Scene::IsScenePaused() {
 	return _paused;
 }
 
-bool Scene::setLoading(bool loading) {
+void Scene::setLoading(bool loading) {
 	this->_loading = loading;
 }
 

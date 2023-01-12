@@ -108,7 +108,7 @@ namespace VSGE {
 
 		bool IsScenePaused();
 
-		bool setLoading(bool loading);
+		void setLoading(bool loading);
 
 		bool isLoading();
 

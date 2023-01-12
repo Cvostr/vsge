@@ -148,6 +148,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/freetype.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/assimp/assimp.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/openal/OpenAL32.lib)
 
+
 if (CMAKE_BUILD_TYPE MATCHES Release)
 #bullet
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletCollision.lib)
@@ -156,6 +157,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath.lib)
 #yaml
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp-rel.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpi.lib)
 ENDIF()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -166,6 +168,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
 #yaml
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp-dbg.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpid.lib)
 ENDIF()
 
 #Win32 libs
