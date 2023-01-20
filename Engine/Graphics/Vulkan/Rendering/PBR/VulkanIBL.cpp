@@ -78,10 +78,10 @@ void VulkanIBL::Create() {
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
 	_pool = new VulkanCommandPool();
-	_pool->Create(device->GetGraphicsQueueFamilyIndex());
+	_pool->Create(device->GetGenericQueueFamilyIndex());
 
 	_compute_pool = new VulkanCommandPool();
-	_compute_pool->Create(device->GetComputeQueueFamilyIndex());
+	_compute_pool->Create(device->GetGenericQueueFamilyIndex());
 
 	_env_cmdbuf = new VulkanCommandBuffer;
 	_env_cmdbuf->Create(_pool);

@@ -83,12 +83,12 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
 
     swc_create_info.queueFamilyIndexCount = 2;
     uint32 queueFamilyIndices[] = { 
-        (uint32)Device->GetGraphicsQueueFamilyIndex(), 
-        (uint32)Device->GetPresentQueueFamilyIndex() 
+        (uint32)Device->GetGenericQueueFamilyIndex(), 
+        (uint32)Device->GetGenericQueueFamilyIndex()
     };
     swc_create_info.pQueueFamilyIndices = queueFamilyIndices;
 
-    if (Device->GetGraphicsQueueFamilyIndex() != Device->GetPresentQueueFamilyIndex()) { //if indices are not equal
+    if (Device->GetGenericQueueFamilyIndex() != Device->GetGenericQueueFamilyIndex()) { //if indices are not equal
         swc_create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         //TODO - implement
     }

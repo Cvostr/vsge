@@ -82,7 +82,7 @@ void ImGuiLayer::OnAttach() {
     imageAvailable.Create();
     presentBegin.Create();
 
-    cmdpool.Create(device->GetGraphicsQueueFamilyIndex());
+    cmdpool.Create(device->GetGenericQueueFamilyIndex());
     cmdbuf.Create(&cmdpool);
 
     ImGui_ImplSDL2_InitForVulkan(win->GetSdlWinPtr());
@@ -90,8 +90,8 @@ void ImGuiLayer::OnAttach() {
     init_info.Instance = vk->GetInstance()->GetInstance();
     init_info.PhysicalDevice = device->getPhysicalDevice();
     init_info.Device = device->getVkDevice();
-    init_info.QueueFamily = device->GetGraphicsQueueFamilyIndex();
-    init_info.Queue = device->GetGraphicsQueue();
+    init_info.QueueFamily = device->GetGenericQueueFamilyIndex();
+    init_info.Queue = device->GetGenericQueue()->GetQueue();
     init_info.PipelineCache = VK_NULL_HANDLE;
     init_info.DescriptorPool = imgui_pool.GetDescriptorPool();
     init_info.Allocator = NULL;

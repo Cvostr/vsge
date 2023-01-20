@@ -43,6 +43,7 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanBuffer.cpp
 				Graphics/Vulkan/VulkanCommandBuffer.cpp
 				Graphics/Vulkan/VulkanDescriptors.cpp
+				Graphics/Vulkan/VulkanQueue.cpp
 				Graphics/Vulkan/VulkanDevice.cpp
 				Graphics/Vulkan/VulkanFramebuffer.cpp
 				Graphics/Vulkan/VulkanInstance.cpp
@@ -195,6 +196,8 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Texture.hpp
 					Graphics/TextureFormat.hpp
 					Graphics/VertexLayout.hpp
+
+					Graphics/Vulkan/VulkanQueue.hpp
 	
 					Core/VarTypes/Base.hpp
 					Core/VarTypes/String.hpp

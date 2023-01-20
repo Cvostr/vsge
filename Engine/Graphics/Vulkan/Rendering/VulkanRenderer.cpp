@@ -174,7 +174,7 @@ void VulkanRenderer::SetupRenderer() {
 
 	//---------------------Command buffers------------------------
 	_cmdpool = new VulkanCommandPool;
-	_cmdpool->Create(device->GetGraphicsQueueFamilyIndex());
+	_cmdpool->Create(device->GetGenericQueueFamilyIndex());
 
 	_render_targets_cmdbuf = new VulkanCommandBuffer;
 	_render_targets_cmdbuf->Create(_cmdpool);

@@ -161,15 +161,23 @@ ThreadCmdbufPair* VulkanMA::GetTransferCmdbufThreaded() {
     VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
     uint32 used_queues = (uint32)_threaded_cmdbufs.size();
-    VkQueue queue = device->GetTransferQueue(used_queues);
-    uint32 queue_family_index = device->GetTransferQueueFamilyIndex(used_queues);
+    VulkanQueueInfo* queueInfo = device->GetFreeQueue(VK_QUEUE_GRAPHICS_BIT);
+    if (queueInfo == nullptr) {
+        queueInfo = device->GetGenericQueue();
+    }
+    else {
+        queueInfo->Acquire();
+    }
+
+    VkQueue queue = queueInfo->GetQueue();
+    uint32 queueFamilyIndex = queueInfo->GetFamilyIndex();
 
     ThreadCmdbufPair* new_pair = new ThreadCmdbufPair;
     new_pair->thread_id = cur_thread;
     new_pair->transfer_queue = queue;
-    new_pair->family_index = queue_family_index;
+    new_pair->family_index = queueFamilyIndex;
     new_pair->cmdbuf = new VulkanCommandBuffer;
-    new_pair->cmdbuf->Create(_family_cmdpools[queue_family_index]);
+    new_pair->cmdbuf->Create(_family_cmdpools[queueFamilyIndex]);
     _threaded_cmdbufs.push_back(new_pair);
     return new_pair;
 }

@@ -76,6 +76,14 @@ VulkanDevice::VulkanDevice() {
 
 }
 
+VkDevice VulkanDevice::getVkDevice() {
+    return mDevice;
+}
+
+VkPhysicalDevice VulkanDevice::getPhysicalDevice() { 
+    return mPhysicalDevice; 
+}
+
 bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
     VulkanInstance* instance = vulkan_rapi->GetInstance();
@@ -139,32 +147,28 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
         return false;                                                           
   
     for (uint32 family_i = 0; family_i < _vkQueueFamilyProps.size(); family_i++) {
-        
+        VkQueueFamilyProperties familyProps = _vkQueueFamilyProps[family_i];
         for (uint32 q_i = 0; q_i < _vkQueueFamilyProps[family_i].queueCount; q_i++) {
             VkQueue queue;
             vkGetDeviceQueue(mDevice, family_i, q_i, &queue);
-
-            if (CheckQueueFamilySupport(family_i, TASK_PRESENT) && _present_queue.queue == VK_NULL_HANDLE) {
-                _present_queue = QueueFamilyIndexPair(queue, family_i);
-                continue;
-            }
-            if (_graphics_queues.size() < GRAPHICS_QUEUES_NEEDED && CheckQueueFamilySupport(family_i, TASK_GRAPHICS)) {
-                QueueFamilyIndexPair pair(queue, family_i);
-                _graphics_queues.push_back(pair);
-                continue;
-            }
-            if (_compute_queues.size() < COMPUTE_QUEUES_NEEDED && CheckQueueFamilySupport(family_i, TASK_COMPUTE)) {
-                QueueFamilyIndexPair pair(queue, family_i);
-                _compute_queues.push_back(pair);
-                continue;
-            }
-            if (_transfer_queues.size() < TRANSFER_QUEUES_NEEDED && CheckQueueFamilySupport(family_i, TASK_TRANSFER)) {
-                QueueFamilyIndexPair pair(queue, family_i);
-                _transfer_queues.push_back(pair);
-                continue;
+            
+            VulkanQueueInfo queueInfo(queue, family_i, familyProps.queueFlags);
+            VkBool32 canPresent = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice, family_i, instance->GetSurface(), &canPresent);
+            if (canPresent) {
+                queueInfo.supportsPresent = true;
             }
 
-            _queues.push_back(queue);
+            //Проверить, подходит ли эта очередь на роль общей
+            if (!_generic_queue.IsAcquired() && 
+                queueInfo.supportsPresent &&
+                queueInfo.GetFlags() & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT))
+            {
+                _generic_queue = queueInfo;
+                _generic_queue.Acquire();
+            }
+
+            _queues.push_back(queueInfo);
         }
     }
 
@@ -173,63 +177,22 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     return true;
 }
 
-bool VulkanDevice::CheckQueueFamilySupport(uint32 family_index, QueueFamilyTask task) {
-    VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
-    VulkanInstance* instance = vulkan_rapi->GetInstance();
-    VkQueueFamilyProperties prop = _vkQueueFamilyProps[family_index];
-    
-    if (task == TASK_GRAPHICS && prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-        return true;
+uint32 VulkanDevice::GetGenericQueueFamilyIndex() {
+    return _generic_queue.GetFamilyIndex();
+}
 
-    if (task == TASK_COMPUTE && prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
-        return true;
+VulkanQueueInfo* VulkanDevice::GetGenericQueue() {
+    return &_generic_queue;
+}
 
-    if (task == TASK_TRANSFER && prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
-        return true;
-
-    if (task == TASK_PRESENT) {
-        VkBool32 canPresent = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice, family_index, instance->GetSurface(), &canPresent);
-        if (canPresent) {
-            return true;
+VulkanQueueInfo* VulkanDevice::GetFreeQueue(VkQueueFlags flags) {
+    for (auto& queue : _queues) {
+        if (!queue.IsAcquired() && (queue.GetFlags() & flags)) {
+            return &queue;
         }
     }
 
-    return false;
-}
-
-VkQueue VulkanDevice::GetQueueByIndexInFamily(uint32 family_index, uint32 queue_index) {
-    uint32 first_queue_index = 0;
-    for (uint32 i = 0; i < family_index; i++) {
-        first_queue_index += _vkQueueFamilyProps[i].queueCount;
-    }
-    return _queues[first_queue_index + queue_index];
-}
-
-VkQueue VulkanDevice::GetGraphicsQueue(uint32 index) { 
-    return _graphics_queues[index].queue; 
-}
-VkQueue VulkanDevice::GetPresentQueue() { 
-    return _present_queue.queue; 
-}
-VkQueue VulkanDevice::GetComputeQueue(uint32 index) { 
-    return _compute_queues[index].queue;
-}
-VkQueue VulkanDevice::GetTransferQueue(uint32 index) {
-    return _transfer_queues[index].queue;
-}
-
-uint32 VulkanDevice::GetGraphicsQueueFamilyIndex(uint32 index) { 
-    return _graphics_queues[index].familyIndex;
-}
-uint32 VulkanDevice::GetPresentQueueFamilyIndex() { 
-    return _present_queue.familyIndex; 
-}
-uint32 VulkanDevice::GetComputeQueueFamilyIndex(uint32 index) { 
-    return _compute_queues[index].familyIndex; 
-}
-uint32 VulkanDevice::GetTransferQueueFamilyIndex(uint32 index) {
-    return _transfer_queues[index].familyIndex;
+    return nullptr;
 }
 
 std::vector<VkQueueFamilyProperties>& VulkanDevice::GetQueueFamilyProperties() {

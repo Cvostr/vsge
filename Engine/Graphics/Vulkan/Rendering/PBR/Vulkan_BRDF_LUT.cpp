@@ -39,7 +39,7 @@ void Vulkan_BRDF_LUT::Create(){
     _brdf_pipeline->Create(_brdf_lut_shader, _brdf_pipeline_layout);
 
     _brdf_cmdpool = new VulkanCommandPool;
-    _brdf_cmdpool->Create(device->GetComputeQueueFamilyIndex());
+    _brdf_cmdpool->Create(device->GetGenericQueueFamilyIndex());
 
     _brdf_cmdbuffer = new VulkanCommandBuffer();
 	_brdf_cmdbuffer->Create(_brdf_cmdpool);
@@ -59,8 +59,8 @@ void Vulkan_BRDF_LUT::Create(){
     
     submitInfo.pCommandBuffers = &cmdbuf;
 
-    vkQueueSubmit(device->GetComputeQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device->GetComputeQueue());
+    vkQueueSubmit(device->GetGenericQueue()->GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(device->GetGenericQueue()->GetQueue());
 }
 
 void Vulkan_BRDF_LUT::RecordCmdbuffer(VulkanCommandBuffer* cmdbuf) {

@@ -47,8 +47,8 @@ void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wa
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();
 
-	vkQueueSubmit(device->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
+	vkQueueSubmit(device->GetGenericQueue()->GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(device->GetGenericQueue()->GetQueue());
 }
 
 void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf) {
@@ -62,8 +62,8 @@ void VSGE::VulkanGraphicsSubmit(VulkanCommandBuffer& cmdbuf) {
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();
 
-	vkQueueSubmit(device->GetGraphicsQueue(), 1, &end_info, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetGraphicsQueue());
+	vkQueueSubmit(device->GetGenericQueue()->GetQueue(), 1, &end_info, VK_NULL_HANDLE);
+	vkQueueWaitIdle(device->GetGenericQueue()->GetQueue());
 }
 
 void VSGE::VulkanComputeSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wait, VulkanSemaphore& signal) {
@@ -85,8 +85,8 @@ void VSGE::VulkanComputeSubmit(VulkanCommandBuffer& cmdbuf, VulkanSemaphore& wai
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = &_signal;
 
-	vkQueueSubmit(device->GetComputeQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(device->GetComputeQueue());
+	vkQueueSubmit(device->GetGenericQueue()->GetQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(device->GetGenericQueue()->GetQueue());
 }
 
 void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
@@ -109,8 +109,8 @@ void VSGE::VulkanPresent(VulkanSemaphore& wait, uint32 imageIndex) {
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr;
 
-	vkQueuePresentKHR(device->GetPresentQueue(), &presentInfo);
-	vkQueueWaitIdle(device->GetPresentQueue());
+	vkQueuePresentKHR(device->GetGenericQueue()->GetQueue(), &presentInfo);
+	vkQueueWaitIdle(device->GetGenericQueue()->GetQueue());
 }
 
 VkResult VSGE::AcquireNextImage(VulkanSemaphore& signal, uint32& imageIndex) {
