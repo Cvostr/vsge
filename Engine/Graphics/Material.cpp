@@ -83,9 +83,14 @@ void Material::SetTexture(const std::string& texture_name, ResourceReference& te
 	SetParameter("@has_" + texture_name, hasTexture);
 	_texturesDirty = true;
 }
-void Material::SetParameter(const std::string& parameter_name, Variant value) {
-	GetParameterByName(parameter_name)->value = value;
-	_paramsDirty = true;
+void Material::SetParameter(const std::string& parameter_name, Variant value) 
+{
+	MaterialParameter* matParam = GetParameterByName(parameter_name);
+	if (matParam)
+	{
+		matParam->value = value;
+		_paramsDirty = true;
+	}
 }
 
 uint32 align(uint32 in) {

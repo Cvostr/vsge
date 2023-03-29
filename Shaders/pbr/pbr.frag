@@ -14,7 +14,6 @@ layout(set = 1, binding = 3) uniform sampler2D roughness_map;
 layout(set = 1, binding = 4) uniform sampler2D metallic_map;
 layout(set = 1, binding = 5) uniform sampler2D height_map;
 layout(set = 1, binding = 6) uniform sampler2D occlusion_map;
-layout(set = 1, binding = 7) uniform sampler2D emission_map;
 
 layout (std140, set = 0, binding = 0) uniform CamMatrices{
     mat4 cam_view_projection;
@@ -105,7 +104,6 @@ void main() {
 
     float roughness = roughness_factor;
     float metallic = metallic_factor;
-    vec3 emission = vec3(0.0);
     float ao = 1.0;
 
     if(hasRoughness){
@@ -116,15 +114,11 @@ void main() {
         metallic *= texture(metallic_map, uv_coords).r;
     }
 
-    if(hasEmission){
-        emission = texture(emission_map, uv_coords).rgb * emission_factor / 15.0;
-    }
-
     if(hasOcclusion)
         ao = texture(occlusion_map, uv_coords).r;
 
     tColor = vec4(diffuse, ao);
-    tNormal = vec4(normal, roughness);
+    tNormal = vec4(normal, 1);
     tPos = FragPos;
-    tMaterial = vec4(emission, metallic);
+    tMaterial = vec4(roughness, metallic, 1, 1);
 }   

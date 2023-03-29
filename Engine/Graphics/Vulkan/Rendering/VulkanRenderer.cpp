@@ -228,12 +228,10 @@ void VulkanRenderer::SetupRenderer() {
 	pbr_template->AddTexture("Metallic", 4);
 	pbr_template->AddTexture("Height", 5);
 	pbr_template->AddTexture("Occlusion", 6);
-	pbr_template->AddTexture("Emission", 7);
 	pbr_template->AddParameter("Color", Color(1, 1, 1, 1));
 	pbr_template->AddParameter("Roughness factor", 1.f);
 	pbr_template->AddParameter("Metallic factor", 0.5f);
 	pbr_template->AddParameter("Height factor", 1.f);
-	pbr_template->AddParameter("Emission factor", 1.f);
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
 

@@ -20,5 +20,5 @@ void AnimationResource::OnRelease() {
 void AnimationResource::PostLoad() {
 	ImportedAnimationFile iaf;
     iaf.loadFromBuffer(_loadedData, _description.size);
-	iaf._Animation->CopyTo(_animation);
+	iaf.m_animation->CopyTo(_animation);
 }
