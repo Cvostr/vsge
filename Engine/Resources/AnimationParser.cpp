@@ -6,11 +6,11 @@
 using namespace VSGE;
 
 ImportedAnimationFile::ImportedAnimationFile() {
-    _Animation = nullptr;
+    m_animation = nullptr;
 }
 
 ImportedAnimationFile::~ImportedAnimationFile() {
-    SAFE_RELEASE(_Animation);
+    SAFE_RELEASE(m_animation);
 }
 
 void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
@@ -23,17 +23,17 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
         return;
     }
     //Allocate animation class
-    _Animation = new Animation; //allocate animation
+    m_animation = new Animation; //allocate animation
     //Read animation name
-    _Animation->SetName(solver.ReadNextString());
+    m_animation->SetName(solver.ReadNextString());
     //Read Tick Per Second property
-    _Animation->SetTPS(solver.GetValue<double>());
+    m_animation->SetTPS(solver.GetValue<double>());
     //Read duration property
-    _Animation->SetDuration(solver.GetValue<double>());
+    m_animation->SetDuration(solver.GetValue<double>());
     //Read Channel amount
-    _Animation->SetNumChannels(solver.GetValue<uint32>());
+    m_animation->SetNumChannels(solver.GetValue<uint32>());
     //Allocate all channels
-    _Animation->SetChannels(new AnimationChannel[_Animation->GetNumChannels()]);
+    m_animation->SetChannels(new AnimationChannel[m_animation->GetNumChannels()]);
     uint32 ch_i = 0;
 
     while (!solver.end()) {
@@ -42,9 +42,9 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
         if (strcmp(prefix, "_CHAN") == 0) {
             //Read node, channel will work with
             //Allocate animation channel
-            AnimationChannel* chan = &_Animation->GetChannels()[ch_i++];
+            AnimationChannel* chan = &m_animation->GetChannels()[ch_i++];
             chan->SetBoneName(solver.ReadNextString());
-            chan->anim_ptr = _Animation;
+            chan->anim_ptr = m_animation;
 
             chan->SetPositionKeysCount(solver.GetValue<uint32>());
             chan->SetScaleKeysCount(solver.GetValue<uint32>());

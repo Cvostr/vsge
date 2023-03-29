@@ -4,10 +4,8 @@
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
-#include <Core/YamlHelper.hpp>
 #include <Physics/PhysicsLayer.hpp>
 
-using namespace YAML;
 using namespace VSGE;
 
 ColliderComponent::ColliderComponent() :

@@ -1,6 +1,5 @@
 #include "Window.hpp"
 #include <Core/Logger.hpp>
-#include "../Core/Random.hpp"
 #include "Application.hpp"
 #include <System/PlatformSpecific.hpp>
 #include <SDL2/SDL_syswm.h>
@@ -55,8 +54,6 @@ void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title) {
     {
         Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening window " << SDL_GetError() << "\n";
     }
-
-    SetRandomSeed(SDL_GetTicks());
 
     Application* app = Application::Get();
     ApplicationCreateInfo desc = app->GetDescription();

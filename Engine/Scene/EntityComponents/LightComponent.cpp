@@ -1,12 +1,10 @@
 #include "LightComponent.hpp"
-#include <Core/YamlHelper.hpp>
 #include "../Entity.hpp"
 #include "../Scene.hpp"
 #include <Math/MatrixCamera.hpp>
 #include <Math/MatrixTransform.hpp>
 
 using namespace VSGE;
-using namespace YAML;
 
 LightsourceComponent::LightsourceComponent() :
 	_intensity(1.f),

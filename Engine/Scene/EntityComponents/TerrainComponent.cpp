@@ -4,6 +4,7 @@
 #include <Core/Random.hpp>
 #include <Physics/PhysicsLayer.hpp>
 #include <Scene/Scene.hpp>
+#include <mpi/Core/Random.hpp>
 
 using namespace VSGE;
 
@@ -362,7 +363,7 @@ void TerrainComponent::UpdateVegetables() {
 			auto& grass_transforms = _grass_transforms[vegetable_id];
 			auto& grass = _terrain_grass[vegetable_id];
 
-			Vec3 rotation = Vec3(0, Random(0, 360), 0);
+			Vec3 rotation = Vec3(0, Mpi::Random::random(0, 360), 0);
 			if (_heightmap) {
 				Vec3 normal = _heightmap[orig_x * _length + orig_y].normal;
 			}

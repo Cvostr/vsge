@@ -2,8 +2,8 @@
 #include <imgui_stdlib.h>
 #include <filesystem>
 #include <Misc/DialogWindows.hpp>
-#include <Core/YamlHelper.hpp>
 #include <fstream>
+#include <yaml-cpp/yaml.h>
 
 using namespace VSGEditor;
 

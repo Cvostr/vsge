@@ -1,8 +1,6 @@
 #include "EntityScriptComponent.hpp"
 #include <MonoScripting/MonoScriptingLayer.hpp>
-#include <Core/YamlHelper.hpp>
 
-using namespace YAML;
 using namespace VSGE;
 
 EntityScriptComponent::EntityScriptComponent() {

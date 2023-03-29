@@ -4,10 +4,9 @@
 #include <Scene/Entity.hpp>
 #include <Core/Time.hpp>
 #include <Math/MatrixTransform.hpp>
-#include <Core/YamlHelper.hpp>
+#include <mpi/Core/Random.hpp>
 
 using namespace VSGE;
-using namespace YAML;
 
 ParticleEmitterComponent::ParticleEmitterComponent() :
 	_simulating(false),
@@ -268,7 +267,7 @@ int ParticleEmitterComponent::GetRandomEmissionRate() {
 }
 
 float ParticleEmitterComponent::GetRandomFloat(float max) {
-	return (Rand() * max) / 32767.f;
+	return (Mpi::Random::random() * max) / 32767.f;
 }
 
 void ParticleEmitterComponent::SetDuration(float duration) {

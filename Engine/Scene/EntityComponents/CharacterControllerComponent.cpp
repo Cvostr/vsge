@@ -4,10 +4,8 @@
 #include <bullet/BulletCollision/CollisionShapes/btCapsuleShape.h>
 #include <bullet/LinearMath/btDefaultMotionState.h>
 #include <Physics/PhysicsLayer.hpp>
-#include <Core/YamlHelper.hpp>
 #include <Math/MatrixTransform.hpp>
 
-using namespace YAML;
 using namespace VSGE;
 
 #define MASS 1.f

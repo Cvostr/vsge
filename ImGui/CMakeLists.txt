@@ -20,9 +20,19 @@ set(SRC_FILES
 	src/imgui_tables.cpp
 	src/imgui_widgets.cpp
 	src/ImGuizmo.cpp
-	src/TextEditor.cpp
 )
 
-file(GLOB_RECURSE HEADER_FILES "*.h")
+set(HEADER_FILES 
+	src/ImageBtnText.h
+	src/imconfig.h
+	src/imgui.h
+	src/imgui_impl_vulkan.h
+	src/imgui_internal.h
+	src/imgui_stdlib.h
+	src/ImGuizmo.h
+	src/imstb_rectpack.h
+	src/imstb_textedit.h
+	src/imstb_truetype.h
+)
 
 add_library (ImGui ${SRC_FILES} ${HEADER_FILES})

@@ -15,9 +15,7 @@ set(SRC_FILES
 				Core/ByteSolver.cpp
 				Core/FileLoader.cpp
 				Core/Logger.cpp
-				Core/Random.cpp
 				Core/Time.cpp
-				Core/YamlHelper.cpp
 				Core/Threading/Thread.cpp
 				Core/VarTypes/String.cpp
 				Core/VarTypes/Variant.cpp

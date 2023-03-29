@@ -19,7 +19,7 @@ namespace VSGE {
 
     class ImportedAnimationFile {
     public:
-        Animation* _Animation;
+        Animation* m_animation;
 
         void loadFromBuffer(byte* buffer, uint32 size);
         void loadFromFile(const std::string& file);
