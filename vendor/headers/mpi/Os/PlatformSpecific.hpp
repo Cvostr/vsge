@@ -7,5 +7,11 @@ namespace Mpi {
 	std::wstring ConvertUtf8ToWide(const std::string& str);
 
 	std::string ConvertWideToUtf8(const std::wstring& wstr);
+
+	
 #endif
+
+	void setTerminalUtf8();
+
+	int getch();
 }

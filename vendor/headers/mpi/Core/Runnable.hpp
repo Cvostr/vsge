@@ -8,6 +8,6 @@ namespace Mpi {
 
         }
 
-        virtual void run() = 0;
+        virtual int run() = 0;
     };
 }

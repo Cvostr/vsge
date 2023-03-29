@@ -78,7 +78,7 @@ void Entity::RemoveChild(Entity* entityToRemove) {
 	if (entityToRemove) {
 		if (HasChild(entityToRemove)) {
 			tEntityList::iterator it = std::remove(_children.begin(), _children.end(), entityToRemove);
-			_children.pop_back();
+			_children.erase(it, _children.end());
 			entityToRemove->SetParent(nullptr);
 
 			UpdateTransformMatrices();
@@ -421,11 +421,11 @@ Entity* Entity::Dublicate() {
 	SceneSerializer serializer;
 	serializer.SetScene(_scene);
 	for (auto component : _components) {
-		YAML::Emitter e;
-		serializer.SerializeEntityComponent(component, e);
+		ByteSerialize ser;
+		serializer.SerializeEntityComponentBinary(component, ser);
 		
-		YAML::Node data = YAML::Load(e.c_str());
-		serializer.DeserializeEntityComponent(new_entity, data);
+		ByteSolver solver(ser.GetBytes(), ser.GetSerializedSize());
+		serializer.DeserializeEntityComponentBinary(new_entity, solver);
 	}
 
 	for (uint32 child_i = 0; child_i < _children.size(); child_i ++) {

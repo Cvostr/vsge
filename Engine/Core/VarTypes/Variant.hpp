@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Base.hpp"
-#include "Guid.hpp"
 #include <Math/Vec2.hpp>
 #include <Math/Vec3.hpp>
 #include <Math/Vec4.hpp>
 #include <Math/Quaternion.hpp>
 #include <Math/Color.hpp>
 #include "String.hpp"
+#include <mpi/Core/Guid.hpp>
 
 enum ValueType {
 	VALUE_TYPE_INT32 = 1,
@@ -43,7 +43,7 @@ union MultitypeData{
 	Vec4i _vec4i;
 	Quat _quat;
 	VSGE::Color _color;
-	VSGE::Guid guid;
+	Guid guid;
 
 	void Assign(MultitypeData& data);
 

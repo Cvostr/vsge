@@ -149,15 +149,6 @@ void CharacterControllerComponent::OnDeactivate() {
 	}
 }
 
-void CharacterControllerComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "center" << Value << _center;
-	e << Key << "size" << Value << _size;
-}
-void CharacterControllerComponent::Deserialize(YAML::Node& entity) {
-	_center = entity["center"].as<Vec3>();
-	_size = entity["size"].as<Vec2>();
-}
-
 void CharacterControllerComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_size);
 	serializer.Serialize(_center);

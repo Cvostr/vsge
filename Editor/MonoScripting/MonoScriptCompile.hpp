@@ -2,7 +2,7 @@
 
 #include <string>
 #include <Core/Threading/Thread.hpp>
-#include <Core/Threading/Mutex.hpp>
+#include <mpi/Os/Mutex.hpp>
 #include <Engine/Event.hpp>
 
 namespace VSGE {
@@ -30,11 +30,11 @@ namespace VSGE {
 		std::string _output;
 		std::string _dll_output_path;
 		std::string _api_dll_path;
-		Mutex* _mutex;
+		Mpi::Mutex * _mutex;
 		COMPILATION_STATE _state;
 		bool _compilation_error;
 
-		std::string GetCompilationCmd();
+		std::string ExecuteCompilation();
 	public:
 
 		MonoScriptCompiler();

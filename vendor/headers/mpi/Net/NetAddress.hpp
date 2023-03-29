@@ -16,6 +16,8 @@ namespace Mpi {
 
 		NetAddress(const uint32_t ip, uint16_t port);
 
+		NetAddress(uint16_t port);
+
 		void toStdAddrStruct(void** struct_ptr, int& struct_size) const;
 
 		int getFamily() const;

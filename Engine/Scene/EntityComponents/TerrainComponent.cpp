@@ -6,7 +6,6 @@
 #include <Scene/Scene.hpp>
 
 using namespace VSGE;
-using namespace YAML;
 
 TerrainTexturesFactors::TerrainTexturesFactors() {
 	_textures_masks = nullptr;
@@ -424,116 +423,6 @@ void TerrainComponent::SetShadowCastEnabled(bool cast) {
 	_cast_shadows = cast;
 }
 
-void TerrainComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "width" << Value << _width;
-	e << Key << "height" << Value << _length;
-	e << Key << "cast_shadows" << Value << _cast_shadows;
-
-	e << YAML::Key << "textures" << YAML::Value << YAML::BeginSeq;
-	for (auto& texture : _terrain_textures) {
-		e << BeginMap;
-		e << Key << "albedo" << Value << texture._albedo_reference.GetResourceName();
-		e << Key << "normal" << Value << texture._normal_reference.GetResourceName();
-		e << Key << "roughness" << Value << texture._roughness_reference.GetResourceName();
-		e << Key << "metallic" << Value << texture._metallic_reference.GetResourceName();
-		e << Key << "ao" << Value << texture._ao_reference.GetResourceName();
-		e << Key << "height" << Value << texture._height_reference.GetResourceName();
-		//write factors
-		e << Key << "roughness_factor" << Value << texture._roughness_factor;
-		e << Key << "metallic_factor" << Value << texture._metallic_factor;
-		e << Key << "height_factor" << Value << texture._height_factor;
-		e << YAML::EndMap; // Anim resource
-	}
-	e << YAML::EndSeq;
-
-	e << YAML::Key << "vegetables" << YAML::Value << YAML::BeginSeq;
-	for (auto& grass : _terrain_grass) {
-		e << BeginMap;
-		e << Key << "diffuse" << Value << grass._texture_reference.GetResourceName();
-		e << Key << "width" << Value << grass._width;
-		e << Key << "height" << Value << grass._height;
-		e << YAML::EndMap; // Anim resource
-	}
-	e << YAML::EndSeq;
-
-	e << YAML::Key << "heightmap" << YAML::Value << YAML::BeginSeq;
-	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		e << Value << _heightmap[v].pos.y;
-	}
-	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			e << Value << (int)_texture_factors.get(v, texture_i);
-		}
-	}
-	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		e << Value << (int)_vegetables_data[v];
-	}
-	e << YAML::EndSeq;
-}
-void TerrainComponent::Deserialize(YAML::Node& entity) {
-	_width = entity["width"].as<uint32>();
-	_length = entity["height"].as<uint32>();
-	_cast_shadows = entity["cast_shadows"].as<bool>();
-
-	Flat(0);
-
-	YAML::Node textures = entity["textures"];
-	for (const auto& texture : textures) {
-		std::string albedo = texture["albedo"].as<std::string>();
-		std::string normal = texture["normal"].as<std::string>();
-		std::string roughness = texture["roughness"].as<std::string>();
-		std::string metallic = texture["metallic"].as<std::string>();
-		std::string ao = texture["ao"].as<std::string>();
-		std::string height = texture["height"].as<std::string>();
-		float roughness_factor = texture["roughness_factor"].as<float>();
-		float metallic_factor = texture["metallic_factor"].as<float>();
-		float height_factor = texture["height_factor"].as<float>();
-
-		TerrainTexture terrain_texture;
-		terrain_texture._albedo_reference.SetResource(albedo);
-		terrain_texture._normal_reference.SetResource(normal);
-		terrain_texture._roughness_reference.SetResource(roughness);
-		terrain_texture._metallic_reference.SetResource(metallic);
-		terrain_texture._ao_reference.SetResource(ao);
-		terrain_texture._height_reference.SetResource(height);
-		terrain_texture._roughness_factor = roughness_factor;
-		terrain_texture._metallic_factor = metallic_factor;
-		terrain_texture._height_factor = height_factor;
-
-		_terrain_textures.push_back(terrain_texture);
-	}
-
-	YAML::Node vegetables = entity["vegetables"];
-	for (const auto& vegetable : vegetables) {
-		std::string diffuse_resource = vegetable["diffuse"].as<std::string>();
-		float width = vegetable["width"].as<float>();
-		float height = vegetable["height"].as<float>();
-
-		TerrainGrass grass;
-		grass._texture_reference.SetResource(diffuse_resource);
-		grass._width = width;
-		grass._height = height;
-		_terrain_grass.push_back(grass);
-	}
-
-	YAML::Node heightmap = entity["heightmap"];
-	
-	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		_heightmap[v].pos.y = heightmap[v].as<float>();
-	}
-	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) {
-			uint8 value = (uint8)heightmap[GetVerticesCount() + _terrain_textures.size() * v + texture_i].as<int>();
-			_texture_factors.set(v, texture_i, value);
-		}
-	}
-	for (uint32 v = 0; v < GetVerticesCount(); v++) {
-		_vegetables_data[v] = 
-			(GRASS_ID)heightmap[GetVerticesCount() + _terrain_textures.size() * GetVerticesCount() + v].as<int>();
-	}
-	
-	UpdateVegetables();
-}
 void TerrainComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_width);
 	serializer.Serialize(_length);

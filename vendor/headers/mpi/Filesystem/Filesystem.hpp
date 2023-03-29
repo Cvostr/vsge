@@ -17,7 +17,7 @@ namespace Mpi{
 
         static bool deleteFile(const std::string& filePath);
 
-        static uint64 getFileSize(const std::string& filePath);
+        static uint64_t getFileSize(const std::string& filePath);
 
         static bool isFileReadonly(const std::string& filePath);
 
@@ -36,5 +36,7 @@ namespace Mpi{
         static void setWorkingDirectory(const std::string& directoryPath);
 
         static bool moveFile(const std::string& oldPath, const std::string& newPath, bool overwrite = false);
+
+        static bool copyFile(const std::string& oldPath, const std::string& newPath);
     };
 }

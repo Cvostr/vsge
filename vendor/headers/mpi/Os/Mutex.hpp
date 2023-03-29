@@ -12,13 +12,17 @@ namespace Mpi {
 	public:
 
 		Mutex();
+		Mutex(const Mutex& other) = delete;
+		Mutex(Mutex&& other) noexcept;
 
 		~Mutex();
 
-		void lock();
+		/// @brief Заблокировать данную критическую секцию.
+		void lock() const;
 
-        void tryLock();
+        bool tryLock();
 
-		void unlock();
+		/// @brief Разблокировать критическую секцию.
+		void unlock() const;
 	};
 }

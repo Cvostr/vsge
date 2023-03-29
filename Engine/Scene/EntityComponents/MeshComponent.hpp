@@ -16,9 +16,6 @@ namespace VSGE {
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_MESH, "Mesh")
 
-		void Serialize(YAML::Emitter& e);
-		void Deserialize(YAML::Node& entity);
-
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);
 

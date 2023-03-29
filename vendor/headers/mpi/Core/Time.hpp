@@ -20,7 +20,7 @@ namespace Mpi {
 
     class Time {
     public:
-        static uint64 getCurrentTimeMillis();
+        static uint64_t getCurrentTimeMillis();
 
         static SystemTime getLocalSystemTime();
         

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Core/VarTypes/Base.hpp>
-#include <Core/VarTypes/Guid.hpp>
+#include <Mpi/Core/Guid.hpp>
 #include "IEntityComponent.hpp"
 #include "EntityComponents/EntityScriptComponent.hpp"
 #include <string>

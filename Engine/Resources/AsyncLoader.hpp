@@ -2,7 +2,7 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include <Core/Threading/Thread.hpp>
-#include <Core/Threading/Mutex.hpp>
+#include <mpi/Os/Mutex.hpp>
 #include "Resource.hpp"
 #include <string>
 #include <queue>
@@ -13,7 +13,7 @@ namespace VSGE {
 
 	class AsyncLoader : public Thread {
 	private:
-		Mutex* mMutex;
+		Mpi::Mutex * mMutex;
 		std::queue<Resource*> loadQueue;
 	public:
 		AsyncLoader();

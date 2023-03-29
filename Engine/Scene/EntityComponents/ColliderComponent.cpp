@@ -191,20 +191,6 @@ bool ColliderComponent::IsTrigger() {
 	return _is_trigger;
 }
 
-void ColliderComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "trigger" << Value << _is_trigger;
-	e << Key << "shape" << Value << _shape;
-	e << Key << "center" << Value << _center;
-	e << Key << "size" << Value << _size;
-}
-
-void ColliderComponent::Deserialize(YAML::Node& entity) {
-	_is_trigger = entity["trigger"].as<bool>();
-	_shape = (ColliderShape)entity["shape"].as<int>();
-	_center = entity["center"].as<Vec3>();
-	_size = entity["size"].as<Vec3>();
-}
-
 void ColliderComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_is_trigger);
 	serializer.Serialize(_shape);

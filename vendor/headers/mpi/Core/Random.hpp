@@ -1,11 +1,16 @@
 #pragma once
 
+#include "Base.hpp"
+#include <string>
+
 namespace Mpi {
 
     class Random {
     public:
-        static int Rand();
+        static int random();
 
-        static int Rand(int min, int max);
+        static int random(int min, int max);
+
+        static std::string randomString(uint32_t len);
     };
 }

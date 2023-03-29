@@ -187,7 +187,7 @@ bool YAML::convert<VSGE::Color>::decode(const Node& node, Color& rhs)
 	return true;
 }
 
-Node YAML::convert<VSGE::Guid>::encode(const Guid & rhs)
+Node YAML::convert<Guid>::encode(const Guid & rhs)
 {
 	Node node;
 	node.push_back(rhs.a);
@@ -198,7 +198,7 @@ Node YAML::convert<VSGE::Guid>::encode(const Guid & rhs)
 	return node;
 }
 
-bool YAML::convert<VSGE::Guid>::decode(const Node& node, Guid& rhs)
+bool YAML::convert<Guid>::decode(const Node& node, Guid& rhs)
 {
 	if (!node.IsSequence() || node.size() != 4)
 		return false;

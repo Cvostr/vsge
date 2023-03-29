@@ -5,20 +5,6 @@
 #include "Quaternion.hpp"
 
 template<typename T>
-T _determinant(T a, T b, T c, T d, T e, T f,
-    T g, T h, T i) {
-    //a b c
-    //d e f
-    //g h i
-    return (a * e * i) +
-        (d * c * h) +
-        (g * b * f) -
-        (g * e * c) -
-        (d * b * i) -
-        (h * f * a);
-}
-
-template<typename T>
 class tMat4 {
 public:
     union

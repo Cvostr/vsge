@@ -1,6 +1,5 @@
 #include "MaterialComponent.hpp"
 
-using namespace YAML;
 using namespace VSGE;
 
 MaterialComponent::MaterialComponent() {
@@ -31,15 +30,6 @@ bool MaterialComponent::IsCastShadows() {
 }
 void MaterialComponent::SetCastShadows(bool cast_shadows) {
 	_cast_shadows = cast_shadows;
-}
-
-void MaterialComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "material" << Value << _materialResource.GetResourceName();
-	e << Key << "cast_shadows" << Value << _cast_shadows;
-}
-void MaterialComponent::Deserialize(YAML::Node& entity) {
-	SetMaterialName(entity["material"].as<std::string>());
-	_cast_shadows = entity["cast_shadows"].as<bool>();
 }
 
 void MaterialComponent::Serialize(ByteSerialize& serializer) {

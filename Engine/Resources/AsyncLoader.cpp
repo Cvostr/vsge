@@ -7,7 +7,7 @@
 using namespace VSGE;
 
 AsyncLoader::AsyncLoader() :
-    mMutex(new Mutex)
+    mMutex(new Mpi::Mutex)
 {
 }
 
@@ -58,24 +58,24 @@ void AsyncLoader::LoadResource(Resource* resource) {
     //Do some specific work (on MeshGroupResource as example)
     //Send Resource load event
     if (mMutex != nullptr)
-        mMutex->Lock();
+        mMutex->lock();
     resource->Prepare();
     ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
     Application::Get()->QueueEvent(rle);
     if (mMutex != nullptr)
-        mMutex->Release();
+        mMutex->unlock();
 }
 
 void AsyncLoader::AddToQueue(Resource* resource) {
     if (resource->GetState() != RESOURCE_STATE_UNLOADED)
         return;
     //Lock array mutex
-    mMutex->Lock();
+    mMutex->lock();
     
     resource->SetState(RESOURCE_STATE_QUEUED);
     loadQueue.push(resource);
     //release array mutex
-    mMutex->Release();
+    mMutex->unlock();
 }
 
 uint32 AsyncLoader::GetQueuedResourcesCount() {
@@ -90,12 +90,12 @@ void AsyncLoader::THRFunc() {
     while (_running) {
 
         if (loadQueue.size() > 0) {
-            mMutex->Lock();
+            mMutex->lock();
             //obtain next resource pointer
             Resource* resource = loadQueue.front();
             loadQueue.pop();
             //unlock thread
-            mMutex->Release();
+            mMutex->unlock();
             //Load resource by request
             LoadResource(resource);
         }

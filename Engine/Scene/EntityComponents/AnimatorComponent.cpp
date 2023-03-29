@@ -2,7 +2,6 @@
 #include <Core/Time.hpp>
 #include <Math/MatrixTransform.hpp>
 
-using namespace YAML;
 using namespace VSGE;
 
 AnimatorComponent::AnimatorComponent() :
@@ -95,30 +94,6 @@ void AnimatorComponent::OnPreRender() {
         }
         //process root entity
         UpdateNodeTransform(GetEntity());
-    }
-}
-
-void AnimatorComponent::Serialize(YAML::Emitter& e) {
-    e << YAML::Key << "anims" << YAML::Value << YAML::BeginSeq;
-    for (auto& anim : _animations) {
-        e << BeginMap;
-        e << Key << "resource" << Value << anim._animResource.GetResourceName();
-        e << Key << "coeff" << Value << anim.coeff;
-        e << YAML::EndMap; // Anim resource
-    }
-    e << YAML::EndSeq;
-}
-void AnimatorComponent::Deserialize(YAML::Node& entity) {
-    YAML::Node anims = entity["anims"];
-    for (const auto& anim : anims) {
-        std::string resource_name = anim["resource"].as<std::string>();
-        float coeff = anim["coeff"].as<float>();
-
-        AnimationCoeff anim_coeff;
-        anim_coeff._animResource.SetResource(resource_name);
-        anim_coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
-        anim_coeff.coeff = coeff;
-        _animations.push_back(anim_coeff);
     }
 }
 

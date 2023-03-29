@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <yaml-cpp/yaml.h>
 #include <Core/ByteSerialize.hpp>
 #include <Core/ByteSolver.hpp>
 
@@ -60,9 +59,6 @@ namespace VSGE {
 		/// Calls on component or entity deactivation
 		/// </summary>
 		virtual void OnDeactivate() {}
-
-		virtual void Serialize(YAML::Emitter& e) {}
-		virtual void Deserialize(YAML::Node& entity) {}
 
 		virtual void Serialize(ByteSerialize& serializer) {}
 		virtual void Deserialize(ByteSolver& solver) {}

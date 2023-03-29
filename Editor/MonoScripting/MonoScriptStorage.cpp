@@ -5,6 +5,7 @@
 #include <Windows/ConsoleWindow.hpp>
 #include <EditorLayers/ImGuiLayer.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <mpi/Filesystem/File.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -66,21 +67,16 @@ void MonoScriptStorage::SetScriptingReady() {
 }
 
 MonoScript* MonoScriptStorage::GetScriptWithFilePath(const std::string& file_path) {
+	std::string _file_path = Mpi::File(file_path).getPath();
 	for (auto& script : _scripts) {
-		if (script->GetFilePath() == file_path)
+		if (Mpi::File(script->GetFilePath()).getPath() == _file_path)
 			return script;
 	}
 	return nullptr;
 }
 
 void MonoScriptStorage::AddScript(const std::string& file_path) {
-	bool exist = false;
-	for (auto& script : _scripts) {
-		if (script->GetFilePath() == file_path)
-			exist = true;
-	}
-
-	if (!exist) {
+	if (!GetScriptWithFilePath(file_path)) {
 		MonoScript* script = new MonoScript;
 		script->SetFilePath(file_path);
 		_scripts.push_back(script);

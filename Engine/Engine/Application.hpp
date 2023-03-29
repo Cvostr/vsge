@@ -3,7 +3,7 @@
 #include "ApplicationLayer.hpp"
 #include "Window.hpp"
 #include <string>
-#include <Core/Threading/Mutex.hpp>
+#include <mpi/Os/Mutex.hpp>
 #include <typeinfo>
 
 namespace VSGE {
@@ -41,7 +41,7 @@ namespace VSGE {
 		tApplicationLayerList _layers;
 		//Events, created (usually) from other thread
 		std::vector<IEvent*> _queuedEvents;
-		Mutex* _queuedEventsMutex;
+		Mpi::Mutex* _queuedEventsMutex;
 
 		Window* _window;
 		IRenderer* _renderer;

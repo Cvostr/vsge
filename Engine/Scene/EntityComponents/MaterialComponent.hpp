@@ -22,9 +22,6 @@ namespace VSGE {
 		bool IsCastShadows();
 		void SetCastShadows(bool cast_shadows);
 
-		void Serialize(YAML::Emitter& e);
-		void Deserialize(YAML::Node& entity);
-
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);
 

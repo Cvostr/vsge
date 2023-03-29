@@ -28,7 +28,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	//descr.headless = true;
 	//descr.server = true;
 	//descr.application_dir = parser.GetApplicationDirPath();
-	descr.application_dir = "D:/DEV/vsge_test_assets/built";
+	descr.application_dir = "D:\\DEV2\\vsge_test_assets\\built";
 
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");

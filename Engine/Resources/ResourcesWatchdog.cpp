@@ -6,7 +6,7 @@
 using namespace VSGE;
 
 ResourcesWatchdog::ResourcesWatchdog() :
-    _mutex(new Mutex),
+    _mutex(new Mpi::Mutex),
     _resource_lifetime(6000)
 {
 
@@ -21,21 +21,21 @@ void ResourcesWatchdog::SetResourceLifetime(uint32 lifetime){
 }
 
 void ResourcesWatchdog::AddResource(Resource* resource) {
-    _mutex->Lock();
+    _mutex->lock();
     _resources.push_back(resource);
-    _mutex->Release();
+    _mutex->unlock();
 }
 
 void ResourcesWatchdog::RemoveResource(Resource* resource) {
-    _mutex->Lock();
+    _mutex->lock();
     auto iterator = std::remove(_resources.begin(), _resources.end(), resource);
-    _mutex->Release();
+    _mutex->unlock();
 }
 
 void ResourcesWatchdog::THRFunc(){
     while (_running) {
         for(uint32 resource_i = 0; resource_i < _resources.size(); resource_i ++){
-            _mutex->Lock();
+            _mutex->lock();
             Resource* resource = _resources.at(resource_i);
             if(resource->IsReady() && resource->GetLoadedData()){
                 resource->FreeLoadedData();
@@ -56,7 +56,7 @@ void ResourcesWatchdog::THRFunc(){
                     resource->Release();
                 }
             }
-            _mutex->Release();
+            _mutex->unlock();
         }
         SleepThread(100);
     }

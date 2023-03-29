@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/VarTypes/Guid.hpp>
+#include <Core/VarTypes/Base.hpp>
 #include <string>
 #include <vector>
 

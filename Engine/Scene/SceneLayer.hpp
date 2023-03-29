@@ -82,7 +82,6 @@ namespace VSGE {
 		void RestoreScene();
 		void RestoreScene(byte* data, uint32 size);
 
-		void LoadSceneYAML(byte* data, uint32 index = 0);
 		void LoadSceneBinary(byte* data, uint32 size, uint32 index = 0);
 
 		void OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& event);

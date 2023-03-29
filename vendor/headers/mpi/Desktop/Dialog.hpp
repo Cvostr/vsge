@@ -35,9 +35,33 @@ namespace Mpi {
         }
     };
 
+    struct FileExtensionDesc {
+        std::string extension;
+        std::string description;
+
+        FileExtensionDesc() :
+            extension("*.*"),
+            description("All files")
+        {}
+        FileExtensionDesc(const std::string& description, const std::string& extension) :
+            extension(extension),
+            description(description)
+        {}
+    };
+
+
+    struct FileDialogDesc {
+        std::string dialogTitle;
+        std::vector<FileExtensionDesc> extensions;
+        std::string baseFileName;
+        std::string initialDir;
+    };
+
     class Dialog {
     public:
         static DialogUserAction MessageDialog(const MessageDialogDesc& dialogDesc);
 
+        static std::string OpenFileDialog(const FileDialogDesc& desc);
+        static std::string SaveFileDialog(const FileDialogDesc& desc);
     };
 }

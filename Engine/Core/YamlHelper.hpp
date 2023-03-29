@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 #include <Core/VarTypes/Variant.hpp>
 #include <Core/VarTypes/Base.hpp>
-#include <Core/VarTypes/Guid.hpp>
+#include <mpi/Core/Guid.hpp>
 #include <Math/Color.hpp>
 #include <Math/Quaternion.hpp>
 #include <Math/Vec4.hpp>
@@ -64,8 +64,8 @@ struct YAML::convert<VSGE::Color>
 };
 
 template<>
-struct YAML::convert<VSGE::Guid>
+struct YAML::convert<Guid>
 {
-	static Node encode(const VSGE::Guid& rhs);
-	static bool decode(const Node& node, VSGE::Guid& rhs);
+	static Node encode(const Guid& rhs);
+	static bool decode(const Node& node, Guid& rhs);
 };

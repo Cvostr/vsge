@@ -6,9 +6,9 @@
 namespace Mpi {
     class DateTime {
     private:
-        int64 mTicks;
+        int64_t mTicks;
     public:
-        DateTime(int64 ticks);
+        DateTime(int64_t ticks);
 
         DateTime(int year, int month, int day, int hour, int minute, int second, int millisecond = 0);
 
@@ -38,9 +38,9 @@ namespace Mpi {
 
         std::string toString() const;
 
-        DateTime operator==(const DateTime& rhs) const;
+        bool operator==(const DateTime& rhs) const;
 
-        DateTime operator!=(const DateTime& rhs) const;
+        bool operator!=(const DateTime& rhs) const;
 
         DateTime operator+(const DateTime& rhs) const;
 
@@ -51,8 +51,8 @@ namespace Mpi {
         void operator-=(const DateTime& rhs);
 
     private:
-        static double getJulianDayFromTicks(int64 ticks);
+        static double getJulianDayFromTicks(int64_t ticks);
 
-        static void calculateDate(int64 ticks, int32& year, int32& month, int32& day);
+        static void calculateDate(int64_t ticks, int32_t& year, int32_t& month, int32_t& day);
     };
 }

@@ -15,7 +15,6 @@ typedef int socklen_t;
 
 enum NetClientStatus {
     CLIENT_STATUS_DISCONNECTED,
-    CLIENT_STATUS_CONNECTING,
     CLIENT_STATUS_CONNECTED
 };
 
@@ -31,3 +30,5 @@ enum class NetResultCode {
     NET_SERVER_BIND_ERROR,
     NET_SERVER_LISTEN_ERROR
 };
+
+#define NET_COMMON_MTU 1500

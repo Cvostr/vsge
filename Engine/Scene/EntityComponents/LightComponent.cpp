@@ -66,35 +66,6 @@ void LightsourceComponent::SetShadowPCF(uint32 pcf) {
 	_shadowsPCF = pcf;
 }
 
-void LightsourceComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "light_type" << Value << _lightType;
-	e << Key << "intensity" << Value << _intensity;
-	e << Key << "range" << Value << _range;
-	e << Key << "sp_angle" << Value << _spot_angle;
-	e << Key << "color" << Value << _lightColor;
-	e << Key << "castShadows" << Value << _castShadows;
-
-	if (_castShadows) {
-		e << Key << "shadowStrength" << Value << _shadowStrength;
-		e << Key << "shadowBias" << Value << _shadowsBias;
-		e << Key << "pcf" << Value << _shadowsPCF;
-	}
-}
-void LightsourceComponent::Deserialize(YAML::Node& entity) {
-	_lightType = (LightType)entity["light_type"].as<int>();
-	_intensity = entity["intensity"].as<float>();
-	_range = entity["range"].as<float>();
-	_spot_angle = entity["sp_angle"].as<float>();
-	_lightColor = entity["color"].as<Color>();
-	_castShadows = entity["castShadows"].as<bool>();
-
-	if (_castShadows) {
-		_shadowStrength = entity["shadowStrength"].as<float>();
-		_shadowsBias = entity["shadowBias"].as<float>();
-		_shadowsPCF = entity["pcf"].as<uint32>();
-	}
-}
-
 void LightsourceComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_lightType);
 	serializer.Serialize(_intensity);

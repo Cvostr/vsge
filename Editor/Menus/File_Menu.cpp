@@ -22,7 +22,7 @@ void SaveScene(std::string file) {
 
 	VSGE::SceneSerializer sc;
 	sc.SetScene(SceneLayer::Get()->GetMainScene());
-	sc.Serialize(file);
+	sc.SerializeBinary(file);
 
 	el->GetOpenedSceneFile() = file;
 }

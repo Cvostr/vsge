@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Core/Threading/Thread.hpp>
-#include <Core/Threading/Mutex.hpp>
+#include <mpi/Os/Mutex.hpp>
 #include <Math/Ray.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <queue>
@@ -10,7 +10,7 @@ namespace VSGEditor {
 
 	class TerrainThreadedEditor : public VSGE::Thread {
 	private:
-		VSGE::Mutex* _mutex;
+		Mpi::Mutex* _mutex;
 		std::queue<VSGE::Ray> _edit_rays;
 		VSGE::TerrainComponent* _terrain;
 

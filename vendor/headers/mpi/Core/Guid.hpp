@@ -6,14 +6,14 @@
 class Guid {
 	public:
 		union {
-			uint32 Values[4];
-			uint8 RawValues[16];
+			uint32_t Values[4];
+			uint8_t RawValues[16];
 
 			struct {
-				uint32 a;
-				uint32 b;
-				uint32 c;
-				uint32 d;
+				uint32_t a;
+				uint32_t b;
+				uint32_t c;
+				uint32_t d;
 			};
 		};
 		/// <summary>
@@ -30,6 +30,8 @@ class Guid {
 		void fromBinaryView(const std::string& bytes);
 
 		std::string toString() const;
+
+		bool isValid() const;
 
 		/// <summary>
 		/// Generate random guid

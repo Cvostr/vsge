@@ -4,6 +4,7 @@
 #include <vector>
 #include <Core/DateTime.hpp>
 #include <fstream>
+#include <array>
 
 namespace Mpi {
 
@@ -11,7 +12,7 @@ namespace Mpi {
     private:
         std::string mPath;
 
-        int getPathLastDivisorIndex() const;
+        mpi_pos_t getPathLastDivisorIndex() const;
 
         void removeLastSlash();
 
@@ -25,8 +26,12 @@ namespace Mpi {
 
         File(const File& dir, const std::string fileName);
 
+        File(const File& file);
+
         const std::string getAbsolutePath() const;
 
+        /// @brief Получить путь к файлу, назначенный для этого объекта File
+        /// @return путь к файлу
         const std::string& getPath() const;
 
         std::string getParent() const;
@@ -39,17 +44,21 @@ namespace Mpi {
 
         bool isFile() const;
 
+        /// @brief Проверяет, является ли файл по пути, указаном в объекте класса, директорией
+        /// @return 
         bool isDirectory() const;
 
         bool isReadonly() const;
 
-        uint64 getFileSize() const;
+        uint64_t getFileSize() const;
 
         bool mkdir() const;
 
-        void remove(bool recursively = false) const;
+        bool remove(bool recursively = false) const;
 
         void rename(const std::string& newName);
+
+        void rename(const File& dest);
 
         std::vector<File> listFiles() const;
 
@@ -60,6 +69,8 @@ namespace Mpi {
         std::ifstream getIfstream(std::ios_base::openmode openmode = std::ios_base::in) const;
 
         std::ofstream getOfstream(std::ios_base::openmode openmode = std::ios_base::out) const;
+
+        int readFile(char** data) const;
     };
 
 

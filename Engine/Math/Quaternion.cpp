@@ -22,15 +22,6 @@ Quat Quat::GetNormalized() const {
 	return Quat(x * coeff, y * coeff, z * coeff, w * coeff);
 }
 
-static float NormalizeAngle(float angle)
-{
-    while (angle > 360)
-        angle -= 360;
-    while (angle < 0)
-        angle += 360;
-    return angle;
-}
-
 static Vec3 NormalizeAngles(Vec3 angles)
 {
     angles.x = NormalizeAngle(angles.x);

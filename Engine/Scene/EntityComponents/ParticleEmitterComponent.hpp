@@ -165,9 +165,6 @@ namespace VSGE {
 		int GetRandomEmissionRate();
 		float GetRandomFloat(float max);
 
-		void Serialize(YAML::Emitter& e);
-		void Deserialize(YAML::Node& entity);
-
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);
 

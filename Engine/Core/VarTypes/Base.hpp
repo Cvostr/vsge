@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mpi/Core/Base.hpp>
+
 typedef unsigned char byte;
 typedef char sbyte;
 
@@ -19,11 +21,3 @@ typedef char* BaseString;
 
 typedef void* GraphicsApiDependent;
 typedef void* Buffer;
-
-#define MAX_INT32 0xFFFFFFF
-#define MAX_INT64 0xFFFFFFFFFFFFFFFF
-#define MAX_FLOAT (3.402823466e+38f)
-
-#define SAFE_RELEASE(x) if (x){ delete x; x = nullptr; }
-
-#define SAFE_RELEASE_ARR(x) if (x) {delete[] x; x = nullptr;}

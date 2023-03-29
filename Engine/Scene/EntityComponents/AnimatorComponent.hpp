@@ -44,9 +44,6 @@ namespace VSGE {
 
 		void OnPreRender();
 
-		void Serialize(YAML::Emitter& e);
-		void Deserialize(YAML::Node& entity);
-
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);
 		

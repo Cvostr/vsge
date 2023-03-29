@@ -4,7 +4,6 @@
 #include <AL/al.h>
 
 using namespace VSGE;
-using namespace YAML;
 
 AudioSourceComponent::AudioSourceComponent() :
 	_audio_source(0),
@@ -181,19 +180,6 @@ void AudioSourceComponent::OnDeactivate() {
 		_playing = true;
 		_paused = false;
 	}
-}
-
-void AudioSourceComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "clip" << Value << _audioResource.GetResourceName();
-	e << Key << "volume" << Value << _volume;
-	e << Key << "pitch" << Value << _pitch;
-	e << Key << "loop" << Value << _loop;
-}
-void AudioSourceComponent::Deserialize(YAML::Node& entity) {
-	_audioResource.SetResource(entity["clip"].as<std::string>());
-	_volume = entity["volume"].as<float>();
-	_pitch = entity["pitch"].as<float>();
-	_loop = entity["loop"].as<bool>();
 }
 
 void AudioSourceComponent::Serialize(ByteSerialize& serializer) {

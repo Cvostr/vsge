@@ -7,7 +7,7 @@
 
 namespace Mpi {
 
-#define THREAD_ROUTINE_FP(x) void (*x)(void*)
+#define THREAD_ROUTINE_FP(x) int (*x)(void*)
 
 #ifdef __linux__
 	typedef void* THREAD_ROUTINE_RET_TYPE;
@@ -20,7 +20,7 @@ namespace Mpi {
 	class Thread {
 	private:
 		void* mHandle;
-		uint32 mThreadId;
+		uint32_t mThreadId;
 
 		THREAD_ROUTINE_FP(mFunction);
 		void* mArg;
@@ -28,23 +28,27 @@ namespace Mpi {
 
 		bool run();
 
-		void executeThreadRoutine();
+		int executeThreadRoutine();
 	public:
 		Thread(THREAD_ROUTINE_FP(func), void* arg);
+
+		Thread(const Thread& other) = delete;
+
+		Thread(Thread&& other) noexcept;
 
 		Thread(Runnable* routine);
 
 		~Thread();
 
-		void join();
+		int join();
 		void setPriority(int priority);
-		void setName(const std::string& name);
+		int setName(const std::string& name);
 		std::string getName() const;
 
-		uint32 getThreadId();
+		uint32_t getThreadId();
 
-		static void sleep(uint32 ms);
-		static uint32 getCurrentThreadId();
+		static void sleep(uint32_t ms);
+		static uint32_t getCurrentThreadId();
 
 		static THREAD_ROUTINE_RET_TYPE threaded_func(void* data);
 	};

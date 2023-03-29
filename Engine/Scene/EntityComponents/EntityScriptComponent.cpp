@@ -131,44 +131,6 @@ void EntityScriptComponent::OnScriptChanged(int step) {
 	}
 }
 
-void EntityScriptComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "class" << Value << GetClassName();
-	//write fields
-	e << YAML::Key << "fields" << YAML::Value << YAML::BeginSeq;
-	for (auto& field : _fields) {
-		e << BeginMap;
-		e << Key << "name" << Value << field.GetDesc()->GetName();
-		e << Key << "type" << Value << (int)field.GetDesc()->GetValueType();
-		Variant* variant = &field.GetValue();
-		if (field.GetDesc()->GetValueType() != VALUE_TYPE_STRING)
-			e << Key << "value" << Value << *(MultitypeData*)variant->GetValuePtr();
-		else
-			e << Key << "value" << field.GetStringValue();
-		e << EndMap;
-	}
-
-	e << YAML::EndSeq;
-
-}
-void EntityScriptComponent::Deserialize(YAML::Node& entity) {
-	SetClassName(entity["class"].as<std::string>());
-	Node fields = entity["fields"];
-	for (const auto& field : fields) {
-		std::string name = field["name"].as<std::string>();
-		int type = field["type"].as<int>();
-		MonoScriptField* p_field = GetFieldByNameType(name, (ValueType)type);
-		if (!p_field)
-			continue;
-		if (type != VALUE_TYPE_STRING) {
-			MultitypeData data = field["value"].as<MultitypeData>();
-			p_field->GetValue().SetData((ValueType)type, data);
-		}
-		else {
-			p_field->GetStringValue() = field["value"].as<std::string>();
-		}
-	}
-}
-
 void EntityScriptComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(GetClassName());
 	serializer.Serialize((uint32)_fields.size());

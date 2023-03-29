@@ -76,25 +76,25 @@ template<typename T>
 tMat4<T> tMat4<T>::invert() const {
     float det_inv = 1.f / determinant();
 
-    T A11 = +_determinant(Values[1][1], Values[1][2], Values[1][3], Values[2][1], Values[2][2], Values[2][3], Values[3][1], Values[3][2], Values[3][3]);
-    T A12 = -_determinant(Values[1][0], Values[1][2], Values[1][3], Values[2][0], Values[2][2], Values[2][3], Values[3][0], Values[3][2], Values[3][3]);
-    T A13 = +_determinant(Values[1][0], Values[1][1], Values[1][3], Values[2][0], Values[2][1], Values[2][3], Values[3][0], Values[3][1], Values[3][3]);
-    T A14 = -_determinant(Values[1][0], Values[1][1], Values[1][2], Values[2][0], Values[2][1], Values[2][2], Values[3][0], Values[3][1], Values[3][2]);
+    T A11 = +determinant3x3(Values[1][1], Values[1][2], Values[1][3], Values[2][1], Values[2][2], Values[2][3], Values[3][1], Values[3][2], Values[3][3]);
+    T A12 = -determinant3x3(Values[1][0], Values[1][2], Values[1][3], Values[2][0], Values[2][2], Values[2][3], Values[3][0], Values[3][2], Values[3][3]);
+    T A13 = +determinant3x3(Values[1][0], Values[1][1], Values[1][3], Values[2][0], Values[2][1], Values[2][3], Values[3][0], Values[3][1], Values[3][3]);
+    T A14 = -determinant3x3(Values[1][0], Values[1][1], Values[1][2], Values[2][0], Values[2][1], Values[2][2], Values[3][0], Values[3][1], Values[3][2]);
                  
-    T A21 = -_determinant(Values[0][1], Values[0][2], Values[0][3], Values[2][1], Values[2][2], Values[2][3], Values[3][1], Values[3][2], Values[3][3]);
-    T A22 = +_determinant(Values[0][0], Values[0][2], Values[0][3], Values[2][0], Values[2][2], Values[2][3], Values[3][0], Values[3][2], Values[3][3]);
-    T A23 = -_determinant(Values[0][0], Values[0][1], Values[0][3], Values[2][0], Values[2][1], Values[2][3], Values[3][0], Values[3][1], Values[3][3]);
-    T A24 = +_determinant(Values[0][0], Values[0][1], Values[0][2], Values[2][0], Values[2][1], Values[2][2], Values[3][0], Values[3][1], Values[3][2]);
+    T A21 = -determinant3x3(Values[0][1], Values[0][2], Values[0][3], Values[2][1], Values[2][2], Values[2][3], Values[3][1], Values[3][2], Values[3][3]);
+    T A22 = +determinant3x3(Values[0][0], Values[0][2], Values[0][3], Values[2][0], Values[2][2], Values[2][3], Values[3][0], Values[3][2], Values[3][3]);
+    T A23 = -determinant3x3(Values[0][0], Values[0][1], Values[0][3], Values[2][0], Values[2][1], Values[2][3], Values[3][0], Values[3][1], Values[3][3]);
+    T A24 = +determinant3x3(Values[0][0], Values[0][1], Values[0][2], Values[2][0], Values[2][1], Values[2][2], Values[3][0], Values[3][1], Values[3][2]);
                  
-    T A31 = +_determinant(Values[0][1], Values[0][2], Values[0][3], Values[1][1], Values[1][2], Values[1][3], Values[3][1], Values[3][2], Values[3][3]);
-    T A32 = -_determinant(Values[0][0], Values[0][2], Values[0][3], Values[1][0], Values[1][2], Values[1][3], Values[3][0], Values[3][2], Values[3][3]);
-    T A33 = +_determinant(Values[0][0], Values[0][1], Values[0][3], Values[1][0], Values[1][1], Values[1][3], Values[3][0], Values[3][1], Values[3][3]);
-    T A34 = -_determinant(Values[0][0], Values[0][1], Values[0][2], Values[1][0], Values[1][1], Values[1][2], Values[3][0], Values[3][1], Values[3][2]);
+    T A31 = +determinant3x3(Values[0][1], Values[0][2], Values[0][3], Values[1][1], Values[1][2], Values[1][3], Values[3][1], Values[3][2], Values[3][3]);
+    T A32 = -determinant3x3(Values[0][0], Values[0][2], Values[0][3], Values[1][0], Values[1][2], Values[1][3], Values[3][0], Values[3][2], Values[3][3]);
+    T A33 = +determinant3x3(Values[0][0], Values[0][1], Values[0][3], Values[1][0], Values[1][1], Values[1][3], Values[3][0], Values[3][1], Values[3][3]);
+    T A34 = -determinant3x3(Values[0][0], Values[0][1], Values[0][2], Values[1][0], Values[1][1], Values[1][2], Values[3][0], Values[3][1], Values[3][2]);
                  
-    T A41 = -_determinant(Values[0][1], Values[0][2], Values[0][3], Values[1][1], Values[1][2], Values[1][3], Values[2][1], Values[2][2], Values[2][3]);
-    T A42 = +_determinant(Values[0][0], Values[0][2], Values[0][3], Values[1][0], Values[1][2], Values[1][3], Values[2][0], Values[2][2], Values[2][3]);
-    T A43 = -_determinant(Values[0][0], Values[0][1], Values[0][3], Values[1][0], Values[1][1], Values[1][3], Values[2][0], Values[2][1], Values[2][3]);
-    T A44 = +_determinant(Values[0][0], Values[0][1], Values[0][2], Values[1][0], Values[1][1], Values[1][2], Values[2][0], Values[2][1], Values[2][2]);
+    T A41 = -determinant3x3(Values[0][1], Values[0][2], Values[0][3], Values[1][1], Values[1][2], Values[1][3], Values[2][1], Values[2][2], Values[2][3]);
+    T A42 = +determinant3x3(Values[0][0], Values[0][2], Values[0][3], Values[1][0], Values[1][2], Values[1][3], Values[2][0], Values[2][2], Values[2][3]);
+    T A43 = -determinant3x3(Values[0][0], Values[0][1], Values[0][3], Values[1][0], Values[1][1], Values[1][3], Values[2][0], Values[2][1], Values[2][3]);
+    T A44 = +determinant3x3(Values[0][0], Values[0][1], Values[0][2], Values[1][0], Values[1][1], Values[1][2], Values[2][0], Values[2][1], Values[2][2]);
 
     tMat4<T> result = tMat4<T>(tVec4<T>(A11, A21, A31, A41),
         tVec4<T>(A12, A22, A32, A42),
@@ -106,13 +106,13 @@ tMat4<T> tMat4<T>::invert() const {
 
 template<typename T>
 T tMat4<T>::determinant() const {
-    T d1 = Values[0][0] * _determinant(Values[1][1], Values[1][2], Values[1][3],
+    T d1 = Values[0][0] * determinant3x3(Values[1][1], Values[1][2], Values[1][3],
         Values[2][1], Values[2][2], Values[2][3], Values[3][1], Values[3][2], Values[3][3]);
-    T d2 = Values[0][1] * _determinant(Values[1][0], Values[1][2], Values[1][3],
+    T d2 = Values[0][1] * determinant3x3(Values[1][0], Values[1][2], Values[1][3],
         Values[2][0], Values[2][2], Values[2][3], Values[3][0], Values[3][2], Values[3][3]);
-    T d3 = Values[0][2] * _determinant(Values[1][0], Values[1][1], Values[1][3],
+    T d3 = Values[0][2] * determinant3x3(Values[1][0], Values[1][1], Values[1][3],
         Values[2][0], Values[2][1], Values[2][3], Values[3][0], Values[3][1], Values[3][3]);
-    T d4 = Values[0][3] * _determinant(Values[1][0], Values[1][1], Values[1][2],
+    T d4 = Values[0][3] * determinant3x3(Values[1][0], Values[1][1], Values[1][2],
         Values[2][0], Values[2][1], Values[2][2], Values[3][0], Values[3][1], Values[3][2]);
 
     return d1 - d2 + d3 - d4;

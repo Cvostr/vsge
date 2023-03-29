@@ -3,7 +3,6 @@
 #include <Resources/ResourceTypes/TextureResource.hpp>
 #include <Core/VarTypes/Variant.hpp>
 #include "Shader.hpp"
-#include <Core/VarTypes/Guid.hpp>
 #include "VertexLayout.hpp"
 #include <vector>
 #include "GraphicsPipeline.hpp"

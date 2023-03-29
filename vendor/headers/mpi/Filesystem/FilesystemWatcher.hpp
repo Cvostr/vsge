@@ -1,19 +1,12 @@
 #pragma once
 
 #include "FilesystemWatcherEvent.hpp"
+#include <Os/PlatformHandles.hpp>
 #include <functional>
 
 namespace Mpi {
 
     class PlatformWatcherRunnable;
-
-#ifdef __linux__
-	typedef int FILE_WATCHER_HANDLE;
-#endif
-
-#ifdef _WIN32
-	typedef void* FILE_WATCHER_HANDLE;
-#endif
 
     class FilesystemWatcher {
     private:
@@ -24,6 +17,8 @@ namespace Mpi {
         bool mEnabled;
 
         bool mWatchSubdirs;
+
+        bool mDecomposeRename;
 
         FILE_WATCHER_HANDLE getHandle() const;
 
@@ -40,11 +35,17 @@ namespace Mpi {
     public:
         FilesystemWatcher(const File& directory, bool watchSubdirs = false);
 
+        FilesystemWatcher(const FilesystemWatcher& other) = delete;
+
         ~FilesystemWatcher();
 
         void setEnabled(bool enabled);
 
         bool isEnabled() const;
+
+        void setDecomposeRename(bool enabled);
+
+        bool isDecomposeRenameEnabled() const;
 
         bool isWatchingSubdirs() const;
 

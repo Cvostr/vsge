@@ -14,7 +14,7 @@ Application::Application(ApplicationCreateInfo descr) :
 	_window(new Window()),
 	_renderer(nullptr),
 	_description(descr),
-	_queuedEventsMutex(new Mutex())
+	_queuedEventsMutex(new Mpi::Mutex())
 {
 	_this = this;
 }
@@ -26,15 +26,15 @@ Application::~Application() {
 
 void Application::OnUpdate() {
 	TimePerf::Get()->Tick();
-	_queuedEventsMutex->Lock();
+	_queuedEventsMutex->lock();
 	for (uint32 event_i = 0; event_i < _queuedEvents.size(); event_i ++) {
 		IEvent* event_ptr = _queuedEvents[0];
 		OnEvent(*(event_ptr));
 		auto iterator = std::remove(_queuedEvents.begin(), _queuedEvents.end(), event_ptr);
-		_queuedEvents.pop_back();
+		_queuedEvents.erase(iterator, _queuedEvents.end());
 		delete event_ptr;
 	}
-	_queuedEventsMutex->Release();
+	_queuedEventsMutex->unlock();
 
 	for (auto Layer : _layers) {
 		Layer->OnUpdate();
@@ -55,9 +55,9 @@ void Application::OnEvent(const IEvent& event) {
 }
 
 void Application::QueueEvent(const IEvent* event) {
-	_queuedEventsMutex->Lock();
+	_queuedEventsMutex->lock();
 	_queuedEvents.push_back((IEvent*)event);
-	_queuedEventsMutex->Release();
+	_queuedEventsMutex->unlock();
 }
 
 void Application::Run() {
@@ -89,7 +89,7 @@ void Application::AddLayer(IApplicationLayer* layer) {
 void Application::RemoveLayer(IApplicationLayer* layer) {
 	layer->OnDetach();
 	tApplicationLayerList::iterator it = std::remove(_layers.begin(), _layers.end(), layer);
-	_layers.pop_back();
+	_layers.erase(it, _layers.end());
 	delete layer;
 }
 

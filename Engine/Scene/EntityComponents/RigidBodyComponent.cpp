@@ -9,7 +9,6 @@
 #include "../Entity.hpp"
 #include <Scene/Scene.hpp>
 
-using namespace YAML;
 using namespace VSGE;
 
 RigidBodyComponent::RigidBodyComponent():
@@ -36,16 +35,6 @@ void RigidBodyComponent::SetMass(float mass) {
 			_rigidBody->setMassProps(mass, _rigidBody->getLocalInertia());
 		}
 	}
-}
-
-void RigidBodyComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "mass" << Value << _mass;
-	e << Key << "friction" << Value << _friction;
-}
-
-void RigidBodyComponent::Deserialize(YAML::Node& entity) {
-	_mass = entity["mass"].as<float>();
-	_friction = entity["friction"].as<float>();
 }
 
 void RigidBodyComponent::Serialize(ByteSerialize& serializer) {

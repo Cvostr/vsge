@@ -5,7 +5,7 @@ using namespace VSGEditor;
 using namespace VSGE;
 
 TerrainThreadedEditor::TerrainThreadedEditor() {
-	_mutex = new Mutex;
+	_mutex = new Mpi::Mutex;
 	_terrain = nullptr;
 }
 TerrainThreadedEditor::~TerrainThreadedEditor() {
@@ -16,21 +16,21 @@ void TerrainThreadedEditor::SetTerrain(VSGE::TerrainComponent* terrain) {
 	_terrain = terrain;
 }
 void TerrainThreadedEditor::QueueRay(const VSGE::Ray& ray) {
-	_mutex->Lock();
+	_mutex->lock();
 	_edit_rays.push(ray);
-	_mutex->Release();
+	_mutex->unlock();
 }
 
 void TerrainThreadedEditor::THRFunc() {
     while (_running) {
 
         if (_edit_rays.size() > 0) {
-            _mutex->Lock();
+            _mutex->lock();
             //obtain next ray
             Ray ray = _edit_rays.front();
             _edit_rays.pop();
             //unlock thread
-            _mutex->Release();
+            _mutex->unlock();
             //perform ray editing
 			if(_terrain)
 				ProcessRay(ray);

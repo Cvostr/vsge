@@ -9,6 +9,7 @@ include_directories("./" REQUIRED)
 include_directories(../Engine REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("../vendor/headers/" REQUIRED)
+include_directories("../vendor/headers/mpi" REQUIRED)
 
 set(SRC_FILES 
                 main.cpp
@@ -44,6 +45,7 @@ target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletSoftBody
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/LinearMath.lib)
 #yaml
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/yaml/yaml-cpp-rel.lib)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mpi/mpi.lib)
 ENDIF()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -54,6 +56,7 @@ target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletSoftBody
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
 #yaml
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/yaml/yaml-cpp-dbg.lib)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mpi/mpid.lib)
 ENDIF()
 
 #Win32 libs

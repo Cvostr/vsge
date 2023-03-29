@@ -323,7 +323,8 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf) {
 			uint32 offset2 = 0;
 
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[vertexDescriptorID], 2, offsets1);
-			cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+			if (vmat)
+				cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _gbuffer->GetAnimationsDescriptorSet(), 1, &offset2);
 			cmdbuf->BindDescriptorSets(*ppl, 3, 1, _deferred_descriptor, 1, offsets1);
 			cmdbuf->BindMesh(*mesh);

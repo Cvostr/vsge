@@ -6,6 +6,7 @@
 #include <fstream>
 #include <filesystem>
 #include <Misc/DialogWindows.hpp>
+#include <yaml-cpp/yaml.h>
 
 using namespace VSGEditor;
 using namespace YAML;

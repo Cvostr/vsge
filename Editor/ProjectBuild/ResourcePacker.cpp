@@ -63,19 +63,19 @@ void ResourcePacker::Write(){
         byte* file_data = nullptr;
         uint32 file_size = 0;
         bool result = false;
-        if(resource->GetResourceType() != RESOURCE_TYPE_SCENE)
+       // if(resource->GetResourceType() != RESOURCE_TYPE_SCENE)
             result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
-        else {
+        /*else {
             VSGE::Scene* temp_scene = new Scene;
             temp_scene->NewScene();
 
             SceneSerializer serializer;
             serializer.SetScene(temp_scene);
-            serializer.Deserialize(resource->GetDataDescription().file_path);
+            serializer.DeserializeBinary(resource->GetDataDescription().file_path);
             serializer.SerializeBinary(&file_data, file_size);
             delete temp_scene;
             result = true;
-        }
+        }*/
 
         if (result) {
             CheckForBundleOverflow();

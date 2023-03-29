@@ -6,7 +6,6 @@
 #include <fstream>
 
 #include <Core/Threading/Thread.hpp>
-#include <Core/Threading/Mutex.hpp>
 
 namespace VSGEditor {
 

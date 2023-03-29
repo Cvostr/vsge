@@ -5,6 +5,7 @@
 #include <Engine/Application.hpp>
 #include <fstream>
 #include <Base/ImguiHelper.hpp>
+#include <yaml-cpp/yaml.h>
 
 using namespace VSGE;
 using namespace VSGEditor;

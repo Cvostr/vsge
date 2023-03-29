@@ -5,7 +5,6 @@
 #include <Math/MathBase.hpp>
 
 using namespace VSGE;
-using namespace YAML;
 
 Camera::Camera() : 
 			_aspectRatio(1280.f / 720.f),
@@ -169,22 +168,6 @@ void Camera::OnPreRender() {
 
 PostEffectsParams& Camera::GetPostEffectParams() {
 	return _post_effects_params;
-}
-
-void Camera::Serialize(YAML::Emitter& e) {
-	e << Key << "fov" << Value << _fov;
-	e << Key << "znear" << Value << _nearPlane;
-	e << Key << "zfar" << Value << _farPlane;
-	e << Key << "view_mask" << Value << _viewMask;
-	e << Key << "target_texture" << Value << _target_texture.GetResourceName();
-}
-
-void Camera::Deserialize(YAML::Node& entity) {
-	_fov = entity["fov"].as<float>();
-	_nearPlane = entity["znear"].as<float>();
-	_farPlane = entity["zfar"].as<float>();
-	_viewMask = entity["view_mask"].as<ViewMask>();
-	_target_texture.SetResource(entity["target_texture"].as<std::string>());
 }
 
 void Camera::Serialize(ByteSerialize& serializer) {

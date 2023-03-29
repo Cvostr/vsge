@@ -1,6 +1,8 @@
 #include "SceneSerialization.hpp"
 #include <string>
+#include <fstream>
 #include <Core/Memory.hpp>
+#include <Core/FileLoader.hpp>
 
 using namespace VSGE;
 
@@ -9,6 +11,10 @@ void SceneSerializer::SerializeBinary(const std::string& path) {
 	uint32 size = 0;
 
 	SerializeBinary(&data, size);
+
+	std::ofstream fout(path, std::ios_base::binary);
+	fout.write((const char*)data, size);
+	fout.close();
 }
 
 void SceneSerializer::SerializeBinary(byte** data, uint32& size) {
@@ -72,7 +78,20 @@ void SceneSerializer::SerializeEntityComponentBinary(IEntityComponent* component
 
 //DESERIALIZE
 
-bool SceneSerializer::DeserializeBinary(byte* data, uint32 size) {
+bool SceneSerializer::DeserializeBinary(const std::string& path)
+{
+	byte* file_data = nullptr;
+	uint32 file_size = 0;
+	bool result = LoadFile(path, (char**)&file_data, &file_size);
+
+	if (result)
+		return DeserializeBinary(file_data, file_size);
+
+	return false;
+}
+
+bool SceneSerializer::DeserializeBinary(byte* data, uint32 size) 
+{
 	ByteSolver solver(data, size);
 
 	std::string header = solver.ReadNextString();

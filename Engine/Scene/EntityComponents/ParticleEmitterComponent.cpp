@@ -29,68 +29,6 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 	_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 }
 
-void ParticleEmitterComponent::Serialize(YAML::Emitter& e) {
-	e << Key << "shape" << Value << _shape;
-	e << Key << "duration" << Value << _duration;
-	e << Key << "loop" << Value << _looping;
-	e << Key << "prewarm" << Value << _prewarm;
-	e << Key << "lifetime" << Value << _lifetime;
-	e << Key << "max_particles" << Value << _maxParticles;
-	e << Key << "emrate_min" << Value << _emissionRate.Min;
-	e << Key << "emrate_max" << Value << _emissionRate.Max;
-
-	e << Key << "direction_min" << Value << _direction.Min;
-	e << Key << "direction_max" << Value << _direction.Max;
-
-	e << Key << "size_min" << Value << _size.OriginalValue.Min;
-	e << Key << "size_max" << Value << _size.OriginalValue.Max;
-	e << Key << "size_add" << Value << _size.Add;
-	e << Key << "size_mul" << Value << _size.Mul;
-
-	e << Key << "velocity_min" << Value << _velocity.Min;
-	e << Key << "velocity_max" << Value << _velocity.Max;
-
-	e << Key << "constant_force" << Value << _constantForce;
-	e << Key << "damping_force" << Value << _dampingForce;
-
-	e << Key << "rotation_min" << Value << _rotation.Min;
-	e << Key << "rotation_max" << Value << _rotation.Max;
-
-	e << Key << "rotation_speed_min" << Value << _rotationSpeed.Min;
-	e << Key << "rotation_speed_max" << Value << _rotationSpeed.Max;
-}
-void ParticleEmitterComponent::Deserialize(YAML::Node& entity) {
-	_shape = (ParticleEmitterShape)entity["shape"].as<int>();
-	_duration = entity["duration"].as<float>();
-	_looping = entity["loop"].as<bool>();
-	_prewarm = entity["prewarm"].as<bool>();
-	_lifetime = entity["lifetime"].as<float>();
-	_maxParticles = entity["max_particles"].as<uint32>();
-
-	_emissionRate.Min = entity["emrate_min"].as<int>();
-	_emissionRate.Max = entity["emrate_max"].as<int>();
-
-	_direction.Min = entity["direction_min"].as<Vec3>();
-	_direction.Max = entity["direction_max"].as<Vec3>();
-
-	_size.OriginalValue.Min = entity["size_min"].as<Vec2>();
-	_size.OriginalValue.Max = entity["size_max"].as<Vec2>();
-	_size.Add = entity["size_add"].as<float>();
-	_size.Mul = entity["size_mul"].as<float>();
-
-	_velocity.Min = entity["velocity_min"].as<float>();
-	_velocity.Max = entity["velocity_max"].as<float>();
-
-	_constantForce = entity["constant_force"].as<Vec3>();
-	_dampingForce = entity["damping_force"].as<float>();
-
-	_rotation.Min = entity["rotation_min"].as<float>();
-	_rotation.Max = entity["rotation_max"].as<float>();
-
-	_rotationSpeed.Min = entity["rotation_speed_min"].as<float>();
-	_rotationSpeed.Max = entity["rotation_speed_max"].as<float>();
-}
-
 void ParticleEmitterComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_shape);
 	serializer.Serialize(_duration);

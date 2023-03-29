@@ -1,15 +1,15 @@
 #include "MonoScriptCompile.hpp"
-#include <System/Shell.hpp>
 #include "MonoScriptStorage.hpp"
 #include <Core/Logger.hpp>
 #include <Engine/Application.hpp>
+#include <mpi/Os/Process.hpp>
 
 using namespace VSGE;
 using namespace VSGEditor;
 
 MonoScriptCompiler::MonoScriptCompiler() :
-	_mutex(new Mutex),
-	_state(COMPILATION_STATE_DONE),
+    _mutex(new Mpi::Mutex),
+    _state(COMPILATION_STATE_DONE),
     _compilation_error(false),
     _dll_output_path("mono_temp.dll"),
     _api_dll_path("api.dll")
@@ -20,22 +20,39 @@ MonoScriptCompiler::~MonoScriptCompiler() {
     SAFE_RELEASE(_mutex)
 }
 
-std::string MonoScriptCompiler::GetCompilationCmd() {
+std::string MonoScriptCompiler::ExecuteCompilation() {
     MonoScriptStorage* storage = MonoScriptStorage::Get();
     std::string input;
     for (auto& script : storage->GetScripts()) {
         input += script->GetFilePath() + " ";
     }
-    if(input.size() > 0)
+    if (input.size() > 0)
         input.pop_back(); //remove space
 
-    std::string result; 
-    #ifdef _WIN32
-        result = "..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
-    #endif
-    #ifdef __linux__
-        result = "sh ../MonoScripting/MonoBinaries/bin/csc.sh -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input;
-    #endif
+    Mpi::ProcessCreateInfo compileProcCreateInfo = {};
+    compileProcCreateInfo.flags = PROCESS_COMBINE_STDERR | PROCESS_REDIRECT_STREAMS;
+#ifdef _WIN32
+    compileProcCreateInfo.executable = "cmd.exe";
+    compileProcCreateInfo.args.push_back("/C ..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input);
+#endif
+#ifdef __linux__
+    compileProcCreateInfo.executable = "sh";
+    compileProcCreateInfo.args.push_back("../MonoScripting/MonoBinaries/bin/csc.sh -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input);
+#endif
+
+    std::string result;
+    Mpi::Process compileProcess = Mpi::Process::createProcess(compileProcCreateInfo);
+    Mpi::InputStream* processOut = compileProcess.getStdout();
+    char buff[100];
+    int len = 0;
+    while ((len = processOut->read(buff, 100)) > 0) {
+        for (int i = 0; i < len; i++) {
+            result.push_back(buff[i]);
+        }
+    }
+
+    compileProcess.waitFor();
+
     return result;
 }
 
@@ -52,9 +69,8 @@ void MonoScriptCompiler::THRFunc() {
 
         if (_state == COMPILATION_STATE_QUEUED) {
             _state = COMPILATION_STATE_ON_PROCESS;
-            //Obtain pointer to LoadRequest
-            std::string cmd = GetCompilationCmd();
-            _output = ExecuteShellCommand(cmd);
+            //Выполнить компиляцию
+            _output = ExecuteCompilation();
             //disable logger output to stdout
             Logger::GetOpLogger().SetPrintToStdout(false);
             //Send logs with each error
@@ -77,12 +93,12 @@ void MonoScriptCompiler::THRFunc() {
 }
 
 void MonoScriptCompiler::QueueCompilation() {
-	_mutex->Lock();
+    _mutex->lock();
     if (_state == COMPILATION_STATE_DONE) {
         _state = COMPILATION_STATE_QUEUED;
         _compilation_error = false;
     }
-	_mutex->Release();
+    _mutex->unlock();
 
     Application::Get()->OnEvent(ScriptCompilationBeginEvent());
 }

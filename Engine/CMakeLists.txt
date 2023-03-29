@@ -17,11 +17,8 @@ set(SRC_FILES
 				Core/Logger.cpp
 				Core/Random.cpp
 				Core/Time.cpp
-				Core/Memory.cpp
 				Core/YamlHelper.cpp
-				Core/Threading/Mutex.cpp
 				Core/Threading/Thread.cpp
-				Core/VarTypes/Guid.cpp
 				Core/VarTypes/String.cpp
 				Core/VarTypes/Variant.cpp
 				Core/VarTypes/StringHash.cpp
@@ -115,7 +112,6 @@ set(SRC_FILES
 				Scene/Scene.cpp
 				Scene/SceneEnvironment.cpp
 				Scene/SceneLayer.cpp
-				Scene/SceneSerialization.cpp
 				Scene/SceneSerializationBinary.cpp
 				Scene/EntityComponents/AnimatorComponent.cpp
 				Scene/EntityComponents/AudioListenerComponent.cpp
@@ -163,7 +159,6 @@ set(SRC_FILES
 				UI/Widgets/ImageView.cpp
 				UI/Widgets/TextView.cpp
 				System/PlatformSpecific.cpp
-				System/Shell.cpp
 				)
 
 set(HEADER1_FILES	Audio/AudioBuffer.hpp
@@ -198,14 +193,40 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/VertexLayout.hpp
 
 					Graphics/Vulkan/VulkanQueue.hpp
+					Graphics/Vulkan/VulkanBuffer.hpp
+					Graphics/Vulkan/VulkanCommandBuffer.hpp
+					Graphics/Vulkan/VulkanComputePipeline.hpp
+					Graphics/Vulkan/VulkanDescriptors.hpp
+					Graphics/Vulkan/VulkanDevice.hpp
+					Graphics/Vulkan/VulkanFramebuffer.hpp
+					Graphics/Vulkan/VulkanInstance.hpp
+					Graphics/Vulkan/VulkanMA.hpp
+					Graphics/Vulkan/VulkanMesh.hpp
+					Graphics/Vulkan/VulkanPipeline.hpp
+					Graphics/Vulkan/VulkanPipelineLayout.hpp
+					Graphics/Vulkan/VulkanPresenter.hpp
+					Graphics/Vulkan/VulkanRAPI.hpp
+					Graphics/Vulkan/VulkanRenderpass.hpp
+					Graphics/Vulkan/VulkanSampler.hpp
+					Graphics/Vulkan/VulkanShader.hpp
+					Graphics/Vulkan/VulkanSwapchain.hpp
+					Graphics/Vulkan/VulkanTexture.hpp
+					Graphics/Vulkan/VulkanSynchronization.hpp
 	
 					Core/VarTypes/Base.hpp
 					Core/VarTypes/String.hpp
+					Core/VarTypes/StringHash.hpp
+					Core/VarTypes/Variant.hpp
+
+					Scene/Scene.hpp
+					Scene/Entity.hpp
+					Scene/IEntityComponent.hpp
+					Scene/Camera.hpp
 					
 					)
 file(GLOB_RECURSE HEADER_FILES "*.hpp")
 
-add_library (Engine ${SRC_FILES} ${HEADER1_FILES} ${HEADER_FILES})
+add_library (Engine ${SRC_FILES} ${HEADER1_FILES})
 
 add_dependencies(Engine shaders)
 add_dependencies(Engine vsge_api)
