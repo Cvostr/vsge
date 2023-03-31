@@ -23,6 +23,7 @@ set(SRC_FILES
 				Engine/Application.cpp
 				Engine/Window.cpp
 				Graphics/Animation.cpp
+				Graphics/AnimationChannel.cpp
 				Graphics/Bone.cpp
 				Graphics/Fonts.cpp
 				Graphics/GraphicsCreation.cpp
@@ -168,6 +169,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Engine/WindowEvent.hpp
 
 					Graphics/Animation.hpp
+					Graphics/AnimationChannel.hpp
 					Graphics/Bone.hpp
 					Graphics/Fonts.hpp
 					Graphics/Framebuffer.hpp
@@ -216,13 +218,17 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Core/VarTypes/StringHash.hpp
 					Core/VarTypes/Variant.hpp
 
+					Resources/Resource.hpp
+					Resources/ResourceCache.hpp
+					Resources/ResourceLayer.hpp
+					Resources/AsyncLoader.hpp
+
 					Scene/Scene.hpp
 					Scene/Entity.hpp
 					Scene/IEntityComponent.hpp
 					Scene/Camera.hpp
 					
 					)
-file(GLOB_RECURSE HEADER_FILES "*.hpp")
 
 add_library (Engine ${SRC_FILES} ${HEADER1_FILES})
 

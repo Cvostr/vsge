@@ -3,7 +3,7 @@
 using namespace VSGE;
 
 TextureResource::TextureResource() {
-	_texture = CreateTexture();
+	_texture = Texture::NewTexture();
 }
 
 TextureResource::~TextureResource() {

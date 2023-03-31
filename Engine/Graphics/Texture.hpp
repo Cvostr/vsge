@@ -26,9 +26,11 @@ namespace VSGE {
         uint32 _flags;
 
         TextureFormat _format;
-    public:
 
         Texture();
+    public:
+
+        static Texture* NewTexture();
 
         virtual ~Texture();
 
@@ -105,6 +107,4 @@ namespace VSGE {
         /// <param name="height">- new height of texture</param>
         virtual void Resize(uint32 width, uint32 height) = 0;
     };
-
-    Texture* CreateTexture();
 }

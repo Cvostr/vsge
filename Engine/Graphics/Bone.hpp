@@ -9,19 +9,19 @@ namespace VSGE {
 
     class Bone {
     private:
-        std::string _boneName;
-        Mat4 _offsetMatrix;
+        std::string m_boneName;
+        Mat4 m_offsetMatrix;
 
-        uint32 _verticesAffected;
+        uint32 m_verticesAffected;
     public:
 
-        uint32 GetAffectedVerticesCount();
+        uint32 GetAffectedVerticesCount() const;
 
         void SetOffsetMatrix(const Mat4& offsetMatrix);
 
-        const Mat4& GetOffsetMatrix();
+        const Mat4& GetOffsetMatrix() const;
 
-        const std::string GetName();
+        const std::string GetName() const;
 
         Bone();
 

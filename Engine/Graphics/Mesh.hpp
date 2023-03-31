@@ -15,15 +15,19 @@ namespace VSGE {
 	class Mesh : public IGpuObject {
 	protected:
 		std::vector<VertexBufferData> _vertexBuffers;
-		uint32* _indexArray;
+		uint32* m_indexArray;
 		Vec3* _positions_array; //array of vertex positions, useful for physics
 
 		AABB _meshBoundingBox; //Bounding box of mesh
-		tBonesList _bones; //Bones, attached to this mesh
+		tBonesList m_bones; //Bones, attached to this mesh
 
-		uint32 _verticesCount;
-		uint32 _indicesCount;
+		uint32 m_verticesCount;
+		uint32 m_indicesCount;
+
+		Mesh();
 	public:
+
+		static Mesh* NewMesh();
 		/// <summary>
 		/// Set main vertex buffer and calculate AABB
 		/// </summary>
@@ -60,11 +64,11 @@ namespace VSGE {
 		/// <summary>
 		/// Get count of mesh vertices
 		/// </summary>
-		uint32 GetVerticesCount() { return _verticesCount; }
+		uint32 GetVerticesCount() const;
 		/// <summary>
 		/// Get count of mesh indices
 		/// </summary>
-		uint32 GetIndexCount() { return _indicesCount; }
+		uint32 GetIndexCount() const;
 		/// <summary>
 		/// Get count of mesh indices
 		/// </summary>
@@ -80,21 +84,16 @@ namespace VSGE {
 		/// Get AABB of mesh
 		/// </summary>
 		/// <returns></returns>
-		const AABB& GetBoundingBox() { return _meshBoundingBox; }
+		const AABB& GetBoundingBox() const;
 
 		uint32 GetTrianglesCount();
 
 		void GetTriangle(uint32 triangle_index, Vec3& v0, Vec3& v1, Vec3& v2);
 
-		tBonesList& GetBones() {
-			return _bones;
-		}
+		const tBonesList& GetBones() const;
 
 		void SetBones(Bone* bones, uint32 size);
 
-		Mesh();
-		~Mesh();
+		virtual ~Mesh();
 	};
-
-	Mesh* CreateMesh();
 }

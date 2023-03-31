@@ -3,6 +3,7 @@
 #include <Core/Logger.hpp>
 #include "ResourceLayer.hpp"
 #include <Engine/Application.hpp>
+#include <mpi/Filesystem/File.hpp>
 
 using namespace VSGE;
 
@@ -23,19 +24,15 @@ void AsyncLoader::LoadResource(Resource* resource) {
     DataDescription desc = resource->GetDataDescription();
     std::string file_path = desc.file_path;
     //Check, if size explicitly specified
-    if (desc.size > 0) {
-        //if size explicitly specified
-        stream.open(file_path, std::ofstream::binary);
-        stream.seekg(static_cast<long>(desc.offset));
-    }
-    else {
-        //if size not explicitly specified, then try to load file
-        //and get file size
-        stream.open(file_path, std::ofstream::binary | std::ofstream::ate);
-        desc.size = static_cast<uint32>(stream.tellg());
+    if (desc.size == 0) {
+        //Если размер не указан (равен 0)
+        Mpi::File file(file_path);
+        desc.size = static_cast<uint32>(file.getFileSize());
         resource->SetDataDescription(desc);
-        stream.seekg(0);
     }
+
+    stream.open(file_path, std::ofstream::binary);
+    stream.seekg(static_cast<long>(desc.offset));
 
     if (!stream.is_open()) {
         resource->SetState(RESOURCE_STATE_LOADING_FAILED);

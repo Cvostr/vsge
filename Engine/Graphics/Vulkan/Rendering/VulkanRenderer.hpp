@@ -79,6 +79,8 @@ namespace VSGE {
 		uint32 _writtenParticleTransforms;
 
 		void StoreWorldObjects(Camera* cam);
+
+		void FillCommandBuffers();
 	public:
 
 		VulkanRenderer();

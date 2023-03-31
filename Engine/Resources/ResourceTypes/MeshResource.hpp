@@ -28,7 +28,7 @@ namespace VSGE {
 	public:
 
 		MeshResource() {
-			mesh = CreateMesh();
+			mesh = Mesh::NewMesh();
 		}
 
 		~MeshResource() {

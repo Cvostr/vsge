@@ -382,7 +382,7 @@ void TerrainComponent::UpdateVegetables() {
 
 void TerrainComponent::UpdateGraphicsMesh() {
 	if (!_heightmap_mesh) {
-		_heightmap_mesh = CreateMesh();
+		_heightmap_mesh = Mesh::NewMesh();
 	}
 	_heightmap_mesh->Destroy();
 
@@ -394,7 +394,7 @@ void TerrainComponent::UpdateGraphicsTextureMasks() {
 	//Update texture masks
 	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 	if (!_texture_masks) {
-		_texture_masks = CreateTexture();
+		_texture_masks = Texture::NewTexture();
 		_texture_masks->Create(_width, _length, FORMAT_RGBA, layers_count, 1);
 	}
 

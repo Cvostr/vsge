@@ -348,11 +348,13 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 				//Get root transform
 				rootNodeTransform = rootNode->GetLocalTransform().invert();
 				for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
-					Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
-
+					//Берем указатель на очередную кость
+					const Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
+					//Находим дочерний объект с именем кости
 					Entity* node = rootNode->GetChildEntityWithLabel(bone->GetName());
-
+					//Проверяем, найден ли объект
 					if (node != nullptr) {
+						//Объект найден
 						//Calculate result matrix
 						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * rootNodeTransform;
 						//Send skinned matrix to skinning uniform buffer
@@ -425,17 +427,24 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 	for (uint32 terrain_i = 0; terrain_i < _terrains.size(); terrain_i++) {
 		_terrain_renderer->ProcessTerrain(_terrains[terrain_i]);
 	}
-	//-----------------------------
 
+	//Обновляем данные буферов интерфейса
 	_ui_renderer->FillBuffers();
+}
 
+void VulkanRenderer::FillCommandBuffers()
+{
+	//Заполняем основной буфер команд отрисовки мира (тени + render targets)
 	_render_targets_cmdbuf->Begin();
 	_shadowmapper->ProcessShadowCasters(_render_targets_cmdbuf);
 	for (auto& render_target : _render_targets) {
 		render_target->RecordCommandBuffers(_render_targets_cmdbuf);
 	}
+
+	//Заполняем буфер команд отрисовки интерфейса
 	_ui_renderer->RecordCommandBuffer(_render_targets_cmdbuf);
 
+	//Заполняем буфер команд совмещения мира и интерфейса
 	_final_pass->RecordCmdbuffer(_render_targets_cmdbuf);
 
 	_render_targets_cmdbuf->End();
@@ -443,7 +452,8 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 	_ibl_map->RecordCmdBufs();
 }
 
-void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
+void VulkanRenderer::DrawScene(VSGE::Camera* cam) 
+{
 	//TEMPORARY
 	//if(mScene)
 	//	mScene->UpdateSceneTree();
@@ -506,7 +516,11 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam) {
 		}
 	}
 
+	//Обновить состояния объектов, заполнить массивы трансформаций, обновить дескрипторы
 	StoreWorldObjects(main_camera);
+
+	//Заполнить буферы команд
+	FillCommandBuffers();
 
 	VulkanGraphicsSubmit(*_render_targets_cmdbuf, *mBeginSemaphore, *_ibl_map->GetBeginSemaphore());
 

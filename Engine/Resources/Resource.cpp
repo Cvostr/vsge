@@ -4,12 +4,37 @@
 
 using namespace VSGE;
 
+const Guid& Resource::getId() const
+{
+	return m_id;
+}
+
+const std::string& Resource::GetName() const 
+{
+	return m_name; 
+}
+
+void Resource::SetName(const std::string& name)
+{ 
+	m_name = name;
+}
+
+const ResourceState& Resource::GetState() const
+{ 
+	return m_resourceState; 
+}
+
+void Resource::SetState(const ResourceState& State)
+{ 
+	m_resourceState = State;
+}
+
 Resource* Resource::GetParent() {
-	return _parent;
+	return m_parent;
 }
 
 void Resource::SetParent(Resource* resource) {
-	_parent = resource;
+	m_parent = resource;
 }
 
 void Resource::SetDataDescription(const DataDescription& desc) {

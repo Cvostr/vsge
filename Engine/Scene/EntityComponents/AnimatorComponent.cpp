@@ -57,9 +57,9 @@ void AnimatorComponent::UpdateNodeTransform(Entity* child) {
         //Get channel with entity name
         AnimationChannel* cha = animation->GetChannelByEntityName(child->GetName());
         if (cha) {
-            child->SetPosition(cha->getPositionInterpolated(animTime));
-            child->SetScale(cha->getScaleInterpolated(animTime));
-            child->SetRotation(cha->getRotationInterpolated(animTime).Conjugate());
+            child->SetPosition(cha->getPositionInterpolated(animTime, animation->GetTPS()));
+            child->SetScale(cha->getScaleInterpolated(animTime, animation->GetTPS()));
+            child->SetRotation(cha->getRotationInterpolated(animTime, animation->GetTPS()).Conjugate());
         }
         index++;
     }

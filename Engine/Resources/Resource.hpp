@@ -3,6 +3,7 @@
 #include <Core/VarTypes/Base.hpp>
 #include <string>
 #include <vector>
+#include <mpi/Core/Guid.hpp>
 
 namespace VSGE {
 	
@@ -45,47 +46,51 @@ namespace VSGE {
 
 	class Resource {
 	protected:
-		ResourceState _resourceState;
+		ResourceState m_resourceState;
 		uint32 _memoryUse;
 		uint64 _lastUseTime;
-		std::string _name;
+		std::string m_name;
+		Guid m_id;
 
 		byte* _loadedData;
 		DataDescription _description;
 
-		Resource* _parent; //Resource, that created this resource
+		Resource* m_parent; //Resource, that created this resource
 		std::vector<Resource*> _subresources; //Resources, that created from this resource
 	public:
+
+		const Guid& getId() const;
+
 		/// <summary>
 		/// Get name of this resource
 		/// </summary>
 		/// <returns>resource name</returns>
-		const std::string& GetName() { return _name; }
+		const std::string& GetName() const;
 		/// <summary>
 		/// Set name of this resource
 		/// </summary>
 		/// <param name="name">new resource name</param>
-		void SetName(const std::string& name) { _name = name; }
+		void SetName(const std::string& name);
 		/// <summary>
 		/// get current loading state of resource
 		/// </summary>
 		/// <returns>state of resource</returns>
-		const ResourceState& GetState() { return _resourceState; }
+		const ResourceState& GetState() const;
 		/// <summary>
 		/// Set loading state of resource
 		/// </summary>
 		/// <param name="State"></param>
-		void SetState(const ResourceState& State) { _resourceState = State; }
+		void SetState(const ResourceState& State);
 		/// <summary>
 		/// Is resource fully unloaded
 		/// </summary>
 		/// <returns></returns>
-		bool IsUnloaded() { return _resourceState == RESOURCE_STATE_UNLOADED; }
+		bool IsUnloaded() { return m_resourceState == RESOURCE_STATE_UNLOADED; }
 		/// <summary>
 		/// Is resource loaded and ready to use
 		/// </summary>
 		/// <returns></returns>
-		bool IsReady() { return _resourceState == RESOURCE_STATE_READY; }
+		bool IsReady() { return m_resourceState == RESOURCE_STATE_READY; }
 		/// <summary>
 		/// Get size of memory, allocated for this resource
 		/// </summary>
@@ -161,8 +166,8 @@ namespace VSGE {
 		virtual ResourceType GetResourceType() const = 0;
 
 		Resource() :
-			_parent(nullptr),
-			_resourceState(RESOURCE_STATE_UNLOADED),
+			m_parent(nullptr),
+			m_resourceState(RESOURCE_STATE_UNLOADED),
 			_memoryUse(0),
 			_lastUseTime(0),
 			_loadedData(nullptr)

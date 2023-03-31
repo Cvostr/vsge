@@ -2,35 +2,38 @@
 
 using namespace VSGE;
 
-uint32 Bone::GetAffectedVerticesCount() { 
-    return _verticesAffected; 
+uint32 Bone::GetAffectedVerticesCount() const
+{ 
+    return m_verticesAffected;
 }
 
 void Bone::SetOffsetMatrix(const Mat4& offsetMatrix) {
-    _offsetMatrix = offsetMatrix;
+    m_offsetMatrix = offsetMatrix;
 }
 
-const Mat4& Bone::GetOffsetMatrix() {
-    return _offsetMatrix; 
+const Mat4& Bone::GetOffsetMatrix() const
+{
+    return m_offsetMatrix;
 }
 
-const std::string Bone::GetName() { 
-    return _boneName; 
+const std::string Bone::GetName() const
+{ 
+    return m_boneName; 
 }
 
 Bone::Bone() :
-    _boneName(""),
-    _verticesAffected(0)
+    m_boneName(""),
+    m_verticesAffected(0)
 {
 
 }
 
 Bone::Bone(const std::string& name, uint32 vertices) :
-    _boneName(name),
-    _verticesAffected(vertices)
+    m_boneName(name),
+    m_verticesAffected(vertices)
 {}
 
 Bone::Bone(const std::string& name) :
-    _boneName(name),
-    _verticesAffected(0)
+    m_boneName(name),
+    m_verticesAffected(0)
 {}

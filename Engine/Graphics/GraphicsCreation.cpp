@@ -11,7 +11,8 @@
 
 using namespace VSGE;
 
-Texture* VSGE::CreateTexture() {
+Texture* Texture::NewTexture() 
+{
 	GraphicsApi api = Application::Get()->GetGraphicsApi();
 
 	if (api == GRAPHICS_API_VULKAN)
@@ -20,7 +21,7 @@ Texture* VSGE::CreateTexture() {
 	return nullptr;
 }
 
-Mesh* VSGE::CreateMesh() {
+Mesh* Mesh::NewMesh() {
 	GraphicsApi api = Application::Get()->GetGraphicsApi();
 
 	if (api == GRAPHICS_API_VULKAN)

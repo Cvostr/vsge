@@ -44,7 +44,6 @@ void ImportedAnimationFile::loadFromBuffer(byte* buffer, uint32 size) {
             //Allocate animation channel
             AnimationChannel* chan = &m_animation->GetChannels()[ch_i++];
             chan->SetBoneName(solver.ReadNextString());
-            chan->anim_ptr = m_animation;
 
             chan->SetPositionKeysCount(solver.GetValue<uint32>());
             chan->SetScaleKeysCount(solver.GetValue<uint32>());

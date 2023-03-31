@@ -171,7 +171,6 @@ void VSGEditor::loadAnimation(const std::string& file_path, Animation* anim, int
         aiNodeAnim* ai_channel = _anim->mChannels[chan_i];
         //ZSPIRE channel
         AnimationChannel* channel = &anim->GetChannels()[chan_i];
-        channel->anim_ptr = anim; //Set pointer
         channel->SetBoneName(std::string(ai_channel->mNodeName.C_Str()));
 
         channel->SetPositionKeysCount(ai_channel->mNumPositionKeys);

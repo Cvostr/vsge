@@ -37,6 +37,8 @@ namespace VSGE {
 			mCpuBuffer(nullptr),
 			_deviceLocation(LOCATION_CPU_GPU)
 		{}
+
+		virtual ~GpuBuffer() {}
 		/// <summary>
 		/// Get size of buffer
 		/// </summary>

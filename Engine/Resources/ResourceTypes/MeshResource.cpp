@@ -42,8 +42,8 @@ void MeshGroupResource::Prepare() {
 }
 
 void MeshResource::Load() {
-	if (_resourceState == RESOURCE_STATE_UNLOADED) {
-		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(_parent);
+	if (m_resourceState == RESOURCE_STATE_UNLOADED) {
+		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(m_parent);
 	}
 }
 
