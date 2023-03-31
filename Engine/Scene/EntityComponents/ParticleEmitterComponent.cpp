@@ -24,8 +24,6 @@ ParticleEmitterComponent::ParticleEmitterComponent() :
 	_rotationSpeed(0, 0),
 	_emissionRate(200, 200)
 {
-	_meshResource.SetResourceType(RESOURCE_TYPE_MESH);
-	_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 }
 
 void ParticleEmitterComponent::Serialize(ByteSerialize& serializer) {

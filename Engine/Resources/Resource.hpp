@@ -61,6 +61,8 @@ namespace VSGE {
 
 		const Guid& getId() const;
 
+		void SetId(const Guid& id);
+
 		/// <summary>
 		/// Get name of this resource
 		/// </summary>

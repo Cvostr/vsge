@@ -3,6 +3,7 @@
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
+#include <Resources/DefaultResources.hpp>
 
 #include <Math/MatrixTransform.hpp>
 
@@ -38,7 +39,7 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 		MeshComponent* meshc = result->AddComponent<MeshComponent>();
 		meshc->SetMeshName(node->mesh_names[0]);
 		MaterialComponent* mat = result->AddComponent<MaterialComponent>();
-		mat->SetMaterialName("Default Material");
+		mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
 	}
 	else {
 		//Iterate over all children meshes
@@ -48,7 +49,7 @@ Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node) {
 			MeshComponent* meshc = object->AddComponent<MeshComponent>();
 			meshc->SetMeshName(mesh_label);
 			MaterialComponent* mat = object->AddComponent<MaterialComponent>();
-			mat->SetMaterialName("Default Material");
+			mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
 			result->AddChild(object, false);
 		}
 	}

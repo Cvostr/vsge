@@ -4,7 +4,6 @@
 #include <vector>
 #include <Core/DateTime.hpp>
 #include <fstream>
-#include <array>
 
 namespace Mpi {
 

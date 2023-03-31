@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <Core/ByteSolver.hpp>
+#include <mpi/Filesystem/File.hpp>
 
 #include "ResourceTypes/TextureResource.hpp"
 #include "ResourceTypes/MeshResource.hpp"
@@ -13,6 +14,7 @@
 
 namespace fs = std::filesystem;
 using namespace VSGE;
+using namespace Mpi;
 
 //Create singleton
 ResourceCache cache;
@@ -45,6 +47,16 @@ Resource* ResourceCache::GetResource(const std::string& name, ResourceType type)
     return nullptr;
 }
 
+Resource* ResourceCache::GetResource(const Guid& id)
+{
+    for (Resource* resource : _resources) {
+        if (resource->getId() == id)
+            return resource;
+    }
+
+    return nullptr;
+}
+
 Resource* ResourceCache::GetResourceWithFilePath(const std::string& fpath) {
     for (uint32 res_i = 0; res_i < GetResourcesCount(); res_i++) {
         VSGE::Resource* res = GetResources()[res_i];
@@ -54,7 +66,8 @@ Resource* ResourceCache::GetResourceWithFilePath(const std::string& fpath) {
     return nullptr;
 }
 
-ResourceType GetTypeByFileExt(const std::string& ext) {
+ResourceType GetTypeByFileExt(const std::string& ext)
+{
     if (ext == ".png" || ext == ".dds" || ext == ".jpg" || ext == ".vstx")
         return RESOURCE_TYPE_TEXTURE;
     if (ext == ".vs3m")
@@ -72,20 +85,43 @@ ResourceType GetTypeByFileExt(const std::string& ext) {
     return RESOURCE_TYPE_NONE;
 }
 
-void ResourceCache::AddResourceFile(const std::string& path) {
+void ResourceCache::AddResourceFile(const std::string& path) 
+{
     fs::directory_entry file(path);
     ResourceType type = GetTypeByFileExt(file.path().extension().string());
-    if (type != RESOURCE_TYPE_NONE) {
+    if (type != RESOURCE_TYPE_NONE) 
+    {
         DataDescription ddescr = {};
         ddescr.file_path = path;
         ddescr.offset = 0;
         ddescr.size = 0;
-        CreateResource(ddescr, type);
+        
+        Resource* resource = CreateResource(ddescr, type);
+        File resFilePath = File(path);
+        File metaFilePath = File(resFilePath.getParent(), resFilePath.getName() + ".meta");
+        if (!metaFilePath.exists())
+        {
+            Guid id; // Генерировать Guid
+            std::ofstream stream = metaFilePath.getOfstream(std::ios_base::binary);
+            stream.write((const char*) & id.a, sizeof(Guid));
+            stream.close();
+            resource->SetId(id);
+        }
+        else
+        {
+            Guid id;
+            std::ifstream stream = metaFilePath.getIfstream(std::ios_base::binary);
+            stream.read((char*)&id.a, sizeof(Guid));
+            stream.close();
+            resource->SetId(id);
+        }
     }
 }
 
-void ResourceCache::AddResourceDir(const std::string& path) {
-    for (const auto& entry : fs::directory_iterator(path)) {
+void ResourceCache::AddResourceDir(const std::string& path) 
+{
+    for (const auto& entry : fs::directory_iterator(path)) 
+    {
         //if file starts with "." then don't show it
         if (entry.path().filename().string()[0] == '.')
             continue;
@@ -98,12 +134,17 @@ void ResourceCache::AddResourceDir(const std::string& path) {
     }
 }
 
-void ResourceCache::RemoveResource(Resource* resource) {
+void ResourceCache::RemoveResource(Resource* resource) 
+{
+    //Удалить ресурс из массива
     auto it = std::remove(_resources.begin(), _resources.end(), resource);
-    _resources.pop_back();
+    _resources.erase(it, _resources.end());
+    //Удалить ресурс из потока наблюдателя
     _watchdog->RemoveResource(resource);
 
-    for (auto reference : _references) {
+    //Обновить все зарегистрированные ссылки
+    for (auto reference : _references) 
+    {
         reference->SetPointerToNull();
         reference->GetResource();
     }
@@ -210,14 +251,14 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
     uint64 count = solver.GetValue<uint64>();
     //read resources configuration
     for (uint64 i = 0; i < count; i++) {
-        std::string name = solver.ReadNextString();
+        Guid id = solver.GetGuid();
         ResourceType type = solver.GetValue<ResourceType>();
         DataDescription descr;
         descr.file_path = directory + bundle_names[solver.GetValue<uint32>()];
         descr.offset = solver.GetValue<uint32>();
         descr.size = solver.GetValue<uint32>();
         Resource* res = CreateResource(descr, type);
-        res->SetName(name);
+        res->SetId(id);
     }
 
     return true;

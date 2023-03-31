@@ -46,9 +46,9 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 				resource->Load();
 			}
 		
-			ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(resource->GetName());
+			ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(resource->getId());
 			if (resource->IsReady())
-				VkMaterialsThumbnails::Get()->CreateThumbnail(resource->GetName());
+				VkMaterialsThumbnails::Get()->CreateThumbnail(resource);
 			if (thumb)
 				mat_texture = thumb;
 		}

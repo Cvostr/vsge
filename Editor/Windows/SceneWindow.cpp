@@ -13,6 +13,7 @@
 #include <Scene/Camera.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
+#include <Resources/DefaultResources.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -39,14 +40,14 @@ void SceneWindow::OnDrawWindow() {
                     MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
                     mesh->SetMeshName("Cube");
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
-                    mat->SetMaterialName("Default Material");
+                    mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
                 }
                 if (ImGui::MenuItem("Sphere")) {
                     Entity* newEntity = scene->AddNewEntity("Sphere");
                     MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
                     mesh->SetMeshName("Sphere");
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
-                    mat->SetMaterialName("Default Material");
+                    mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
                 }
                 if (ImGui::MenuItem("Terrain")) {
                     Entity* newEntity = scene->AddNewEntity("Terrain");

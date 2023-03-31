@@ -4,13 +4,14 @@
 #include <string>
 #include <vector>
 #include <fstream>
-
+#include <mpi/Core/Guid.hpp>
 #include <Core/Threading/Thread.hpp>
 
 namespace VSGEditor {
 
 	struct MapEntry {
 		std::string resource_name;
+		Guid resourceId;
 		int type;
 		uint32 offset;
 		uint32 size;

@@ -21,23 +21,35 @@ ResourceReference& MaterialComponent::GetResourceReference() {
 	return _materialResource;
 }
 
-void MaterialComponent::SetMaterialName(const std::string& mesh) {
-	_materialResource.SetResource(mesh);
+void MaterialComponent::SetMaterialResource(MaterialResource* resource)
+{
+	_materialResource.SetResource(resource);
 }
 
-bool MaterialComponent::IsCastShadows() {
+void MaterialComponent::SetMaterialId(const Guid& material)
+{
+	_materialResource.SetResource(material);
+}
+
+bool MaterialComponent::IsCastShadows() 
+{
 	return _cast_shadows;
 }
-void MaterialComponent::SetCastShadows(bool cast_shadows) {
+
+void MaterialComponent::SetCastShadows(bool cast_shadows) 
+{
 	_cast_shadows = cast_shadows;
 }
 
-void MaterialComponent::Serialize(ByteSerialize& serializer) {
-	serializer.Serialize(_materialResource.GetResourceName());
+void MaterialComponent::Serialize(ByteSerialize& serializer) 
+{
+	serializer.Serialize(_materialResource.GetId());
 	serializer.Serialize(_cast_shadows);
 }
 
-void MaterialComponent::Deserialize(ByteSolver& solver) {
-	SetMaterialName(solver.ReadNextString());
+void MaterialComponent::Deserialize(ByteSolver& solver) 
+{
+	Guid id = solver.GetGuid();
+	_materialResource.SetResource(id);
 	_cast_shadows = solver.GetValue<bool>();
 }

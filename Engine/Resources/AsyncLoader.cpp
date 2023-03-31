@@ -47,20 +47,13 @@ void AsyncLoader::LoadResource(Resource* resource) {
     resource->SetLoadedData(data);
     //Set resource state to loaded
     resource->SetState(RESOURCE_STATE_LOADED);
-    //if mutex was destroyed outside
-    if(!mMutex){
-        return;
-    }
 
-    //Do some specific work (on MeshGroupResource as example)
-    //Send Resource load event
-    if (mMutex != nullptr)
-        mMutex->lock();
+
+    //Вызов обработки ресурса из этого потока
     resource->Prepare();
+    //Отправка события в главный поток
     ResourceLoadEvent* rle = new ResourceLoadEvent(resource);
     Application::Get()->QueueEvent(rle);
-    if (mMutex != nullptr)
-        mMutex->unlock();
 }
 
 void AsyncLoader::AddToQueue(Resource* resource) {

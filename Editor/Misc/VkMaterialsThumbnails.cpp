@@ -108,39 +108,39 @@ void VkMaterialsThumbnails::Destroy() {
 void VkMaterialsThumbnails::RecreateAll() {
 
 }
-void VkMaterialsThumbnails::CreateThumbnail(const std::string& material_name) {
+void VkMaterialsThumbnails::CreateThumbnail(VSGE::Resource* material) {
     //find queued with this name
     bool add = true;
     for (auto& name : _queued) {
-        if (name == material_name) {
+        if (name == material->getId()) {
             add = false;
         }
     }
     if(add)
-        _queued.push_back(material_name);
+        _queued.push_back(material->getId());
 }
-VkMaterialThumbnail* VkMaterialsThumbnails::GetMaterialThumbnail(const std::string& material_name) {
+VkMaterialThumbnail* VkMaterialsThumbnails::GetMaterialThumbnail(const Guid& material_id) {
     for (auto& thumb : _thumbnails) {
-        if (thumb->material_name == material_name)
+        if (thumb->material_id == material_id)
             return thumb;
     }
     return nullptr;
 }
-ImTextureID VkMaterialsThumbnails::GetMaterialThumbnailTexture(const std::string& material_name) {
-    VkMaterialThumbnail* thumb = GetMaterialThumbnail(material_name);
+ImTextureID VkMaterialsThumbnails::GetMaterialThumbnailTexture(const Guid& material_id) {
+    VkMaterialThumbnail* thumb = GetMaterialThumbnail(material_id);
     if (thumb)
         return thumb->imtexture;
     return nullptr;
 }
 
-VkMaterialThumbnail* VkMaterialsThumbnails::GetPlace(const std::string& name) {
+VkMaterialThumbnail* VkMaterialsThumbnails::GetPlace(const Guid& id) {
     //check for empty space
     for (auto& thumb : _thumbnails) {
         if (thumb->deleted)
             return thumb;
     }
     //check for thumb with this name
-    VkMaterialThumbnail* thumb = GetMaterialThumbnail(name);
+    VkMaterialThumbnail* thumb = GetMaterialThumbnail(id);
     if (thumb)
         return thumb;
 
@@ -154,7 +154,7 @@ void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
     VulkanRenderer::Get()->GetCamerasBuffer()->SetCamera(99, _camera);
     if (_queued.size() > 0) {
         MaterialComponent* material_component = _thumb_entity->GetComponent<MaterialComponent>();
-        material_component->SetMaterialName(_queued[0]);
+        material_component->SetMaterialId(_queued[0]);
 
         MaterialResource* resource = (MaterialResource*)material_component->GetResourceReference().GetResource();
         Material* mat = resource->GetMaterial();
@@ -166,7 +166,7 @@ void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
         _gamma_correction->FillCommandBuffer(cmdbuf);
 
         VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
-        thumb->material_name = _queued[0];
+        thumb->material_id = _queued[0];
         VulkanTexture* src = _gamma_correction->GetOutputTexture();
         VulkanTexture* dst = thumb->texture;
 

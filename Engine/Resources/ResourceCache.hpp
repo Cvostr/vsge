@@ -67,6 +67,8 @@ namespace VSGE {
 		/// <returns>pointer to resource</returns>
 		Resource* GetResource(const std::string& name, ResourceType type = RESOURCE_TYPE_NONE);
 
+		Resource* GetResource(const Guid& id);
+
 		template<typename T>
 		T* GetResource(const std::string& name) {
 			for (Resource* resource : _resources) {

@@ -2,6 +2,7 @@
 
 #include "VarTypes/Base.hpp"
 #include <string>
+#include <mpi/Core/Guid.hpp>
 
 namespace VSGE {
 	class ByteSolver {
@@ -21,13 +22,11 @@ namespace VSGE {
 
 		std::string ReadNextString();
 
-		bool end() {
-			return mOffset >= mSize;
-		}
+		bool end() const;
 
-		void move(uint32 offset) {
-			mOffset += offset;
-		}
+		void move(uint32 offset);
+
+		Guid GetGuid();
 
 		template<typename T>
 		void Copy(T* dest) {

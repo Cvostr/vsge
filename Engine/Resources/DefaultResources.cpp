@@ -12,6 +12,8 @@ using namespace VSGE;
 static MeshResource* cube_mesh = nullptr;
 static MeshResource* sphere_mesh = nullptr;
 
+static MaterialResource* default_mat = nullptr;
+
 static Vertex cube_vertices[] = {
     // back face
     Vertex(Vec3(-1.0f, -1.0f, -1.0f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
@@ -67,9 +69,15 @@ Vertex plane_vertices[] = {
 
 unsigned int plane_indices[] = { 0,1,2, 0,2,3 };
 
+const Guid defaultMaterialId = Guid(0, 0, 0, 1);
+const Guid cubeMeshId = Guid(0, 0, 0, 2);
+const Guid planeMeshId = Guid(0, 0, 0, 3);
+const Guid sphereMeshId = Guid(0, 0, 0, 4);
+
 void VSGE::AddDefaultMaterial() {
-	MaterialResource* default_mat = new MaterialResource;
+    default_mat = new MaterialResource;
 	default_mat->SetName("Default Material");
+    default_mat->SetId(defaultMaterialId);
     default_mat->SetDefault();
     default_mat->SetState(RESOURCE_STATE_READY);
     default_mat->GetMaterial()->SetParameter("Metallic factor", 0.f);
@@ -84,6 +92,11 @@ void* VSGE::GetSphereMesh() {
     return sphere_mesh;
 }
 
+MaterialResource* VSGE::getDefaultMaterialResource()
+{
+    return default_mat;
+}
+
 void VSGE::AddDefaultMeshes() {
     ProcessTangentSpace(cube_vertices, 36);
 
@@ -92,6 +105,7 @@ void VSGE::AddDefaultMeshes() {
 	cube_mesh = new MeshResource;
     cube_mesh->SetDefault();
 	cube_mesh->SetName("Cube");
+    cube_mesh->SetId(cubeMeshId);
     cube_mesh->GetMesh()->SetVertexBuffer(cube_vertices, 36);
     cube_mesh->GetMesh()->AddVertexBuffer(verts);
     cube_mesh->GetMesh()->Create();
@@ -102,6 +116,7 @@ void VSGE::AddDefaultMeshes() {
     MeshResource* plane_mesh = new MeshResource;
     plane_mesh->SetDefault();
     plane_mesh->SetName("Plane");
+    plane_mesh->SetId(planeMeshId);
     plane_mesh->GetMesh()->SetVertexBuffer(plane_vertices, 4);
     plane_mesh->GetMesh()->SetIndexBuffer(plane_indices, 6);
     plane_mesh->GetMesh()->AddVertexBuffer(verts);
@@ -186,6 +201,7 @@ void VSGE::AddDefaultMeshes() {
 
     sphere_mesh = new MeshResource;
     sphere_mesh->SetName("Sphere");
+    sphere_mesh->SetId(sphereMeshId);
     sphere_mesh->SetDefault();
     sphere_mesh->GetMesh()->SetVertexBuffer(sphere_v.data(), sphere_v.size());
     sphere_mesh->GetMesh()->SetIndexBuffer(sphere_indices.data(), sphere_indices.size());

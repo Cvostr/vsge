@@ -14,7 +14,7 @@
 
 class VkMaterialThumbnail {
 public:
-	std::string material_name;
+	Guid material_id;
 	VSGE::VulkanTexture* texture;
 	ImTextureID imtexture;
 	bool deleted;
@@ -44,10 +44,10 @@ private:
 	VSGE::VulkanGammaCorrection* _gamma_correction;
 
 	std::vector<VkMaterialThumbnail*> _thumbnails;
-	std::vector<std::string> _queued;
+	std::vector<Guid> _queued;
 
 
-	VkMaterialThumbnail* GetPlace(const std::string& name);
+	VkMaterialThumbnail* GetPlace(const Guid& id);
 public:
 
 	VkMaterialsThumbnails();
@@ -61,9 +61,9 @@ public:
 	void Destroy();
 
 	void RecreateAll();
-	void CreateThumbnail(const std::string& material_name);
-	VkMaterialThumbnail* GetMaterialThumbnail(const std::string& material_name);
-	ImTextureID GetMaterialThumbnailTexture(const std::string& material_name);
+	void CreateThumbnail(VSGE::Resource* material);
+	VkMaterialThumbnail* GetMaterialThumbnail(const Guid& material_id);
+	ImTextureID GetMaterialThumbnailTexture(const Guid& material_id);
 
 	void RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf);
 };

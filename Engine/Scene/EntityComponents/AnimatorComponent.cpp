@@ -97,25 +97,31 @@ void AnimatorComponent::OnPreRender() {
     }
 }
 
-void AnimatorComponent::Serialize(ByteSerialize& serializer) {
+void AnimatorComponent::Serialize(ByteSerialize& serializer) 
+{
+    //Записать количество анимационных групп
     uint32 anims_count = static_cast<uint32>(_animations.size());
     serializer.Serialize(anims_count);
 
-    for (const auto& anim : _animations) {
-		std::string anim_res_name = anim._animResource.GetResourceName();
-        serializer.Serialize(anim_res_name);
+    for (const auto& anim : _animations) 
+    {
+        serializer.Serialize(anim._animResource.GetId());
         serializer.Serialize(anim.coeff);
     }
 }
-void AnimatorComponent::Deserialize(ByteSolver& solver) {
+void AnimatorComponent::Deserialize(ByteSolver& solver)
+{
+    //Считать количество анимационных групп
     uint32 count = solver.GetValue<uint32>();
 
-    for (uint32 anim_i = 0; anim_i < count; anim_i++) {
-        std::string resource_name = solver.ReadNextString();
+    //Считать анимационные группы
+    for (uint32 anim_i = 0; anim_i < count; anim_i++) 
+    {
+        Guid resourceId = solver.GetGuid();
         float coeff = solver.GetValue<float>();
 
         AnimationCoeff anim_coeff;
-        anim_coeff._animResource.SetResource(resource_name);
+        anim_coeff._animResource.SetResource(resourceId);
         anim_coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
         anim_coeff.coeff = coeff;
         _animations.push_back(anim_coeff);

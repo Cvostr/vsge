@@ -2,6 +2,7 @@
 
 #include "ByteSerialize.hpp"
 #include <Core/VarTypes/Base.hpp>
+#include <mpi/Core/Guid.hpp>
 #include <string>
 
 namespace VSGE {
@@ -37,6 +38,8 @@ namespace VSGE {
 		void Serialize(T* data) {
 			WriteBytes((void*)data, sizeof(T));
 		}
+
+		void Serialize(const Guid& id);
 
 		template<typename T>
 		void Serialize(const T& data) {

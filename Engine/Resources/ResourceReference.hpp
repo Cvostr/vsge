@@ -9,6 +9,7 @@ namespace VSGE{
 		ResourceType _resourceType;
 		Resource* _resourcePointer;
 		std::string _resourceName;
+		Guid _resourceId;
 		std::string _parentName;
 	public:
 		
@@ -31,7 +32,11 @@ namespace VSGE{
 
 		const std::string& GetResourceName() const;
 
+		const Guid& GetId() const;
+
 		void SetResource(const std::string& resourceName);
+
+		void SetResource(const Guid& id);
 
         const std::string& GetResourceParentName() const;
 

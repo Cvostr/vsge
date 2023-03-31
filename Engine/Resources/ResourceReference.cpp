@@ -48,6 +48,11 @@ const std::string& ResourceReference::GetResourceName() const {
 	return _resourceName;
 }
 
+const Guid& ResourceReference::GetId() const
+{
+	return _resourceId;
+}
+
 bool ResourceReference::IsResourceSpecified() {
 	return !_resourceName.empty();
 }
@@ -58,6 +63,7 @@ void ResourceReference::SetResource(Resource* resource) {
 
 	_resourceName = resource->GetName();
 	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName, _resourceType);
+	_resourceId = resource->getId();
 	SetResourceType(resource->GetResourceType());
 
 	//if resource created from other resource
@@ -72,6 +78,12 @@ void ResourceReference::SetResource(const std::string& resourceName) {
 		_resourcePointer = nullptr;
 	else
 		SetResource(ResourceCache::Get()->GetResource(_resourceName, _resourceType));
+}
+
+void ResourceReference::SetResource(const Guid& id)
+{
+	_resourceId = id;
+	SetResource(ResourceCache::Get()->GetResource(_resourceId));
 }
 
 const std::string& ResourceReference::GetResourceParentName() const{

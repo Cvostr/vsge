@@ -142,24 +142,27 @@ void Material::DestroyDescriptors() {
 
 void Material::Serialize(const std::string& fpath) {
 	ByteSerialize serializer;
-	//write header without terminator
+	//Записать заголовок
 	serializer.WriteBytes("vs_material", 12);
 
 	std::string template_name = "";
 	if (GetTemplate()) {
 		template_name = GetTemplate()->GetName();
 	}
-	//write name of template
+
+	//Записать название шаблона материала
 	serializer.Serialize(template_name);
-	//Write count of textures and params
+	//Записать количество текстур и параметров
 	serializer.Serialize((uint32)_materialTextures.size());
 	serializer.Serialize((uint32)_materialParams.size());
-	//Write textures
+
+	//Записать текстуры
 	for (auto& _texture : _materialTextures) {
 		serializer.Serialize(_texture->_name);
-		serializer.Serialize(_texture->_resource.GetResourceName());
+		serializer.Serialize(_texture->_resource.GetId());
 	}
 
+	//Записать параметры
 	for (auto& _param : _materialParams) {
 		serializer.Serialize(_param.name);
 		serializer.Serialize(_param.value.GetType());
@@ -192,10 +195,9 @@ void Material::Deserialize(byte* data, uint32 size) {
 
 	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) {
 		std::string name = deserializer.ReadNextString();
-		std::string texture_name = deserializer.ReadNextString();
 
 		ResourceReference ref;
-		ref.SetResource(texture_name);
+		ref.SetResource(deserializer.GetGuid());
 		SetTexture(name, ref);
 	}
 

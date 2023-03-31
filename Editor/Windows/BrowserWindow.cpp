@@ -63,7 +63,7 @@ void FileBrowserWindow::UpdateDirectoryContent() {
     for (const auto& entry : fs::directory_iterator(_currentDir)) {
         FileEntry e;
         //if file starts with "." then don't show it
-        if (entry.path().filename().string()[0] == '.')
+        if (entry.path().filename().string()[0] == '.' || entry.path().extension().string() == ".meta")
             continue;
         e.isDir = entry.is_directory();
         e.abs_path = entry.path().string();
@@ -203,9 +203,9 @@ void FileBrowserWindow::OnDrawWindow() {
                 }
             }
 
-            ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->GetName());
+            ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->getId());
             if (mat->IsReady())
-                VkMaterialsThumbnails::Get()->CreateThumbnail(mat->GetName());
+                VkMaterialsThumbnails::Get()->CreateThumbnail(mat);
             if (thumb)
                icon = thumb;
         }

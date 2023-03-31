@@ -5,7 +5,7 @@
 using namespace VSGE;
 
 static void SetMaterial(MaterialComponent* comp, Resource* resource) {
-	comp->SetMaterialName(resource->GetName());
+	comp->SetMaterialId(resource->getId());
 }
 
 static Material* GetMaterial(MaterialComponent* comp) {

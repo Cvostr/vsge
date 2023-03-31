@@ -17,7 +17,9 @@ namespace VSGE {
 
 		ResourceReference& GetResourceReference();
 
-		void SetMaterialName(const std::string& mesh);
+		void SetMaterialResource(MaterialResource* resource);
+
+		void SetMaterialId(const Guid& material);
 
 		bool IsCastShadows();
 		void SetCastShadows(bool cast_shadows);

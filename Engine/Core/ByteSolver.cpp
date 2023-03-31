@@ -20,3 +20,20 @@ std::string ByteSolver::ReadNextString() {
 
 	return result;
 }
+
+bool ByteSolver::end() const
+{
+	return mOffset >= mSize;
+}
+
+void ByteSolver::move(uint32 offset)
+{
+	mOffset += offset;
+}
+
+Guid ByteSolver::GetGuid()
+{
+	Guid id;
+	Copy(&id, sizeof(Guid));
+	return id;
+}

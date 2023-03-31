@@ -9,6 +9,11 @@ const Guid& Resource::getId() const
 	return m_id;
 }
 
+void Resource::SetId(const Guid& id)
+{
+	m_id = id;
+}
+
 const std::string& Resource::GetName() const 
 {
 	return m_name; 

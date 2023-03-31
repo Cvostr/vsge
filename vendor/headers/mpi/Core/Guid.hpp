@@ -21,11 +21,11 @@ class Guid {
 		/// </summary>
 		/// <param name="g"></param>
 		/// <returns></returns>
-		bool operator==(const Guid& g);
+		bool operator==(const Guid& g) const;
 
-		bool operator!=(const Guid& g);
+		bool operator!=(const Guid& g) const;
 
-		std::string toBinaryView();
+		std::string toBinaryView() const;
 
 		void fromBinaryView(const std::string& bytes);
 

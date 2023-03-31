@@ -58,7 +58,7 @@ void ProjectSettingsWindow::Save() {
     YAML::Emitter out;
     out << YAML::BeginMap;
     out << YAML::Key << "project_name" << YAML::Value << _project_name;
-    out << YAML::Key << "main_scene" << YAML::Value << _main_scene.GetResourceName();
+    out << YAML::Key << "main_scene" << YAML::Value << _main_scene.GetId().toString();
     out << YAML::EndMap;
     std::ofstream fout(project_cfg_path);
     fout << out.c_str();

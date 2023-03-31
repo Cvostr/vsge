@@ -182,14 +182,17 @@ void AudioSourceComponent::OnDeactivate() {
 	}
 }
 
-void AudioSourceComponent::Serialize(ByteSerialize& serializer) {
-	serializer.Serialize(_audioResource.GetResourceName());
+void AudioSourceComponent::Serialize(ByteSerialize& serializer)
+{
+	serializer.Serialize(_audioResource.GetId());
 	serializer.Serialize(_volume);
 	serializer.Serialize(_pitch);
 	serializer.Serialize(_loop);
 }
-void AudioSourceComponent::Deserialize(ByteSolver& solver) {
-	_audioResource.SetResource(solver.ReadNextString());
+
+void AudioSourceComponent::Deserialize(ByteSolver& solver) 
+{
+	_audioResource.SetResource(solver.GetGuid());
 	_volume = solver.GetValue<float>();
 	_pitch = solver.GetValue<float>();
 	_loop = solver.GetValue<bool>();

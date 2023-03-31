@@ -60,27 +60,16 @@ void ResourcePacker::Write(){
         if (resource->IsDefault())
             continue;
 
+        //Прочитать файл
         byte* file_data = nullptr;
         uint32 file_size = 0;
-        bool result = false;
-       // if(resource->GetResourceType() != RESOURCE_TYPE_SCENE)
-            result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
-        /*else {
-            VSGE::Scene* temp_scene = new Scene;
-            temp_scene->NewScene();
-
-            SceneSerializer serializer;
-            serializer.SetScene(temp_scene);
-            serializer.DeserializeBinary(resource->GetDataDescription().file_path);
-            serializer.SerializeBinary(&file_data, file_size);
-            delete temp_scene;
-            result = true;
-        }*/
+        bool result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
 
         if (result) {
             CheckForBundleOverflow();
             MapEntry entry;
             entry.resource_name = resource->GetName();
+            entry.resourceId = resource->getId();
             entry.type = resource->GetResourceType();
             entry.offset = _written_bytes;
             entry.size = file_size;
@@ -132,7 +121,7 @@ void ResourcePacker::Write(){
     serializer.Serialize(std::string("__data__"));
     serializer.Serialize((uint64)_map_entries.size());
     for (MapEntry& entry : _map_entries) {
-        serializer.Serialize(entry.resource_name);
+        serializer.Serialize(entry.resourceId);
         serializer.Serialize(entry.type);
         serializer.Serialize(entry.bundle_index);
         serializer.Serialize(entry.offset);

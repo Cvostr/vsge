@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Base.hpp"
+
 namespace Mpi {
     class Disposable {
     public:

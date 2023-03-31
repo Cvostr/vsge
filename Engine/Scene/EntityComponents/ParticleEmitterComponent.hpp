@@ -83,8 +83,6 @@ namespace VSGE {
 
 	class ParticleEmitterComponent : public IEntityComponent {
 	private:
-		ResourceReference _meshResource;
-		ResourceReference _materialResource;
 
 		//Array of particles
 		std::vector<Particle*> _particles;
@@ -169,11 +167,5 @@ namespace VSGE {
 		void Deserialize(ByteSolver& solver);
 
 		void OnPreRender();
-
-		void SetMeshName(const std::string& mesh);
-		MeshResource* GetMeshResource() { return _meshResource.GetResource<MeshResource>(); }
-		ResourceReference& GetResourceReference() {
-			return _meshResource;
-		}
 	};
 }

@@ -63,3 +63,8 @@ byte* ByteSerialize::GetBytes() {
 uint32 ByteSerialize::GetSerializedSize() {
 	return mSerializedSize;
 }
+
+void ByteSerialize::Serialize(const Guid& id)
+{
+	WriteBytes(&id.a, sizeof(Guid));
+}
