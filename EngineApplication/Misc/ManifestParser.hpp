@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
+#include <mpi/Core/Guid.hpp>
 
 namespace VSGE {
 	class ManifestParser {
 	private:
 		std::string _project_name;
-		std::string _main_scene;
+		Guid _main_scene;
 	public:
 
 		ManifestParser();
@@ -15,6 +16,6 @@ namespace VSGE {
 
 		const std::string& GetProjectName();
 
-		const std::string& GetMainScene();
+		const Guid& GetMainScene();
 	};
 }

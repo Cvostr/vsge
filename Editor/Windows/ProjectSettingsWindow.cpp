@@ -83,7 +83,13 @@ void ProjectSettingsWindow::LoadSettings() {
 
     Node data = YAML::LoadFile(project_cfg_path);
     _project_name = data["project_name"].as<std::string>();
-    _main_scene.SetResource(data["main_scene"].as<std::string>());
+    try {
+        _main_scene.SetResource(Guid(data["main_scene"].as<std::string>()));
+    }
+    catch (...)
+    {
+
+    }
 
     Node data_app = YAML::LoadFile(app_cfg_path);
     _application_name = data_app["application_name"].as<std::string>();

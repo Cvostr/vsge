@@ -19,7 +19,8 @@ namespace VSGE {
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);
 
-		void SetMeshName(const std::string& mesh);
+		void SetMeshId(const Guid& id);
+		void SetMesh(const Guid& id, const std::string& childName);
 		void SetMeshResource(MeshResource* resource);
 
 		MeshResource* GetMeshResource();

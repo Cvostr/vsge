@@ -5,5 +5,5 @@
 
 namespace VSGEditor {
 	void AddSubSceneVS3M(VSGE::Scene* scn, const std::string& file);
-	VSGE::Entity* addObjectFromNode(VSGE::Scene* w, VSGE::SceneNode* node);
+	VSGE::Entity* addObjectFromNode(VSGE::Scene* w, VSGE::SceneNode* node, VSGE::Resource* meshGroupResource);
 }

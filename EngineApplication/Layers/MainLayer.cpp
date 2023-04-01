@@ -20,7 +20,7 @@ void MainLayer::OnAttach() {
 	ManifestParser manifest;
 	manifest.ParseFromFile(app_dir + "/app.manifest");
 
-	SceneResource* sc_res = ResourceCache::Get()->GetResource<SceneResource>(manifest.GetMainScene());
+	SceneResource* sc_res = (SceneResource*)ResourceCache::Get()->GetResource(manifest.GetMainScene());
 
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");
 

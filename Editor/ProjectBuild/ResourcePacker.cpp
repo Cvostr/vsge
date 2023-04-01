@@ -48,7 +48,7 @@ void ResourcePacker::Write(){
     std::string project_cfg_path = el->GetProject().GetRootDirectory() + "/project.manifest";
     Node data = YAML::LoadFile(project_cfg_path);
     std::string project_name = data["project_name"].as<std::string>();
-    std::string main_scene = data["main_scene"].as<std::string>();
+    Guid main_scene = Guid(data["main_scene"].as<std::string>());
 
     ResourceCache* cache = ResourceCache::Get();
     

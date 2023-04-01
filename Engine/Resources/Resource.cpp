@@ -50,8 +50,20 @@ const DataDescription& Resource::GetDataDescription() {
 	return _description;
 }
 
-std::vector<Resource*>& Resource::GetSubresources() {
+std::vector<Resource*>& Resource::GetSubresources() 
+{
 	return _subresources;
+}
+
+Resource* Resource::GetSubresourceWithName(const std::string& name) const
+{
+	for (auto& resource : _subresources)
+	{
+		if (resource->GetName() == name)
+			return resource;
+	}
+
+	return nullptr;
 }
 
 byte* Resource::GetLoadedData() {

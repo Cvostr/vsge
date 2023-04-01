@@ -48,7 +48,6 @@ void AsyncLoader::LoadResource(Resource* resource) {
     //Set resource state to loaded
     resource->SetState(RESOURCE_STATE_LOADED);
 
-
     //Вызов обработки ресурса из этого потока
     resource->Prepare();
     //Отправка события в главный поток

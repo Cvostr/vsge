@@ -54,8 +54,9 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 		}
 	}
 	else {
-		ImGui::Text(reference.GetResourceName().c_str());
-		text_size.x += ImGui::CalcTextSize(reference.GetResourceName().c_str()).x;
+		std::string resourceName = reference.GetResourceName();
+		ImGui::Text(resourceName.c_str());
+		text_size.x += ImGui::CalcTextSize(resourceName.c_str()).x;
 		
 	}
 

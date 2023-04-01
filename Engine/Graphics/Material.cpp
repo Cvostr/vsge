@@ -197,6 +197,7 @@ void Material::Deserialize(byte* data, uint32 size) {
 		std::string name = deserializer.ReadNextString();
 
 		ResourceReference ref;
+		ref.SetResourceType(RESOURCE_TYPE_TEXTURE);
 		ref.SetResource(deserializer.GetGuid());
 		SetTexture(name, ref);
 	}

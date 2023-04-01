@@ -38,14 +38,14 @@ void SceneWindow::OnDrawWindow() {
                 if (ImGui::MenuItem("Cube")) {
                     Entity* newEntity = scene->AddNewEntity("Cube");
                     MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
-                    mesh->SetMeshName("Cube");
+                    mesh->SetMeshId(GetCubeMesh()->getId());
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
                     mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
                 }
                 if (ImGui::MenuItem("Sphere")) {
                     Entity* newEntity = scene->AddNewEntity("Sphere");
                     MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
-                    mesh->SetMeshName("Sphere");
+                    mesh->SetMeshId(GetSphereMesh()->getId());
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
                     mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
                 }

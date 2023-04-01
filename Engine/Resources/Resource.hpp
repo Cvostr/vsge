@@ -114,6 +114,8 @@ namespace VSGE {
 		/// </summary>
 		/// <returns></returns>
 		std::vector<Resource*>& GetSubresources();
+
+		Resource* GetSubresourceWithName(const std::string& name) const;
 		/// <summary>
 		/// Set data description
 		/// </summary>

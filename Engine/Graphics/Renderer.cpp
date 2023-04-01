@@ -43,12 +43,14 @@ void IRenderer::ProcessEntity(Entity* entity) {
 	bool hasTerrain = entity->HasComponent<TerrainComponent>();
 	if (HasMesh) {
 		MeshComponent* mesh = entity->GetComponent<MeshComponent>();
-		if (mesh->GetMeshResource()) {
+		//ѕопробовать получить дочерний ресурс
+		if (mesh->GetMeshResource()) 
+		{
 			mesh->GetMeshResource()->Load();
 			HasMesh = true;
 		}
-		else if (!mesh->GetResourceReference().GetResourceName().empty() && !mesh->GetResourceReference().GetResourceParentName().empty()) {
-			Resource* parent = mesh->GetResourceReference().GetParentResource(RESOURCE_TYPE_MESHGROUP);
+		else if (!mesh->GetResourceReference().GetResourceName().empty() && !mesh->GetResourceReference().GetParentResource()->GetName().empty()) {
+			Resource* parent = mesh->GetResourceReference().GetParentResource();
 			if (parent) {
 				parent->Load();
 				HasMesh = false;
@@ -60,8 +62,9 @@ void IRenderer::ProcessEntity(Entity* entity) {
 
 	if (HasMaterial) {
 		MaterialComponent* mat = entity->GetComponent<MaterialComponent>();
-		if (mat->GetMaterialResource()) {
-			mat->GetMaterialResource()->Load();
+		MaterialResource* materialResource = mat->GetMaterialResource();
+		if (materialResource) {
+			materialResource->Load();
 			HasMaterial = true;
 		}
 		else

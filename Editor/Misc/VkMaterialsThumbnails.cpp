@@ -3,6 +3,7 @@
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <Resources/DefaultResources.hpp>
 #include <algorithm>
 
 using namespace VSGE;
@@ -22,9 +23,11 @@ VkMaterialThumbnail::~VkMaterialThumbnail() {
     SAFE_RELEASE(texture);
 }
 
-VkMaterialsThumbnails::VkMaterialsThumbnails() {
-    _gbuffer = nullptr;
-    _light = nullptr;
+VkMaterialsThumbnails::VkMaterialsThumbnails() :
+    _gbuffer(nullptr),
+    _light(nullptr),
+    _camera(nullptr)
+{
     _this = this;
 }
 VkMaterialsThumbnails::~VkMaterialsThumbnails() {
@@ -38,7 +41,7 @@ void VkMaterialsThumbnails::Create() {
     _thumb_scene->NewScene();
     _thumb_entity = _thumb_scene->AddNewEntity("thumb_sphere");
     MeshComponent* mesh_component = _thumb_entity->AddComponent<MeshComponent>();
-    mesh_component->SetMeshName("Sphere");
+    mesh_component->SetMeshId(GetSphereMesh()->getId());
     _thumb_entity->AddComponent<MaterialComponent>();
 
     _entities_to_render.push_back(_thumb_entity);

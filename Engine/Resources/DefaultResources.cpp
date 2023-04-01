@@ -84,11 +84,11 @@ void VSGE::AddDefaultMaterial() {
 	ResourceCache::Get()->PushResource(default_mat);
 }
 
-void* VSGE::GetCubeMesh(){
+MeshResource* VSGE::GetCubeMesh(){
     return cube_mesh;
 }
 
-void* VSGE::GetSphereMesh() {
+MeshResource* VSGE::GetSphereMesh() {
     return sphere_mesh;
 }
 

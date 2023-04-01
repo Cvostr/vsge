@@ -126,7 +126,7 @@ void ResourcePickerWindow::DrawScriptPicker() {
 }
 
 void ResourcePickerWindow::SetResourceToReference(Resource* resource) {
-    reference->SetResource(resource->GetName());
+    reference->SetResource(resource->getId());
     Hide();
 }
 

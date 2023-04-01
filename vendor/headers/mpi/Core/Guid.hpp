@@ -16,11 +16,7 @@ class Guid {
 				uint32_t d;
 			};
 		};
-		/// <summary>
-		/// Compare two guids
-		/// </summary>
-		/// <param name="g"></param>
-		/// <returns></returns>
+
 		bool operator==(const Guid& g) const;
 
 		bool operator!=(const Guid& g) const;
@@ -33,10 +29,8 @@ class Guid {
 
 		bool isValid() const;
 
-		/// <summary>
-		/// Generate random guid
-		/// </summary>
 		Guid();
-		Guid(uint32_t a, uint32_t b, uint32_t c, uint32_t d) :
-			a(a), b(b), c(c), d(d) {}
+		Guid(uint32_t a, uint32_t b, uint32_t c, uint32_t d);
+		Guid(uint8_t values[16]);
+		Guid(const std::string& str);
 	};

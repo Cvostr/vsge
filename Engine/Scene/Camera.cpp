@@ -175,7 +175,7 @@ void Camera::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_nearPlane);
 	serializer.Serialize(_farPlane);
 	serializer.Serialize(_viewMask);
-	serializer.Serialize(_target_texture.GetResourceName());
+	serializer.Serialize(_target_texture.GetId());
 }
 
 void Camera::Deserialize(ByteSolver& solver) {
@@ -183,5 +183,5 @@ void Camera::Deserialize(ByteSolver& solver) {
 	_nearPlane = solver.GetValue<float>();
 	_farPlane = solver.GetValue<float>();
 	_viewMask = solver.GetValue<ViewMask>();
-	_target_texture.SetResource(solver.ReadNextString());
+	_target_texture.SetResource(solver.GetGuid());
 }

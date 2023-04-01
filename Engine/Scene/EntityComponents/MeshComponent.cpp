@@ -3,8 +3,14 @@
 
 using namespace VSGE;
 
-void MeshComponent::SetMeshName(const std::string& mesh) {
-	_meshResource.SetResource(mesh);
+void MeshComponent::SetMeshId(const Guid& id)
+{
+	_meshResource.SetResource(id);
+}
+
+void MeshComponent::SetMesh(const Guid& id, const std::string& childName)
+{
+	_meshResource.SetResource(id, childName);
 }
 
 void MeshComponent::SetMeshResource(MeshResource* resource) {
@@ -12,7 +18,7 @@ void MeshComponent::SetMeshResource(MeshResource* resource) {
 }
 
 MeshResource* MeshComponent::GetMeshResource() {
-	return _meshResource.GetResource<MeshResource>(); 
+	return (MeshResource*)_meshResource.GetResource(); 
 }
 
 Mesh* MeshComponent::GetMesh() {
@@ -27,12 +33,21 @@ ResourceReference& MeshComponent::GetResourceReference() {
 	return _meshResource;
 }
 
-void MeshComponent::Serialize(ByteSerialize& serializer) {
-	serializer.Serialize(_meshResource.GetResourceParentName());
-	serializer.Serialize(_meshResource.GetResourceName());
+void MeshComponent::Serialize(ByteSerialize& serializer) 
+{
+	Resource* parentResource = _meshResource.GetParentResource();
+	if (parentResource)
+		serializer.Serialize(_meshResource.GetParentResource()->getId());
+	else
+		serializer.Serialize(Guid(0,0,0,0));
+
+	serializer.Serialize(_meshResource.GetResource()->GetName());
 }
 
-void MeshComponent::Deserialize(ByteSolver& solver) {
-	_meshResource.SetParentResource(solver.ReadNextString());
-	SetMeshName(solver.ReadNextString());
+void MeshComponent::Deserialize(ByteSolver& solver) 
+{
+	Guid parentId = solver.GetGuid();
+	std::string childName = solver.ReadNextString();
+
+	_meshResource.SetResource(parentId, childName);
 }

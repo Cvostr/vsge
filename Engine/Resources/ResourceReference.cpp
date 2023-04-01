@@ -6,15 +6,18 @@ using namespace VSGE;
 ResourceReference::ResourceReference() {
     _resourcePointer = nullptr;
     _resourceType = RESOURCE_TYPE_NONE;
+	_resourceId = Guid(0, 0, 0, 0);
 
 	ResourceCache::Get()->AddResourceReference(this);
 }
 
-ResourceReference::~ResourceReference() {
+ResourceReference::~ResourceReference() 
+{
 	ResourceCache::Get()->RemoveResourceReference(this);
 }
 
-ResourceType ResourceReference::GetResourceType() {
+ResourceType ResourceReference::GetResourceType() 
+{
 	return _resourceType;
 }
 
@@ -22,30 +25,49 @@ void ResourceReference::SetPointerToNull() {
 	_resourcePointer = nullptr;
 }
 
-void ResourceReference::operator=(ResourceReference& ref) {
-	SetResource(ref._resourceName);
-    SetParentResource(ref._parentName);
-}
-
 void ResourceReference::SetResourceType(ResourceType type) {
 	_resourceType = type;
 }
 
-Resource* ResourceReference::GetResource() {
+Resource* ResourceReference::ResolvePointer() const
+{
+	if (!_resourceId.isValid()) {
+		return ResourceCache::Get()->GetResource(_childName);
+	}
+
+	Resource* resource = ResourceCache::Get()->GetResource(_resourceId);
+	if (!_childName.empty())
+	{
+		//Указано имя дочернего ресурса
+		resource = resource->GetSubresourceWithName(_childName);
+	}
+
+	return resource;
+}
+
+void ResourceReference::UpdatePointer()
+{
 	if (!_resourcePointer)
-		_resourcePointer = ResourceCache::Get()->GetResource(_resourceName, _resourceType);
+		_resourcePointer = ResolvePointer();
+}
+
+Resource* ResourceReference::GetResource() 
+{
+	UpdatePointer();
 	return _resourcePointer;
 }
 
-Resource* ResourceReference::GetParentResource(ResourceType type) {
-	if (_resourcePointer)
-		if (_resourcePointer->GetParent())
-			return _resourcePointer->GetParent();
-	return ResourceCache::Get()->GetResource(_parentName, type);
+Resource* ResourceReference::GetParentResource()
+{
+	return GetResource()->GetParent();
 }
 
-const std::string& ResourceReference::GetResourceName() const {
-	return _resourceName;
+const std::string ResourceReference::GetResourceName() const 
+{
+	Resource* ptr = _resourcePointer != nullptr ? _resourcePointer : ResolvePointer();
+	std::string resourceName = ptr != nullptr ? ptr->GetName() : "";
+
+	return resourceName;
 }
 
 const Guid& ResourceReference::GetId() const
@@ -53,43 +75,41 @@ const Guid& ResourceReference::GetId() const
 	return _resourceId;
 }
 
-bool ResourceReference::IsResourceSpecified() {
-	return !_resourceName.empty();
+bool ResourceReference::IsResourceSpecified() 
+{
+	return _resourceId.isValid();
 }
 
-void ResourceReference::SetResource(Resource* resource) {
+void ResourceReference::SetResource(Resource* resource)
+{
 	if (resource == nullptr)
 		return;
 
-	_resourceName = resource->GetName();
-	_resourcePointer = ResourceCache::Get()->GetResource(_resourceName, _resourceType);
-	_resourceId = resource->getId();
-	SetResourceType(resource->GetResourceType());
-
-	//if resource created from other resource
-	if (resource->GetParent()) {
-		_parentName = resource->GetParent()->GetName();
+	if (resource->GetParent())
+	{
+		//Это дочерний ресурс, запоминаем имя
+		_childName = resource->GetName();
+		_resourceId = resource->GetParent()->getId();
 	}
+	else 
+	{
+		_childName = "";
+		_resourceId = resource->getId();
+	}
+
+	_resourcePointer = nullptr;
+	UpdatePointer();
 }
 
-void ResourceReference::SetResource(const std::string& resourceName) {
-	_resourceName = resourceName;
-	if (resourceName.empty())
-		_resourcePointer = nullptr;
-	else
-		SetResource(ResourceCache::Get()->GetResource(_resourceName, _resourceType));
+void ResourceReference::SetResource(const Guid& parentId, const std::string& childName)
+{
+	_resourcePointer = nullptr;
+	_childName = childName;
+	_resourceId = parentId;
+	UpdatePointer();
 }
 
 void ResourceReference::SetResource(const Guid& id)
 {
-	_resourceId = id;
-	SetResource(ResourceCache::Get()->GetResource(_resourceId));
-}
-
-const std::string& ResourceReference::GetResourceParentName() const{
-    return _parentName;
-}
-
-void ResourceReference::SetParentResource(const std::string& parentName){
-	_parentName = parentName;
+	SetResource(id, "");
 }

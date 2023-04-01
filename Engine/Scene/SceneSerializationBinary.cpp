@@ -24,7 +24,7 @@ void SceneSerializer::SerializeBinary(byte** data, uint32& size) {
 	//Store environment settings
 	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
 	serializer.Serialize(settings.GetAmbientColor());
-	serializer.Serialize(settings._skybox_material.GetResourceName());
+	serializer.Serialize(settings._skybox_material.GetId());
 	
 	uint32 entities_count = _scene->GetEntitiesCount() + 1;
 	serializer.Serialize(entities_count);
@@ -101,7 +101,7 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size)
 
 	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
 	settings.SetAmbientColor(solver.GetValue<Color>());
-	settings._skybox_material.SetResource(solver.ReadNextString());
+	settings._skybox_material.SetResource(solver.GetGuid());
 
 	uint32 entity_count = solver.GetValue<uint32>();
 
