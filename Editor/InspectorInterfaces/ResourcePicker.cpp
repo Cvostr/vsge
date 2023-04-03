@@ -9,13 +9,13 @@
 using namespace VSGE;
 using namespace VSGEditor;
 
-void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& reference, bool empty_res, uint32 index)
+void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& reference, ResourceType resourceType, bool empty_res, uint32 index)
 {
 	ImVec2 win_size = ImGui::GetWindowSize();
 	ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
 
 	ImVec2 cursor = ImGui::GetCursorPos();
-	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE || reference.GetResourceType() == RESOURCE_TYPE_MATERIAL)
+	if (resourceType == RESOURCE_TYPE_TEXTURE || resourceType == RESOURCE_TYPE_MATERIAL)
 		ImGui::SetCursorPos(cursor + ImVec2(0, 32));
 
 	ImGui::Text(label.c_str());
@@ -25,7 +25,7 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 	ImguiVulkanTexture* texture = nullptr;
 	ImTextureID mat_texture = nullptr;
 
-	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE) {
+	if (resourceType == RESOURCE_TYPE_TEXTURE) {
 		texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
 		Resource* resource = reference.GetResource();
@@ -36,7 +36,7 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 				texture = tex;
 		}
 	}
-	else if (reference.GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+	else if (resourceType == RESOURCE_TYPE_MATERIAL) {
 		texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
 		Resource* resource = reference.GetResource();
@@ -64,24 +64,26 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 
 	cursor = ImGui::GetCursorPos();
 
-	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE || reference.GetResourceType() == RESOURCE_TYPE_MATERIAL)
+	if (resourceType == RESOURCE_TYPE_TEXTURE || resourceType == RESOURCE_TYPE_MATERIAL)
 		ImGui::SetCursorPos(cursor + ImVec2(win_size.x - text_size.x - 120, -32));
 	else
 		ImGui::SetCursorPos(cursor + ImVec2(win_size.x - text_size.x - 90, 0));
 
 	std::string btn_text = "Select##" + label + std::to_string(index);
-	if (reference.GetResourceType() == RESOURCE_TYPE_TEXTURE && texture) {
+	if (resourceType == RESOURCE_TYPE_TEXTURE && texture) {
 		if (ImageButtonWithText((void*)texture->imtexture, btn_text.c_str(), nullptr, nullptr, ImVec2(64, 64))) {
 			ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 			rpw->SetAllowEmptyResource(empty_res);
+			rpw->SetResourceType(resourceType);
 			rpw->SetResourceReference(&reference);
 			rpw->Show();
 		}
 	}
-	else if (reference.GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+	else if (resourceType == RESOURCE_TYPE_MATERIAL) {
 		if (ImageButtonWithText((void*)mat_texture, btn_text.c_str(), nullptr, nullptr, ImVec2(64, 64))) {
 			ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 			rpw->SetAllowEmptyResource(empty_res);
+			rpw->SetResourceType(resourceType);
 			rpw->SetResourceReference(&reference);
 			rpw->Show();
 		}
@@ -89,6 +91,7 @@ void VSGEditor::DrawResourcePicker(const std::string& label, ResourceReference& 
 	else if (ImGui::Button(btn_text.c_str())) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 		rpw->SetAllowEmptyResource(empty_res);
+		rpw->SetResourceType(resourceType);
 		rpw->SetResourceReference(&reference);
 		rpw->Show();
 	}

@@ -34,7 +34,7 @@ namespace VSGE {
 		void SetFriction(float friction);
 
 		btTransform GetEntityTransform();
-		btCollisionShape* GetCollisionShape();
+		btCollisionShape* CreateCollisionShape();
 
 		void AddToWorld();
 

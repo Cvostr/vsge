@@ -30,7 +30,8 @@ namespace VSGE {
 		EventScriptCompilationBegin,
 		EventScriptCompilationDone,
 
-		EventSceneViewResized
+		EventSceneViewResized,
+		EventLibraryWindowEvent
 	};
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return type; } \

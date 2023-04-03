@@ -14,7 +14,7 @@ using namespace YAML;
 ProjectSettingsWindow::ProjectSettingsWindow() {
     _showCloseCross = true;
     _draw_mode = MODE_PROJECT;
-    _main_scene.SetResourceType(VSGE::RESOURCE_TYPE_SCENE);
+    _version = 0;
 }
 
 void ProjectSettingsWindow::OnDrawWindow(){
@@ -36,7 +36,7 @@ void ProjectSettingsWindow::OnDrawWindow(){
 
 void ProjectSettingsWindow::DrawProjectSettings() {
     DrawStringControl("Project name", _project_name);
-    DrawResourcePicker("Start scene", _main_scene);
+    DrawResourcePicker("Start scene", _main_scene, VSGE::RESOURCE_TYPE_SCENE);
 }
 void ProjectSettingsWindow::DrawApplicationSettings() {
     DrawStringControl("Application name", _application_name);

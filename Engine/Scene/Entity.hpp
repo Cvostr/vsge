@@ -186,6 +186,7 @@ namespace VSGE {
 		/// Create new entity with same content
 		/// </summary>
 		/// <returns>pointer to new entity</returns>
+		Entity* DublicateInternal();
 		Entity* Dublicate();
 		/// <summary>
 		/// Store entity in prefab

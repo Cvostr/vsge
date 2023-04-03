@@ -30,7 +30,6 @@ namespace VSGE {
 
 		MaterialTexture() {
 			_binding = 0;
-			_resource.SetResourceType(RESOURCE_TYPE_TEXTURE);
 		}
 	};
 

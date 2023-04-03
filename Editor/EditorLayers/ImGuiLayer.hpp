@@ -51,8 +51,8 @@ namespace VSGEditor {
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();
-		void OnSDL2Event(void* event_ptr);
 		void OnEvent(const VSGE::IEvent& event);
+		void OnLibraryEvent(const VSGE::LibraryWindowEvent& event);
 
 		void AddWindow(EditorWindow* window);
 		void RemoveWindow(EditorWindow* window);

@@ -12,7 +12,7 @@ namespace VSGE {
 
 	enum GraphicsApi {
 		GRAPHICS_API_VULKAN,
-		GRAPHICS_API_D3D12
+		GRAPHICS_API_HEADLESS
 	};
 
 	struct ApplicationCreateInfo {
@@ -86,7 +86,6 @@ namespace VSGE {
 		void SetRenderer(IRenderer* renderer);
 		IRenderer* GetRenderer();
 
-		void OnSDL2Event(void* event);
 		void OnEvent(const IEvent& event);
 
 		void QueueEvent(const IEvent* event);

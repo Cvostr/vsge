@@ -5,7 +5,6 @@ using namespace VSGE;
 
 ResourceReference::ResourceReference() {
     _resourcePointer = nullptr;
-    _resourceType = RESOURCE_TYPE_NONE;
 	_resourceId = Guid(0, 0, 0, 0);
 
 	ResourceCache::Get()->AddResourceReference(this);
@@ -16,17 +15,8 @@ ResourceReference::~ResourceReference()
 	ResourceCache::Get()->RemoveResourceReference(this);
 }
 
-ResourceType ResourceReference::GetResourceType() 
-{
-	return _resourceType;
-}
-
 void ResourceReference::SetPointerToNull() {
 	_resourcePointer = nullptr;
-}
-
-void ResourceReference::SetResourceType(ResourceType type) {
-	_resourceType = type;
 }
 
 Resource* ResourceReference::ResolvePointer() const

@@ -4,7 +4,6 @@
 using namespace VSGE;
 
 SceneEnvironmentSettings::SceneEnvironmentSettings(){
-	_skybox_material.SetResourceType(RESOURCE_TYPE_MATERIAL);
 	_shadow_distance = 200;
 	_shadow_cascades_count = 4;
 	UpdateShadows();

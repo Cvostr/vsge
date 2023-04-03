@@ -72,20 +72,12 @@ uint8 TerrainTexturesFactors::get(uint32 index, uint32 texture_id) {
 }
 
 TerrainTexture::TerrainTexture() {
-	_albedo_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-	_normal_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-	_roughness_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-	_metallic_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-	_ao_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-	_height_reference.SetResourceType(ResourceType::RESOURCE_TYPE_TEXTURE);
-
 	_roughness_factor = 1.f;
 	_metallic_factor = 0.f;
 	_height_factor = 0.2f;
 }
 
 TerrainGrass::TerrainGrass() {
-	_texture_reference.SetResourceType(RESOURCE_TYPE_TEXTURE);
 	_width = 1;
 	_height = 1;
 }

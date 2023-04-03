@@ -3,7 +3,6 @@
 using namespace VSGE;
 
 MaterialComponent::MaterialComponent() {
-	_materialResource.SetResourceType(RESOURCE_TYPE_MATERIAL);
 	_cast_shadows = true;
 }
 

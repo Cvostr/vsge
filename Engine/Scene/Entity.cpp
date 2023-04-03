@@ -405,14 +405,19 @@ void Entity::RemoveScript(EntityScriptComponent* script) {
 	script->OnDestroy();
 }
 
-Entity* Entity::Dublicate() {
+Entity* Entity::Dublicate()
+{
+	Entity* entity = DublicateInternal();
+	GetParent()->AddChild(entity);
+	return entity;
+}
+
+Entity* Entity::DublicateInternal() {
 	Entity* new_entity = _scene->AddNewEntity(GetName());
 
 	new_entity->SetPosition(GetAbsolutePosition());
 	new_entity->SetScale(GetAbsoluteScale());
 	new_entity->SetRotation(GetAbsoluteRotation());
-
-	GetParent()->AddChild(new_entity);
 
 	new_entity->SetActive(_active);
 	new_entity->SetStatic(_static);

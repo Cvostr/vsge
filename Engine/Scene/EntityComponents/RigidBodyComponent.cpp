@@ -119,23 +119,32 @@ btTransform RigidBodyComponent::GetEntityTransform() {
 	return result;
 }
 
-btCollisionShape* RigidBodyComponent::GetCollisionShape() {
+btCollisionShape* RigidBodyComponent::CreateCollisionShape() 
+{
 	Vec3 scale = _entity->GetAbsoluteScale();
 
-	MeshComponent* mesh_comp = _entity->GetComponent<MeshComponent>();
+	//Получить объект MeshComponent
+	MeshComponent* meshComponent = _entity->GetComponent<MeshComponent>();
 
-	if (mesh_comp) {
-		MeshResource* mesh_resource = mesh_comp->GetResourceReference().GetResource<MeshResource>();
-		if (mesh_resource) {
-			if (!mesh_resource->IsReady()) {
-				mesh_resource->Load();
+	if (meshComponent) 
+	{
+		//Объект удалось получить, получаем ресурс Mesh
+		MeshResource* meshResource = meshComponent->GetResourceReference().GetResource<MeshResource>();
+		if (meshResource) 
+		{
+			//Удалось получить ресурс
+			//Проверяем состояние
+			if (!meshResource->IsReady()) 
+			{
+				//Ресурс не загружен, ставим в очередь на загрузку и выходим с nullptr
+				meshResource->Load();
 				return nullptr;
 			}
 
-			Mesh* mesh = mesh_resource->GetMesh();
+			Mesh* mesh = meshResource->GetMesh();
 			Vec3* pos = mesh->GetPositions();
 
-			btCollisionShape* shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(float) * 3);
+			btCollisionShape* shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(Vec3));
 			shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 			return shape;
 		}
@@ -144,7 +153,8 @@ btCollisionShape* RigidBodyComponent::GetCollisionShape() {
 	return nullptr;
 }
 
-void RigidBodyComponent::AddToWorld() {
+void RigidBodyComponent::AddToWorld() 
+{
 	btVector3 local_intertia(0, 0, 0);
 
 	if (_collision_shape && _rigidBody)
@@ -158,7 +168,7 @@ void RigidBodyComponent::AddToWorld() {
 	//release old rigidbody
 	SAFE_RELEASE(_rigidBody);
 
-	_collision_shape = GetCollisionShape();
+	_collision_shape = CreateCollisionShape();
 	if (_collision_shape == nullptr)
 		return;
 
@@ -186,45 +196,64 @@ void RigidBodyComponent::AddToWorld() {
 	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidBody);
 }
 
-void RigidBodyComponent::OnUpdate() {
-	if (!_rigidBody)
+void RigidBodyComponent::OnUpdate() 
+{
+	//Проверка, создан ли объект rigidBody
+	if (!_rigidBody) 
+	{
+		//если не создан, попробуем создать
 		AddToWorld();
-	if (!_rigidBody)
-		return;
+	}
 
+	if (!_rigidBody)
+	{
+		//Создать не получилось, выходим
+		return;
+	}
+
+	//Извлечение данных трансформации из bullet и изменение состояния объекта в мире
 	btVector3 bullet_pos = _rigidBody->getCenterOfMassPosition();
 	btQuaternion bullet_rot = _rigidBody->getOrientation();
 
 	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
 	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
 
-	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
+	//Получена матрица абсолютной трансформации
+	Mat4 entityAbsoluteTransformMat = GetTransform(pos, GetEntity()->GetScale(), rot);
+	//Получение матрицы трансформации родителя
 	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
-	Mat4 _new = mm * parent_tranform.invert();
+	//Получение матрицы локальной трансформации
+	Mat4 entityLocalTransformMat = entityAbsoluteTransformMat * parent_tranform.invert();
 
-	_entity->SetPosition(_new.GetPosition());
-	_entity->SetRotation(GetRotationFromQuat(_new));
+	//Применение локальной трансформации для объекта
+	_entity->SetPosition(entityLocalTransformMat.GetPosition());
+	_entity->SetRotation(GetRotationFromQuat(entityLocalTransformMat));
 
 	Activate();
 }
 
-void RigidBodyComponent::OnDestroy() {
-	
-	if (_rigidBody) {
+void RigidBodyComponent::OnDestroy() 
+{
+	if (_rigidBody) 
+	{
 		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidBody);
 		SAFE_RELEASE(_rigidBody)
 	}
 	SAFE_RELEASE(_collision_shape)
 }
 
-void RigidBodyComponent::OnActivate() {
-	if (_rigidBody) {
+void RigidBodyComponent::OnActivate() 
+{
+	if (_rigidBody)
+	{
 		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidBody);
 	}
 }
 
-void RigidBodyComponent::OnDeactivate() {
-	if (_rigidBody) {
+void RigidBodyComponent::OnDeactivate() 
+{
+	if (_rigidBody)
+	{
 		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidBody);
 	}
 }

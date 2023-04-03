@@ -13,7 +13,6 @@ AnimatorComponent::AnimatorComponent() :
 void AnimatorComponent::AddNewAnimation() {
 	AnimationCoeff coeff;
 	coeff.coeff = 1;
-	coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
 	_animations.push_back(coeff);
 }
 
@@ -122,7 +121,6 @@ void AnimatorComponent::Deserialize(ByteSolver& solver)
 
         AnimationCoeff anim_coeff;
         anim_coeff._animResource.SetResource(resourceId);
-        anim_coeff._animResource.SetResourceType(RESOURCE_TYPE_ANIMATION);
         anim_coeff.coeff = coeff;
         _animations.push_back(anim_coeff);
     }

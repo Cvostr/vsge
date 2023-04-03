@@ -230,13 +230,15 @@ void ImGuiLayer::OnDetach() {
     ImGui::DestroyContext();
 }
 
-void ImGuiLayer::OnSDL2Event(void* event_ptr) {
-    SDL_Event* event = static_cast<SDL_Event*>(event_ptr);
-    ImGui_ImplSDL2_ProcessEvent(event);
+void ImGuiLayer::OnEvent(const VSGE::IEvent& event) 
+{
+    VSGE::DispatchEvent<VSGE::LibraryWindowEvent>(event, EVENT_FUNC(ImGuiLayer::OnLibraryEvent));
 }
 
-void ImGuiLayer::OnEvent(const VSGE::IEvent& event) {
-    
+void ImGuiLayer::OnLibraryEvent(const VSGE::LibraryWindowEvent& event)
+{
+    SDL_Event* pEvent = static_cast<SDL_Event*>(event.ptr);
+    ImGui_ImplSDL2_ProcessEvent(pEvent);
 }
 
 void ImGuiLayer::AddWindow(EditorWindow* window) {

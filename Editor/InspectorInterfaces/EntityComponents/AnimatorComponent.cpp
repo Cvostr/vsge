@@ -7,7 +7,7 @@ void VSGEditor::DrawAnimatorComponent(VSGE::AnimatorComponent* anic) {
 
 	int i = 0;
 	for (auto& anim : anic->GetAnimations()) {
-		DrawResourcePicker(std::string("Animation"), anim._animResource, true, i++);
+		DrawResourcePicker(std::string("Animation"), anim._animResource, VSGE::RESOURCE_TYPE_ANIMATION, true, i++);
 		ImGui::InputFloat(std::string("Coeff##" + std::to_string(i)).c_str(), &anim.coeff);
 		ImGui::Separator();
 	}

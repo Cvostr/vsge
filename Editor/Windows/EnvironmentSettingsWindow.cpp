@@ -17,7 +17,7 @@ void EnvironmentSettingsWindow::OnDrawWindow(){
 		DrawColorControl("Light color", ambient_color);
 		settings.SetAmbientColor(ambient_color);
 
-		DrawResourcePicker("Skybox material", settings._skybox_material);
+		DrawResourcePicker("Skybox material", settings._skybox_material, VSGE::RESOURCE_TYPE_MATERIAL);
 
 		float shadows_distance = settings.GetMaxShadowDistance();
 		DrawFloatControl("Shadow distance", shadows_distance);

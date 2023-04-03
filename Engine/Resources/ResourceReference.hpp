@@ -6,7 +6,6 @@
 
 namespace VSGE{
     class ResourceReference {
-		ResourceType _resourceType;
 		Resource* _resourcePointer;
 		Guid _resourceId;			//ID ресурса, если ссылаемся на дочерний ресурс - это ид родителя
 		std::string _childName;		//Если не пустое - значит ссылаемся на дочерний ресурс
@@ -14,10 +13,6 @@ namespace VSGE{
 		Resource* ResolvePointer() const; //Вычислить указатель из кеша
 		void UpdatePointer();
 	public:
-		
-		ResourceType GetResourceType();
-
-		void SetResourceType(ResourceType type);
 
 		void SetPointerToNull();
 

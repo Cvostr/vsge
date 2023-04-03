@@ -10,7 +10,6 @@ namespace VSGE {
 		virtual void OnDetach() {}
 		virtual void OnUpdate() = 0;
 
-		virtual void OnSDL2Event(void* event_ptr) {}
 		virtual void OnEvent(const IEvent& event) {}
 	};
 

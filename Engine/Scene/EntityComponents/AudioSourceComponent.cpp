@@ -19,7 +19,7 @@ AudioSourceComponent::AudioSourceComponent() :
 	_clipDuration(0),
 	_created(false)
 {
-	_audioResource.SetResourceType(RESOURCE_TYPE_AUDIOCLIP);
+
 }
 
 void AudioSourceComponent::Create() {

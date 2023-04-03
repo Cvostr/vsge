@@ -11,7 +11,6 @@ namespace VSGE {
 		ResourceReference _meshResource;
 	public:
 		MeshComponent() {
-			_meshResource.SetResourceType(RESOURCE_TYPE_MESH);
 		}
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_MESH, "Mesh")

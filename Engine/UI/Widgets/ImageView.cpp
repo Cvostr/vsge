@@ -5,8 +5,9 @@
 using namespace VSGE;
 
 SpriteView::SpriteView() {
-	_texture_reference.SetResourceType(RESOURCE_TYPE_TEXTURE);
+
 }
+
 SpriteView::~SpriteView() {
 
 }

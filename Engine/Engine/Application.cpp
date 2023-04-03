@@ -41,11 +41,6 @@ void Application::OnUpdate() {
 	}
 }
 
-void Application::OnSDL2Event(void* event) {
-    for (auto layer : _layers) {
-        layer->OnSDL2Event(event);
-    }
-}
 void Application::OnEvent(const IEvent& event) {
 	for (auto layer : _layers) {
 		if (_running) {

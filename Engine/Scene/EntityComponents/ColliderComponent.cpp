@@ -49,26 +49,35 @@ void ColliderComponent::SetCenter(const Vec3& center) {
 void ColliderComponent::AddToWorld() {
 	btVector3 local_intertia(0, 0, 0);
 
-	if(_rigidbody)
+	if (_rigidbody) 
+	{
+		//До этого был создан жесткий rigidbody объект, удаляем его со сцены
 		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
-	if (_trigger)
+		//Уничтожаем объект
+		SAFE_RELEASE(_rigidbody);
+	}
+	if (_trigger) 
+	{
+		//До этого был создан жесткий trigger объект, удаляем его со сцены
 		_entity->GetScene()->GetPhysicalWorld()->RemoveCollisionObject(_trigger);
+		//Уничтожаем объект
+		SAFE_RELEASE(_trigger);
+	}
 
 	//release old collider shape
 	SAFE_RELEASE(_collision_shape);
-	//release old rigidbody
-	SAFE_RELEASE(_rigidbody);
-	//release old ghost
-	SAFE_RELEASE(_trigger);
 	//Create new collision shape
 	_collision_shape = GetBtShape();
 	//check new shape
 	if (_collision_shape == nullptr)
-		//shape wasn't created, exiting
+	{
+		//Создать shape не получилось, выходим
 		return;
+	}
 
 	btTransform startTransform = GetEntityTransform();
-	if (!_is_trigger) {
+	if (!_is_trigger) 
+	{
 		//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
 		btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
 		//rigidbody info
@@ -80,7 +89,9 @@ void ColliderComponent::AddToWorld() {
 		//add rigidbody to world
 		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
 	}
-	else {
+	else 
+	{
+		//Создаем trigger объект
 		_trigger = new btGhostObject();
 		_trigger->setCollisionFlags(_trigger->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		_trigger->setCollisionShape(_collision_shape);
@@ -107,7 +118,8 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 		break;
 	}
 
-	if (shape) {
+	if (shape) 
+	{
 		shape->setLocalScaling(btVector3(_size.x, _size.y, _size.z));
 	}
 

@@ -6,6 +6,6 @@
 #include <imgui.h>
 
 namespace VSGEditor {
-	void DrawResourcePicker(const std::string& label, VSGE::ResourceReference& reference, bool empty_res = false, uint32 index = 0);
+	void DrawResourcePicker(const std::string& label, VSGE::ResourceReference& reference, VSGE::ResourceType resourceType, bool empty_res = false, uint32 index = 0);
 	void DrawScriptPicker(const std::string& label, VSGE::EntityScriptComponent* script, uint32 index);
 }

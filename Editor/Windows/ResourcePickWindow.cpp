@@ -21,7 +21,7 @@ void ResourcePickerWindow::OnDrawWindow() {
     if (Draw("Select")) {
         
         if (reference)
-            DrawResourcePicker();
+            DrawResourcePicker(resourceType);
         if (script_reference)
             DrawScriptPicker();
         
@@ -29,7 +29,7 @@ void ResourcePickerWindow::OnDrawWindow() {
     }
 }
 
-void ResourcePickerWindow::DrawResourcePicker() {
+void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
     uint32 resources_size = ResourceCache::Get()->GetResourcesCount();
     float width = ImGui::GetCurrentWindow()->Size.x;
     uint32 drawn_pix = 0;
@@ -42,9 +42,9 @@ void ResourcePickerWindow::DrawResourcePicker() {
 
     for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) {
         Resource* resource = ResourceCache::Get()->GetResources()[resource_i];
-        if (resource->GetResourceType() == reference->GetResourceType()) {
+        if (resource->GetResourceType() == resourceType) {
 
-            if (reference->GetResourceType() == RESOURCE_TYPE_TEXTURE) {
+            if (resourceType == RESOURCE_TYPE_TEXTURE) {
                 ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
 
                 ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(resource->GetDataDescription().file_path);
@@ -76,7 +76,7 @@ void ResourcePickerWindow::DrawResourcePicker() {
                         drawn_pix = 0;
                 }
             }
-            else if (reference->GetResourceType() == RESOURCE_TYPE_MATERIAL) {
+            else if (resourceType == RESOURCE_TYPE_MATERIAL) {
                 ImTextureID texture = TextureThumbnails::Get()->GetCheckerboardTexture()->imtexture;
 
                 if (resource->GetState() != RESOURCE_STATE_READY) {
@@ -123,6 +123,11 @@ void ResourcePickerWindow::DrawScriptPicker() {
             Hide();
         }
     }
+}
+
+void ResourcePickerWindow::SetResourceType(VSGE::ResourceType type)
+{
+    resourceType = type;
 }
 
 void ResourcePickerWindow::SetResourceToReference(Resource* resource) {

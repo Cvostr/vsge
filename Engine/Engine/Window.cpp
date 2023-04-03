@@ -138,7 +138,9 @@ void VSGE::Window::PollEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        app->OnSDL2Event(&event);
+        LibraryWindowEvent libevent;
+        libevent.ptr = &event;
+        app->OnEvent(libevent);
 
         if (event.type == SDL_MOUSEMOTION) {
             EventMouseMotion mouse_motion_event(event.motion.x,

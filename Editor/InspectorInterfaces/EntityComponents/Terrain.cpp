@@ -92,7 +92,7 @@ bool DrawTerrainGrassEdit(uint32 grass_index, VSGE::TerrainGrass* terrain_grass)
 	if (is_picked)
 		picked_grass_index = grass_index;
 
-	DrawResourcePicker("Diffuse", terrain_grass->_texture_reference, true, grass_index);
+	DrawResourcePicker("Diffuse", terrain_grass->_texture_reference, VSGE::RESOURCE_TYPE_TEXTURE, true, grass_index);
 
 	std::string width_text = "Grass width##" + std::to_string(grass_index);
 	std::string height_text = "Grass height##" + std::to_string(grass_index);

@@ -5,7 +5,7 @@
 using namespace VSGEditor;
 
 void VSGEditor::DrawAudioSourceComponent(VSGE::AudioSourceComponent* asc) {
-	DrawResourcePicker(std::string("Audio Clip"), asc->GetResourceReference());
+	DrawResourcePicker(std::string("Audio Clip"), asc->GetResourceReference(), VSGE::RESOURCE_TYPE_AUDIOCLIP);
 
 	float volume = asc->GetVolume();
 	DrawFloatControl("Volume", volume);

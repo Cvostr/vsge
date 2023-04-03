@@ -24,7 +24,7 @@ void VSGEditor::DrawCameraComponent(VSGE::Camera* cac) {
 	DrawViewMaskEditor(current_view_mask);
 	cac->SetViewMask(current_view_mask);
 
-	DrawResourcePicker(std::string("Render Target"), cac->GetTargetReference(), true);
+	DrawResourcePicker(std::string("Render Target"), cac->GetTargetReference(), VSGE::RESOURCE_TYPE_TEXTURE, true);
 
 	PostEffectsParams& params = cac->GetPostEffectParams();
 

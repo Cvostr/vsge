@@ -7,7 +7,7 @@
 using namespace VSGE;
 
 void VSGEditor::DrawMaterialComponent(VSGE::MaterialComponent* mat) {
-	DrawResourcePicker(std::string("Material"), mat->GetResourceReference());
+	DrawResourcePicker(std::string("Material"), mat->GetResourceReference(), VSGE::RESOURCE_TYPE_MATERIAL);
 
 	bool cast_shadows = mat->IsCastShadows();
 	DrawCheckboxControl("Cast shadows", cast_shadows);

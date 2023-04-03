@@ -6,5 +6,5 @@ using namespace VSGEditor;
 using namespace VSGE;
 
 void VSGEditor::DrawMeshComponent(VSGE::MeshComponent* light) {
-	DrawResourcePicker(std::string("Mesh"), light->GetResourceReference());
+	DrawResourcePicker(std::string("Mesh"), light->GetResourceReference(), VSGE::RESOURCE_TYPE_MESH);
 }

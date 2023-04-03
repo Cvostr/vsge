@@ -143,4 +143,14 @@ namespace VSGE {
 			
 		}
 	};
+	class LibraryWindowEvent : public IEvent {
+	public:
+		void* ptr;
+
+		EVENT_CLASS_TYPE(EventType::EventLibraryWindowEvent)
+
+		LibraryWindowEvent() {
+
+		}
+	};
 }
