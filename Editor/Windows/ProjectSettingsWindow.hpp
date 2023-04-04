@@ -13,13 +13,6 @@ namespace VSGEditor {
 	class ProjectSettingsWindow : public EditorWindow {
 	private:
 		DrawMode _draw_mode;
-		//project settings
-		std::string _project_name;
-		VSGE::ResourceReference _main_scene;
-		//Application settings
-		std::string _application_name;
-		int _version;
-		std::string _version_string;
 
 		void Save();
 
@@ -31,7 +24,6 @@ namespace VSGEditor {
 
 		void SetDrawMode(DrawMode mode);
 
-		void LoadSettings();
 		void OnDrawWindow();
 	};
 }

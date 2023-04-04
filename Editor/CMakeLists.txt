@@ -10,6 +10,7 @@ set(SRC_FILES
                 Base/ImguiHelper.cpp
                 Base/ImGuiWindow.cpp
                 Base/Project.cpp
+                Base/ProjectSettings.cpp
                 EditorLayers/EditorLayer.cpp
                 EditorLayers/EditorSettingsLayer.cpp
                 EditorLayers/ImGuiLayer.cpp
@@ -69,6 +70,7 @@ set(HEADER_FILES   Base/Events.hpp
                     Base/ImGuiWindow.hpp
                     Base/ImVulkanTexture.hpp
                     Base/Project.hpp
+                    Base/ProjectSettings.hpp
                     
                     EditorLayers/EditorLayer.hpp
                     EditorLayers/EditorSettingsLayer.hpp

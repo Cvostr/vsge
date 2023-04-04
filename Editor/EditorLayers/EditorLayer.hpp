@@ -87,7 +87,7 @@ namespace VSGEditor {
 		void fileEvent(const VSGE::FilesystemEvent& event);
 
 		bool OpenProject(const Project& project);
-		const Project& GetProject();
+		Project& GetProject();
 
 		void OnAttach();
 		void OnUpdate();

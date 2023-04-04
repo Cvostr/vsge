@@ -5,16 +5,15 @@
 #include <Engine/Application.hpp>
 #include <fstream>
 #include <Base/ImguiHelper.hpp>
-#include <yaml-cpp/yaml.h>
+#include <mpi/Parse/Json/JsonReader.hpp>
+#include <mpi/Parse/Json/JsonWriter.hpp>
 
 using namespace VSGE;
 using namespace VSGEditor;
-using namespace YAML;
 
 ProjectSettingsWindow::ProjectSettingsWindow() {
     _showCloseCross = true;
     _draw_mode = MODE_PROJECT;
-    _version = 0;
 }
 
 void ProjectSettingsWindow::OnDrawWindow(){
@@ -35,13 +34,25 @@ void ProjectSettingsWindow::OnDrawWindow(){
 }
 
 void ProjectSettingsWindow::DrawProjectSettings() {
-    DrawStringControl("Project name", _project_name);
-    DrawResourcePicker("Start scene", _main_scene, VSGE::RESOURCE_TYPE_SCENE);
+    std::string projectName = EditorLayer::Get()->GetProject().getSettings().getProjectName();
+    DrawStringControl("Project name", projectName);
+    EditorLayer::Get()->GetProject().getSettings().setProjectName(projectName);
+
+    ResourceReference& startupScene = EditorLayer::Get()->GetProject().getSettings().getStartupSceneResource();
+    DrawResourcePicker("Start scene", startupScene, VSGE::RESOURCE_TYPE_SCENE);
 }
 void ProjectSettingsWindow::DrawApplicationSettings() {
-    DrawStringControl("Application name", _application_name);
-    DrawIntControl("Version", _version);
-    DrawStringControl("Version string", _version_string);
+    std::string applicationName = EditorLayer::Get()->GetProject().getSettings().getApplicationName();
+    DrawStringControl("Application name", applicationName);
+    EditorLayer::Get()->GetProject().getSettings().setApplicationName(applicationName);
+
+    int version = EditorLayer::Get()->GetProject().getSettings().getVersion();
+    DrawIntControl("Version", version);
+    EditorLayer::Get()->GetProject().getSettings().setVersion(version);
+    
+    std::string versionString = EditorLayer::Get()->GetProject().getSettings().getVersionString();
+    DrawStringControl("Version string", versionString);
+    EditorLayer::Get()->GetProject().getSettings().setVersionString(versionString);
 }
 
 void ProjectSettingsWindow::SetDrawMode(DrawMode mode) {
@@ -52,47 +63,6 @@ void ProjectSettingsWindow::Save() {
     Application* app = Application::Get();
     EditorLayer* el = app->GetLayer<EditorLayer>();
 
-    std::string project_cfg_path = el->GetProject().GetRootDirectory() + "/project.manifest";
-    std::string app_cfg_path = el->GetProject().GetRootDirectory() + "/application.manifest";
-
-    YAML::Emitter out;
-    out << YAML::BeginMap;
-    out << YAML::Key << "project_name" << YAML::Value << _project_name;
-    out << YAML::Key << "main_scene" << YAML::Value << _main_scene.GetId().toString();
-    out << YAML::EndMap;
-    std::ofstream fout(project_cfg_path);
-    fout << out.c_str();
-    fout.close();
-
-    YAML::Emitter out_app;
-    out_app << YAML::BeginMap;
-    out_app << YAML::Key << "application_name" << YAML::Value << _application_name;
-    out_app << YAML::Key << "version" << YAML::Value << _version;
-    out_app << YAML::Key << "version_str" << YAML::Value << _version_string;
-    out_app << YAML::EndMap;
-    std::ofstream fout_app(app_cfg_path);
-    fout_app << out_app.c_str();
-    fout_app.close();
-}
-
-void ProjectSettingsWindow::LoadSettings() {
-    Application* app = Application::Get();
-    EditorLayer* el = app->GetLayer<EditorLayer>();
-    std::string project_cfg_path = el->GetProject().GetRootDirectory() + "/project.manifest";
-    std::string app_cfg_path = el->GetProject().GetRootDirectory() + "/application.manifest";
-
-    Node data = YAML::LoadFile(project_cfg_path);
-    _project_name = data["project_name"].as<std::string>();
-    try {
-        _main_scene.SetResource(Guid(data["main_scene"].as<std::string>()));
-    }
-    catch (...)
-    {
-
-    }
-
-    Node data_app = YAML::LoadFile(app_cfg_path);
-    _application_name = data_app["application_name"].as<std::string>();
-    _version = data_app["version"].as<int>();
-    _version_string = data_app["version_str"].as<std::string>();
+    el->GetProject().saveSettings();
+  
 }

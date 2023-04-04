@@ -4,17 +4,7 @@
 using namespace VSGE;
 
 void SceneResource::Prepare() {
-	//check header
-	bool is_binary = true;
-	bool is_yaml = true;
-	char* binary_header = "vsgebscene";
-	for (uint32 i = 0; i < 10; i++) {
-		if (_loadedData[i] != binary_header[i])
-			is_binary = false;
-	}
-
-	if (is_binary)
-		SceneLayer::Get()->LoadSceneBinary(_loadedData, _description.size, _load_slot);
+	SceneLayer::Get()->LoadSceneBinary(_loadedData, _description.size, _load_slot);
 
 	FreeLoadedData();
 	SetState(RESOURCE_STATE_UNLOADED);

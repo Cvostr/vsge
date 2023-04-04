@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <Misc/DialogWindows.hpp>
 #include <fstream>
-#include <yaml-cpp/yaml.h>
+#include <Base/ProjectSettings.hpp>
 
 using namespace VSGEditor;
 
@@ -46,26 +46,18 @@ void CreateProjectWindow::OnDrawWindow() {
             std::filesystem::create_directory(root_dir + "/cache");
             std::filesystem::create_directory(root_dir + "/built");
 
-            //Write manifest files
-            YAML::Emitter out;
-            out << YAML::BeginMap;
-            out << YAML::Key << "project_name" << YAML::Value << project_name;
-            out << YAML::Key << "main_scene" << YAML::Value << "";
-            out << YAML::EndMap;
+            //Write settings files
+            ProjectSettings settings;
+            settings.setProjectName(project_name);
+            settings.setApplicationName(project_name);
+            settings.setVersion(0);
+            settings.setVersionString("v0.0");
+            settings.setStartupSceneId(Guid(0, 0, 0, 0));
+            std::string json;
+            settings.saveToJSON(json);
 
-            std::ofstream fout(root_dir + "/project.manifest");
-            fout << out.c_str();
-            fout.close();
-
-            YAML::Emitter out_app;
-            out_app << YAML::BeginMap;
-            out_app << YAML::Key << "application_name" << YAML::Value << project_name;
-            out_app << YAML::Key << "version" << YAML::Value << 1;
-            out_app << YAML::Key << "version_str" << YAML::Value << "v1.0";
-            out_app << YAML::EndMap;
-
-            fout.open(root_dir + "/application.manifest");
-            fout << out_app.c_str();
+            std::ofstream fout(root_dir + "/config.json", std::ios::binary);
+            fout.write(json.c_str(), json.size());
             fout.close();
 
             Hide();

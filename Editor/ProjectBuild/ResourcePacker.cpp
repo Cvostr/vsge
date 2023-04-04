@@ -9,7 +9,6 @@
 
 using namespace VSGEditor;
 using namespace VSGE;
-using namespace YAML;
 
 #define MEGS_2_BYTES 1024 * 1024
 
@@ -45,10 +44,9 @@ void ResourcePacker::Write(){
 
     Application* app = Application::Get();
     EditorLayer* el = app->GetLayer<EditorLayer>();
-    std::string project_cfg_path = el->GetProject().GetRootDirectory() + "/project.manifest";
-    Node data = YAML::LoadFile(project_cfg_path);
-    std::string project_name = data["project_name"].as<std::string>();
-    Guid main_scene = Guid(data["main_scene"].as<std::string>());
+    
+    std::string project_name = el->GetProject().getSettings().getProjectName();
+    Guid main_scene = el->GetProject().getSettings().getStartupSceneResource().GetId();
 
     ResourceCache* cache = ResourceCache::Get();
     

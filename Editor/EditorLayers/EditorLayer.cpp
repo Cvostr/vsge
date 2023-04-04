@@ -121,7 +121,6 @@ bool EditorLayer::OpenProject(const Project& project) {
 
 	ProjectSettingsWindow* proj_settings = new ProjectSettingsWindow;
 	proj_settings->Hide();
-	proj_settings->LoadSettings();
 	ImGuiLayer::Get()->AddWindow(proj_settings);
 
 	ProjectBuildingWindow* pbw = new ProjectBuildingWindow;
@@ -143,7 +142,7 @@ bool EditorLayer::OpenProject(const Project& project) {
 	return false;
 }
 
-const Project& EditorLayer::GetProject() {
+Project& EditorLayer::GetProject() {
 	return _project;
 }
 

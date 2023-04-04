@@ -94,10 +94,9 @@ void SceneLayer::LoadSceneBinary(byte* data, uint32 size, uint32 index) {
 	Application::Get()->QueueEvent(load_event);
 
 	VSGE::SceneSerializer ss;
-
 	dest_scene->NewScene();
 	ss.SetScene(dest_scene);
-	ss.DeserializeBinary(data, size);
+	bool rc = ss.DeserializeBinary(data, size);
 
 	dest_scene->setLoading(false);
 	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(dest_scene);
