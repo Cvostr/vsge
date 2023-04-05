@@ -20,6 +20,7 @@
 #include <Misc/VkMaterialsThumbnails.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
 #include <mpi/Desktop/Desktop.hpp> 
+#include <EditorLayers/EditorSettingsLayer.hpp>
 
 namespace fs = std::filesystem;
 using namespace VSGEditor;
@@ -83,7 +84,6 @@ void FileBrowserWindow::UpdateDirectoryContent() {
 
 FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
     _rootDir = RootDir;
-    _itemsSize = 64;
     SetDirectory(RootDir);
 
     EditorIcons::Get()->LoadIcons();
@@ -116,6 +116,8 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
 
 void FileBrowserWindow::OnDrawWindow() {
     Draw("File Browser");
+
+    EditorSettingsLayer* settingsLayer = EditorSettingsLayer::Get();
 
     ImGuiWindow* w = ImGui::GetCurrentWindow(); //Newly created window
 
@@ -180,7 +182,7 @@ void FileBrowserWindow::OnDrawWindow() {
     }
 
     ImGui::SameLine();
-    ImGui::SliderInt("Size", &_itemsSize, 32, 96);
+    ImGui::SliderInt("Size", &settingsLayer->icons_size, 32, 96);
 
     float width = w->Size.x;
     
@@ -220,7 +222,7 @@ void FileBrowserWindow::OnDrawWindow() {
         bool hovered = false;
         bool clicked = ImageButtonWithText(icon, e->name.c_str(),
             &pix, &hovered,
-            ImVec2((float)_itemsSize, (float)_itemsSize),
+            ImVec2((float)settingsLayer->icons_size, (float)settingsLayer->icons_size),
             ImVec2(0, 0),
             ImVec2(1, 1),
             -1,

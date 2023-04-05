@@ -9,9 +9,11 @@ namespace VSGEditor {
 	class EditorSettingsLayer : public VSGE::IApplicationLayer {
 	private:
 		static EditorSettingsLayer* _this;
+
+		void parseJSON(const std::string& settingsJson);
+		void serializeToJSON(std::string& serialized);
 	public:
-		uint32 icons_size;
-		std::string _mono_path;
+		int icons_size;
 
 		uint32 _windowWidth;
 		uint32 _windowHeight;
@@ -29,7 +31,6 @@ namespace VSGEditor {
 			_windowHeight = 720;
 			_windowPosX = SDL_WINDOWPOS_CENTERED;
 			_windowPosY = SDL_WINDOWPOS_CENTERED;
-			_mono_path = "D:\\Mono";
 		}
 	
 		void OnAttach();

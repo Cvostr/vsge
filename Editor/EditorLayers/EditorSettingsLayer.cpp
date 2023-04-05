@@ -1,30 +1,57 @@
 #include <Engine/Application.hpp>
 #include "EditorSettingsLayer.hpp"
-#include <yaml-cpp/yaml.h>
 #include <fstream>
+#include <mpi/Parse/Json/JsonReader.hpp>
+#include <mpi/Parse/Json/JsonWriter.hpp>
 
 using namespace VSGEditor;
+using namespace Mpi;
+
+#define SETTINGS_FILE "settings.json"
 
 EditorSettingsLayer* EditorSettingsLayer::_this = nullptr;
 
-void EditorSettingsLayer::OnAttach() {
-	YAML::Node data;
-	try {
-		data = YAML::LoadFile("editor_settings.ini");
-	}
-	catch (YAML::BadFile& exc) {
-		return;
-	}
+void EditorSettingsLayer::parseJSON(const std::string& settingsJson)
+{
+	JsonReader reader(settingsJson);
+	JsonNode node = reader.parse();
 
-	icons_size = data["icons_size"].as<uint32>();
-	_mono_path = data["mono_path"].as<std::string>();
+	_windowWidth = (uint32)node["windowWidth"].getValue<int>();
+	_windowHeight = (uint32)node["windowHeight"].getValue<int>();
 
-	_windowWidth = data["win_width"].as<uint32>();
-	_windowHeight = data["win_height"].as<uint32>();
+	_windowPosX = (uint32)node["windowPosX"].getValue<int>();
+	_windowPosY = (uint32)node["windowPosY"].getValue<int>();
 
-	_windowPosX = data["win_posX"].as<uint32>();
-	_windowPosY = data["win_posY"].as<uint32>();
+	icons_size = node["iconSize"].getValue<int>();
 }
+
+void EditorSettingsLayer::serializeToJSON(std::string& serialized)
+{
+	Mpi::JsonNode cfgRootNode;
+	cfgRootNode
+		.add("windowWidth", Mpi::JsonValue((int)_windowWidth))
+		.add("windowHeight", Mpi::JsonValue((int)_windowHeight))
+		.add("windowPosX", Mpi::JsonValue((int)_windowPosX))
+		.add("windowPosY", Mpi::JsonValue((int)_windowPosY))
+		.add("iconSize", Mpi::JsonValue(icons_size));
+	Mpi::JsonWriter writer(cfgRootNode);
+	writer.write(serialized);
+}
+
+void EditorSettingsLayer::OnAttach() 
+{
+	Mpi::File file(SETTINGS_FILE);
+	if (file.isFile()) 
+	{
+		std::ifstream stream = file.getIfstream(std::ios::binary);
+		char* data = new char[file.getFileSize()];
+		stream.read(data, file.getFileSize());
+		stream.close();
+		parseJSON(std::string(data));
+		delete[] data;
+	}
+}
+
 void EditorSettingsLayer::OnUpdate() {
 
 }
@@ -33,18 +60,17 @@ void EditorSettingsLayer::OnDetach() {
 	auto win = app->GetWindow();
 	//Save
 
-	YAML::Emitter out;
-	out << YAML::BeginMap;
-	out << YAML::Key << "icons_size" << YAML::Value << icons_size;
-	out << YAML::Key << "mono_path" << YAML::Value << _mono_path;
-	out << YAML::Key << "win_posX" << YAML::Value << win.GetWindowPositionX();
-	out << YAML::Key << "win_posY" << YAML::Value << win.GetWindowPositionY();
-	out << YAML::Key << "win_width" << YAML::Value << win.GetWindowWidth();
-	out << YAML::Key << "win_height" << YAML::Value << win.GetWindowHeight();
+	_windowWidth = win.GetWindowWidth();
+	_windowHeight = win.GetWindowHeight();
+	_windowPosX = win.GetWindowPositionX();
+	_windowPosY = win.GetWindowPositionX();
 
-	out << YAML::EndSeq;
-	out << YAML::EndMap;
+	std::string json;
+	serializeToJSON(json);
 
-	std::ofstream fout("editor_settings.ini");
-	fout << out.c_str();
+	Mpi::File file(SETTINGS_FILE);
+	std::ofstream stream = file.getOfstream(std::ios::binary);
+	stream.write(json.c_str(), json.size());
+	stream.close();
+
 }

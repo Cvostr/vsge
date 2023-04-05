@@ -6,57 +6,67 @@
 #include <fstream>
 #include <filesystem>
 #include <Misc/DialogWindows.hpp>
-#include <yaml-cpp/yaml.h>
+#include <mpi/Parse/Json/JsonReader.hpp>
+#include <mpi/Parse/Json/JsonWriter.hpp>
 
 using namespace VSGEditor;
-using namespace YAML;
+using namespace Mpi;
 namespace fs = std::filesystem;
+
+#define PROJECTS_LIST_FILE "projects.json"
 
 StartWindow::StartWindow() {
     ReadProjects();
 }
 
-bool StartWindow::ReadProjects() {
-    Node data;
-    try {
-        data = YAML::LoadFile("projects.ini");
-    }
-    catch (YAML::BadFile) {
-        return false;
-    }
-
-
-    if (!data["ProjectsList"])
-        return false;
-
-    Node projects = data["projects"];
-
-    if (projects)
+bool StartWindow::ReadProjects()
+{
+    Mpi::File file(PROJECTS_LIST_FILE);
+    if (!file.isFile())
     {
-        for (auto project : projects)
-        {
-            std::string proj_path = project.as<std::string>();
-            _projects.push_back(proj_path);
-        }
+        return false;
     }
+
+    std::ifstream stream = file.getIfstream(std::ios::binary);
+    char* data = new char[file.getFileSize()];
+    stream.read(data, file.getFileSize());
+    stream.close();
+
+    std::string jsonString = std::string(data);
+
+    delete[] data;
+
+    JsonReader reader(jsonString);
+    JsonNode node = reader.parse();
+
+    const JsonNode& projectsNode = node["projects"];
+    for (int i = 0; i < projectsNode.size(); i++)
+    {
+        const JsonNode& projectNode = projectsNode[i];
+        _projects.push_back(projectNode["path"].getValue<std::string>());
+    }
+
     return true;
 }
 
-void StartWindow::SaveProjectsList() {
-    YAML::Emitter out;
-    out << YAML::BeginMap;
-    out << YAML::Key << "ProjectsList" << YAML::Value << "Untitled";
-    out << YAML::Key << "projects" << YAML::Value << YAML::BeginSeq;
-
+void StartWindow::SaveProjectsList() 
+{
+    JsonValue projectsArrayNode = Mpi::JsonValue::array();
     for (auto& project : _projects) {
-        out << Value << project;
+        JsonValue projectNode = Mpi::JsonValue::object();
+        projectNode.add("path", JsonValue(project));
+        projectsArrayNode.add(projectNode);
     }
 
-    out << YAML::EndSeq;
-    out << YAML::EndMap;
+    Mpi::JsonNode cfgRootNode;
+    cfgRootNode.add("projects", projectsArrayNode);
 
-    std::ofstream fout("projects.ini");
-    fout << out.c_str();
+    std::string jsonSerialized;
+    Mpi::JsonWriter writer(cfgRootNode);
+    writer.write(jsonSerialized);
+
+    std::ofstream fout(PROJECTS_LIST_FILE, std::ios::binary);
+    fout.write(jsonSerialized.c_str(), jsonSerialized.size());
     fout.close();
 }
 

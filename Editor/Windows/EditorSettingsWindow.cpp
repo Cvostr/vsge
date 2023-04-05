@@ -68,5 +68,5 @@ void EditorSettingsWindow::DrawBuilding() {
 void EditorSettingsWindow::DrawMonoSettings() {
     EditorSettingsLayer* es = EditorSettingsLayer::Get();
     
-    ImGui::InputText("Path to mono", &es->_mono_path);
+    //ImGui::InputText("Path to mono", &es->_mono_path);
 }

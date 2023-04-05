@@ -52,8 +52,6 @@ namespace VSGEditor {
 		std::string _currentDir;
 		std::string _rootDir;
 
-		int _itemsSize;
-
 		FileEntry* renaming_entry;
 		std::string rename_file_name;
 		bool openRenameDialog;
