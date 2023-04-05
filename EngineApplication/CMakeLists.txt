@@ -43,8 +43,6 @@ target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletCollisio
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletDynamics.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletSoftBody.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/LinearMath.lib)
-#yaml
-target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/yaml/yaml-cpp-rel.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mpi/mpi.lib)
 ENDIF()
 
@@ -54,8 +52,6 @@ target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletCollisio
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletDynamics_Debug.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/BulletSoftBody_Debug.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
-#yaml
-target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/yaml/yaml-cpp-dbg.lib)
 target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mpi/mpid.lib)
 ENDIF()
 

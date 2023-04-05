@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Scene.hpp"
-#include <yaml-cpp/yaml.h>
 #include <Core/ByteSerialize.hpp>
 #include <Core/ByteSolver.hpp>
 #include "Entity.hpp"

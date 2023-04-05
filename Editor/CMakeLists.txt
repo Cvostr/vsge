@@ -157,8 +157,6 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletCollision.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath.lib)
-#yaml
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp-rel.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpi.lib)
 ENDIF()
 
@@ -168,8 +166,6 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletCollision_Debug.lib
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
-#yaml
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/yaml-cpp-dbg.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpid.lib)
 ENDIF()
 
@@ -197,7 +193,6 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/freetype/libfreetype.a)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/assimp/libassimp.a)
-target_link_libraries(Editor ${STATIC_LIBS_DIR}/yaml/libyaml-cpp.a)
 
 #bullet3 libs should be in this correct order
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/libBulletSoftBody.a)
