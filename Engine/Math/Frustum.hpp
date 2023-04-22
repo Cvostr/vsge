@@ -24,11 +24,11 @@ namespace VSGE {
 
 	class Frustum {
 	private:
-		std::vector<Plane> _planes;
+		std::vector<Plane> m_planes;
 	public:
 
 		Frustum() {
-			_planes.resize(6);
+			m_planes.resize(6);
 		}
 
 		void Update(const Mat4& PV);

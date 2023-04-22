@@ -4,8 +4,8 @@
 #include "Math/MatrixTransform.hpp"
 
 AABB::AABB(const Vec3& min, const Vec3& max) {
-	_min = min;
-	_max = max;
+	m_min = min;
+	m_max = max;
 }
 
 AABB::AABB() {
@@ -13,39 +13,39 @@ AABB::AABB() {
 }
 
 void AABB::SetZero() {
-	_min = Vec3(0);
-	_max = Vec3(0);
+	m_min = Vec3(0);
+	m_max = Vec3(0);
 }
 
 void AABB::Extend(const AABB& box) {
-	if (box._min.x < _min.x)
-		_min.x = box._min.x;
-	if (box._min.y < _min.y)
-		_min.y = box._min.y;
-	if (box._min.z < _min.z)
-		_min.z = box._min.z;
+	if (box.m_min.x < m_min.x)
+		m_min.x = box.m_min.x;
+	if (box.m_min.y < m_min.y)
+		m_min.y = box.m_min.y;
+	if (box.m_min.z < m_min.z)
+		m_min.z = box.m_min.z;
 
-	if (box._max.x > _max.x)
-		_max.x = box._max.x;
-	if (box._max.y > _max.y)
-		_max.y = box._max.y;
-	if (box._max.z > _max.z)
-		_max.z = box._max.z;
+	if (box.m_max.x > m_max.x)
+		m_max.x = box.m_max.x;
+	if (box.m_max.y > m_max.y)
+		m_max.y = box.m_max.y;
+	if (box.m_max.z > m_max.z)
+		m_max.z = box.m_max.z;
 }
 
 void AABB::Extend(const Vec3& vec) {
-	if (_min.x > vec.x) _min.x = vec.x;
-	if (_min.y > vec.y) _min.y = vec.y;
-	if (_min.z > vec.z) _min.z = vec.z;
+	if (m_min.x > vec.x) m_min.x = vec.x;
+	if (m_min.y > vec.y) m_min.y = vec.y;
+	if (m_min.z > vec.z) m_min.z = vec.z;
 				 			 
-	if (_max.x < vec.x) _max.x = vec.x;
-	if (_max.y < vec.y) _max.y = vec.y;
-	if (_max.z < vec.z) _max.z = vec.z;
+	if (m_max.x < vec.x) m_max.x = vec.x;
+	if (m_max.y < vec.y) m_max.y = vec.y;
+	if (m_max.z < vec.z) m_max.z = vec.z;
 }
 
 void AABB::PrepareForExtend() {
-	_min = Vec3(MAX_FLOAT);
-	_max = Vec3(-MAX_FLOAT);
+	m_min = Vec3(MAX_FLOAT);
+	m_max = Vec3(-MAX_FLOAT);
 }
 
 void AABB::CreateFromVertexArray(Vertex* array, unsigned int vertexCount) {
@@ -56,9 +56,9 @@ void AABB::CreateFromVertexArray(Vertex* array, unsigned int vertexCount) {
 }
 
 bool AABB::IsIntersects(const AABB& box) const {
-	if ((this->_max.x < box._min.x) || (this->_min.x > box._max.x) ||
-		(this->_max.y < box._min.y) || (this->_min.y > box._max.y) ||
-		(this->_max.z < box._min.z) || (this->_min.z > box._max.z))
+	if ((this->m_max.x < box.m_min.x) || (this->m_min.x > box.m_max.x) ||
+		(this->m_max.y < box.m_min.y) || (this->m_min.y > box.m_max.y) ||
+		(this->m_max.z < box.m_min.z) || (this->m_min.z > box.m_max.z))
 	{
 		return false;
 	}
@@ -66,9 +66,9 @@ bool AABB::IsIntersects(const AABB& box) const {
 }
 
 bool AABB::IsInside(const Vec3& point) const {
-	if (point.x < _min.x || point.x > _max.x ||
-		point.y < _min.y || point.y > _max.y ||
-		point.z < _min.z || point.z > _max.z)
+	if (point.x < m_min.x || point.x > m_max.x ||
+		point.y < m_min.y || point.y > m_max.y ||
+		point.z < m_min.z || point.z > m_max.z)
 	{
 		return false;
 	}
@@ -78,14 +78,14 @@ bool AABB::IsInside(const Vec3& point) const {
 
 void AABB::ApplyTransform(const Mat4& transform) {
 	Vec3 corners[8];
-	corners[0] = _min;
-	corners[1] = Vec3(_min.x, _max.y, _min.z);
-	corners[2] = Vec3(_min.x, _max.y, _max.z);
-	corners[3] = Vec3(_min.x, _min.y, _max.z);
-	corners[4] = Vec3(_max.x, _min.y, _min.z);
-	corners[5] = Vec3(_max.x, _max.y, _min.z);
-	corners[6] = _max;
-	corners[7] = Vec3(_max.x, _min.y, _max.z);
+	corners[0] = m_min;
+	corners[1] = Vec3(m_min.x, m_max.y, m_min.z);
+	corners[2] = Vec3(m_min.x, m_max.y, m_max.z);
+	corners[3] = Vec3(m_min.x, m_min.y, m_max.z);
+	corners[4] = Vec3(m_max.x, m_min.y, m_min.z);
+	corners[5] = Vec3(m_max.x, m_max.y, m_min.z);
+	corners[6] = m_max;
+	corners[7] = Vec3(m_max.x, m_min.y, m_max.z);
 
 	PrepareForExtend();
 	for (int i = 0; i < 8; i++) {
@@ -96,11 +96,11 @@ void AABB::ApplyTransform(const Mat4& transform) {
 }
 
 Vec3 AABB::GetCenter() const {
-	return (_min + _max) * 0.5f;
+	return (m_min + m_max) * 0.5f;
 }
 
 Vec3 AABB::GetSize() const {
-	return (_max - _min) * 0.5;
+	return (m_max - m_min) * 0.5;
 }
 
 Mat4 AABB::GetMatrix() const {

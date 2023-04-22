@@ -6,8 +6,8 @@
 
 class AABB {
 private:
-	Vec3 _min;
-	Vec3 _max;
+	Vec3 m_min;
+	Vec3 m_max;
 
 public:
 	
@@ -21,11 +21,11 @@ public:
 	void ApplyTransform(const Mat4& transform);
 
 	const Vec3& GetMin() const {
-		return _min;
+		return m_min;
 	}
 
 	const Vec3& GetMax() const {
-		return _max;
+		return m_max;
 	}
 
 	Vec3 GetCenter() const;

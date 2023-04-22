@@ -13,9 +13,9 @@ namespace VSGE {
 
 	class MonoScriptBlob {
 	private:
-		MonoAssembly* _assembly;
-		MonoImage* _image;
-		std::vector<MonoClassDesc*> _class_descs;
+		MonoAssembly* m_assembly;
+		MonoImage* m_image;
+		std::vector<MonoClassDesc*> m_class_descs;
 		void ClearDescs();
 	public:
 
@@ -29,7 +29,10 @@ namespace VSGE {
 
 		void Release();
 
-		void LoadFromFile(const std::string& path);
+		//0 - success
+		//1 - assembly load failed
+		//2 - image load failed
+		int LoadFromFile(const std::string& path);
 		MonoMethod* GetMethodByDescription(MonoMethodDesc* method_desc);
 		void BuildMonoClassDescsList();
 	};
