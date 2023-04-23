@@ -29,6 +29,7 @@ namespace Mpi {
         const std::string& getKey() const;
 
         const size_t size() const;
+        bool hasChild(const std::string& label) const;
         const JsonNode& operator[](const mpi_pos_t index) const;
         const JsonNode& operator[](const std::string& label) const;
 

@@ -4,7 +4,6 @@
 #include <Resources/ResourceCache.hpp>
 #include <Resources/ResourceTypes/MaterialResource.hpp>
 #include <Engine/Application.hpp>
-#include <Misc/DialogWindows.hpp>
 #include "../Misc/ResourceImporter.hpp"
 #include "../EditorLayers/EditorLayer.hpp"
 #include <Scene/SceneLayer.hpp>
@@ -12,7 +11,7 @@
 #include <Scene/SceneSerialization.hpp>
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include <Windows/ProjectBuildingWindow.hpp>
-#include <Misc/DialogWindows.hpp>
+#include <mpi/Desktop/Dialog.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -28,11 +27,12 @@ void SaveScene(std::string file) {
 }
 
 void SaveAs() {
-	FileDialogDesc desc;
-	desc.dialog_title = "test";
-	desc.extensions = {{"Scene", "*.scn"}};
+	Mpi::FileDialogDesc desc;
+	desc.dialogTitle = "test";
+	desc.addFileFilter({ "Scene", "*.scn" });
 	std::string save;
-	SaveFileDialog(&desc, save);
+	save = Mpi::Dialog::SaveFileDialog(desc);
+	save += ".scn";
 
 	SaveScene(save);
 }
@@ -47,11 +47,11 @@ void File_Menu::OnDrawMenu() {
 			SaveAs();
 		}
 		if (ImGui::MenuItem("Import", NULL)) {
-			FileDialogDesc desc;
-			desc.dialog_title = "Import resource";
-			desc.extensions = {{"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}};
+			Mpi::FileDialogDesc desc;
+			desc.dialogTitle = "Import resource";
+			desc.addFileFilters({{"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}});
 			std::string path;
-			OpenFileDialog(&desc, path);
+			path = Mpi::Dialog::OpenFileDialog(desc);
 
 			ImportFile(path);
 		}
@@ -89,12 +89,11 @@ void File_Menu::OnSave() {
 		}
 	}
 	else {
-		MessageDialogDesc desc;
-		desc.dialog_title = "Error saving scene!";
-		desc.message = "Unable to save scene in playmode";
-		desc.dialog_type = MessageDialogType::MESSAGE_DIALOG_TYPE_ERROR;
-		DialogUserAction action;
-		MessageDialog(&desc, action);
+		Mpi::MessageDialogDesc desc;
+		desc.dialogTitle = "Error saving scene!";
+		desc.dialogMessage = "Unable to save scene in playmode";
+		desc.dialogTitle = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+		Mpi::Dialog::MessageDialog(desc);
 	}
 
 }

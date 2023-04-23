@@ -5,13 +5,6 @@
 #include <gtk/gtk.h>
 #endif
 
-#ifdef _WIN32
-#include <windows.h>
-#include <shlobj.h>
-#undef CreateWindow
-#include <Engine/Window.hpp>
-#endif
-
 void GTK_Init(){
     #ifdef __linux__
         if ( !gtk_init_check( NULL, NULL ) )
@@ -40,22 +33,7 @@ void GTK_BindFileExtensionsToDialog(FileDialogDesc* desc, GtkWidget *dialog){
 }
 #endif
 
-void WIN32_CreateFileExtensions(FileDialogDesc* desc, std::string& out) {
-    out = "";
-    for (auto& extension : desc->extensions) {
-        out += extension.description;
-        out.push_back('\0');
-        out += extension.extension;
-        out.push_back('\0');
-    }
-}
-
 void OpenFileDialog(FileDialogDesc* desc, std::string& result){
-
-    std::string dialog_title = (!desc->dialog_title.empty()) ? desc->dialog_title : "Open File";
-    std::string accept_btn_text = (!desc->accept_btn_text.empty()) ? desc->accept_btn_text : "Select";
-    std::string cancel_btn_text = (!desc->cancel_btn_text.empty()) ? desc->cancel_btn_text : "Cancel";
-
 #ifdef __linux__
 
     GTK_Init();
@@ -82,36 +60,10 @@ void OpenFileDialog(FileDialogDesc* desc, std::string& result){
 
     GTK_Wait();
 #endif
-
-#ifdef _WIN32
-    VSGE::Window* win = VSGE::Window::Get();
-    OPENFILENAMEA ofn;
-    CHAR szFile[260] = { 0 };
-    ZeroMemory(&ofn, sizeof(OPENFILENAME));
-    ofn.lStructSize = sizeof(OPENFILENAME);
-    ofn.hwndOwner = (HWND)win->GetHWND();
-    ofn.lpstrFile = szFile;
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrTitle = dialog_title.c_str();
-    //ofn.lpstrFile = (char*)desc->base_file_name.c_str();
-
-    std::string filter;
-    WIN32_CreateFileExtensions(desc, filter);
-
-    ofn.lpstrFilter = filter.c_str();
-    ofn.nFilterIndex = 1;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-
-    if (GetOpenFileNameA(&ofn) == TRUE)
-        result = ofn.lpstrFile;
-#endif
 }
 
 void SaveFileDialog(FileDialogDesc* desc, std::string& result){
 
-    std::string dialog_title = (!desc->dialog_title.empty()) ? desc->dialog_title : "Save File";
-    std::string accept_btn_text = (!desc->accept_btn_text.empty()) ? desc->accept_btn_text : "Save";
-    std::string cancel_btn_text = (!desc->cancel_btn_text.empty()) ? desc->cancel_btn_text : "Cancel";
 #ifdef __linux__
 
     GTK_Init();
@@ -137,29 +89,6 @@ void SaveFileDialog(FileDialogDesc* desc, std::string& result){
     gtk_widget_destroy (dialog);
 
     GTK_Wait();
-#endif
-
-#ifdef _WIN32
-    VSGE::Window* win = VSGE::Window::Get();
-    OPENFILENAMEA ofn;
-    CHAR szFile[260] = { 0 };
-    ZeroMemory(&ofn, sizeof(OPENFILENAME));
-    ofn.lStructSize = sizeof(OPENFILENAME);
-    ofn.hwndOwner = (HWND)win->GetHWND();
-    ofn.lpstrFile = szFile;
-    ofn.nMaxFile = sizeof(szFile);
-
-    std::string filter;
-    WIN32_CreateFileExtensions(desc, filter);
-
-    ofn.lpstrFilter = filter.c_str();
-    ofn.nFilterIndex = 1;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-
-    ofn.lpstrDefExt = strchr(filter.c_str(), '\0') + 1;
-
-    if (GetSaveFileNameA(&ofn) == TRUE)
-        result = ofn.lpstrFile;
 #endif
 }
 
@@ -243,54 +172,5 @@ void MessageDialog(MessageDialogDesc* desc, DialogUserAction& action){
 
     gtk_widget_destroy (dialog);
     GTK_Wait();
-#endif
-
-#ifdef _WIN32
-    VSGE::Window* win = VSGE::Window::Get();
-    uint32 btype = MB_OK;
-
-    switch (desc->buttons) {
-    case MESSAGE_DIALOG_BTN_OK:
-        btype = MB_OK;
-        break;
-    case MESSAGE_DIALOG_BTN_OK_CANCEL:
-        btype = MB_OKCANCEL;
-        break;
-    case MESSAGE_DIALOG_BTN_YES_NO:
-        btype = MB_YESNO;
-        break;
-    }
-
-    uint32 mtype = MB_ICONSTOP;
-
-    switch (desc->dialog_type) {
-    case MESSAGE_DIALOG_TYPE_INFO:
-        mtype = MB_ICONINFORMATION;
-        break;
-    case MESSAGE_DIALOG_TYPE_WARNING:
-        mtype = MB_ICONWARNING;
-        break;
-    case MESSAGE_DIALOG_TYPE_QUESTION:
-        mtype = MB_ICONQUESTION;
-        break;
-    case MESSAGE_DIALOG_TYPE_ERROR:
-        mtype = MB_ICONERROR;
-        break;
-    }
-
-    LPWSTR title = new WCHAR[desc->dialog_title.size() + 1];
-    title[desc->dialog_title.size()] = '\0';
-    mbstowcs((wchar_t*)title, desc->dialog_title.c_str(), desc->dialog_title.size());
-
-    LPWSTR message = new WCHAR[desc->message.size() + 1];
-    message[desc->message.size()] = '\0';
-    mbstowcs((wchar_t*)message, desc->message.c_str(), desc->message.size());
-
-    int result = MessageBoxW((HWND)win->GetHWND(), message, title, btype | mtype);
-
-    if (result == IDOK || result == IDYES)
-        action = DIALOG_USER_ACTION_ACCEPT;
-    if (result == IDNO || result == IDCANCEL)
-        action = DIALOG_USER_ACTION_CANCEL;
 #endif
 }

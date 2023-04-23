@@ -35,26 +35,34 @@ namespace Mpi {
         }
     };
 
-    struct FileExtensionDesc {
-        std::string extension;
+    class DialogFileFilter {
+    private:
+        std::string pattern;
         std::string description;
+    public:
 
-        FileExtensionDesc() :
-            extension("*.*"),
-            description("All files")
-        {}
-        FileExtensionDesc(const std::string& description, const std::string& extension) :
-            extension(extension),
-            description(description)
-        {}
+        const std::string& getDescription() const;
+
+        const std::string& getPattern() const;
+
+        DialogFileFilter();
+
+        DialogFileFilter(const std::string& description, const std::string& pattern);
     };
 
 
-    struct FileDialogDesc {
+    class FileDialogDesc {
+    private:
+        std::vector<DialogFileFilter> filters;
+    public:
         std::string dialogTitle;
-        std::vector<FileExtensionDesc> extensions;
         std::string baseFileName;
         std::string initialDir;
+
+        const std::vector<DialogFileFilter>& getFileFilters() const;
+
+        void addFileFilter(const DialogFileFilter& filter);
+        void addFileFilters(const std::vector<DialogFileFilter>& filters);
     };
 
     class Dialog {

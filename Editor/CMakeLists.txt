@@ -158,6 +158,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpi.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpi-desktop.lib)
 ENDIF()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -167,6 +168,7 @@ target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletDynamics_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/BulletSoftBody_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/bullet/LinearMath_Debug.lib)
 target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpid.lib)
+target_link_libraries(Editor ${STATIC_LIBS_DIR}/mpi/mpi-desktopd.lib)
 ENDIF()
 
 #Win32 libs

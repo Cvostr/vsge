@@ -1,7 +1,7 @@
 #include "CreateProjectWindow.hpp"
 #include <imgui_stdlib.h>
 #include <filesystem>
-#include <Misc/DialogWindows.hpp>
+#include <mpi/Desktop/Dialog.hpp>
 #include <fstream>
 #include <Base/ProjectSettings.hpp>
 
@@ -29,14 +29,13 @@ void CreateProjectWindow::OnDrawWindow() {
             std::string root_dir = project_directory + "/" + project_name;
 
             if (std::filesystem::is_directory(root_dir)) {
-                MessageDialogDesc desc;
-                desc.dialog_title = "Error creating project";
-                desc.message = "Directory " + root_dir + " already exist!";
-                desc.buttons = MESSAGE_DIALOG_BTN_OK;
-                desc.dialog_type = MESSAGE_DIALOG_TYPE_ERROR;
-                DialogUserAction action;
-                MessageDialog(&desc, action);
-                if (action == DIALOG_USER_ACTION_ACCEPT) {
+                Mpi::MessageDialogDesc desc;
+                desc.dialogTitle = "Error creating project";
+                desc.dialogMessage = "Directory " + root_dir + " already exist!";
+                desc.buttons = Mpi::MESSAGE_DIALOG_BTN_OK;
+                desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR; 
+                Mpi::DialogUserAction action = Mpi::Dialog::MessageDialog(desc);
+                if (action == Mpi::DIALOG_USER_ACTION_ACCEPT) {
                     return;
                 }
             }

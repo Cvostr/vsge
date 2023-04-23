@@ -4,6 +4,8 @@
 #include <string>
 
 namespace Mpi {
+
+
     class CharBuffer {
     private:
         char* buffer;
@@ -15,7 +17,7 @@ namespace Mpi {
         ~CharBuffer();
 
         CharBuffer(const CharBuffer& charBuffer);
-        CharBuffer(CharBuffer&& charBuffer);
+        CharBuffer(CharBuffer&& charBuffer) noexcept;
 
         char nextChar();
         char getChar() const;

@@ -2,19 +2,18 @@
 
 #include "JsonNode.hpp"
 #include <Parse/CharBuffer.hpp>
+#include "JsonLexer.hpp"
 
 namespace Mpi {
 
     class JsonReader {
     private:
-        CharBuffer* charBuffer;
+        JsonLexer* lexer;
         JsonNode* readSingleValueNode();
         JsonValue* readBody();
         JsonValue* readArray();
         JsonValue* readValue();
-        JsonValue* readNumber();
 
-        std::string readLabel();
         std::string readIdentifier();
         std::string readUntil(char c);
     public:

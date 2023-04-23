@@ -15,7 +15,7 @@
 #include "InspectorWindow.hpp"
 #include <Resources/ResourceTypes/MaterialResource.hpp>
 #include <Misc/Thumbnails.hpp>
-#include <Misc/DialogWindows.hpp>
+#include <mpi/Desktop/Dialog.hpp>
 #include <Misc/EditorIcons.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
 #include <MonoScripting/MonoScriptStorage.hpp>
@@ -263,14 +263,13 @@ void FileBrowserWindow::OnDrawWindow() {
                 
             }
             if (ImGui::MenuItem("Delete")) {
-                MessageDialogDesc desc;
-                desc.dialog_title = "File deletion";
-                desc.message = "Are you sure?";
-                desc.buttons = MESSAGE_DIALOG_BTN_YES_NO;
-                desc.dialog_type = MESSAGE_DIALOG_TYPE_QUESTION;
-                DialogUserAction action;
-                MessageDialog(&desc, action);
-                if(action == DIALOG_USER_ACTION_ACCEPT){
+                Mpi::MessageDialogDesc desc;
+                desc.dialogTitle = "File deletion";
+                desc.dialogMessage = "Are you sure?";
+                desc.buttons = Mpi::MESSAGE_DIALOG_BTN_YES_NO;
+                desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_QUESTION;
+                Mpi::DialogUserAction action = Mpi::Dialog::MessageDialog(desc);
+                if(action == Mpi::DIALOG_USER_ACTION_ACCEPT) {
                     RemoveFile(e->abs_path);
                     InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();
                     insp->SetShowingResource(nullptr);

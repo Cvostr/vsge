@@ -5,9 +5,9 @@
 #include <EditorLayers/ImGuiLayer.hpp>
 #include <fstream>
 #include <filesystem>
-#include <Misc/DialogWindows.hpp>
 #include <mpi/Parse/Json/JsonReader.hpp>
 #include <mpi/Parse/Json/JsonWriter.hpp>
+#include <mpi/Desktop/Dialog.hpp>
 
 using namespace VSGEditor;
 using namespace Mpi;
@@ -87,12 +87,12 @@ void StartWindow::OnDrawWindow() {
         }
         ImGui::SameLine();
         if (ImGui::Button("Add existing project", ImVec2(_size.x / 2, 0))) {
-            FileDialogDesc desc;
-            desc.dialog_title = "Select project manifest of project";
+            Mpi::FileDialogDesc desc;
+            desc.dialogTitle = "Select project manifest of project";
             //desc.base_file_name = "project.manifest";
-            desc.extensions = { {"VSGE manifest", "*.manifest"} };
+            desc.addFileFilters({ {"VSGE manifest", "*.manifest"} });
             std::string path;
-            OpenFileDialog(&desc, path);
+            path = Mpi::Dialog::OpenFileDialog(desc);
 
             if (!path.empty()) {
 
@@ -114,14 +114,14 @@ void StartWindow::OnDrawWindow() {
 
 void StartWindow::OpenProject(const std::string& path) {
     if (!fs::is_directory(path)) {
-        MessageDialogDesc desc;
-        desc.dialog_title = "Error opening project";
-        desc.message = "Directory " + path + " doesn't exist!";
-        desc.buttons = MESSAGE_DIALOG_BTN_OK;
-        desc.dialog_type = MESSAGE_DIALOG_TYPE_ERROR;
-        DialogUserAction action;
-        MessageDialog(&desc, action);
-        if (action == DIALOG_USER_ACTION_ACCEPT) {
+        Mpi::MessageDialogDesc desc;
+        desc.dialogTitle = "Error opening project";
+        desc.dialogMessage = "Directory " + path + " doesn't exist!";
+        desc.buttons = Mpi::MESSAGE_DIALOG_BTN_OK;
+        desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+        Mpi::DialogUserAction action;
+        action = Mpi::Dialog::MessageDialog(desc);
+        if (action == ::DIALOG_USER_ACTION_ACCEPT) {
             return;
         }
     }
