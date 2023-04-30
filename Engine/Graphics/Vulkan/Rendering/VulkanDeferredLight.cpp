@@ -5,6 +5,7 @@
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
+#include "VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -79,10 +80,16 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	_deferred_descriptor->WriteDescriptorBuffer(1, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
-	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderer::Get()->GetBlackTexture(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
 	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)VulkanRenderer::Get()->GetLightsBuffer()->GetLightsGpuBuffer());
-	_deferred_descriptor->WriteDescriptorImage(9, VulkanRenderer::Get()->GetBRDF()->GetTextureLut(), attachment_sampler);
-	_deferred_descriptor->WriteDescriptorImage(12, VulkanRenderer::Get()->GetWhiteTexture(), attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(
+		9,
+		VulkanRenderer::Get()->GetBRDF()->GetTextureLut(),
+		attachment_sampler);
+	_deferred_descriptor->WriteDescriptorImage(
+		12,
+		VulkanRenderingGenerics::Get()->GetWhiteTexture(),
+		attachment_sampler);
 
 	UnsetIBL();
 }
@@ -135,14 +142,14 @@ void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 }
 
 void VulkanDeferredLight::UnsetIBL() {
-	SetTexture(10, VulkanRenderer::Get()->GetBlackCubeTexture());
-	SetTexture(11, VulkanRenderer::Get()->GetWhiteCubeTexture());
+	SetTexture(10, VulkanRenderingGenerics::Get()->GetBlackCubeTexture());
+	SetTexture(11, VulkanRenderingGenerics::Get()->GetWhiteCubeTexture());
 }
 
 void VulkanDeferredLight::SetIBL(VulkanTexture* specular, VulkanTexture* irradiance) {
 	UnsetIBL();
 
-	SetTexture(10, specular, VulkanRenderer::Get()->GetSpecularIBLSampler());
+	SetTexture(10, specular, VulkanRenderingGenerics::Get()->GetSpecularIBLSampler());
 	SetTexture(11, irradiance);
 }
 
@@ -152,7 +159,7 @@ void VulkanDeferredLight::SetSSAO(VulkanTexture* ssao_map) {
 		_deferred_descriptor->WriteDescriptorImage(12, ssao_map, attachment_sampler);
 	else
 		_deferred_descriptor->WriteDescriptorImage(12, 
-			VulkanRenderer::Get()->GetWhiteTexture(), attachment_sampler);
+			VulkanRenderingGenerics::Get()->GetWhiteTexture(), attachment_sampler);
 }
 
 void VulkanDeferredLight::SetDrawWorld(bool draw_world) {

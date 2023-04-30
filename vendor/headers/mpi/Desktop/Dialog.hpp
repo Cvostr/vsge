@@ -71,5 +71,6 @@ namespace Mpi {
 
         static std::string OpenFileDialog(const FileDialogDesc& desc);
         static std::string SaveFileDialog(const FileDialogDesc& desc);
+        static std::string BrowseDirectoryDialog(const FileDialogDesc& desc);
     };
 }

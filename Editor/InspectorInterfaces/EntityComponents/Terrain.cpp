@@ -33,6 +33,7 @@ void DrawTerrainTexturePickBtn(VSGE::ResourceReference& reference, const std::st
 	) {
 		ResourcePickerWindow* rpw = ImGuiLayer::Get()->GetWindow<ResourcePickerWindow>();
 		rpw->SetAllowEmptyResource(true);
+		rpw->SetResourceType(VSGE::RESOURCE_TYPE_TEXTURE);
 		rpw->SetResourceReference(&reference);
 		rpw->Show();
 	}

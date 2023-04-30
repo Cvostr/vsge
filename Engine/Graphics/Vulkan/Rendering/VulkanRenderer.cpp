@@ -10,6 +10,7 @@
 #include <Resources/DefaultResources.hpp>
 #include <Math/MatrixCamera.hpp>
 #include <Graphics/MaterialTemplateCache.hpp>
+#include "VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -96,55 +97,13 @@ void VulkanRenderer::SetupRenderer() {
 	mSpriteMesh->SetIndexBuffer(plane_inds, 6);
 	mSpriteMesh->Create();
 
-	mEmptyZeroTexture = new VulkanTexture;
-	mEmptyZeroTexture->Create(2, 2);
-	char* empty_texture_data = new char[2 * 2 * 4];
-	memset(empty_texture_data, 0, 16);
-	mEmptyZeroTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
-	mEmptyZeroTexture->SetReadyToUseInShaders();
-
-	mEmptyZeroCubeTexture = new VulkanTexture;
-	mEmptyZeroCubeTexture->SetCubemap(true);
-	mEmptyZeroCubeTexture->Create(2, 2, FORMAT_RGBA, 6, 1);
-	for (uint32 i = 0; i < 6; i++)
-		mEmptyZeroCubeTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
-	mEmptyZeroCubeTexture->SetReadyToUseInShaders();
-
-	mEmptyZero2dArrayTexture = new VulkanTexture;
-	mEmptyZero2dArrayTexture->Create(2, 2, FORMAT_RGBA, 6, 2);
-	for (uint32 i = 0; i < 2; i++)
-		mEmptyZero2dArrayTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
-	mEmptyZero2dArrayTexture->SetReadyToUseInShaders();
-
-	memset(empty_texture_data, 255, 16);
-
-	mEmptyOneTexture = new VulkanTexture;
-	mEmptyOneTexture->Create(2, 2);
-	mEmptyOneTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, 0);
-	mEmptyOneTexture->SetReadyToUseInShaders();
-
-	mEmptyOneCubeTexture = new VulkanTexture;
-	mEmptyOneCubeTexture->SetCubemap(true);
-	mEmptyOneCubeTexture->Create(2, 2, FORMAT_RGBA, 6, 1);
-	for (uint32 i = 0; i < 6; i++)
-		mEmptyOneCubeTexture->AddMipLevel((byte*)empty_texture_data, 16, 2, 2, 0, i);
-	mEmptyOneCubeTexture->SetReadyToUseInShaders();
-
-	delete[] empty_texture_data;
+	VulkanRenderingGenerics::Get()->Init();
 
 	//---------------------Samplers------------------
-	mMaterialMapsSampler = new VulkanSampler;
-	mMaterialMapsSampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
-	mMaterialMapsSampler->SetLodsRanges(0, 10);
-	mMaterialMapsSampler->Create();
 
 	mAttachmentSampler = new VulkanSampler;
 	mAttachmentSampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
 	mAttachmentSampler->Create();
-
-	mSamplerIBL = new VulkanSampler;
-	mSamplerIBL->SetLodsRanges(-1000, 1000);
-	mSamplerIBL->Create();
 
 	//----------------------Descriptors--------------------------
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;
@@ -562,30 +521,6 @@ VulkanSemaphore* VulkanRenderer::GetEndSemaphore() {
 
 VulkanSampler* VulkanRenderer::GetAttachmentSampler() {
 	return mAttachmentSampler;
-}
-
-VulkanSampler* VulkanRenderer::GetSpecularIBLSampler() {
-	return mSamplerIBL;
-}
-
-VulkanTexture* VulkanRenderer::GetBlackTexture() {
-	return mEmptyZeroTexture;
-}
-
-VulkanTexture* VulkanRenderer::GetWhiteTexture() {
-	return mEmptyOneTexture;
-}
-
-VulkanTexture* VulkanRenderer::GetBlackCubeTexture() {
-	return mEmptyZeroCubeTexture;
-}
-
-VulkanTexture* VulkanRenderer::GetWhiteCubeTexture() {
-	return mEmptyOneCubeTexture;
-}
-
-VulkanTexture* VulkanRenderer::GetBlack2dArrayTexture() {
-	return mEmptyZero2dArrayTexture;
 }
 
 VulkanMesh* VulkanRenderer::GetScreenMesh() {

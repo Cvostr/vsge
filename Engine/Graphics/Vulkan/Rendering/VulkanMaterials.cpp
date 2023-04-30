@@ -1,6 +1,7 @@
 #include "VulkanRenderer.hpp"
 #include <Resources/ResourceCache.hpp>
 #include <Core/Random.hpp>
+#include "VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -110,7 +111,10 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 			TextureResource* texture_res = static_cast<TextureResource*>(tex->_resource.GetResource());
 			if (texture_res == nullptr) {
 				//if no texture bound, then bind default white texture
-				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex->_binding, mEmptyZeroTexture, this->mMaterialMapsSampler);
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(
+					tex->_binding,
+					VulkanRenderingGenerics::Get()->GetBlackTexture(),
+					VulkanRenderingGenerics::Get()->GetMaterialMapsSampler());
 				continue;
 			}
 
@@ -123,7 +127,10 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 				//Mark texture resource as used in this frame
 				texture_res->Use();
 				//Write texture to descriptor
-				vmat->_fragmentDescriptorSet->WriteDescriptorImage(tex->_binding, (VulkanTexture*)texture_res->GetTexture(), this->mMaterialMapsSampler);
+				vmat->_fragmentDescriptorSet->WriteDescriptorImage(
+					tex->_binding,
+					(VulkanTexture*)texture_res->GetTexture(),
+					VulkanRenderingGenerics::Get()->GetMaterialMapsSampler());
 			}else
 				//Not all textures are loaded, 
 				//we have to return to this material in next frame

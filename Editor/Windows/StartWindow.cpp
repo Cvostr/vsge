@@ -88,20 +88,11 @@ void StartWindow::OnDrawWindow() {
         ImGui::SameLine();
         if (ImGui::Button("Add existing project", ImVec2(_size.x / 2, 0))) {
             Mpi::FileDialogDesc desc;
-            desc.dialogTitle = "Select project manifest of project";
-            //desc.base_file_name = "project.manifest";
-            desc.addFileFilters({ {"VSGE manifest", "*.manifest"} });
-            std::string path;
-            path = Mpi::Dialog::OpenFileDialog(desc);
+            desc.dialogTitle = "Select project directory";
+            std::string path = Mpi::Dialog::BrowseDirectoryDialog(desc);
 
             if (!path.empty()) {
 
-                uint32 size = static_cast<uint32>(path.size()) - 1;
-                while (path[size] != '\\' && path[size] != '/') {
-                    path.pop_back();
-                    size--;
-                }
-                path.pop_back();
                 //Add project root directory to list
                 _projects.push_back(path);
                 SaveProjectsList();

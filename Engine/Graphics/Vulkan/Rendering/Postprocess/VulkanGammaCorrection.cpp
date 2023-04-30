@@ -1,5 +1,6 @@
 #include "VulkanGammaCorrection.hpp"
 #include "../VulkanRenderer.hpp"
+#include "../VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -102,7 +103,7 @@ void VulkanGammaCorrection::SetInputTexture(VulkanTexture * input) {
 }
 void VulkanGammaCorrection::SetInputBloomTexture(VulkanTexture* input) {
 	if (!input)
-		input = VulkanRenderer::Get()->GetBlackTexture();
+		input = VulkanRenderingGenerics::Get()->GetBlackTexture();
 	_descr_set->WriteDescriptorImage(1, input,
 		VulkanRenderer::Get()->GetAttachmentSampler());
 }

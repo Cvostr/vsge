@@ -1,6 +1,7 @@
 #include "VulkanRenderer.hpp"
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Entity.hpp>
+#include "VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -36,9 +37,9 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 	if (texture_res == nullptr) {
 		//if no texture bound, then bind default texture
 
-		VulkanTexture* default_texture = VulkanRenderer::Get()->GetBlackTexture();
+		VulkanTexture* default_texture = VulkanRenderingGenerics::Get()->GetBlackTexture();
 		if(texture_type == 2 || texture_type == 3 || texture_type == 4)
-			default_texture = VulkanRenderer::Get()->GetWhiteTexture();
+			default_texture = VulkanRenderingGenerics::Get()->GetWhiteTexture();
 
 		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
 			default_texture,
@@ -70,7 +71,7 @@ void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetabl
 	VulkanDescriptorSet* grass_set = _grass_descriptor_sets[vegetable_index]._descr_set;
 	if (texture_res == nullptr) {
 		//if no texture bound, then bind default texture
-		VulkanTexture* default_texture = VulkanRenderer::Get()->GetBlackTexture();
+		VulkanTexture* default_texture = VulkanRenderingGenerics::Get()->GetBlackTexture();
 		grass_set->WriteDescriptorImage(1,
 			default_texture,
 			VulkanRenderer::Get()->GetTerrainRenderer()->GetTerrainTextureSampler(),

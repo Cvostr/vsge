@@ -7,6 +7,7 @@
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Scene.hpp>
 #include "VulkanRenderer.hpp"
+#include "VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -197,10 +198,10 @@ VulkanShadowmapping::VulkanShadowmapping(
 	//write empty textures to shadowmaps
 	for (uint32 i = 0; i < 32; i++) {
 		if (i < 2) {
-			_shadowrenderer_descrSet->WriteDescriptorImage(3, VulkanRenderer::Get()->GetBlack2dArrayTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+			_shadowrenderer_descrSet->WriteDescriptorImage(3, VulkanRenderingGenerics::Get()->GetBlack2dArrayTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 		}
-		_shadowrenderer_descrSet->WriteDescriptorImage(4, VulkanRenderer::Get()->GetBlackCubeTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
-		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderer::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+		_shadowrenderer_descrSet->WriteDescriptorImage(4, VulkanRenderingGenerics::Get()->GetBlackCubeTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderingGenerics::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 	}
 }
 VulkanShadowmapping::~VulkanShadowmapping() {

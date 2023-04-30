@@ -58,6 +58,7 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanPresenter.cpp
 				Graphics/Vulkan/Rendering/VulkanMaterials.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderer.cpp
+				Graphics/Vulkan/Rendering/VulkanRenderingGenerics.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderTarget.cpp
 				Graphics/Vulkan/Rendering/VulkanDeferredLight.cpp
 				Graphics/Vulkan/Rendering/VulkanGBufferRenderer.cpp
@@ -167,6 +168,22 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Engine/Event.hpp
 					Engine/Window.hpp
 					Engine/WindowEvent.hpp
+
+					Math/AABB.hpp
+					Math/Color.hpp
+					Math/Frustum.hpp
+					Math/Mat4.hpp
+					Math/MathBase.hpp
+					Math/MatrixCamera.hpp
+					Math/MatrixTransform.hpp
+					Math/Plane.hpp
+					Math/Quaternion.hpp
+					Math/Ray.hpp
+					Math/Rect.hpp
+					Math/Vec2.hpp
+					Math/Vec3.hpp
+					Math/Vec4.hpp
+					Math/Vertex.hpp
 
 					Graphics/Animation.hpp
 					Graphics/AnimationChannel.hpp
