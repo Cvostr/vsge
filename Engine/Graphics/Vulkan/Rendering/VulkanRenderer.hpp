@@ -45,11 +45,6 @@ namespace VSGE {
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
 		VulkanBuffer* mParticlesTransformShaderBuffer;
 		LightsBuffer* _lights_buffer;
-		//--------------------Meshes--------------------
-		VulkanMesh* mSpriteMesh;
-
-		//--------------------Samplers-------------------
-		VulkanSampler* mAttachmentSampler;
 
 		VulkanShadowmapping* _shadowmapper;
 		VulkanTerrainRenderer* _terrain_renderer;
@@ -89,10 +84,6 @@ namespace VSGE {
 		void SetBeginSemaphore(VulkanSemaphore* semaphore);
 
 		VulkanSemaphore* GetEndSemaphore();
-
-		VulkanSampler* GetAttachmentSampler();
-
-		VulkanMesh* GetScreenMesh();
 
 		VulkanCamerasBuffer* GetCamerasBuffer();
 

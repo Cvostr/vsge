@@ -99,13 +99,13 @@ void VulkanGammaCorrection::SetInputTexture(VulkanTexture * input) {
 	_input = input;
 
 	_descr_set->WriteDescriptorImage(0, input,
-		VulkanRenderer::Get()->GetAttachmentSampler());
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 void VulkanGammaCorrection::SetInputBloomTexture(VulkanTexture* input) {
 	if (!input)
 		input = VulkanRenderingGenerics::Get()->GetBlackTexture();
 	_descr_set->WriteDescriptorImage(1, input,
-		VulkanRenderer::Get()->GetAttachmentSampler());
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 VulkanTexture* VulkanGammaCorrection::GetOutputTexture() {
 	return (VulkanTexture*)_fb->GetColorAttachments()[0];
@@ -115,7 +115,7 @@ void VulkanGammaCorrection::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->BindPipeline(*_pipeline);
 	cmdbuf->SetViewport(0, 0, (float)_output_size.x, (float)_output_size.y);
 	cmdbuf->BindDescriptorSets(*gamma_pl_layout, 0, 1, _descr_set, 0);
-	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+	cmdbuf->BindMesh(*VulkanRenderingGenerics::Get()->GetScreenMesh(), 0);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
 }

@@ -388,13 +388,8 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 }
 
 void EditorLayer::OnSceneViewResizedEvent(const VSGE::EventSceneViewResized& svr) {
-	GetCamera()->SetAspectRatio((float)svr.GetSizeX() / svr.GetSizeY());
-
-    VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
+	VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
     renderer->ResizeOutput((uint32)svr.GetSizeX(), (uint32)svr.GetSizeY());
-	renderer->GetCamerasBuffer()->GetCameraByIndex(0)->SetAspectRatio((float)svr.GetSizeX() / svr.GetSizeY());
-
-    renderer->GetFinalPass()->Resize((uint32)svr.GetSizeX(), (uint32)svr.GetSizeY());
 }
 
 void EditorLayer::fileEvent(const FilesystemEvent& event) {

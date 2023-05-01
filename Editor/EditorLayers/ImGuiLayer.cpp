@@ -262,13 +262,6 @@ void ImGuiLayer::AddMenu(ImGuiMenu* menu) {
     mMenus.push_back(menu);
 }
 
-void ImGuiLayer::RegroupWindows() {
-    VSGE::Window* win = &VSGE::Application::Get()->GetWindow();
-    for (auto window : mWindows) {
-        window->Regroup(win->GetWindowWidth(), win->GetWindowHeight());
-    }
-}
-
 void ImGuiLayer::SetTabWindowCurrent(const std::string& window_title) {
     ImGuiWindow* window = ImGui::FindWindowByName(window_title.c_str());
     if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)

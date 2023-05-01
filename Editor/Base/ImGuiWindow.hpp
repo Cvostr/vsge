@@ -22,13 +22,7 @@ namespace VSGEditor {
 		bool _showCloseCross;
 	public:
 
-		EditorWindow() :
-			_inFocus(false),
-			_showing(true),
-			_queuedResize(false),
-			_queuedMove(false),
-			_showCloseCross(false)
-		{}
+		EditorWindow();
 
 		void UpdateWindowData();
 
@@ -54,9 +48,7 @@ namespace VSGEditor {
 
 		virtual void OnDrawWindow() = 0;
 
-		virtual void OnWindowResize(){}
-
-		virtual void Regroup(uint32 width, uint32 height) {}
+		virtual void OnWindowResize() {}
 	};
 
 	typedef std::vector<EditorWindow*> tEditorWindowList;

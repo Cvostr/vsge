@@ -3,6 +3,14 @@
 
 using namespace VSGEditor;
 
+EditorWindow::EditorWindow() :
+	_inFocus(false),
+	_showing(true),
+	_queuedResize(false),
+	_queuedMove(false),
+	_showCloseCross(false)
+{}
+
 void EditorWindow::UpdateWindowData() {
 	ImVec2 old_size = _size;
 

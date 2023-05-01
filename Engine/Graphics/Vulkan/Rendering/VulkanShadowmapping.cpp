@@ -87,7 +87,9 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowrenderer_descrSet->Create();
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
-	_shadowrenderer_descrSet->WriteDescriptorImage(1, _gbuffer_pos, renderer->GetAttachmentSampler());
+	_shadowrenderer_descrSet->WriteDescriptorImage(1, 
+		_gbuffer_pos, 
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
@@ -323,7 +325,7 @@ void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
 
 void VulkanShadowmapping::SetGbufferPositionsAttachment(VulkanTexture* gpos) {
 	_shadowrenderer_descrSet->WriteDescriptorImage(1, gpos,
-		VulkanRenderer::Get()->GetAttachmentSampler());
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 
 VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
@@ -395,7 +397,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 			if (!material_comp->IsCastShadows())
 				continue;
 		}
-
 		
 		VulkanMesh* mesh = nullptr;
 
@@ -479,7 +480,7 @@ void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdb
 	cmdbuf->BindPipeline(*_shadowprocess_pipeline);
 	cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
 	cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet);
-	VulkanMesh* screenPlane = VulkanRenderer::Get()->GetScreenMesh();
+	VulkanMesh* screenPlane = VulkanRenderingGenerics::Get()->GetScreenMesh();
 	cmdbuf->BindMesh(*screenPlane);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();

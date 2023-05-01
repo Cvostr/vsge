@@ -2,6 +2,7 @@
 
 #include "../VulkanTexture.hpp"
 #include "../VulkanSampler.hpp"
+#include "../VulkanMesh.hpp"
 
 namespace VSGE {
 	class VulkanRenderingGenerics {
@@ -13,8 +14,13 @@ namespace VSGE {
 		VulkanTexture* m_emptyOneCubeTexture;
 		VulkanTexture* m_emptyZero2dArrayTexture;
 
+		//--------------------Samplers-------------------
+		VulkanSampler* m_attachmentSampler;
 		VulkanSampler* m_samplerIBL;
 		VulkanSampler* m_materialMapsSampler;
+
+		//--------------------Meshes--------------------
+		VulkanMesh* m_screenMesh;
 
 		static VulkanRenderingGenerics* _this;
 	public:
@@ -35,8 +41,12 @@ namespace VSGE {
 
 		VulkanTexture* GetBlack2dArrayTexture();
 
+		VulkanSampler* GetAttachmentSampler();
+
 		VulkanSampler* GetSpecularIBLSampler();
 
 		VulkanSampler* GetMaterialMapsSampler();
+
+		VulkanMesh* GetScreenMesh();
 	};
 }

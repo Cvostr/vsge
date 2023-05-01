@@ -46,8 +46,6 @@ namespace VSGEditor {
 
 		void DrawDockWindow();
 
-		void RegroupWindows();
-
 		void OnAttach();
 		void OnUpdate();
 		void OnDetach();

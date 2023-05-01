@@ -79,7 +79,7 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 
 	_deferred_descriptor->WriteDescriptorBuffer(1, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
 	//write base textures
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
 	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)VulkanRenderer::Get()->GetLightsBuffer()->GetLightsGpuBuffer());
 	_deferred_descriptor->WriteDescriptorImage(
@@ -122,7 +122,7 @@ void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
 		return;
 
 	VulkanFramebuffer* fb = gbuffer->GetFramebuffer();
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 	//attachments
 	_deferred_descriptor->WriteDescriptorImage(3, (VulkanTexture*)fb->GetColorAttachments()[0], attachment_sampler);
 	_deferred_descriptor->WriteDescriptorImage(4, (VulkanTexture*)fb->GetColorAttachments()[1], attachment_sampler);
@@ -136,7 +136,7 @@ void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	if (!_deferred_descriptor)
 		return;
 
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 
 	_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
 }
@@ -154,7 +154,7 @@ void VulkanDeferredLight::SetIBL(VulkanTexture* specular, VulkanTexture* irradia
 }
 
 void VulkanDeferredLight::SetSSAO(VulkanTexture* ssao_map) {
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 	if(ssao_map)
 		_deferred_descriptor->WriteDescriptorImage(12, ssao_map, attachment_sampler);
 	else
@@ -171,13 +171,13 @@ void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture, Vul
 		return;
 
 	if(!sampler)
-		sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+		sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 
 	_deferred_descriptor->WriteDescriptorImage(binding, texture, sampler);
 }
 
 void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
-	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
+	VulkanMesh* mesh = VulkanRenderingGenerics::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);
 	//draw skybox

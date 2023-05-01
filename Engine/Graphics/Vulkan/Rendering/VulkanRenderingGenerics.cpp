@@ -12,7 +12,9 @@ VulkanRenderingGenerics::VulkanRenderingGenerics() :
 	m_emptyOneTexture(nullptr),
 	m_emptyOneCubeTexture(nullptr),
 	m_samplerIBL(nullptr),
-	m_materialMapsSampler(nullptr)
+	m_materialMapsSampler(nullptr),
+	m_attachmentSampler(nullptr),
+	m_screenMesh(nullptr)
 {
 	_this = this;
 }
@@ -80,6 +82,26 @@ bool VulkanRenderingGenerics::Init() {
 	m_samplerIBL->SetLodsRanges(-1000, 1000);
 	m_samplerIBL->Create();
 
+	m_attachmentSampler = new VulkanSampler;
+	m_attachmentSampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
+	m_attachmentSampler->Create();
+
+	//---------------------Meshes----------------------------------
+	m_screenMesh = new VulkanMesh;
+	Vertex plane_verts[] = {
+		// positions              // texture coords
+		Vertex(Vec3(1.0f,  1.0f, 0.0f),   Vec2(1.0f, 1.0f),   Vec3(0, 0, 1)),   // top right
+		Vertex(Vec3(1.0f, -1.0f, 0.0f),   Vec2(1.0f, 0.0f),   Vec3(0, 0, 1)),   // bottom right
+		Vertex(Vec3(-1.0f, -1.0f, 0.0f),  Vec2(0.0f, 0.0f),   Vec3(0, 0, 1)),   // bottom left
+		Vertex(Vec3(-1.0f,  1.0f, 0.0f),  Vec2(0.0f, 1.0f),   Vec3(0, 0, 1))   // top left
+	};
+
+	unsigned int plane_inds[] = { 0,1,2, 0,2,3 };
+
+	m_screenMesh->SetVertexBuffer(plane_verts, 4);
+	m_screenMesh->SetIndexBuffer(plane_inds, 6);
+	m_screenMesh->Create();
+
 	m_initialized = true;
 	return false;
 }
@@ -110,4 +132,12 @@ VulkanSampler* VulkanRenderingGenerics::GetSpecularIBLSampler() {
 
 VulkanSampler* VulkanRenderingGenerics::GetMaterialMapsSampler() {
 	return m_materialMapsSampler;
+}
+
+VulkanMesh* VulkanRenderingGenerics::GetScreenMesh() {
+	return m_screenMesh;
+}
+
+VulkanSampler* VulkanRenderingGenerics::GetAttachmentSampler() {
+	return m_attachmentSampler;
 }

@@ -1,5 +1,5 @@
 #include "VulkanSpecularMap.hpp"
-#include "../VulkanRenderer.hpp"
+#include "../VulkanRenderingGenerics.hpp"
 #include "../../VulkanRAPI.hpp"
 
 using namespace VSGE;
@@ -17,7 +17,7 @@ void VulkanSpecularMap::SetStepsCount(uint32 steps_count) {
 }
 
 void VulkanSpecularMap::Create() {
-	VulkanSampler* attachment_sampler = VulkanRenderer::Get()->GetAttachmentSampler();
+	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 
 	_spmap_shader = new VulkanShader;
 	_spmap_shader->AddShaderFromFile("spmap.comp", SHADER_STAGE_COMPUTE);

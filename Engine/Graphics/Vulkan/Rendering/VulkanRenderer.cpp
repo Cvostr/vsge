@@ -81,29 +81,7 @@ void VulkanRenderer::SetupRenderer() {
 	_lights_buffer = new LightsBuffer;
 	_lights_buffer->Create();
 
-	//---------------------Meshes----------------------------------
-	mSpriteMesh = new VulkanMesh;
-	Vertex plane_verts[] = {
-		// positions              // texture coords
-		Vertex(Vec3(1.0f,  1.0f, 0.0f),   Vec2(1.0f, 1.0f),   Vec3(0, 0, 1)),   // top right
-		Vertex(Vec3(1.0f, -1.0f, 0.0f),   Vec2(1.0f, 0.0f),   Vec3(0, 0, 1)),   // bottom right
-		Vertex(Vec3(-1.0f, -1.0f, 0.0f),  Vec2(0.0f, 0.0f),   Vec3(0, 0, 1)),   // bottom left
-		Vertex(Vec3(-1.0f,  1.0f, 0.0f),  Vec2(0.0f, 1.0f),   Vec3(0, 0, 1))   // top left
-	};
-
-	unsigned int plane_inds[] = { 0,1,2, 0,2,3 };
-
-	mSpriteMesh->SetVertexBuffer(plane_verts, 4);
-	mSpriteMesh->SetIndexBuffer(plane_inds, 6);
-	mSpriteMesh->Create();
-
 	VulkanRenderingGenerics::Get()->Init();
-
-	//---------------------Samplers------------------
-
-	mAttachmentSampler = new VulkanSampler;
-	mAttachmentSampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
-	mAttachmentSampler->Create();
 
 	//----------------------Descriptors--------------------------
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;
@@ -473,6 +451,8 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 		else {
 			render_target->SetOutput(nullptr);
 		}
+
+		camera->SetAspectRatio((float)render_target->GetWidth() / render_target->GetHeight());
 	}
 
 	//Обновить состояния объектов, заполнить массивы трансформаций, обновить дескрипторы
@@ -517,14 +497,6 @@ void VulkanRenderer::SetBeginSemaphore(VulkanSemaphore* semaphore) {
 
 VulkanSemaphore* VulkanRenderer::GetEndSemaphore() {
 	return mEndSemaphore;
-}
-
-VulkanSampler* VulkanRenderer::GetAttachmentSampler() {
-	return mAttachmentSampler;
-}
-
-VulkanMesh* VulkanRenderer::GetScreenMesh() {
-	return mSpriteMesh;
 }
 
 VulkanCamerasBuffer* VulkanRenderer::GetCamerasBuffer() {

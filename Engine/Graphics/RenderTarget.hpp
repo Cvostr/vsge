@@ -5,17 +5,18 @@
 namespace VSGE {
 	class RenderTarget {
 	protected:
-		uint32 _width;
+		uint32 m_width;
 		uint32 _height;
 		uint32 _camera_index;
 	public:
-		RenderTarget() {
-			_width = 0;
-			_height = 0;
-			_camera_index = 0;
-		}
+		RenderTarget();
+
 		virtual ~RenderTarget() {
 
 		}
+
+		uint32 GetWidth() const;
+
+		uint32 GetHeight() const;
 	};
 }

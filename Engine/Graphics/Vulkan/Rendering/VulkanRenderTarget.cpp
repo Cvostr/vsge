@@ -67,10 +67,10 @@ void VulkanRenderTarget::SetIBL(VulkanIBL* ibl) {
 	_deferred_renderer->SetIBL(ibl->GetSpecularMap(), ibl->GetIrradianceMap());
 }
 void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
-	if (_width == width && _height == height)
+	if (m_width == width && _height == height)
 		return;
 
-	_width = width;
+	m_width = width;
 	_height = height;
 
 	//resize gbuffer and deferred buffer

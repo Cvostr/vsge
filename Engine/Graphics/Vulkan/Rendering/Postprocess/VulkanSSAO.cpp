@@ -4,6 +4,7 @@
 #include <random>
 #include <Math/MathBase.hpp>
 #include "../VulkanRenderer.hpp"
+#include "../VulkanRenderingGenerics.hpp"
 
 using namespace VSGE;
 
@@ -187,7 +188,7 @@ void VulkanSSAO::Create() {
     //write images and buffers to ssao descriptor set
     {
         _ssao_descr_set->WriteDescriptorImage(2, ssao_base->GetNoiseTexture(),
-            VulkanRenderer::Get()->GetAttachmentSampler());
+            VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 
         _ssao_descr_set->WriteDescriptorBuffer(3, ssao_base->GetKernelBuffer());
 
@@ -223,10 +224,10 @@ void VulkanSSAO::SetInputTextures(
     Texture* input_normals)
 {
     _ssao_descr_set->WriteDescriptorImage(0, (VulkanTexture*)input_positions,
-        VulkanRenderer::Get()->GetAttachmentSampler());
+        VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 
     _ssao_descr_set->WriteDescriptorImage(1, (VulkanTexture*)input_normals,
-        VulkanRenderer::Get()->GetAttachmentSampler());
+        VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 
 VulkanTexture* VulkanSSAO::GetBlurredSSAO() {
@@ -240,7 +241,7 @@ void VulkanSSAO::FillCommandBuffer(VulkanCommandBuffer* cmdbuf) {
     uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
     cmdbuf->BindDescriptorSets(*ssao_base->GetSSAOPipeline()->GetPipelineLayout(), 0, 1,
         _ssao_descr_set, 1, &cam_offset);
-    cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+    cmdbuf->BindMesh(*VulkanRenderingGenerics::Get()->GetScreenMesh(), 0);
     cmdbuf->DrawIndexed(6);
     cmdbuf->EndRenderPass();
 
@@ -266,6 +267,6 @@ void VulkanSSAO::ResizeOutput(const Vec2i& new_size) {
     _fb_ssao_blur->Resize(new_size.x, new_size.y);
 
     _ssao_blur_descr_set->WriteDescriptorImage(0, (VulkanTexture*)_fb_ssao->GetColorAttachments()[0],
-        VulkanRenderer::Get()->GetAttachmentSampler());
+        VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 
 }

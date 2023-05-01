@@ -2,6 +2,7 @@
 #include "VulkanRenderer.hpp"
 #include <Graphics/Vulkan/VulkanSwapchain.hpp>
 #include <Graphics/Vulkan/VulkanRAPI.hpp>
+#include <Graphics/Vulkan/Rendering/VulkanRenderingGenerics.hpp>
 
 using namespace VSGE;
 
@@ -80,12 +81,12 @@ void VulkanFinalPass::Resize(uint32 width, uint32 height) {
 		_fb->Resize(width, height);
 }
 void VulkanFinalPass::SetAttachments(VulkanTexture* world, VulkanTexture* ui) {
-	_world_descr->WriteDescriptorImage(0, world, VulkanRenderer::Get()->GetAttachmentSampler());
-	_world_descr->WriteDescriptorImage(1, ui, VulkanRenderer::Get()->GetAttachmentSampler());
+	_world_descr->WriteDescriptorImage(0, world, VulkanRenderingGenerics::Get()->GetAttachmentSampler());
+	_world_descr->WriteDescriptorImage(1, ui, VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 void VulkanFinalPass::RecordCmdbuffer(VulkanCommandBuffer* cmdbuffer) {
 	VSGE::VulkanRAPI* vk = VSGE::VulkanRAPI::Get();
-	VulkanMesh* mesh = VulkanRenderer::Get()->GetScreenMesh();
+	VulkanMesh* mesh = VulkanRenderingGenerics::Get()->GetScreenMesh();
 
 	_rp->CmdBegin(*cmdbuffer, *_fb);
 

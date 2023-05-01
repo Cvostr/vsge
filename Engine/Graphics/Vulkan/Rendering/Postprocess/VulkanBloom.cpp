@@ -1,5 +1,6 @@
 #include "VulkanBloom.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <Graphics/Vulkan/Rendering/VulkanRenderingGenerics.hpp>
 
 using namespace VSGE;
 
@@ -136,7 +137,7 @@ void VulkanBloom::Destroy() {
 void VulkanBloom::SetInputTextureHDR(VulkanTexture* input) {
 	_input_texture = input;
 	_bright_descr_set->WriteDescriptorImage(0, input, 
-		VulkanRenderer::Get()->GetAttachmentSampler());
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 VulkanTexture* VulkanBloom::GetBlurredBloomTextureHDR() {
 	return (VulkanTexture*)_fb_2->GetColorAttachments()[0];
@@ -147,7 +148,7 @@ void VulkanBloom::RecordCommandBuffer(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->SetViewport(0, 0, (float)_output_size.x, (float)_output_size.y);
 	cmdbuf->BindDescriptorSets(*base->GetBrightnessPipelineLayout(), 0, 1,
 		_bright_descr_set);
-	cmdbuf->BindMesh(*VulkanRenderer::Get()->GetScreenMesh(), 0);
+	cmdbuf->BindMesh(*VulkanRenderingGenerics::Get()->GetScreenMesh(), 0);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
 
@@ -175,9 +176,9 @@ void VulkanBloom::ResizeOutput(const Vec2i& new_size) {
 
 	_blur_1_descr_set->WriteDescriptorImage(0,
 		(VulkanTexture*)_fb_bright->GetColorAttachments()[0],
-		VulkanRenderer::Get()->GetAttachmentSampler());
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 
 	_blur_2_descr_set->WriteDescriptorImage(0,
 		(VulkanTexture*)_fb_1->GetColorAttachments()[0],
-		VulkanRenderer::Get()->GetAttachmentSampler());
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }

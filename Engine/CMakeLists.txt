@@ -31,6 +31,7 @@ set(SRC_FILES
 				Graphics/MaterialTemplate.cpp
 				Graphics/MaterialTemplateCache.cpp
 				Graphics/Mesh.cpp
+				Graphics/RenderTarget.cpp
 				Graphics/Renderer.cpp
 				Graphics/Sampler.cpp
 				Graphics/Shader.cpp

@@ -1,5 +1,6 @@
 #include "SceneViewWindow.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <Graphics/Vulkan/Rendering/VulkanRenderingGenerics.hpp>
 #include <imgui_impl_vulkan.h>
 #include <ImGuizmo.h>
 #include "../EditorLayers/EditorLayer.hpp"
@@ -28,9 +29,8 @@ void SceneViewWindow::OnDrawWindow() {
 
         if (texture == nullptr) {
             VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
-            //VSGE::VulkanTexture* out = (VSGE::VulkanTexture*)renderer->GetOutputTexture();
             VSGE::VulkanTexture* out = (VSGE::VulkanTexture*)renderer->GetFinalPass()->GetFramebuffer()->GetColorAttachments()[0];
-            texture = ImGui_ImplVulkan_AddTexture(renderer->GetAttachmentSampler()->GetSampler(),
+            texture = ImGui_ImplVulkan_AddTexture(VSGE::VulkanRenderingGenerics::Get()->GetAttachmentSampler()->GetSampler(),
                 out->GetImageView(),
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         }else
