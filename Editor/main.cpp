@@ -20,7 +20,7 @@
 #include <Misc/VkGizmos.hpp>
 
 #include <Resources/DefaultResources.hpp>
-#include <Graphics/Fonts.hpp>
+#include <Graphics/FontManager.hpp>
 
 using namespace VSGE;
 using namespace VSGEditor;

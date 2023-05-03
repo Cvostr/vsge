@@ -37,6 +37,7 @@ set(SRC_FILES
 				Graphics/Shader.cpp
 				Graphics/Texture.cpp
 				Graphics/LightsBuffer.cpp
+				Graphics/FontManager.cpp
 				Graphics/Vulkan/VulkanBuffer.cpp
 				Graphics/Vulkan/VulkanCommandBuffer.cpp
 				Graphics/Vulkan/VulkanDescriptors.cpp
@@ -207,7 +208,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Texture.hpp
 					Graphics/TextureFormat.hpp
 					Graphics/VertexLayout.hpp
-
+					Graphics/FontManager.hpp
 					Graphics/Vulkan/VulkanQueue.hpp
 					Graphics/Vulkan/VulkanBuffer.hpp
 					Graphics/Vulkan/VulkanCommandBuffer.hpp
@@ -244,7 +245,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Scene/IEntityComponent.hpp
 					Scene/Camera.hpp
 					Scene/SceneLayer.hpp
-					
+					Scene/SceneSerialization.hpp
 					)
 
 add_library (Engine ${SRC_FILES} ${HEADER1_FILES})

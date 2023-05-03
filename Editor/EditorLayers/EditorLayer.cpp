@@ -67,7 +67,8 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnUpdate() {
 	ImGuiLayer* imgui = ImGuiLayer::Get();
 	if (imgui->GetWindow<SceneViewWindow>())
-		if (imgui->GetWindow<SceneViewWindow>()->IsInFocus()) {
+		if (imgui->GetWindow<SceneViewWindow>()->IsInFocus() &&
+			_camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
 
 			TimePerf* time = TimePerf::Get();
 			Vec3 cam_pos_offset(0.f);

@@ -24,7 +24,6 @@ namespace VSGE {
 		VulkanFramebuffer* _ui_framebuffer;
 		VulkanRenderPass* _ui_rp;
 
-		VulkanShader* _ui_shader;
 		VulkanPipelineLayout* _ui_pll;
 		VulkanPipeline* _ui_pipeline;
 

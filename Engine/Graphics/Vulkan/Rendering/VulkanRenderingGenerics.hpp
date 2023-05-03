@@ -23,7 +23,7 @@ namespace VSGE {
 		//--------------------Meshes--------------------
 		VulkanMesh* m_screenMesh;
 
-		Vulkan_BRDF_LUT* m_brdf_lut;
+		Vulkan_BRDF_LUT* m_brdfLut;
 
 		static VulkanRenderingGenerics* _this;
 	public:

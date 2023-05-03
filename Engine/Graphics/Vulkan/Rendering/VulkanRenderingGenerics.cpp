@@ -14,7 +14,8 @@ VulkanRenderingGenerics::VulkanRenderingGenerics() :
 	m_samplerIBL(nullptr),
 	m_materialMapsSampler(nullptr),
 	m_attachmentSampler(nullptr),
-	m_screenMesh(nullptr)
+	m_screenMesh(nullptr),
+	m_brdfLut(nullptr)
 {
 	_this = this;
 }
@@ -102,11 +103,6 @@ bool VulkanRenderingGenerics::Init() {
 	m_screenMesh->SetIndexBuffer(plane_inds, 6);
 	m_screenMesh->Create();
 
-	//------------------BRDF LUT ------------------------------------
-
-	m_brdf_lut = new Vulkan_BRDF_LUT;
-	m_brdf_lut->Create();	
-
 	//--------------------Shaders-----------------------
 	ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
 	VulkanShader* pbr = new VulkanShader;
@@ -138,6 +134,15 @@ bool VulkanRenderingGenerics::Init() {
 	skybox->AddShaderFromFile("skybox.vert", SHADER_STAGE_VERTEX);
 	skybox->AddShaderFromFile("skybox.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(skybox, "Skybox");
+
+	VulkanShader* ui_shader = new VulkanShader;
+	ui_shader->AddShaderFromFile("ui.vert", SHADER_STAGE_VERTEX);
+	ui_shader->AddShaderFromFile("ui.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(ui_shader, "ui");
+
+	//------------------BRDF LUT ------------------------------------
+	m_brdfLut = new Vulkan_BRDF_LUT;
+	m_brdfLut->Create();
 
 	m_initialized = true;
 	return false;
@@ -180,5 +185,5 @@ VulkanSampler* VulkanRenderingGenerics::GetAttachmentSampler() {
 }
 
 Vulkan_BRDF_LUT* VulkanRenderingGenerics::GetBRDF() {
-	return m_brdf_lut;
+	return m_brdfLut;
 }

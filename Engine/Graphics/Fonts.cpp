@@ -1,47 +1,9 @@
 #include "Fonts.hpp"
-#include <iostream>
 #include <algorithm>
-#include <Core/FileLoader.hpp>
 #include <Engine/Application.hpp>
+#include <Graphics/FontManager.hpp>
 
 using namespace VSGE;
-
-GlyphManager glyphs;
-GlyphManager* GlyphManager::_this = nullptr;
-
-GlyphManager::GlyphManager() {
-    _this = this;
-    if (FT_Init_FreeType(&this->mFtlib))
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-}
-
-FT_Library GlyphManager::getFreetypeLibraryInstance() {
-    return this->mFtlib;
-}
-
-void GlyphManager::AddFontContainer(GlyphFontContainer* ptr) {
-    this->_fonts.push_back(ptr);
-}
-
-void GlyphManager::AddFontContainer(const std::string& file_path, const std::string& name) {
-    byte* data = nullptr;
-    uint32 size = 0;
-    bool result = LoadFile(file_path, (char**)&data, &size);
-    if (result) 
-    {
-        GlyphFontContainer* container = new GlyphFontContainer(data, size, 64);
-        container->SetName(name);
-        AddFontContainer(container);
-    }
-}
-
-GlyphFontContainer* GlyphManager::GetFontByName(const std::string& name) {
-    for (auto font : _fonts) {
-        if (font->GetName() == name)
-            return font;
-    }
-    return nullptr;
-}
 
 GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     //Load font by freetype

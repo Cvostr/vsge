@@ -102,7 +102,6 @@ void VulkanRenderer::SetupRenderer() {
 		_cameras_buffer->GetCamerasBuffer(),
 		gbuffer->GetPositionAttachment());
 	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
-	_shadowmapper->SetTerrainsToRender(&_terrains);
 
 	_main_render_target->SetShadowmapper(_shadowmapper);
 

@@ -7,18 +7,16 @@
 namespace VSGE{
     class Vulkan_BRDF_LUT{
     private:
-        VulkanComputePipeline* _brdf_pipeline;
-        VulkanDescriptorPool* _brdf_descr_pool;
-        VulkanDescriptorSet* _brdf_descr_set;
-        VulkanPipelineLayout* _brdf_pipeline_layout;
-        VulkanShader* _brdf_lut_shader;
+        VulkanComputePipeline* m_brdfPipeline;
+        VulkanDescriptorPool* m_brdfDescriptorPool;
+        VulkanDescriptorSet* m_brdfDescriptorSet;
+        VulkanPipelineLayout* m_brdfPipelineLayout;
+        VulkanShader* m_brdfLutShader;
 
-        VulkanTexture* _brdf_lut_texture;
+        VulkanTexture* m_brdfLutMap;
 
         VulkanCommandPool* _brdf_cmdpool;
         VulkanCommandBuffer* _brdf_cmdbuffer;
-
-        bool _brdf_lut_calculated;
     public:
         Vulkan_BRDF_LUT();
 
@@ -31,9 +29,5 @@ namespace VSGE{
         VulkanTexture* GetTextureLut();
 
         void RecordCmdbuffer(VulkanCommandBuffer* cmdbuf);
-
-        bool IsCalculated();
-
-        void SetCalculated();
     };
 }

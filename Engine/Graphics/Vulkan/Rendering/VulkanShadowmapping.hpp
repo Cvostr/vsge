@@ -84,7 +84,6 @@ namespace VSGE {
 
 		Camera* cam;
 		tEntityList* _entitiesToRender;
-		tEntityList* _terrainsToRender;
 		VulkanTexture* _gbuffer_pos;
 		VulkanSampler* _shadowmap_sampler;
 

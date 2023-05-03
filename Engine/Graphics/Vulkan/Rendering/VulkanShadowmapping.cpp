@@ -234,11 +234,9 @@ uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 ca
 void VulkanShadowmapping::SetCamera(Camera* cam) {
 	this->cam = cam;
 }
+
 void VulkanShadowmapping::SetEntitiesToRender(tEntityList* entities) {
 	_entitiesToRender = entities;
-}
-void VulkanShadowmapping::SetTerrainsToRender(tEntityList* terrains) {
-	_terrainsToRender = terrains;
 }
 
 void VulkanShadowmapping::AddEntity(Entity* entity) {

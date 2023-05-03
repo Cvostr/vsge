@@ -4,7 +4,7 @@
 #include <UI/UiLayer.hpp>
 #include <Math/MatrixCamera.hpp>
 #include <Math/MatrixTransform.hpp>
-#include <Graphics/Fonts.hpp>
+#include <Graphics/FontManager.hpp>
 
 using namespace VSGE;
 
@@ -67,11 +67,6 @@ void VulkanUiRenderer::Create() {
 	_ui_framebuffer->AddAttachment(FORMAT_RGBA); //Color
 	_ui_framebuffer->Create(_ui_rp);
 
-	_ui_shader = new VulkanShader;
-	_ui_shader->AddShaderFromFile("ui.vert", SHADER_STAGE_VERTEX);
-	_ui_shader->AddShaderFromFile("ui.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(_ui_shader, "ui");
-
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
@@ -90,7 +85,11 @@ void VulkanUiRenderer::Create() {
 	_ui_pipeline->SetCullMode(CULL_MODE_NONE);
 	_ui_pipeline->SetDepthTest(false);
 	_ui_pipeline->SetBlendingAttachmentDesc(0, ui_blend_desc);
-	_ui_pipeline->Create(_ui_shader, _ui_rp, _vertexLayout, _ui_pll);
+	_ui_pipeline->Create(
+		(VulkanShader*)ShaderCache::Get()->GetShader("ui"),
+		_ui_rp,
+		_vertexLayout,
+		_ui_pll);
 
 	_ui_sampler = new VulkanSampler;
 	_ui_sampler->Create();

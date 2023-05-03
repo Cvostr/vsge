@@ -2,7 +2,6 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 #include <Core/VarTypes/Base.hpp>
 #include <Math/Vec2.hpp>
@@ -80,27 +79,4 @@ namespace VSGE {
         /// <returns></returns>
         Vec2i GetSizeOfString(uint32* str, uint32 strlen);
     };
-    
-    class GlyphManager {
-    private:
-
-        static GlyphManager* _this;
-
-        FT_Library mFtlib;
-        std::vector<GlyphFontContainer*> _fonts;
-    public:
-
-        static GlyphManager* Get() {
-            return _this;
-        }
-
-        void AddFontContainer(const std::string& file_path, const std::string& name);
-        void AddFontContainer(GlyphFontContainer* ptr); //add font container to vector
-
-        GlyphFontContainer* GetFontByName(const std::string& name);
-
-        FT_Library getFreetypeLibraryInstance();
-        GlyphManager();
-    };
-    
 }

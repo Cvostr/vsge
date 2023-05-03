@@ -3,9 +3,14 @@
 
 using namespace VSGE;
 
-Vulkan_BRDF_LUT::Vulkan_BRDF_LUT(){
-    _brdf_lut_calculated = false;
-}
+Vulkan_BRDF_LUT::Vulkan_BRDF_LUT() :
+    m_brdfLutMap(nullptr),
+    m_brdfLutShader(nullptr),
+    m_brdfPipeline(nullptr),
+    m_brdfPipelineLayout(nullptr),
+    m_brdfDescriptorSet(nullptr),
+    m_brdfDescriptorPool(nullptr)
+{}
 
 Vulkan_BRDF_LUT::~Vulkan_BRDF_LUT(){
 
@@ -14,29 +19,29 @@ Vulkan_BRDF_LUT::~Vulkan_BRDF_LUT(){
 void Vulkan_BRDF_LUT::Create(){
     VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
-    _brdf_lut_shader = new VulkanShader;
-	_brdf_lut_shader->AddShaderFromFile("brdf_lut.comp", SHADER_STAGE_COMPUTE);
+    m_brdfLutShader = new VulkanShader;
+    m_brdfLutShader->AddShaderFromFile("brdf_lut.comp", SHADER_STAGE_COMPUTE);
 
-    _brdf_lut_texture = new VulkanTexture;
-    _brdf_lut_texture->SetStorage(true);
-    _brdf_lut_texture->Create(1024, 1024, FORMAT_RG16F);
+    m_brdfLutMap = new VulkanTexture;
+    m_brdfLutMap->SetStorage(true);
+    m_brdfLutMap->Create(1024, 1024, FORMAT_RG16F);
 
-    _brdf_descr_pool = new VulkanDescriptorPool;
-    _brdf_descr_pool->SetDescriptorSetsCount(1);
-    _brdf_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1);
-    _brdf_descr_pool->Create();
+    m_brdfDescriptorPool = new VulkanDescriptorPool;
+    m_brdfDescriptorPool->SetDescriptorSetsCount(1);
+    m_brdfDescriptorPool->AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1);
+    m_brdfDescriptorPool->Create();
 
-    _brdf_descr_set = new VulkanDescriptorSet(_brdf_descr_pool);
-    _brdf_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, VK_SHADER_STAGE_COMPUTE_BIT);
-    _brdf_descr_set->Create();
-    _brdf_descr_set->WriteDescriptorImage(0, _brdf_lut_texture, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+    m_brdfDescriptorSet = new VulkanDescriptorSet(m_brdfDescriptorPool);
+    m_brdfDescriptorSet->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, VK_SHADER_STAGE_COMPUTE_BIT);
+    m_brdfDescriptorSet->Create();
+    m_brdfDescriptorSet->WriteDescriptorImage(0, m_brdfLutMap, nullptr, VK_IMAGE_LAYOUT_GENERAL);
 
-    _brdf_pipeline_layout = new VulkanPipelineLayout;
-    _brdf_pipeline_layout->PushDescriptorSet(_brdf_descr_set);
-    _brdf_pipeline_layout->Create();
+    m_brdfPipelineLayout = new VulkanPipelineLayout;
+    m_brdfPipelineLayout->PushDescriptorSet(m_brdfDescriptorSet);
+    m_brdfPipelineLayout->Create();
 
-    _brdf_pipeline = new VulkanComputePipeline;
-    _brdf_pipeline->Create(_brdf_lut_shader, _brdf_pipeline_layout);
+    m_brdfPipeline = new VulkanComputePipeline;
+    m_brdfPipeline->Create(m_brdfLutShader, m_brdfPipelineLayout);
 
     _brdf_cmdpool = new VulkanCommandPool;
     _brdf_cmdpool->Create(device->GetGenericQueueFamilyIndex());
@@ -64,12 +69,12 @@ void Vulkan_BRDF_LUT::Create(){
 }
 
 void Vulkan_BRDF_LUT::RecordCmdbuffer(VulkanCommandBuffer* cmdbuf) {
-    VkImageMemoryBarrier pre_brdf_barrier = GetImageBarrier(_brdf_lut_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
-    VkImageMemoryBarrier post_brdf_barrier = GetImageBarrier(_brdf_lut_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    VkImageMemoryBarrier pre_brdf_barrier = GetImageBarrier(m_brdfLutMap, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+    VkImageMemoryBarrier post_brdf_barrier = GetImageBarrier(m_brdfLutMap, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     _brdf_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, { pre_brdf_barrier });
-    _brdf_cmdbuffer->BindComputePipeline(*_brdf_pipeline);
-    _brdf_cmdbuffer->BindDescriptorSets(*_brdf_pipeline_layout, 0, 1, _brdf_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
+    _brdf_cmdbuffer->BindComputePipeline(*m_brdfPipeline);
+    _brdf_cmdbuffer->BindDescriptorSets(*m_brdfPipelineLayout, 0, 1, m_brdfDescriptorSet, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
     _brdf_cmdbuffer->Dispatch(1024 / 32, 1024 / 32, 6);
     _brdf_cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, { post_brdf_barrier });
 }
@@ -79,13 +84,5 @@ void Vulkan_BRDF_LUT::Destroy(){
 }
 
 VulkanTexture* Vulkan_BRDF_LUT::GetTextureLut(){
-    return _brdf_lut_texture;
-}
-
-bool Vulkan_BRDF_LUT::IsCalculated() {
-    return _brdf_lut_calculated;
-}
-
-void Vulkan_BRDF_LUT::SetCalculated() {
-    _brdf_lut_calculated = true;
+    return m_brdfLutMap;
 }
