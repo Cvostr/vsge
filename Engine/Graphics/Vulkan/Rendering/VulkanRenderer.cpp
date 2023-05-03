@@ -26,38 +26,6 @@ VulkanRenderer::~VulkanRenderer() {
 }
 
 void VulkanRenderer::SetupRenderer() {
-	//--------------------Shaders-----------------------
-	ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
-	VulkanShader* pbr = new VulkanShader;
-	pbr->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
-	pbr->AddShaderFromFile("pbr.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(pbr, "PBR");
-
-	VulkanShader* vegetable = new VulkanShader;
-	vegetable->AddShaderFromFile("vegetable.vert", SHADER_STAGE_VERTEX);
-	vegetable->AddShaderFromFile("vegetable.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(vegetable, "Vegetable");
-
-	VulkanShader* deferred_light = new VulkanShader;
-	deferred_light->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
-	deferred_light->AddShaderFromFile("deferred_pbr.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(deferred_light, "Deferred");
-
-	VulkanShader* deferred_light_envmap = new VulkanShader;
-	deferred_light_envmap->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
-	deferred_light_envmap->AddShaderFromFile("deferred_pbr_envmap.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(deferred_light_envmap, "Deferred_envmap");
-
-	VulkanShader* particle = new VulkanShader;
-	particle->AddShaderFromFile("particle.vert", SHADER_STAGE_VERTEX);
-	particle->AddShaderFromFile("particle.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(particle, "Particle");
-
-	VulkanShader* skybox = new VulkanShader;
-	skybox->AddShaderFromFile("skybox.vert", SHADER_STAGE_VERTEX);
-	skybox->AddShaderFromFile("skybox.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(skybox, "Skybox");
-
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 	//-----------------------Prepare semaphores-------------------
 	mBeginSemaphore = new VulkanSemaphore;
@@ -94,9 +62,6 @@ void VulkanRenderer::SetupRenderer() {
 	_ui_renderer->Create();
 	_ui_renderer->ResizeOutput(mOutputWidth, mOutputHeight);
 
-	_brdf_lut = new Vulkan_BRDF_LUT;
-	_brdf_lut->Create();
-
 	_ibl_map = new VulkanIBL;
 	_ibl_map->SetInputData(
 		_entitiesToRender,
@@ -130,13 +95,6 @@ void VulkanRenderer::SetupRenderer() {
 	_render_targets[0] = _main_render_target;
 
 	VulkanGBufferRenderer* gbuffer = _main_render_target->GetGBufferRenderer();
-
-	_terrain_renderer = new VulkanTerrainRenderer;
-	_terrain_renderer->Create(
-		_main_render_target->GetGBufferRenderer()->GetRenderPass(),
-		_main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets()
-	);
-	_terrain_renderer->SetOutputSizes(mOutputWidth, mOutputHeight);
 
 	_shadowmapper = new VulkanShadowmapping(
 		&gbuffer->GetVertexDescriptorSets(),
@@ -235,8 +193,6 @@ void VulkanRenderer::SetupRenderer() {
 }
 
 void VulkanRenderer::DestroyRenderer() {
-	delete _brdf_lut;
-	delete _terrain_renderer;
 	delete _shadowmapper;
 
 	for (auto& render_target : _render_targets) {
@@ -359,11 +315,6 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 		_shadowmapper->AddEntity(_shadowcasters[caster_i]);
 	}
 	//-----------------------------
-	//-------------TERRAINS------------------
-	_terrain_renderer->ResetProcessedTerrains();
-	for (uint32 terrain_i = 0; terrain_i < _terrains.size(); terrain_i++) {
-		_terrain_renderer->ProcessTerrain(_terrains[terrain_i]);
-	}
 
 	//Обновляем данные буферов интерфейса
 	_ui_renderer->FillBuffers();
@@ -482,10 +433,6 @@ void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
 	GetFinalPass()->SetAttachments(_main_render_target->GetGammaCorrectedOutput(), GetUiAttachment());
 }
 
-VulkanTerrainRenderer* VulkanRenderer::GetTerrainRenderer() {
-	return _terrain_renderer;
-}
-
 VulkanSemaphore* VulkanRenderer::GetBeginSemaphore() {
 	return mBeginSemaphore;
 }
@@ -501,10 +448,6 @@ VulkanSemaphore* VulkanRenderer::GetEndSemaphore() {
 
 VulkanCamerasBuffer* VulkanRenderer::GetCamerasBuffer() {
 	return _cameras_buffer;
-}
-
-Vulkan_BRDF_LUT* VulkanRenderer::GetBRDF() {
-	return _brdf_lut;
 }
 
 VulkanUiRenderer* VulkanRenderer::GetUiRenderer() {

@@ -3,7 +3,6 @@
 #include <algorithm>
 #include "EntityComponents/MeshComponent.hpp"
 #include "EntityComponents/AnimatorComponent.hpp"
-#include "EntityComponents/TerrainComponent.hpp"
 #include <Math/MatrixTransform.hpp>
 #include "SceneSerialization.hpp"
 #include "string.h"
@@ -236,9 +235,7 @@ const AABB& Entity::GetAABB(bool extendChildren) {
 			_boundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
 		}
 	}
-	else if (GetComponent<TerrainComponent>()) {
-		_boundingBox = GetComponent<TerrainComponent>()->GetBoundingBox();
-	}else
+	else
 		_boundingBox.SetZero();
 
 	_boundingBox.ApplyTransform(_worldTransform);

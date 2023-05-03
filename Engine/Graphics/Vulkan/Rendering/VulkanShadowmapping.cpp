@@ -4,7 +4,6 @@
 #include <Resources/ResourceTypes/MeshResource.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
-#include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Scene.hpp>
 #include "VulkanRenderer.hpp"
 #include "VulkanRenderingGenerics.hpp"
@@ -411,13 +410,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 				mesh_resource->Use();
 				mesh = (VulkanMesh*)mesh_resource->GetMesh();
 				BindPipeline(cmdbuf, light_type, 0, shadowmap_offset);
-			}
-		}
-		else {
-			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
-			if (terrain->IsShadowCastEnabled()) {
-				mesh = (VulkanMesh*)terrain->GetTerrainMesh();
-				BindPipeline(cmdbuf, light_type, 1, shadowmap_offset);
 			}
 		}
 

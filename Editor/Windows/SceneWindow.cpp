@@ -12,7 +12,6 @@
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
 #include <Scene/Camera.hpp>
 #include <Scene/SceneLayer.hpp>
-#include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Resources/DefaultResources.hpp>
 
 using namespace VSGEditor;
@@ -48,10 +47,6 @@ void SceneWindow::OnDrawWindow() {
                     mesh->SetMeshId(GetSphereMesh()->getId());
                     MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();
                     mat->SetMaterialResource(VSGE::getDefaultMaterialResource());
-                }
-                if (ImGui::MenuItem("Terrain")) {
-                    Entity* newEntity = scene->AddNewEntity("Terrain");
-                    TerrainComponent* terrain = newEntity->AddComponent<TerrainComponent>();
                 }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Directional Light")) {

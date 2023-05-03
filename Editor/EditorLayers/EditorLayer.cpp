@@ -54,14 +54,11 @@ EditorLayer::EditorLayer() {
 	_pickedEntity = nullptr;
 	_transformMode = 7;
 	_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
-	_terrain_editor = new TerrainThreadedEditor;
-	_terrain_editor->Run();
 }
 
 EditorLayer::~EditorLayer() {
 	delete mEditorCamera;
 	delete mResourcesWatcher;
-	delete _terrain_editor;
 }
 
 void EditorLayer::OnAttach() {
@@ -187,19 +184,6 @@ void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
 			front.z = sin(to_radians(CameraState.cam_yaw)) * cos(to_radians(CameraState.cam_pitch));
 			mEditorCamera->SetFront(front.GetNormalized());
 		}
-		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY())
-			&& Input::Get()->IsMouseButtonHold(MouseButton::MOUSE_BUTTON_LEFT)) {
-			Ray ray;
-			if (GetPickingRay(ray)) {
-
-				if (_pickedEntity) {
-					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
-					if (terrain) {
-						_terrain_editor->QueueRay(ray);
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -270,17 +254,6 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 		//Try to pick object
 		Ray ray;
 		if (GetPickingRay(ray)) {
-
-			if (_pickedEntity) {
-				TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
-				if (terrain) {
-					_terrain_editor->SetTerrain(terrain);
-					_terrain_editor->QueueRay(ray);
-				}
-				else
-					_terrain_editor->SetTerrain(nullptr);
-			}
-
 			std::vector<RayHit> hits;
 
 			Entity* picked = nullptr;

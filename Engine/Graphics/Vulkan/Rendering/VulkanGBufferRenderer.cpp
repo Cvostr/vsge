@@ -148,11 +148,6 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
 
-	VulkanTerrainRenderer* terrain_renderer = VulkanRenderer::Get()->GetTerrainRenderer();
-	terrain_renderer->SetCameraIndex(_camera_index);
-	terrain_renderer->SetReverseFaceCull(_reverseCull);
-	terrain_renderer->SetOutputSizes(_fb_width, _fb_height);
-
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
 
 	_boundPipeline = nullptr;
@@ -163,21 +158,6 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
 		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
-
-		if (!mesh_component && !material_component) {
-			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
-			if (terrain) {
-				Vec3 bb_max = bounding_box.GetMax();
-				bb_max.y = terrain->GetMaxTerrainHeight();
-				bounding_box.Extend(bb_max);
-				if (camera->IsVisibleInFrustum(bounding_box)) {
-					terrain_renderer->DrawTerrain(cmdbuf, drawn_terrains++, e_i);
-					//need to rebind pipeline
-					_boundPipeline = nullptr;
-				}
-			}
-			continue;
-		}
 
 		MeshResource* mesh_resource = mesh_component->GetMeshResource();
 		MaterialResource* mat_resource = material_component->GetMaterialResource();

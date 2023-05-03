@@ -9,7 +9,6 @@
 #include <MonoScripting/MonoScriptCompile.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Base/Project.hpp>
-#include <Misc/TerrainThreadedEditor.hpp>
 #include <Math/Ray.hpp>
 #include <Base/Events.hpp>
 #include <mpi/Filesystem/FilesystemWatcher.hpp>
@@ -37,7 +36,6 @@ namespace VSGEditor {
 		int _transformMode;
 		EditorCameraMode _camera_mode;
 		Project _project;
-		TerrainThreadedEditor* _terrain_editor;
 
 		bool GetPickingRay(VSGE::Ray& result);
 

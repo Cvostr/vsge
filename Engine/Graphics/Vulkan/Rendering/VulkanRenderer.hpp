@@ -11,7 +11,6 @@
 
 #include "VulkanMaterials.hpp"
 #include <Graphics/LightsBuffer.hpp>
-#include "VulkanTerrainRenderer.hpp"
 #include "VulkanUiRenderer.hpp"
 #include "VulkanCamerasBuffer.hpp"
 #include "PBR/VulkanIrradianceMap.hpp"
@@ -47,9 +46,7 @@ namespace VSGE {
 		LightsBuffer* _lights_buffer;
 
 		VulkanShadowmapping* _shadowmapper;
-		VulkanTerrainRenderer* _terrain_renderer;
 		VulkanUiRenderer* _ui_renderer;
-		Vulkan_BRDF_LUT* _brdf_lut;
 		VulkanCamerasBuffer* _cameras_buffer;
 		VulkanIBL* _ibl_map;
 		std::vector<VulkanRenderTarget*> _render_targets;
@@ -87,8 +84,6 @@ namespace VSGE {
 
 		VulkanCamerasBuffer* GetCamerasBuffer();
 
-		Vulkan_BRDF_LUT* GetBRDF();
-
 		VulkanRenderPass* GetMaterialsRenderPass();
 
 		VulkanRenderTarget* GetMainRenderTarget();
@@ -105,8 +100,6 @@ namespace VSGE {
 		void DestroyRenderer();
 		void DrawScene(VSGE::Camera* cam);
 		void UpdateMaterialDescrSet(Material* mat);
-
-		VulkanTerrainRenderer* GetTerrainRenderer();
 
 		void ResizeOutput(uint32 width, uint32 height);
 	};

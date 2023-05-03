@@ -65,7 +65,6 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/VulkanGBufferRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanShadowmapping.cpp
 				Graphics/Vulkan/Rendering/VulkanEnvMap.cpp
-				Graphics/Vulkan/Rendering/VulkanTerrainRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanCamerasBuffer.cpp
 				Graphics/Vulkan/Rendering/VulkanUiRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanFinalPass.cpp
@@ -124,7 +123,6 @@ set(SRC_FILES
 				Scene/EntityComponents/MeshComponent.cpp
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
-				Scene/EntityComponents/TerrainComponent.cpp
 				Scene/EntityComponents/CharacterControllerComponent.cpp
 				MonoScripting/MonoScriptingLayer.cpp
 				MonoScripting/MonoScript.cpp
@@ -245,6 +243,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Scene/Entity.hpp
 					Scene/IEntityComponent.hpp
 					Scene/Camera.hpp
+					Scene/SceneLayer.hpp
 					
 					)
 

@@ -28,7 +28,6 @@ set(SRC_FILES
                 InspectorInterfaces/EntityComponents/MeshComponent.cpp
                 InspectorInterfaces/EntityComponents/ParticleEmitter.cpp
                 InspectorInterfaces/EntityComponents/RigidBody.cpp
-                InspectorInterfaces/EntityComponents/Terrain.cpp
                 InspectorInterfaces/EntityComponents/CharacterController.cpp
                 InspectorInterfaces/EntityComponents/EntityScript.cpp
                 InspectorInterfaces/ResourceTypes/AudioResource.cpp
@@ -40,7 +39,6 @@ set(SRC_FILES
                 Misc/ResourceImporter.cpp
                 Misc/SceneExt.cpp
                 Misc/Thumbnails.cpp
-                Misc/TerrainThreadedEditor.cpp
                 Misc/VkMaterialsThumbnails.cpp
                 Misc/VkGizmos.cpp
                 Misc/EditorIcons.cpp
@@ -93,7 +91,6 @@ set(HEADER_FILES   Base/Events.hpp
                     Misc/EditorIcons.hpp
                     Misc/ResourceImporter.hpp
                     Misc/SceneExt.hpp
-                    Misc/TerrainThreadedEditor.hpp
                     Misc/Thumbnails.hpp
                     Misc/VkGizmos.hpp
                     Misc/VkMaterialsThumbnails.hpp

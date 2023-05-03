@@ -10,7 +10,6 @@
 #include <Scene/EntityComponents/AnimatorComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/CharacterControllerComponent.hpp>
-#include <Scene/EntityComponents/TerrainComponent.hpp>
 
 using namespace VSGE;
 
@@ -115,9 +114,6 @@ static void* WComponent(void* ptr, int type, int action) {
 		break;
 	case ENTITY_COMPONENT_PARTICLE_EMITTER:
 		return _WComponent<ParticleEmitterComponent>(ent, action);
-		break;
-	case ENTITY_COMPONENT_TERRAIN:
-		return _WComponent<TerrainComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_CHARACTER_CONTROLLER:
 		return _WComponent<ParticleEmitterComponent>(ent, action);

@@ -84,7 +84,7 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)VulkanRenderer::Get()->GetLightsBuffer()->GetLightsGpuBuffer());
 	_deferred_descriptor->WriteDescriptorImage(
 		9,
-		VulkanRenderer::Get()->GetBRDF()->GetTextureLut(),
+		VulkanRenderingGenerics::Get()->GetBRDF()->GetTextureLut(),
 		attachment_sampler);
 	_deferred_descriptor->WriteDescriptorImage(
 		12,

@@ -102,6 +102,43 @@ bool VulkanRenderingGenerics::Init() {
 	m_screenMesh->SetIndexBuffer(plane_inds, 6);
 	m_screenMesh->Create();
 
+	//------------------BRDF LUT ------------------------------------
+
+	m_brdf_lut = new Vulkan_BRDF_LUT;
+	m_brdf_lut->Create();	
+
+	//--------------------Shaders-----------------------
+	ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
+	VulkanShader* pbr = new VulkanShader;
+	pbr->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
+	pbr->AddShaderFromFile("pbr.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(pbr, "PBR");
+
+	VulkanShader* vegetable = new VulkanShader;
+	vegetable->AddShaderFromFile("vegetable.vert", SHADER_STAGE_VERTEX);
+	vegetable->AddShaderFromFile("vegetable.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(vegetable, "Vegetable");
+
+	VulkanShader* deferred_light = new VulkanShader;
+	deferred_light->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
+	deferred_light->AddShaderFromFile("deferred_pbr.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(deferred_light, "Deferred");
+
+	VulkanShader* deferred_light_envmap = new VulkanShader;
+	deferred_light_envmap->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);
+	deferred_light_envmap->AddShaderFromFile("deferred_pbr_envmap.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(deferred_light_envmap, "Deferred_envmap");
+
+	VulkanShader* particle = new VulkanShader;
+	particle->AddShaderFromFile("particle.vert", SHADER_STAGE_VERTEX);
+	particle->AddShaderFromFile("particle.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(particle, "Particle");
+
+	VulkanShader* skybox = new VulkanShader;
+	skybox->AddShaderFromFile("skybox.vert", SHADER_STAGE_VERTEX);
+	skybox->AddShaderFromFile("skybox.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(skybox, "Skybox");
+
 	m_initialized = true;
 	return false;
 }
@@ -140,4 +177,8 @@ VulkanMesh* VulkanRenderingGenerics::GetScreenMesh() {
 
 VulkanSampler* VulkanRenderingGenerics::GetAttachmentSampler() {
 	return m_attachmentSampler;
+}
+
+Vulkan_BRDF_LUT* VulkanRenderingGenerics::GetBRDF() {
+	return m_brdf_lut;
 }

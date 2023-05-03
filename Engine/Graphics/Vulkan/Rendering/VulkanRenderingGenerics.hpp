@@ -3,6 +3,7 @@
 #include "../VulkanTexture.hpp"
 #include "../VulkanSampler.hpp"
 #include "../VulkanMesh.hpp"
+#include "PBR/Vulkan_BRDF_LUT.hpp"
 
 namespace VSGE {
 	class VulkanRenderingGenerics {
@@ -21,6 +22,8 @@ namespace VSGE {
 
 		//--------------------Meshes--------------------
 		VulkanMesh* m_screenMesh;
+
+		Vulkan_BRDF_LUT* m_brdf_lut;
 
 		static VulkanRenderingGenerics* _this;
 	public:
@@ -48,5 +51,7 @@ namespace VSGE {
 		VulkanSampler* GetMaterialMapsSampler();
 
 		VulkanMesh* GetScreenMesh();
+
+		Vulkan_BRDF_LUT* GetBRDF();
 	};
 }
