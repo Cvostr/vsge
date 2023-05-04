@@ -18,7 +18,7 @@ VulkanGBufferRenderer::VulkanGBufferRenderer() {
 	_boundPipeline = nullptr;
 }
 VulkanGBufferRenderer::~VulkanGBufferRenderer() {
-	SAFE_RELEASE(_gbuffer_fb)
+	SAFE_RELEASE(m_gbufferFramebuffer)
 	SAFE_RELEASE(_gbuffer_renderpass)
 }
 
@@ -34,14 +34,14 @@ void VulkanGBufferRenderer::CreateFramebuffer() {
 	_gbuffer_renderpass->PushDepthAttachment(device->GetSuitableDepthFormat());
 	_gbuffer_renderpass->Create();
 
-	_gbuffer_fb = new VulkanFramebuffer;
-	_gbuffer_fb->SetSize(_fb_width, _fb_height);
-	_gbuffer_fb->AddAttachment(FORMAT_RGBA16F); //Color
-	_gbuffer_fb->AddAttachment(FORMAT_RGBA16F); //Normal
-	_gbuffer_fb->AddAttachment(FORMAT_RGBA16F); //Position
-	_gbuffer_fb->AddAttachment(FORMAT_RGBA); //Material
-	_gbuffer_fb->AddDepth(GetTextureFormat(device->GetSuitableDepthFormat()));
-	_gbuffer_fb->Create(_gbuffer_renderpass);
+	m_gbufferFramebuffer = new VulkanFramebuffer;
+	m_gbufferFramebuffer->SetSize(_fb_width, _fb_height);
+	m_gbufferFramebuffer->AddAttachment(FORMAT_RGBA16F); //Color
+	m_gbufferFramebuffer->AddAttachment(FORMAT_RGBA16F); //Normal
+	m_gbufferFramebuffer->AddAttachment(FORMAT_RGBA16F); //Position
+	m_gbufferFramebuffer->AddAttachment(FORMAT_RGBA); //Material
+	m_gbufferFramebuffer->AddDepth(GetTextureFormat(device->GetSuitableDepthFormat()));
+	m_gbufferFramebuffer->Create(_gbuffer_renderpass);
 }
 
 void VulkanGBufferRenderer::Resize(uint32 width, uint32 height) {
@@ -49,7 +49,7 @@ void VulkanGBufferRenderer::Resize(uint32 width, uint32 height) {
 	_fb_height = height;
 
 	_gbuffer_renderpass->SetClearSize(width, height);
-	_gbuffer_fb->Resize(_fb_width, _fb_height);
+	m_gbufferFramebuffer->Resize(_fb_width, _fb_height);
 }
 
 void VulkanGBufferRenderer::EnableReverseCull() {
@@ -148,7 +148,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
 
-	_gbuffer_renderpass->CmdBegin(*cmdbuf, *_gbuffer_fb);
+	_gbuffer_renderpass->CmdBegin(*cmdbuf, *m_gbufferFramebuffer);
 
 	_boundPipeline = nullptr;
 	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
@@ -176,7 +176,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
 			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
-			
+				
 			//Mark mesh resource used in this frame
 			mesh_resource->Use();
 			//Mark material resource used in this frame
@@ -228,25 +228,25 @@ Scene* VulkanGBufferRenderer::GetScene() {
 	return _scene;
 }
 VulkanFramebuffer* VulkanGBufferRenderer::GetFramebuffer() {
-	return _gbuffer_fb;
+	return m_gbufferFramebuffer;
 }
 VulkanRenderPass* VulkanGBufferRenderer::GetRenderPass() {
 	return _gbuffer_renderpass;
 }
 VulkanTexture* VulkanGBufferRenderer::GetAlbedoAttachment() {
-	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[0];
+	return (VulkanTexture*)m_gbufferFramebuffer->GetColorAttachments()[0];
 }
 VulkanTexture* VulkanGBufferRenderer::GetNormalAttachment() {
-	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[1];
+	return (VulkanTexture*)m_gbufferFramebuffer->GetColorAttachments()[1];
 }
 VulkanTexture* VulkanGBufferRenderer::GetPositionAttachment() {
-	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[2];
+	return (VulkanTexture*)m_gbufferFramebuffer->GetColorAttachments()[2];
 }
 VulkanTexture* VulkanGBufferRenderer::GetMaterialsAttachment() {
-	return (VulkanTexture*)_gbuffer_fb->GetColorAttachments()[3];
+	return (VulkanTexture*)m_gbufferFramebuffer->GetColorAttachments()[3];
 }
 VulkanTexture* VulkanGBufferRenderer::GetDepthAttachment() {
-	return (VulkanTexture*)_gbuffer_fb->GetDepthAttachment();
+	return (VulkanTexture*)m_gbufferFramebuffer->GetDepthAttachment();
 }
 VulkanBuffer* VulkanGBufferRenderer::GetTransformsBuffer() {
 	return _transforms_buffer;

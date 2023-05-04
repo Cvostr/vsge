@@ -12,7 +12,7 @@
 namespace VSGE {
 	class VulkanGBufferRenderer {
 	private:
-		VulkanFramebuffer* _gbuffer_fb;
+		VulkanFramebuffer* m_gbufferFramebuffer;
 		VulkanRenderPass* _gbuffer_renderpass;
 
 		//---------------------DESCRIPTORS-----------------

@@ -50,7 +50,7 @@ void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_fb->Create(_deferred_rp);
 }
 
-void VulkanDeferredLight::CreateDescriptorSet(){
+void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer){
 	//Allocate pool
 	_deferred_pool = new VulkanDescriptorPool;
 
@@ -81,7 +81,7 @@ void VulkanDeferredLight::CreateDescriptorSet(){
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
-	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)VulkanRenderer::Get()->GetLightsBuffer()->GetLightsGpuBuffer());
+	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)lightsBuffer->GetLightsGpuBuffer());
 	_deferred_descriptor->WriteDescriptorImage(
 		9,
 		VulkanRenderingGenerics::Get()->GetBRDF()->GetTextureLut(),

@@ -34,7 +34,7 @@ namespace VSGE {
 		~VulkanDeferredLight();
 
 		void CreateFramebuffer();
-		void CreateDescriptorSet();
+		void CreateDescriptorSet(LightsBuffer* lightsBuffer);
 		void CreatePipeline();
 
 		void SetLightsBuffer(VulkanBuffer* lights_buffer);

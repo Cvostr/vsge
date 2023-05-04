@@ -7,43 +7,33 @@
 #include "Postprocess/VulkanSSAO.hpp"
 #include "PBR/VulkanIBL.hpp"
 #include <Graphics/RenderTarget.hpp>
+#include <Graphics/LightsBuffer.hpp>
 
 namespace VSGE {
-	class VulkanRenderTarget : public RenderTarget {
+	class VulkanRTRenderer {
 	private:
+		VulkanShadowmapping* m_shadowmapper;
 		VulkanGBufferRenderer* m_gbufferRenderer;
-		VulkanDeferredLight* _deferred_renderer;
+		VulkanDeferredLight* m_deferredRenderer;
 
-		VulkanGammaCorrection* _gamma_correction;
-		VulkanBloom* _bloom;
-		VulkanSSAO* _ssao;
+		VulkanGammaCorrection* m_gammaCorrection;
+		VulkanBloom* m_bloom;
+		VulkanSSAO* m_ssao;
 
-		VulkanTexture* _output;
-
-		VulkanShadowmapping* _shadowmapper;
-
-		void CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf);
+		LightsBuffer* m_lightsBuffer;
+		VulkanBuffer* m_transformsShaderBuffer;
+		VulkanBuffer* m_animationTransformsShaderBuffer;
+		VulkanBuffer* m_particlesTransformShaderBuffer;
 	public:
-		VulkanRenderTarget();
-		~VulkanRenderTarget();
+		VulkanRTRenderer();
+		~VulkanRTRenderer();
 
 		void Create();
 		void Destroy();
 
-		void SetCameraIndex(uint32 camera_index);
-		void SetEntitiesToRender(tEntityList& entities, tEntityList& particles);
-		void SetBuffers(
-			VulkanBuffer* transforms_buffer = nullptr,
-			VulkanBuffer* anims_buffer = nullptr,
-			VulkanBuffer* particles_buffer = nullptr);
-		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
-		void SetIBL(VulkanIBL* ibl);
 		void ResizeOutput(uint32 width, uint32 height);
-		void SetOutput(VulkanTexture* output_texture);
 
 		void RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer);
-
-		Camera* GetCamera();
 
 		VulkanTexture* GetDeferredOutput();
 		VulkanTexture* GetGammaCorrectedOutput();

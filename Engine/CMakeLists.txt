@@ -60,6 +60,7 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanPresenter.cpp
 				Graphics/Vulkan/Rendering/VulkanMaterials.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderer.cpp
+				Graphics/Vulkan/Rendering/VulkanRTRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderingGenerics.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderTarget.cpp
 				Graphics/Vulkan/Rendering/VulkanDeferredLight.cpp
@@ -229,6 +230,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Vulkan/VulkanSwapchain.hpp
 					Graphics/Vulkan/VulkanTexture.hpp
 					Graphics/Vulkan/VulkanSynchronization.hpp
+					Graphics/Vulkan/Rendering/VulkanRTRenderer.hpp
 	
 					Core/VarTypes/Base.hpp
 					Core/VarTypes/String.hpp
@@ -246,6 +248,8 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Scene/Camera.hpp
 					Scene/SceneLayer.hpp
 					Scene/SceneSerialization.hpp
+					Scene/EntityComponents/AnimatorComponent.hpp
+					Scene/EntityComponents/AudioListenerComponent.hpp
 					)
 
 add_library (Engine ${SRC_FILES} ${HEADER1_FILES})

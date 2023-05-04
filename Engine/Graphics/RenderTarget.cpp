@@ -4,7 +4,7 @@ using namespace VSGE;
 
 RenderTarget::RenderTarget() {
 	m_width = 0;
-	_height = 0;
+	m_height = 0;
 	_camera_index = 0;
 }
 
@@ -13,5 +13,5 @@ uint32 RenderTarget::GetWidth() const {
 }
 
 uint32 RenderTarget::GetHeight() const {
-	return _height;
+	return m_height;
 }

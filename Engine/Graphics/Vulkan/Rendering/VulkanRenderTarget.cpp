@@ -15,19 +15,16 @@ VulkanRenderTarget::~VulkanRenderTarget() {
 }
 
 void VulkanRenderTarget::Create() {
-	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
-
-	_gbuffer_renderer = new VulkanGBufferRenderer;
-	_gbuffer_renderer->CreateFramebuffer();
-	_gbuffer_renderer->CreateDescriptorSets();
-	_gbuffer_renderer->SetScene(vk_renderer->GetScene());
-	_gbuffer_renderer->SetCameraIndex(0);
+	m_gbufferRenderer = new VulkanGBufferRenderer;
+	m_gbufferRenderer->CreateFramebuffer();
+	m_gbufferRenderer->CreateDescriptorSets();
+	m_gbufferRenderer->SetCameraIndex(0);
 
 	_deferred_renderer = new VulkanDeferredLight;
 	_deferred_renderer->CreateFramebuffer();
-	_deferred_renderer->CreateDescriptorSet();
+	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer());
 	_deferred_renderer->CreatePipeline();
-	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
+	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
 
@@ -41,23 +38,23 @@ void VulkanRenderTarget::Create() {
 }
 void VulkanRenderTarget::Destroy() {
 	SAFE_RELEASE(_deferred_renderer);
-	SAFE_RELEASE(_gbuffer_renderer);
+	SAFE_RELEASE(m_gbufferRenderer);
 	SAFE_RELEASE(_gamma_correction);
 }
 void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) {
 	_camera_index = camera_index;
-	_gbuffer_renderer->SetCameraIndex(camera_index);
+	m_gbufferRenderer->SetCameraIndex(camera_index);
 	_deferred_renderer->SetCameraIndex(camera_index);
 }
 void VulkanRenderTarget::SetEntitiesToRender(tEntityList& entities, tEntityList& particles) {
-	_gbuffer_renderer->SetEntitiesToRender(entities, particles);
+	m_gbufferRenderer->SetEntitiesToRender(entities, particles);
 }
 void VulkanRenderTarget::SetBuffers(
 	VulkanBuffer* transforms_buffer,
 	VulkanBuffer* anims_buffer,
 	VulkanBuffer* particles_buffer) 
 {
-	_gbuffer_renderer->SetBuffers(transforms_buffer, anims_buffer, particles_buffer);
+	m_gbufferRenderer->SetBuffers(transforms_buffer, anims_buffer, particles_buffer);
 }
 void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	_shadowmapper = shadowmapping;
@@ -67,16 +64,16 @@ void VulkanRenderTarget::SetIBL(VulkanIBL* ibl) {
 	_deferred_renderer->SetIBL(ibl->GetSpecularMap(), ibl->GetIrradianceMap());
 }
 void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
-	if (m_width == width && _height == height)
+	if (m_width == width && m_height == height)
 		return;
 
 	m_width = width;
-	_height = height;
+	m_height = height;
 
 	//resize gbuffer and deferred buffer
-	_gbuffer_renderer->Resize(width, height);
+	m_gbufferRenderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
-	_deferred_renderer->SetGBuffer(_gbuffer_renderer);
+	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 	//update shadowmapper (if exists)
 	if (_shadowmapper) {
 		_shadowmapper->ResizeOutput(width, height);
@@ -104,16 +101,16 @@ VulkanTexture* VulkanRenderTarget::GetGammaCorrectedOutput() {
 	return _gamma_correction->GetOutputTexture();
 }
 VulkanTexture* VulkanRenderTarget::GetGBufferNormalsAttachment() {
-	return _gbuffer_renderer->GetNormalAttachment();
+	return m_gbufferRenderer->GetNormalAttachment();
 }
 VulkanTexture* VulkanRenderTarget::GetGBufferPositionsAttachment() {
-	return _gbuffer_renderer->GetPositionAttachment();
+	return m_gbufferRenderer->GetPositionAttachment();
 }
 VulkanTexture* VulkanRenderTarget::GetGBufferDepthAttachment() {
-	return _gbuffer_renderer->GetDepthAttachment();
+	return m_gbufferRenderer->GetDepthAttachment();
 }
 VulkanGBufferRenderer* VulkanRenderTarget::GetGBufferRenderer() {
-	return _gbuffer_renderer;
+	return m_gbufferRenderer;
 }
 VulkanDeferredLight* VulkanRenderTarget::GetDeferredLightRenderer() {
 	return _deferred_renderer;
@@ -131,9 +128,9 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 	PostEffectsParams& params = cam->GetPostEffectParams();
 
 	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
-	_gbuffer_renderer->SetScene(vk_renderer->GetScene());
+	m_gbufferRenderer->SetScene(vk_renderer->GetScene());
 
-	_gbuffer_renderer->RecordCmdBuffer(cmdbuffer);
+	m_gbufferRenderer->RecordCmdBuffer(cmdbuffer);
 	if (_shadowmapper) {
 		_shadowmapper->UpdateShadowrenderingDescriptors();
 		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
