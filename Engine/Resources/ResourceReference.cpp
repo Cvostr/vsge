@@ -103,3 +103,9 @@ void ResourceReference::SetResource(const Guid& id)
 {
 	SetResource(id, "");
 }
+
+void ResourceReference::Unset()
+{
+	_resourceId = Guid(0, 0, 0, 0);
+	_resourcePointer = nullptr;
+}

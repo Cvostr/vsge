@@ -213,8 +213,9 @@ void FileBrowserWindow::OnDrawWindow() {
         }
         if (e->isTexture()) {
             ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(e->abs_path);
-            if (tex)
+            if (tex) {
                 icon = tex->imtexture;
+            }
         }
 
         //Draw button with file

@@ -44,7 +44,7 @@ bool Entity::IsActive() const {
 }
 
 void Entity::SetStatic(bool _static) {
-	_static = _static; 
+	this->_static = _static; 
 }
 
 bool Entity::IsStatic() const {

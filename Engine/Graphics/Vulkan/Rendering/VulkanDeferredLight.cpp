@@ -237,7 +237,8 @@ void VulkanDeferredLight::DrawSkybox(VulkanCommandBuffer* cmdbuf) {
 		}
 	}
 }
-void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf) {
+void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf) 
+{
 	uint32 writtenParticleTransforms = 0;
 	for (uint32 particle_em_i = 0; particle_em_i < _gbuffer->GetParticlesToRender()->size(); particle_em_i++) {
 		Entity* entity = (*_gbuffer->GetParticlesToRender())[particle_em_i];
@@ -246,7 +247,11 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf) {
 		if (!particle_emitter->IsSimulating())
 			continue;
 
-		MeshResource* mesh_resource = entity->GetComponent<MeshComponent>()->GetMeshResource();
+		MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
+		if (meshComponent == nullptr)
+			continue;
+
+		MeshResource* mesh_resource = meshComponent->GetMeshResource();
 		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
 
 		//bind material
@@ -288,15 +293,12 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf) {
 	}
 }
 
-void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf) {
+void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf) 
+{
 	for (uint32 e_i = 0; e_i < _gbuffer->GetEntitiesToRender()->size(); e_i++) {
 		Entity* entity = (*_gbuffer->GetEntitiesToRender())[e_i];
-		AABB bounding_box = entity->GetAABB();
 		
-		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
-		if (!mesh_component)
-			continue;
-		
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();		
 		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
 
 		MaterialResource* mat_resource = material_component->GetMaterialResource();
@@ -307,6 +309,7 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf) {
 		Material* mat = mat_resource->GetMaterial();
 		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
 
+		// На этом этапе рисуем объекты постпрохода
 		if (templ->GetRenderStage() != RENDER_STAGE_POST)
 			continue;
 

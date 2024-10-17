@@ -35,8 +35,8 @@ namespace VSGE{
 		void SetResource(const Guid& id);
 
 		void SetResource(const Guid& parentId, const std::string& childName);
-
 		void SetResource(Resource* resource);
+		void Unset();
 
 		bool IsResourceSpecified();
         

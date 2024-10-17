@@ -3,8 +3,7 @@
 
 using namespace VSGE;
 
-VkDescriptorSet temp_sets[6];
-VkBuffer temp_bufs[6];
+#define MAX_TEMP_DESCRIPTORS_SETS 7
 
 bool VulkanCommandPool::Create(uint32 queueFamilyIndex) {
     VkCommandPoolCreateInfo poolInfo = {};
@@ -73,7 +72,9 @@ void VulkanCommandBuffer::BindComputePipeline(VulkanComputePipeline& pipeline){
     vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline.GetPipeline());
 }
 
-void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount, const uint32* offsets, VkPipelineBindPoint bind_point) {
+void VulkanCommandBuffer::BindDescriptorSets(VulkanPipelineLayout& layout, uint32 firstSet, uint32 setsCount, VulkanDescriptorSet* sets, uint32 dynOffsetCount, const uint32* offsets, VkPipelineBindPoint bind_point) 
+{
+    VkDescriptorSet temp_sets[MAX_TEMP_DESCRIPTORS_SETS];
     for (uint32 set_i = 0; set_i < setsCount; set_i++) {
         temp_sets[set_i] = sets[set_i].GetDescriptorSet();
     }
@@ -90,11 +91,15 @@ void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
     vkCmdBindVertexBuffers(mCommandBuffer, 0, 1, &_buffer, offsets);
 }
 
-void VulkanCommandBuffer::BindVertexBuffers(VulkanBuffer** buffer, uint32 size, uint32 start) {
+void VulkanCommandBuffer::BindVertexBuffers(VulkanBuffer** buffer, uint32 size, uint32 start) 
+{
     VkDeviceSize offsets[] = { 0, 0, 0, 0  };
+    VkBuffer temp_bufs[6];
+    
     for (uint32 buf_i = 0; buf_i < size; buf_i++) {
         temp_bufs[buf_i] = buffer[buf_i]->GetBuffer();
     }
+
     vkCmdBindVertexBuffers(mCommandBuffer, start, size, temp_bufs, offsets);
 }
 

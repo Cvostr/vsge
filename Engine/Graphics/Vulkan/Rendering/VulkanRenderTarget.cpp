@@ -37,9 +37,11 @@ void VulkanRenderTarget::Create() {
 	_ssao->Create();
 }
 void VulkanRenderTarget::Destroy() {
+	SAFE_RELEASE(_ssao)
+	SAFE_RELEASE(_bloom)
+	SAFE_RELEASE(_gamma_correction);
 	SAFE_RELEASE(_deferred_renderer);
 	SAFE_RELEASE(m_gbufferRenderer);
-	SAFE_RELEASE(_gamma_correction);
 }
 void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) {
 	_camera_index = camera_index;

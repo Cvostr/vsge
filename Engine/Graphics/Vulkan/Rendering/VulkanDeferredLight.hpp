@@ -5,6 +5,7 @@
 #include "VulkanGBufferRenderer.hpp"
 #include "VulkanShadowmapping.hpp"
 #include "PBR/Vulkan_BRDF_LUT.hpp"
+#include "../../LightsBuffer.hpp"
 
 namespace VSGE {
 	class VulkanDeferredLight {

@@ -39,7 +39,7 @@ void VulkanEnvMap::Create() {
 		_sides[i]._light->SetCameraIndex(ENVMAP_CAMS_POS + i);
 		_sides[i]._light->SetEnvmap(true);
 		_sides[i]._light->CreateFramebuffer();
-		_sides[i]._light->CreateDescriptorSet();
+		_sides[i]._light->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer());
 		_sides[i]._light->CreatePipeline();
 		_sides[i]._light->SetLightsBuffer(_lights_buffer);
 		_sides[i]._light->SetGBuffer(_sides[i]._gbuffer);

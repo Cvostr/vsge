@@ -5,8 +5,8 @@
 using namespace VSGE;
 
 const std::vector<const char*> deviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    , "VK_EXT_extended_dynamic_state"
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME
 };
 
 const std::vector<const char*> validationLayers = {
@@ -17,12 +17,14 @@ const std::vector<const char*> validationLayers = {
 #define COMPUTE_QUEUES_NEEDED 2
 #define TRANSFER_QUEUES_NEEDED 4
 
-VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices){
+VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
+{
     if(devices.size() == 0)
         return VK_NULL_HANDLE;
+
     //Try to find discrete gpu with highest performance
     VkPhysicalDevice best = VK_NULL_HANDLE;
-    for(auto device : devices) {
+    for (auto device : devices) {
         VkPhysicalDeviceProperties device_props;
         vkGetPhysicalDeviceProperties(device, &device_props);
 
@@ -72,7 +74,10 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
     return nullptr;
 }
 
-VulkanDevice::VulkanDevice() {
+VulkanDevice::VulkanDevice() :
+    mPhysicalDevice(VK_NULL_HANDLE),
+    mDevice(VK_NULL_HANDLE)
+{
 
 }
 
@@ -129,7 +134,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     VkDeviceCreateInfo logical_gpu_create_info = {};
     logical_gpu_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    logical_gpu_create_info.pNext = &eds_features;
+    logical_gpu_create_info.pNext = nullptr;// &eds_features;
     logical_gpu_create_info.flags = 0;
     logical_gpu_create_info.queueCreateInfoCount = static_cast<uint32>(QueuesToCreate.size()); //size of queues vector
     logical_gpu_create_info.pQueueCreateInfos = QueuesToCreate.data(); //pointer to start of queues vector

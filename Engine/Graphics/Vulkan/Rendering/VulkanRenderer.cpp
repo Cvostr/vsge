@@ -281,6 +281,13 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 		Entity* entity = _particleEmitters[particle_em_i];
 		ParticleEmitterComponent* emitter = entity->GetComponent<ParticleEmitterComponent>();
 
+		// У сущности должны быть Mesh и Material
+		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
+		if (!mesh_component)
+			continue;
+		MeshResource* mesh_resource = mesh_component->GetMeshResource();
+		if (!mesh_resource)
+			continue;
 		MaterialComponent* component = entity->GetComponent<MaterialComponent>();
 		if (!component)
 			continue;

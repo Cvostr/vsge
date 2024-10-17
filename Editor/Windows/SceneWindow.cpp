@@ -69,6 +69,9 @@ void SceneWindow::OnDrawWindow() {
                 if (ImGui::MenuItem("Particle Emitter")) {
                     Entity* newEntity = scene->AddNewEntity("Particles");
                     ParticleEmitterComponent* light = newEntity->AddComponent<ParticleEmitterComponent>();
+                    MeshComponent* mesh = newEntity->AddComponent<MeshComponent>();
+                    mesh->SetMeshId(GetPlaneMesh()->getId());
+                    MaterialComponent* mat = newEntity->AddComponent<MaterialComponent>();                 
                 }
                 if (ImGui::MenuItem("Audio Source")) {
                     Entity* newEntity = scene->AddNewEntity("Audio");

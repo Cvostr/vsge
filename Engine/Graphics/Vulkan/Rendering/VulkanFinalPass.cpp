@@ -54,8 +54,14 @@ void VulkanFinalPass::Create() {
 	_copy_pipeline->Create(_copy_shader, _rp, _vertexLayout, _copy_pl);
 }
 
-void VulkanFinalPass::Destroy() {
-
+void VulkanFinalPass::Destroy() 
+{
+	SAFE_RELEASE(_copy_pipeline);
+	SAFE_RELEASE(_copy_pl)
+	SAFE_RELEASE(_world_descr)
+	SAFE_RELEASE(_pool)
+	SAFE_RELEASE(_copy_shader)
+	SAFE_RELEASE(_rp)
 }
 void VulkanFinalPass::CreateFramebuffer() {
 	_fb = new VulkanFramebuffer;

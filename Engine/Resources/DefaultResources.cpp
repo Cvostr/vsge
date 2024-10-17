@@ -11,6 +11,7 @@ using namespace VSGE;
 
 static MeshResource* cube_mesh = nullptr;
 static MeshResource* sphere_mesh = nullptr;
+static MeshResource* plane_mesh = nullptr;
 
 static MaterialResource* default_mat = nullptr;
 
@@ -84,11 +85,18 @@ void VSGE::AddDefaultMaterial() {
 	ResourceCache::Get()->PushResource(default_mat);
 }
 
-MeshResource* VSGE::GetCubeMesh(){
+MeshResource* VSGE::GetCubeMesh()
+{
     return cube_mesh;
 }
 
-MeshResource* VSGE::GetSphereMesh() {
+MeshResource* VSGE::GetPlaneMesh()
+{
+    return plane_mesh;
+}
+
+MeshResource* VSGE::GetSphereMesh()
+{
     return sphere_mesh;
 }
 
@@ -112,8 +120,7 @@ void VSGE::AddDefaultMeshes() {
     cube_mesh->SetState(RESOURCE_STATE_READY);
 	ResourceCache::Get()->PushResource(cube_mesh);
 
-
-    MeshResource* plane_mesh = new MeshResource;
+    plane_mesh = new MeshResource;
     plane_mesh->SetDefault();
     plane_mesh->SetName("Plane");
     plane_mesh->SetId(planeMeshId);

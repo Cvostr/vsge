@@ -9,6 +9,7 @@ namespace VSGE {
 
 	MeshResource* GetCubeMesh();
 	MeshResource* GetSphereMesh();
+	MeshResource* GetPlaneMesh();
 
 	MaterialResource* getDefaultMaterialResource();
 }

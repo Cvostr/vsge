@@ -84,7 +84,7 @@ void VkMaterialsThumbnails::Create() {
 
     _light = new VulkanDeferredLight;
     _light->CreateFramebuffer();
-    _light->CreateDescriptorSet();
+    _light->CreateDescriptorSet(_lights_buffer);
     _light->CreatePipeline();
     _light->SetLightsBuffer((VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
     _light->SetGBuffer(_gbuffer);
@@ -102,10 +102,14 @@ void VkMaterialsThumbnails::Create() {
     _gamma_correction->SetKeepAlpha(true);
 }
 
-void VkMaterialsThumbnails::Destroy() {
+void VkMaterialsThumbnails::Destroy() 
+{
+    SAFE_RELEASE(_gamma_correction)
+    SAFE_RELEASE(_sampler)
     SAFE_RELEASE(_light)
     SAFE_RELEASE(_gbuffer)
-    SAFE_RELEASE(_gamma_correction)
+    SAFE_RELEASE(_camera)
+    SAFE_RELEASE(_lights_buffer)
 }
 
 void VkMaterialsThumbnails::RecreateAll() {

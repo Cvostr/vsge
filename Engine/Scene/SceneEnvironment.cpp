@@ -3,13 +3,15 @@
 
 using namespace VSGE;
 
-SceneEnvironmentSettings::SceneEnvironmentSettings(){
+SceneEnvironmentSettings::SceneEnvironmentSettings()
+{
 	_shadow_distance = 200;
 	_shadow_cascades_count = 4;
 	UpdateShadows();
 }
 
-void SceneEnvironmentSettings::UpdateShadows(){
+void SceneEnvironmentSettings::UpdateShadows()
+{
 	_cascade_depths.resize(_shadow_cascades_count);
 	_cascade_dists.resize(_shadow_cascades_count);
 	
@@ -35,11 +37,13 @@ void SceneEnvironmentSettings::UpdateShadows(){
 	}
 }
 
-const Color& SceneEnvironmentSettings::GetAmbientColor(){
+const Color& SceneEnvironmentSettings::GetAmbientColor()
+{
 	return _ambient_color;
 }
 
-void SceneEnvironmentSettings::SetAmbientColor(const Color& color){
+void SceneEnvironmentSettings::SetAmbientColor(const Color& color)
+{
 	_ambient_color = color;
 }
 
@@ -75,7 +79,8 @@ int SceneEnvironmentSettings::GetCascadeByDistance(Vec3 pos, const Mat4& cam_vie
 	return 0;
 }
 
-void SceneEnvironmentSettings::SetShadowCascadesCount(uint32 cascades){
+void SceneEnvironmentSettings::SetShadowCascadesCount(uint32 cascades)
+{
 	if(cascades > 0 && cascades < 10)
 		_shadow_cascades_count = cascades;
 }

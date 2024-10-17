@@ -85,9 +85,9 @@ void VSGEditor::processMesh(aiMesh* mesh, MeshContainer* mesh_ptr) {
         bone.SetOffsetMatrix(boneTransform);
 
         //Iterate over all weights to set them to vertices
-        for(uint32 vw_i = 0; vw_i < bone.GetAffectedVerticesCount(); vw_i ++){
+        for (uint32 vw_i = 0; vw_i < bone.GetAffectedVerticesCount(); vw_i ++)
+        {
             aiVertexWeight* vw = &bone_ptr->mWeights[vw_i];
-            //ZSVERTEX* vertex = &mesh_ptr->vertices_arr[vw->mVertexId];
             VertexSkinningData* vsd = &mesh_ptr->vertexSkinningArray[vw->mVertexId];
 
             if(vsd->bones_num + 1 > MAX_BONE_PER_VERTEX)
@@ -137,7 +137,8 @@ void ProcessAiMeshes(aiMesh** meshes, uint32 meshes_count) {
     }
 }
 
-void VSGEditor::loadMesh(const std::string& file_path, MeshContainer* mesh_ptr, int index){
+void VSGEditor::loadMesh(const std::string& file_path, MeshContainer* mesh_ptr, int index)
+{
     const aiScene* scene = importer.ReadFile(file_path, loadflags);
     std::cout << "Loading mesh " << scene->mMeshes[index]->mName.C_Str() << " from file " << file_path << std::endl;
 
@@ -147,7 +148,8 @@ void VSGEditor::loadMesh(const std::string& file_path, MeshContainer* mesh_ptr, 
     importer.FreeScene();
 }
 
-void VSGEditor::loadAnimation(const std::string& file_path, Animation* anim, int index){
+void VSGEditor::loadAnimation(const std::string& file_path, Animation* anim, int index)
+{
     const aiScene* scene = importer.ReadFile(file_path, loadflagsAnim);
     std::cout << "Loading animation " << scene->mAnimations[index]->mName.C_Str() << " from file " << file_path << std::endl;
 

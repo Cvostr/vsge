@@ -15,9 +15,11 @@ ResourcePickerWindow::ResourcePickerWindow() {
     _allow_empty_resource = false;
     reference = nullptr;
     script_reference = nullptr;
+    resourceType = RESOURCE_TYPE_NONE;
 }
 
-void ResourcePickerWindow::OnDrawWindow() {
+void ResourcePickerWindow::OnDrawWindow() 
+{
     if (Draw("Select")) {
         
         if (reference)
@@ -36,7 +38,8 @@ void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
 
     if (_allow_empty_resource) {
         if (ImGui::Button("...", ImVec2(32, 32))) {
-            SetResourceToReference("");
+            reference->Unset();
+            Hide();
         }
     }
 
