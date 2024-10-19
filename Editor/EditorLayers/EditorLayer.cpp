@@ -457,8 +457,12 @@ void EditorLayer::OnScriptBeginEvent(const VSGE::ScriptCompilationBeginEvent& sc
 
 void EditorLayer::OnScriptCompiledEvent(const VSGE::ScriptCompilationDoneEvent& scde) {
 	MonoScriptStorage::Get()->SetScriptingReady();
+	// Save field descriptions
+	// THIS IS TOTAL SHIT (полная хуйня)
+	// TODO: refactor
 	SceneLayer::Get()->GetMainScene()->GetRootEntity()->CallOnScriptChanged(0);
-	//Reload scripts dll
+	// Reload scripts dll
+	// This operation also clears all field descriptions
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile("mono_temp.dll");
 	//Hide HoldOn window
 	ImGuiLayer::Get()->SetDrawWindows(true);

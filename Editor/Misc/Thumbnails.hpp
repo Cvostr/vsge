@@ -13,6 +13,8 @@ private:
 	VSGE::VulkanSampler* sampler;
 	std::vector<STRIMGVKT*> _textureResources;
 	ImguiVulkanTexture* _emptyTextureIcon;
+
+	void Setup();
 public:
 
 	TextureThumbnails();
@@ -23,6 +25,6 @@ public:
 
 	ImguiVulkanTexture* GetTextureResource(const std::string& fname);
 
-	ImguiVulkanTexture* GetCheckerboardTexture() { return _emptyTextureIcon; }
+	ImguiVulkanTexture* GetCheckerboardTexture();
 
 };

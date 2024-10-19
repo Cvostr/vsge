@@ -91,8 +91,12 @@ MonoClassFieldDesc::MonoClassFieldDesc(MonoClassDesc* class_desc, MonoClassField
 	Create(class_desc, mono_field);
 }
 
-MonoClassFieldDesc::MonoClassFieldDesc(const std::string& name, ValueType type) {
-	_name = name;
+MonoClassFieldDesc::MonoClassFieldDesc(const std::string& name, ValueType type) :
+	_name(name),
+	_class(nullptr),
+	_field(nullptr),
+	_type_class(nullptr)
+{
 	_base_value.SetType(type);
 }
 

@@ -12,16 +12,29 @@ TextureThumbnails::TextureThumbnails() {
     _emptyTextureIcon = nullptr;
 }
 
-ImguiVulkanTexture* TextureThumbnails::GetTextureResource(const std::string& fname) {
+void TextureThumbnails::Setup()
+{
     if (!sampler) {
         sampler = new VulkanSampler;
         sampler->Create();
     }
+}
+
+ImguiVulkanTexture* TextureThumbnails::GetCheckerboardTexture() 
+{
+    Setup();
 
     if (!_emptyTextureIcon) {
         _emptyTextureIcon = new ImguiVulkanTexture;
         _emptyTextureIcon->CreateFromFile("res/icons/Checkerboard.png", *sampler);
     }
+
+    return _emptyTextureIcon;
+}
+
+ImguiVulkanTexture* TextureThumbnails::GetTextureResource(const std::string& fname) 
+{
+    Setup();
 
     STRIMGVKT* ptr = nullptr;
     for (auto& texture_res : _textureResources) {

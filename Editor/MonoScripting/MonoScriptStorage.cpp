@@ -97,7 +97,8 @@ void MonoScriptStorage::ClearScripts() {
 	_scripts.clear();
 }
 
-void MonoScriptStorage::BuildScriptList(const std::string& root_dir) {
+void MonoScriptStorage::BuildScriptList(const std::string& root_dir) 
+{
 	for (const auto& entry : directory_iterator(root_dir)) {
 		//if file starts with "." then don't show it
 		if (entry.path().filename().string()[0] == '.')
@@ -111,10 +112,8 @@ void MonoScriptStorage::BuildScriptList(const std::string& root_dir) {
 	}
 }
 
-void MonoScriptStorage::Compile() {
-	if (_scripts.size() == 0)
-		return;
-
+void MonoScriptStorage::Compile() 
+{
 	MonoScriptingLayer::Get()->ReleaseDomain();
 	MonoScriptingLayer::Get()->CreateDomain();
 

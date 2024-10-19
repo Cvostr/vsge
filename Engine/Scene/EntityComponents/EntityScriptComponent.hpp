@@ -6,6 +6,7 @@
 
 namespace VSGE {
 
+	// Field with description and value
 	class MonoScriptField {
 	private:
 		MonoClassFieldDesc* _desc;
@@ -43,6 +44,8 @@ namespace VSGE {
 		std::vector<MonoScriptField> _fields;
 
 		MonoScriptField* GetFieldByNameType(const std::string& field_name, ValueType type);
+
+		// Clear all current fields data and reload from _class_name
 		void LoadFields();
 	public:
 		EntityScriptComponent();

@@ -203,13 +203,13 @@ void FileBrowserWindow::OnDrawWindow() {
                 if (!mat->IsReady()) {
                     mat->Load();
                 }
-            }
 
-            ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->getId());
-            if (mat->IsReady())
-                VkMaterialsThumbnails::Get()->CreateThumbnail(mat);
-            if (thumb)
-               icon = thumb;
+                ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->getId());
+                if (mat->IsReady())
+                    VkMaterialsThumbnails::Get()->CreateThumbnail(mat);
+                if (thumb)
+                    icon = thumb;
+            }
         }
         if (e->isTexture()) {
             ImguiVulkanTexture* tex = TextureThumbnails::Get()->GetTextureResource(e->abs_path);

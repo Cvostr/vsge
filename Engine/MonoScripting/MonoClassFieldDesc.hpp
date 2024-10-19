@@ -20,11 +20,17 @@ namespace VSGE {
 
 	class MonoClassFieldDesc {
 	private:
+		// Class, which this field belongs to
 		MonoClassDesc* _class;
+		// Mono field descriptor
 		MonoClassField* _field;
+		// Name of field
 		std::string _name;
+		// Type of this field
 		MonoClass* _type_class;
+		// Field visibility
 		MonoClassFieldVisibility _visibility;
+		// Base primitive value
 		Variant _base_value;
 	public:
 		/// <summary>

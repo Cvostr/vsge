@@ -1,6 +1,7 @@
 #include "MonoScript.hpp"
 #include <mono/metadata/assembly.h>
 #include "MonoScriptingLayer.hpp"
+#include "Core/Logger.hpp"
 
 using namespace VSGE;
 
@@ -36,10 +37,17 @@ MonoObject* MonoScriptInstance::CallMethod(MonoMethod* method_desc, void** args)
     return result;
 }
 
-bool MonoScriptInstance::CreateClassByName(const std::string& class_name) {
+bool MonoScriptInstance::CreateClassByName(const std::string& class_name) 
+{
     this->_class_name = class_name;
     MonoScriptBlob* blob = MonoScriptingLayer::Get()->GetScriptsBlob();
     _mono_class_desc = blob->GetMonoClassDesc(class_name);
+
+    if (_mono_class_desc == nullptr) {
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Can't find class " << class_name << " in mono script blob";
+        throw std::exception("No class in bundle");
+    }
+
     _mono_class_instance = _mono_class_desc->CreateObjectInstance();
 
     _update_method = GetMethod("OnUpdate()");

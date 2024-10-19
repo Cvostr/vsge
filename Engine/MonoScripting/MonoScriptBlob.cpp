@@ -71,7 +71,12 @@ int MonoScriptBlob::LoadFromFile(const std::string& path)
 	return 1;
 }
 
-MonoMethod* MonoScriptBlob::GetMethodByDescription(MonoMethodDesc* method_desc) {
+MonoMethod* MonoScriptBlob::GetMethodByDescription(MonoMethodDesc* method_desc) 
+{
+	if (m_image == nullptr) {
+		throw std::exception("m_image is null");
+	}
+
 	return mono_method_desc_search_in_image(method_desc, m_image);
 }
 

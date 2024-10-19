@@ -7,6 +7,8 @@
 #include <ImGuizmo.h>
 #include <MonoScripting/MonoScriptStorage.hpp>
 #include <Misc/EditorIcons.hpp>
+#include <mpi/Desktop/Dialog.hpp>
+#include <exception>
 
 using namespace VSGEditor;
 
@@ -68,12 +70,22 @@ void ToolbarWindow::PlayScene() {
 
     EditorLayer::Get()->SetEditorCameraMode(EDITOR_CAMERA_MODE_GAME_CAMERA);
 
-    if (!scene_layer->IsScenePaused()) {
-        //Save scene
-        scene_layer->BackupScene();
+    try {
+        if (!scene_layer->IsScenePaused()) {
+            //Save scene
+            scene_layer->BackupScene();
+        }
+        //Start scene execution
+        scene_layer->StartScene();
     }
-    //Start scene execution
-    scene_layer->StartScene();
+    catch (const std::exception& ex) {
+        StopScene();
+        Mpi::MessageDialogDesc desc;
+        desc.dialogTitle = "Error starting scene!";
+        desc.dialogMessage = "Scene cannot be started.\nReason: " + std::string(ex.what());
+        desc.dialogTitle = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+        Mpi::Dialog::MessageDialog(desc);
+    }
 }
 void ToolbarWindow::PauseScene() {
     VSGE::Application* app = VSGE::Application::Get();

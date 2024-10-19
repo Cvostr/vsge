@@ -55,7 +55,8 @@ MonoScriptField* EntityScriptComponent::GetFieldByNameType(const std::string& fi
 	return nullptr;
 }
 
-void EntityScriptComponent::Init() {
+void EntityScriptComponent::Init() 
+{
 	_script_instance->CreateClassByName(_class_name);
 	_script_instance->CallDefaultConstructor();
 	_script_instance->SetValuePtrToField("entity_ptr", &_entity);
@@ -99,6 +100,8 @@ void EntityScriptComponent::OnTriggerExit(Entity* entity) {
 
 void EntityScriptComponent::OnScriptChanged(int step) {
 	if (step == 0) {
+		// Save all field descriptions, because they will be destroyed next
+		// THIS IS TOTAL SHIT
 		for (auto& field : _fields) {
 			MonoClassFieldDesc* temp_desc = new MonoClassFieldDesc(
 				field.GetDesc()->GetName(), 
@@ -107,13 +110,16 @@ void EntityScriptComponent::OnScriptChanged(int step) {
 		}
 	}
 	else {
+		// Save all current field data
 		std::vector<MonoScriptField> temp_fields;
 		for (auto& field : _fields) {
 			temp_fields.push_back(field);
 		}
 
+		// Clear all current fields data and reload from _class_name
 		LoadFields();
 
+		// Copy values for fields that not changed
 		for (auto& field : temp_fields) {
 			//find field with this name and type
 			MonoScriptField* pfield = GetFieldByNameType(field.GetDesc()->GetName(), field.GetDesc()->GetValueType());
