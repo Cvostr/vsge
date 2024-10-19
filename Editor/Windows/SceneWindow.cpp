@@ -118,16 +118,30 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
     if (!entity->IsActive()) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1));
     }
+
+    // Mark picked object
+    Entity* pickedEntity = EditorLayer::Get()->GetPickedEntity();
+
+    if (pickedEntity == entity) {
+        flags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    if (pickedEntity != nullptr && pickedEntity->IsDescedant(entity)) {
+        ImGui::SetNextItemOpen(true);
+    }
+
     //Draw Tree Node
     string _unique_name = entity->GetName().c_str() + string("##") + to_string(_drawn_entities);
     bool tree_open = ImGui::TreeNodeEx(_unique_name.c_str(), flags);
     if (!isRoot) {
         if (ImGui::BeginPopupContextItem())
         {
-            if (ImGui::MenuItem("Delete Entity")) {
-                Entity* picked = EditorLayer::Get()->GetPickedEntity();
-                if(picked == entity)
+            if (ImGui::MenuItem("Delete Entity")) 
+            {
+                if (pickedEntity == entity) {
                     EditorLayer::Get()->SetPickedEntity(nullptr);
+                }
+
                 InspectorWindow::Get()->SetShowingEntity(nullptr);
                 _entityRemoved = true;
             }

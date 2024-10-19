@@ -320,7 +320,15 @@ void FileBrowserWindow::RenameFileDialog(FileEntry* Entry) {
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0))) {
+            // Rename asset file
             fs::rename(Entry->abs_path, Entry->directory + "/" + rename_file_name);
+
+            // Rename asset meta file, if exists
+            std::string metaAbsPath = Entry->abs_path + ".meta";
+            if (fs::exists(metaAbsPath)) {
+                fs::rename(metaAbsPath, Entry->directory + "/" + rename_file_name + ".meta");
+            }
+
             ImGui::CloseCurrentPopup();
             UpdateDirectoryContent();
         }

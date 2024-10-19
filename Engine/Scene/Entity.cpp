@@ -33,6 +33,22 @@ Entity* Entity::GetParent() const {
 	return _parent; 
 }
 
+bool Entity::IsDescedant(Entity* entity) const {
+
+	Entity* current = GetParent();
+
+	while (current != nullptr) {
+
+		if (current == entity) {
+			return true;
+		}
+
+		current = current->GetParent();
+	}
+
+	return false;
+}
+
 void Entity::SetActive(bool active) {
 	_active = active; 
 }

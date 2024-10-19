@@ -57,12 +57,37 @@ Resource* ResourceCache::GetResource(const Guid& id)
     return nullptr;
 }
 
-Resource* ResourceCache::GetResourceWithFilePath(const std::string& fpath) {
-    for (uint32 res_i = 0; res_i < GetResourcesCount(); res_i++) {
+bool pathEqual(const std::string& p1, const std::string& p2)
+{
+    if (p1.size() != p2.size()) {
+        return false;
+    }
+
+    for (size_t i = 0; i < p1.size(); i++) {
+        char p1c = p1[i];
+        char p2c = p2[i];
+
+        if ((p1c == '/' || p1c == '\\')) {
+            if ((p2c != '/' && p2c != '\\'))
+                return false;
+        }
+        else if (p1c != p2c) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+Resource* ResourceCache::GetResourceWithFilePath(const std::string& fpath) 
+{
+    for (uint32 res_i = 0; res_i < GetResourcesCount(); res_i++) 
+    {
         VSGE::Resource* res = GetResources()[res_i];
-        if (res->GetDataDescription().file_path == fpath)
+        if ( pathEqual( res->GetDataDescription().file_path ,fpath) )
             return res;
     }
+
     return nullptr;
 }
 
@@ -95,6 +120,12 @@ void ResourceCache::AddResourceFile(const std::string& path)
         ddescr.file_path = path;
         ddescr.offset = 0;
         ddescr.size = 0;
+
+        // to unix slash
+        for (size_t i = 0; i < ddescr.file_path.size(); i++) {
+            if (ddescr.file_path[i] == '\\')
+                ddescr.file_path[i] = '/';
+        }
         
         Resource* resource = CreateResource(ddescr, type);
         File resFilePath = File(path);

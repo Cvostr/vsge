@@ -169,6 +169,12 @@ namespace VSGE {
 		/// <returns></returns>
 		Entity* GetParent() const;
 		/// <summary>
+		/// Checks is entity a descedant for specified
+		/// </summary>
+		/// <param name="entity">entity to check</param>
+		/// <returns></returns>
+		bool IsDescedant(Entity* entity) const;
+		/// <summary>
 		/// Tries to find the entity with the given name in this entity hierarchy
 		/// </summary>
 		/// <param name="name"></param>
