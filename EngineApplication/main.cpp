@@ -15,6 +15,7 @@
 
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <Graphics/FontManager.hpp>
 
 using namespace VSGE;
 
@@ -25,10 +26,9 @@ Application* VSGEMain(int argc, char* argv[]) {
 	descr.graphicsApi = GRAPHICS_API_VULKAN;
 	descr.headless = parser.IsHeadless();
 	descr.server = parser.IsServer();
-	//descr.headless = true;
-	//descr.server = true;
-	//descr.application_dir = parser.GetApplicationDirPath();
-	descr.application_dir = "D:\\DEV2\\vsge_test_assets\\built";
+	const auto& appDirOpt = parser.GetApplicationDirPath();
+	// if argument not provided, use current workdir
+	descr.application_dir = parser.GetApplicationDirPath().value_or(".");
 
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");
@@ -36,6 +36,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	PhysicsLayer* phys_layer = new PhysicsLayer;
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
+	
 	app->AddLayer(mono_scripting_layer);
 	app->AddLayer(new SceneLayer);
 

@@ -21,6 +21,9 @@ void MainLayer::OnAttach() {
 	manifest.ParseFromFile(app_dir + "/app.manifest");
 
 	SceneResource* sc_res = (SceneResource*)ResourceCache::Get()->GetResource(manifest.GetMainScene());
+	if (sc_res == nullptr) {
+		throw std::exception("No main scene resource in resource cache");
+	}
 
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");
 

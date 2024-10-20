@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
+#include <optional>
 
 namespace VSGE {
 
 	class ArgsParser {
 	private:
-		std::string _app_dir_path;
+		std::optional<std::string> _app_dir_path;
 		int _graphics_api;
 		bool _headless;
 		bool _server;
@@ -16,7 +17,7 @@ namespace VSGE {
 
 		bool IsServer();
 		bool IsHeadless();
-		const std::string& GetApplicationDirPath();
+		const std::optional<std::string>& GetApplicationDirPath();
 		int GetServerPort();
 	};
 }

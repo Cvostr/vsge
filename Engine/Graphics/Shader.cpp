@@ -37,7 +37,8 @@ ShaderStorageItem* ShaderStorage::GetItemByName(std::string& name) {
 	return nullptr;
 }
 
-void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::string& map_path) {
+void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::string& map_path) 
+{
 	std::ifstream bundle_stream;
 	std::ifstream map_stream;
 
@@ -45,7 +46,7 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 
 	if (map_stream.fail())
 	{
-		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error openging shader map file " << map_path << '\n';
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening shader map file " << map_path << '\n';
 		return;
 	}
 

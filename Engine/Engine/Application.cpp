@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <Core/Time.hpp>
 #include <Graphics/Renderer.hpp>
+#include <iostream>
 
 using namespace VSGE;
 
@@ -102,9 +103,16 @@ IRenderer* Application::GetRenderer() {
 }
 
 int main(int argc, char* argv[]) {
-	Application* app = VSGEMain(argc, argv);
 
-	app->Run();
+	try {
+		Application* app = VSGEMain(argc, argv);
+
+		app->Run();
+	}
+	catch (const std::exception& ex) {
+		std::cerr << "Error initializing VSGE Application: " << ex.what();
+		return 1;
+	}
 
 	return 0;
 }

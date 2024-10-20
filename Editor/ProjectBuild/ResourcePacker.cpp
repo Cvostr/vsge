@@ -19,6 +19,8 @@ ResourcePacker::ResourcePacker(){
     _bundle_file_split_size = 100;
     _bundle_name_prefix = "bundle";
 
+    _bundle_stream.exceptions(std::ios::badbit | std::ios::failbit);
+
     SetThreadName("resource_packer");
 }
 
@@ -29,7 +31,12 @@ void ResourcePacker::SetOutputBundleDirectoryPath(const std::string& path){
 }
 
 void ResourcePacker::THRFunc() {
-    Write();
+    try {
+        Write();
+    }
+    catch (const std::exception& ex) {
+        *this << ex.what();
+    }
 }
 
 void ResourcePacker::Write(){
@@ -53,10 +60,10 @@ void ResourcePacker::Write(){
     for (uint32 resource_i = 0; resource_i < cache->GetResourcesCount(); resource_i++) {
         Resource* resource = cache->GetResources()[resource_i];
 
-        *this << "Writing resource " << resource->GetName() << "\n";
-
         if (resource->IsDefault())
             continue;
+
+        *this << "Writing resource " << resource->GetName() << "\n";
 
         //Прочитать файл
         byte* file_data = nullptr;
@@ -88,7 +95,10 @@ void ResourcePacker::Write(){
         bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
         if (result) {
             std::string output_file = _output_dir + "runtime.dll";
-            std::ofstream scripts_stream(output_file, std::ios::binary);
+            std::ofstream scripts_stream;
+            scripts_stream.exceptions(std::ios::badbit | std::ios::failbit);
+            scripts_stream.open(output_file, std::ios::binary);
+
             scripts_stream.write((char*)file_data, file_size);
             scripts_stream.close();
         }

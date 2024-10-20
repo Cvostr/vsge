@@ -1,6 +1,8 @@
 #include "MonoScriptingLayer.hpp"
 #include <Core/Logger.hpp>
 #include "Api/ApiBindings.hpp"
+#include <optional>
+#include "mpi/Filesystem/File.hpp"
 
 using namespace VSGE;
 
@@ -12,14 +14,15 @@ MonoScriptingLayer::MonoScriptingLayer() :
     _scripts_blob(new MonoScriptBlob)
 {
 	_this = this;
-    CreateRootDomain();
 }
-MonoScriptingLayer::~MonoScriptingLayer() {
-    
+MonoScriptingLayer::~MonoScriptingLayer() 
+{
+    SAFE_RELEASE(_scripts_blob)
 }
 
-void MonoScriptingLayer::OnAttach() {
-    
+void MonoScriptingLayer::OnAttach() 
+{
+    CreateRootDomain();
 }
 void MonoScriptingLayer::OnUpdate() {
 
@@ -47,12 +50,29 @@ MonoString* MonoScriptingLayer::CreateMonoString(const String& str) {
 bool MonoScriptingLayer::CreateRootDomain() {
     if (_root_domain)
         return true;
-    mono_set_dirs("../MonoScripting/MonoBinaries/lib", "../MonoScripting/MonoBinaries/etc");
+
+    std::vector<std::string> paths = { "../MonoScripting/MonoBinaries", "MonoScripting/MonoBinaries", "MonoBinaries" };
+
+    std::optional<std::string> monoRootDir = std::nullopt;
+    for (const auto& path : paths) {
+        Mpi::File dir(path);
+        if (dir.isDirectory()) {
+            monoRootDir = path;
+        }
+    }
+
+    if (!monoRootDir.has_value()) {
+        throw std::exception("Can't find Mono directory\n");
+    }
+
+    std::string monoLibDir = monoRootDir.value() + "/lib";
+    std::string monoEtcDir = monoRootDir.value() + "/etc";
+
+    mono_set_dirs(monoLibDir.c_str(), monoEtcDir.c_str());
 	//Create domain
     _root_domain = mono_jit_init_version(MONO_ROOT_DOMAIN_NAME, "v4.0.30319");
     if (!_root_domain) {
-        Logger::Log(LogType::LOG_TYPE_ERROR) << "Error creating mono domain\n";
-        return false;
+        throw std::exception("Error creating mono domain");
     }
     bool is_domain_set = mono_domain_set(_root_domain, false);
     if (!is_domain_set) {

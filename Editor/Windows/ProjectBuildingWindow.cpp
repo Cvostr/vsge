@@ -33,10 +33,18 @@ void ProjectBuildingWindow::Build() {
     Application* app = Application::Get();
     EditorLayer* el = app->GetLayer<EditorLayer>();
 
-    _packer->SetOutputBundleDirectoryPath(el->GetProject().GetRootDirectory() + "/built");
+    Mpi::File outputDir(el->GetProject().GetRootDirectory() + "/built");
+
+    if (!outputDir.isDirectory()) {
+        outputDir.mkdir();
+    }
+
+    _packer->SetOutputBundleDirectoryPath(outputDir.getAbsolutePath());
     MonoScriptStorage::Get()->Compile();
+
     _packer->Run();
     _building = true;
+
 }
 
 void ProjectBuildingWindow::DrawPreBuildingInterface() {

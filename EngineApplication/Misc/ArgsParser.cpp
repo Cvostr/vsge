@@ -27,7 +27,7 @@ bool ArgsParser::IsServer() {
 bool ArgsParser::IsHeadless() {
 	return _headless;
 }
-const std::string& ArgsParser::GetApplicationDirPath() {
+const std::optional<std::string>& ArgsParser::GetApplicationDirPath() {
 	return _app_dir_path;
 }
 int ArgsParser::GetServerPort() {
