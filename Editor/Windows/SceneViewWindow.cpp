@@ -45,8 +45,8 @@ void SceneViewWindow::OnDrawWindow() {
         //ImGuizmo::DrawGrid(&cam->GetViewMatrix().M11, &proj.M11, &identity.M11, 80.f);
 
         if (editor_layer->GetPickedEntity() && EditorLayer::Get()->GetEditorCameraMode() == EDITOR_CAMERA_MODE_EDIT_CAMERA) {
-            VSGE::Entity* picked_entity = editor_layer->GetPickedEntity();
-            Mat4 newmat = picked_entity->GetWorldTransform();
+            VSGE::Entity* pickedEntity = editor_layer->GetPickedEntity();
+            Mat4 newmat = pickedEntity->GetWorldTransform();
 
             Quat rotation = GetRotationFromQuat(newmat);
 
@@ -66,19 +66,19 @@ void SceneViewWindow::OnDrawWindow() {
             if (ImGuizmo::IsUsing()) {
                 _transform_gizmo_used = true;
 
-                Mat4 delta_mat = newmat * picked_entity->GetParent()->GetWorldTransform().invert();
+                Mat4 delta_mat = newmat * pickedEntity->GetParent()->GetWorldTransform().invert();
 
                 if (op == ImGuizmo::TRANSLATE) {
-                    picked_entity->SetPosition(delta_mat.GetPosition());
+                    pickedEntity->SetPosition(delta_mat.GetPosition());
                 }
                 if (op == ImGuizmo::SCALE) {
-                    picked_entity->SetScale(delta_mat.GetScale());
+                    pickedEntity->SetScale(delta_mat.GetScale());
                 }
                 if (op == ImGuizmo::ROTATE) {
                     Quat delta;
                     delta.CreateFromEulerAngles(rotDelta);
-                    rotation = editor_layer->GetPickedEntity()->GetRotation();
-                    picked_entity->SetRotation(rotation * delta);
+                    rotation = pickedEntity->GetRotation();
+                    pickedEntity->SetRotation(rotation * delta);
                 }
             }
             else {

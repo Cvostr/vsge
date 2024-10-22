@@ -100,14 +100,14 @@ Mat4 GetRotationZMatrixEuler(float angle) {
     return mat;
 }
 
-Mat4 GetRotationMatrix(const Vec3 Rotation) {
+Mat4 GetRotationMatrix(const Vec3& Rotation) {
     return
         GetRotationXMatrixEuler(Rotation.x) *
         GetRotationYMatrixEuler(Rotation.y) *
         GetRotationZMatrixEuler(Rotation.z);
 }
 
-Mat4 GetRotationMatrix(const Quat Rotation) {
+Mat4 GetRotationMatrix(const Quat& Rotation) {
     float x2 = Rotation.x * Rotation.x;
     float y2 = Rotation.y * Rotation.y;
     float z2 = Rotation.z * Rotation.z;

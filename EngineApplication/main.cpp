@@ -16,6 +16,7 @@
 #include "Graphics/Vulkan/VulkanRAPI.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 #include <Graphics/FontManager.hpp>
+#include <System/PlatformSpecific.hpp>
 
 using namespace VSGE;
 
@@ -32,6 +33,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");
+
+	//WIN32_HideConsoleWindow();
 
 	PhysicsLayer* phys_layer = new PhysicsLayer;
 

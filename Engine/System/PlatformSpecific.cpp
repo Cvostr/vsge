@@ -11,3 +11,10 @@ void VSGE::WIN32_DisableHIDPIWindowScale() {
 	SetProcessDPIAware();
 #endif
 }
+
+void VSGE::WIN32_HideConsoleWindow()
+{
+#ifdef _WIN32
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+#endif
+}
