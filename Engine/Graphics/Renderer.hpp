@@ -26,6 +26,8 @@ namespace VSGE {
 		//Entities with terrain
 		tEntityList _terrains;
 
+		tEntityList _probes;
+
 	public:
 
 		IRenderer();

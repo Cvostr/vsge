@@ -126,6 +126,7 @@ set(SRC_FILES
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
 				Scene/EntityComponents/CharacterControllerComponent.cpp
+				Scene/EntityComponents/LightProbeComponent.cpp
 				MonoScripting/MonoScriptingLayer.cpp
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
@@ -231,7 +232,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Vulkan/VulkanTexture.hpp
 					Graphics/Vulkan/VulkanSynchronization.hpp
 					Graphics/Vulkan/Rendering/VulkanRTRenderer.hpp
-	
+					Graphics/Vulkan/Rendering/PBR/VulkanIBL.hpp
 					Core/VarTypes/Base.hpp
 					Core/VarTypes/String.hpp
 					Core/VarTypes/StringHash.hpp

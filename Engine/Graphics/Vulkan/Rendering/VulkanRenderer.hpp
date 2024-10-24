@@ -48,10 +48,12 @@ namespace VSGE {
 		VulkanShadowmapping* _shadowmapper;
 		VulkanUiRenderer* _ui_renderer;
 		VulkanCamerasBuffer* _cameras_buffer;
-		VulkanIBL* _ibl_map;
 		std::vector<VulkanRenderTarget*> _render_targets;
 		VulkanRenderTarget* _main_render_target;
 		VulkanFinalPass* _final_pass;
+
+		VulkanIBL* _ibl_map;
+		std::vector<VulkanIBL*> _local_ibl_maps;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 

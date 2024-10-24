@@ -211,23 +211,25 @@ void RigidBodyComponent::OnUpdate()
 		return;
 	}
 
-	//Извлечение данных трансформации из bullet и изменение состояния объекта в мире
-	btVector3 bullet_pos = _rigidBody->getCenterOfMassPosition();
-	btQuaternion bullet_rot = _rigidBody->getOrientation();
+	if (!_entity->IsStatic()) {
+		//Извлечение данных трансформации из bullet и изменение состояния объекта в мире
+		btVector3 bullet_pos = _rigidBody->getCenterOfMassPosition();
+		btQuaternion bullet_rot = _rigidBody->getOrientation();
 
-	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
-	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
+		Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
+		Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
 
-	//Получена матрица абсолютной трансформации
-	Mat4 entityAbsoluteTransformMat = GetTransform(pos, GetEntity()->GetScale(), rot);
-	//Получение матрицы трансформации родителя
-	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
-	//Получение матрицы локальной трансформации
-	Mat4 entityLocalTransformMat = entityAbsoluteTransformMat * parent_tranform.invert();
+		//Получена матрица абсолютной трансформации
+		Mat4 entityAbsoluteTransformMat = GetTransform(pos, GetEntity()->GetScale(), rot);
+		//Получение матрицы трансформации родителя
+		Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
+		//Получение матрицы локальной трансформации
+		Mat4 entityLocalTransformMat = entityAbsoluteTransformMat * parent_tranform.invert();
 
-	//Применение локальной трансформации для объекта
-	_entity->SetPosition(entityLocalTransformMat.GetPosition());
-	_entity->SetRotation(GetRotationFromQuat(entityLocalTransformMat));
+		//Применение локальной трансформации для объекта
+		_entity->SetPosition(entityLocalTransformMat.GetPosition());
+		_entity->SetRotation(GetRotationFromQuat(entityLocalTransformMat));
+	}
 
 	Activate();
 }

@@ -14,6 +14,8 @@ layout(binding = 9) uniform sampler2D brdf_lut;
 layout(binding = 10) uniform samplerCube env_cube;
 layout(binding = 11) uniform samplerCube env_cube_irradiance;
 layout(binding = 12) uniform sampler2D ssao_map;
+layout(binding = 13) uniform samplerCube ibl_specular[12];
+layout(binding = 14) uniform samplerCube ibl_irradiance[12];
 
 #define LIGHTSOURCE_DIR 0
 #define LIGHTSOURCE_POINT 1
@@ -21,7 +23,7 @@ layout(binding = 12) uniform sampler2D ssao_map;
 #define PI 3.14159265
 #define RADIANS PI / 180
 
-struct Light{
+struct Light {
     int type;           //0
     float intensity;    //4
     float range;        //8
@@ -31,17 +33,26 @@ struct Light{
     vec3 color;         //48
 };
 
-layout (std140, binding = 1) uniform CamMatrices{
+struct LightProbe {
+    vec3 position;
+    float radius;
+};
+
+layout (std140, binding = 1) uniform CamMatrices {
     mat4 cam_view_projection;
     mat4 cam_view;
     mat4 cam_projection;
     vec3 cam_position;
 };
 
-layout (std140, binding = 2) uniform Lights{
+layout (std140, binding = 2) uniform Lights {
     vec3 ambient_light;
     int lights_count;
     Light lights[200];
+};
+
+layout (std140, binding = 3) uniform LightProbes {
+    LightProbe probes[12];
 };
 
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0);
@@ -86,7 +97,8 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_color, vec3 albedo, vec3 normal, float roughness, float metallic, vec3 F0){
+vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_color, vec3 albedo, vec3 normal, float roughness, float metallic, vec3 F0)
+{
     vec3 H = normalize(cam_to_frag + L);
     vec3 radiance = light_color * attenuation;
 
@@ -111,7 +123,8 @@ vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_colo
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
-vec3 CalculateIBL(vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, float metalness, vec3 albedo){
+vec3 CalculateIBL(vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, float metalness, vec3 albedo)
+{
     vec3 Lr = 2.0 * cosLo * Normal - Lo;
     
     vec3 irradiance = texture(env_cube_irradiance, Normal).rgb;
@@ -127,7 +140,8 @@ vec3 CalculateIBL(vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, f
     return diffuseIBL + specularIBL;
 }
 
-vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0) {
+vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0)
+{
     vec3 result = vec3(0);
     //Calculate direction from camera to processing fragment
     //iterate over all lights and calculate them
