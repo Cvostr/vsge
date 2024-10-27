@@ -70,6 +70,7 @@ void VulkanEnvMap::RecordCmdbuffer(VulkanCommandBuffer* cmdbuf) {
 	uint32 step_c = 6 / _steps;
 
 	if (_enabled) {
+
 		for (uint32 i = _processed * step_c; i < _processed * step_c + step_c; i++) {
 			_sides[i]._gbuffer->RecordCmdBuffer(cmdbuf);
 		}
@@ -157,7 +158,8 @@ void VulkanEnvMap::SetStepsCount(uint32 steps) {
 		_steps = steps;
 }
 
-void VulkanEnvMap::SetDrawWorld(bool draw) {
+void VulkanEnvMap::SetDrawWorld(bool draw) 
+{
 	for (int i = 0; i < 6; i++) {
 		_sides[i]._light->SetDrawWorld(draw);
 	}

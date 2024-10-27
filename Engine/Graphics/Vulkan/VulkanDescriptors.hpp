@@ -40,7 +40,7 @@ namespace VSGE {
 
 		void SetDescriptorSetsCount(uint32 descriptorSets);
 
-		void AddLayoutBinding(VkDescriptorType type);
+		void AddLayoutBinding(VkDescriptorType type, uint32 descriptorsCount = 1);
 		void IncDescriptorSet() { mDescriptorSetsCount++; }
 	};
 

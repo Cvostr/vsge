@@ -62,8 +62,9 @@ void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	_shadowmapper = shadowmapping;
 	_deferred_renderer->SetShadowmapper(shadowmapping);
 }
-void VulkanRenderTarget::SetIBL(VulkanIBL* ibl) {
-	_deferred_renderer->SetIBL(ibl->GetSpecularMap(), ibl->GetIrradianceMap());
+void VulkanRenderTarget::SetGenericLightProbe(VulkanLightProbeImage* probeImage)
+{
+	_deferred_renderer->SetIBL((VulkanTexture*)probeImage->GetSpmap(), (VulkanTexture*) probeImage->GetIrmap());
 }
 void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	if (m_width == width && m_height == height)

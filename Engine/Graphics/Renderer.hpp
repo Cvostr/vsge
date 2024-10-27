@@ -3,8 +3,17 @@
 #include <Scene/Scene.hpp>
 #include <Math/Vec2.hpp>
 #include "Texture.hpp"
+#include "LightProbeImage.hpp"
 
 namespace VSGE {
+
+	struct LightProbeRenderRequest {
+
+		LightProbeImage* image;
+		Vec3 pos;
+		float farPlane;
+	};
+
 	class IRenderer {
 	protected:
 		uint32 mOutputWidth;
@@ -40,13 +49,13 @@ namespace VSGE {
 
 		virtual void ResizeOutput(uint32 width, uint32 height) = 0;
 
-		const tEntityList& GetEntitiesToDraw() {
-			return _entitiesToRender;
-		}
+		const tEntityList& GetEntitiesToDraw();
 
 		virtual void DrawScene(VSGE::Camera* cam) = 0;
 
 		void CreateRenderList();
 		void ProcessEntity(Entity* entity);
+
+		virtual void EnqueueLightProbe(const LightProbeRenderRequest& component) = 0;
 	};
 }

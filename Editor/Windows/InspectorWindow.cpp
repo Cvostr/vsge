@@ -16,6 +16,7 @@
 #include <Scene/EntityComponents/RigidBodyComponent.hpp>
 #include <Scene/Camera.hpp>
 #include <Scene/EntityComponents/CharacterControllerComponent.hpp>
+#include <Scene/EntityComponents/LightProbeComponent.hpp>
 
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include "../InspectorInterfaces/VariantInput.hpp"
@@ -101,6 +102,9 @@ void InspectorWindow::DrawComponent() {
 		if (typeid(T) == typeid(CharacterControllerComponent)) {
 			DrawCharControllerComponent((CharacterControllerComponent*)component);
 		}
+		if (typeid(T) == typeid(LightProbeComponent)) {
+			DrawLightProbeComponent((LightProbeComponent*)component);
+		}
 	}
 }
 
@@ -176,6 +180,7 @@ void InspectorWindow::DrawEntityContents() {
 	DrawComponent<VSGE::Camera>();
 	DrawComponent<VSGE::AudioListenerComponent>();
 	DrawComponent<VSGE::CharacterControllerComponent>();
+	DrawComponent<VSGE::LightProbeComponent>();
 
 	for (uint32 script_i = 0; script_i < mShowingEntity->GetScriptsCount(); script_i++) {
 		DrawScriptComponent(mShowingEntity->GetScripts()[script_i], script_i);
@@ -202,6 +207,7 @@ void InspectorWindow::DrawEntityContents() {
 		AddComponentButton<VSGE::RigidBodyComponent>();
 		AddComponentButton<VSGE::Camera>();
 		AddComponentButton<VSGE::CharacterControllerComponent>();
+		AddComponentButton<VSGE::LightProbeComponent>();
 
 		AddScriptButton();
 

@@ -34,7 +34,7 @@ struct Light {
 };
 
 struct LightProbe {
-    vec3 position;
+    vec3 pos;
     float radius;
 };
 
@@ -51,7 +51,11 @@ layout (std140, binding = 2) uniform Lights {
     Light lights[200];
 };
 
-layout (std140, binding = 3) uniform LightProbes {
+layout (std140, binding = 15) uniform LightProbes {
+    int probes_count;
+    int pad1;
+    int pad2;
+    int pad3;
     LightProbe probes[12];
 };
 
@@ -123,17 +127,43 @@ vec3 CalculateLight(vec3 L, float attenuation, vec3 cam_to_frag, vec3 light_colo
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
-vec3 CalculateIBL(vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, float metalness, vec3 albedo)
+vec3 CalculateIBL(vec3 pos, vec3 Normal, vec3 F0, vec3 Lo, float cosLo, float roughness, float metalness, vec3 albedo)
 {
-    vec3 Lr = 2.0 * cosLo * Normal - Lo;
+    vec3 Lr = 2.0 * cosLo * Normal - Lo; 
+
+    float min_dist = 1000000;
+    int probe_id = -1;
+    for (int i = 0; i < probes_count; i ++) {
+        LightProbe probe = probes[i];
+        float dist = length(pos - probe.pos);
+        if (dist <= probe.radius && dist < min_dist) {
+            probe_id = i;
+            min_dist = dist;
+        }
+    }
+
+    vec3 irradiance = vec3(0);
     
-    vec3 irradiance = texture(env_cube_irradiance, Normal).rgb;
+    if (probe_id == -1) {
+        irradiance = texture(env_cube_irradiance, Normal).rgb;
+    } else {
+        irradiance = texture(ibl_irradiance[probe_id], Normal).rgb;
+    }
+    
     vec3 F = fresnelSchlick(cosLo, F0);
     vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metalness);
     vec3 diffuseIBL = kd * albedo * irradiance;
 
-    int specularTextureLevels = textureQueryLevels(env_cube);
-    vec3 specularIrradiance = textureLod(env_cube, Lr, roughness * specularTextureLevels).rgb;
+    int specularTextureLevels = 0;
+    vec3 specularIrradiance = vec3(0);
+    if (probe_id == -1) {
+        specularTextureLevels = textureQueryLevels(env_cube);
+        specularIrradiance = textureLod(env_cube, Lr, roughness * specularTextureLevels).rgb;
+    } else {
+        specularTextureLevels = textureQueryLevels(ibl_specular[probe_id]);
+        specularIrradiance = textureLod(ibl_specular[probe_id], Lr, roughness * specularTextureLevels).rgb;
+    }
+
     vec2 specularBRDF = texture(brdf_lut, vec2(cosLo, roughness)).rg;
     vec3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
@@ -231,7 +261,7 @@ void main() {
         vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
         
         float cosLo = max(0.0, dot(normal, Lo));
-        vec3 ambient = CalculateIBL(normal, F0, Lo, cosLo, roughness, metallic, albedo);
+        vec3 ambient = CalculateIBL(pos, normal, F0, Lo, cosLo, roughness, metallic, albedo);
         color += ambient * ambient_light;
 
         tColor = vec4(color, 1);

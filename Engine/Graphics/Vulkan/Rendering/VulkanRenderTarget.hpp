@@ -37,7 +37,7 @@ namespace VSGE {
 			VulkanBuffer* anims_buffer = nullptr,
 			VulkanBuffer* particles_buffer = nullptr);
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
-		void SetIBL(VulkanIBL* ibl);
+		void SetGenericLightProbe(VulkanLightProbeImage* probeImage);
 		void ResizeOutput(uint32 width, uint32 height);
 		void SetOutput(VulkanTexture* output_texture);
 

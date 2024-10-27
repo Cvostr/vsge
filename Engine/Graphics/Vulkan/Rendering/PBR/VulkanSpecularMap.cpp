@@ -7,6 +7,7 @@ using namespace VSGE;
 VulkanSpecularMap::VulkanSpecularMap() {
 	_steps_count = 1;
 	_steps_passed = 0;
+	_envmap_input_texture = nullptr;
 }
 VulkanSpecularMap::~VulkanSpecularMap() {
 	Destroy();
@@ -38,6 +39,9 @@ void VulkanSpecularMap::Create() {
 
 	_spmap_output_texture->Create(MAX_MAP_SIZE, MAX_MAP_SIZE, MAP_FORMAT, 6, mips_levels);
 
+	VulkanRAPI* vulkan = VulkanRAPI::Get();
+	VulkanDevice* device = vulkan->GetDevice();
+
 	for (uint32 i = 1; i < mips_levels; i++) {
 		SpecularMap_MipMapLevel* mplevel = &_mipmap_levels[i];
 
@@ -52,23 +56,23 @@ void VulkanSpecularMap::Create() {
 		textureImageViewInfo.subresourceRange.layerCount = 6;
 		textureImageViewInfo.components = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A };
 
-		VulkanRAPI* rapi = VulkanRAPI::Get();
-		VulkanDevice* device = rapi->GetDevice();
-
 		vkCreateImageView(device->getVkDevice(), &textureImageViewInfo, nullptr, &mplevel->_image_view);
 	}
 
 	_spmap_descr_pool = new VulkanDescriptorPool;
-	_spmap_descr_pool->SetDescriptorSetsCount(1);
+	_spmap_descr_pool->SetDescriptorSetsCount(2);
 	_spmap_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1);
 	_spmap_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, mips_levels - 1);
 	_spmap_descr_pool->Create();
 
-	_spmap_descr_set = new VulkanDescriptorSet(_spmap_descr_pool);
-	_spmap_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_COMPUTE_BIT);
-	_spmap_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, mips_levels - 1);
-	_spmap_descr_set->Create();
-	_spmap_descr_set->WriteDescriptorImage(0, _envmap_input_texture, attachment_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	_spmap_input_descr_set = new VulkanDescriptorSet(_spmap_descr_pool);
+	_spmap_input_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, VK_SHADER_STAGE_COMPUTE_BIT);
+	_spmap_input_descr_set->Create();
+	_spmap_input_descr_set->WriteDescriptorImage(0, _envmap_input_texture, attachment_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	_spmap_output_descr_set = new VulkanDescriptorSet(_spmap_descr_pool);
+	_spmap_output_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 0, VK_SHADER_STAGE_COMPUTE_BIT, mips_levels - 1);
+	_spmap_output_descr_set->Create();
 
 	for (uint32 i = 1; i < mips_levels; i++) {
 		SpecularMap_MipMapLevel* mplevel = &_mipmap_levels[i];
@@ -80,8 +84,8 @@ void VulkanSpecularMap::Create() {
 
 		VkWriteDescriptorSet descriptorWrite{};
 		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = _spmap_descr_set->GetDescriptorSet();
-		descriptorWrite.dstBinding = 1;
+		descriptorWrite.dstSet = _spmap_output_descr_set->GetDescriptorSet();
+		descriptorWrite.dstBinding = 0;
 		descriptorWrite.dstArrayElement = i - 1;
 
 		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -90,21 +94,17 @@ void VulkanSpecularMap::Create() {
 		descriptorWrite.pImageInfo = &imageInfo; // Optional
 		descriptorWrite.pTexelBufferView = nullptr; // Optional
 
-		VulkanRAPI* vulkan = VulkanRAPI::Get();
-		VulkanDevice* device = vulkan->GetDevice();
-
 		vkUpdateDescriptorSets(device->getVkDevice(), 1, &descriptorWrite, 0, nullptr);
 	}
 
 	_spmap_pipeline_layout = new VulkanPipelineLayout;
-	_spmap_pipeline_layout->PushDescriptorSet(_spmap_descr_set);
+	_spmap_pipeline_layout->PushDescriptorSet(_spmap_input_descr_set);
+	_spmap_pipeline_layout->PushDescriptorSet(_spmap_output_descr_set);
 	_spmap_pipeline_layout->AddPushConstantRange(0, 12, VK_SHADER_STAGE_COMPUTE_BIT);
 	_spmap_pipeline_layout->Create();
 
 	_spmap_pipeline = new VulkanComputePipeline;
 	_spmap_pipeline->Create(_spmap_shader, _spmap_pipeline_layout);
-
-	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 }
 
 void VulkanSpecularMap::SetEnvMapInputTexture(VulkanTexture* texture) {
@@ -118,16 +118,22 @@ void VulkanSpecularMap::Destroy() {
 	
 }
 
-void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
-	VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(_spmap_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
-	VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(_spmap_output_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) 
+{
+	RecordCommandBuffer(cmdbuffer, _spmap_output_descr_set, _spmap_output_texture, MAX_MAP_SIZE, _mipmap_levels.size());
+}
+
+void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer, VulkanDescriptorSet* out_descr_set, VulkanTexture* spmap_output_texture, uint32 max_size, uint32 mipmap_levels)
+{
+	VkImageMemoryBarrier pre_irmap_barrier = GetImageBarrier(spmap_output_texture, 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+	VkImageMemoryBarrier post_irmap_arrier = GetImageBarrier(spmap_output_texture, VK_ACCESS_SHADER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	cmdbuffer->ImagePipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {pre_irmap_barrier});
 	cmdbuffer->BindComputePipeline(*_spmap_pipeline);
-	cmdbuffer->BindDescriptorSets(*_spmap_pipeline_layout, 0, 1, _spmap_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
+	cmdbuffer->BindDescriptorSets(*_spmap_pipeline_layout, 0, 1, _spmap_input_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
+	cmdbuffer->BindDescriptorSets(*_spmap_pipeline_layout, 1, 1, out_descr_set, 0, nullptr, VK_PIPELINE_BIND_POINT_COMPUTE);
 
-	uint32 mip_map_levels = (uint32)_mipmap_levels.size();
-	const float deltaRoughness = 1.0f / std::max(float(mip_map_levels), 1.0f);
+	const float deltaRoughness = 1.0f / std::max(float(mipmap_levels), 1.0f);
 
 	if (_steps_passed == _steps_count)
 		_steps_passed = 0;
@@ -135,7 +141,7 @@ void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
 	uint32 per_time = 6 / _steps_count;
 	uint32 passed = _steps_passed * per_time;
 
-	for (uint32_t level = 1, size = MAX_MAP_SIZE / 2; level < mip_map_levels; ++level, size /= 2) {
+	for (uint32_t level = 1, size = max_size / 2; level < mipmap_levels; ++level, size /= 2) {
 		const uint32_t numGroups = std::max<uint32_t>(1, size / 8);
 
 		int32 pc_level = level - 1;
@@ -152,7 +158,7 @@ void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
 	_steps_passed++;
 
 	//copy base mipmap level
-	_spmap_output_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	spmap_output_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	_envmap_input_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 	VkImageSubresourceLayers src = {};
 	src.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -172,17 +178,17 @@ void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
 	img_copy.dstSubresource = dst;
 	img_copy.srcOffset = offset;
 	img_copy.dstOffset = offset;
-	img_copy.extent = { MAX_MAP_SIZE , MAX_MAP_SIZE , 1 };
+	img_copy.extent = { max_size , max_size , 1 };
 
 	vkCmdCopyImage(
 		cmdbuffer->GetCommandBuffer(),
 		_envmap_input_texture->GetImage(),
 		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-		_spmap_output_texture->GetImage(),
+		spmap_output_texture->GetImage(),
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1,
 		&img_copy);
 
-	_spmap_output_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	spmap_output_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	_envmap_input_texture->CmdChangeLayout(cmdbuffer, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }

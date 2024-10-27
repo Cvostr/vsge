@@ -11,6 +11,7 @@
 #include <Math/MatrixCamera.hpp>
 #include <Graphics/MaterialTemplateCache.hpp>
 #include "VulkanRenderingGenerics.hpp"
+#include <algorithm>
 
 using namespace VSGE;
 
@@ -71,8 +72,13 @@ void VulkanRenderer::SetupRenderer() {
 		mParticlesTransformShaderBuffer,
 		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
-	_ibl_map->SetSpmapIrmapAlternately(true);
+	_ibl_map->SetSpmapIrmapAlternately(false);
 	//_ibl_map->SetEnabled(false);
+
+	_generic_probe_image = new VulkanLightProbeImage();
+	_generic_probe_image->Create(); // Create base Vulkan object (textures)
+	// We are going to render it in realtime, so create image views and descriptor sets
+	_generic_probe_image->CreateForRendering();
 
 	//---------------------Command buffers------------------------
 	_cmdpool = new VulkanCommandPool;
@@ -88,8 +94,8 @@ void VulkanRenderer::SetupRenderer() {
 		mTransformsShaderBuffer,
 		mAnimationTransformsShaderBuffer,
 		mParticlesTransformShaderBuffer);
-	
-	_main_render_target->SetIBL(_ibl_map);
+	// Probe with skybox
+	_main_render_target->SetGenericLightProbe(_generic_probe_image);
 
 	_render_targets.resize(1);
 	_render_targets[0] = _main_render_target;
@@ -216,15 +222,18 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 		_lights_buffer->UpdateGpuBuffer();
 	}
 
-	Mat4* transforms = new Mat4[_entitiesToRender.size() * 4];
-	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / 64];
+	// на некоторых видеокартах (NVidia GTX 10** выравнивание по 256 байт)
+	uint32 alignmentFactor = std::max(UNI_ALIGN, sizeof(Mat4)) / sizeof(Mat4);
+
+	Mat4* transforms = new Mat4[_entitiesToRender.size() * alignmentFactor];
+	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / sizeof(Mat4)];
 
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 
 	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i ++) {
 		Entity* entity = _entitiesToRender[e_i];
-		transforms[e_i * 4] = entity->GetWorldTransform();
+		transforms[e_i * alignmentFactor] = entity->GetWorldTransform();
 
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
 		if (!mesh_component)
@@ -258,7 +267,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 		}
 	}
 
-	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * 4 * (uint32)_entitiesToRender.size(), transforms);
+	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * alignmentFactor * (uint32)_entitiesToRender.size(), transforms);
 	delete[] transforms;
 
 	mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
@@ -343,7 +352,24 @@ void VulkanRenderer::FillCommandBuffers()
 
 	_render_targets_cmdbuf->End();
 
-	_ibl_map->RecordCmdBufs();
+	if (!probesToRender.empty()) {
+		const LightProbeRenderRequest& probe = probesToRender.front();
+
+		_ibl_map->RecordCmdBufs((VulkanLightProbeImage*) probe.image);
+
+		probesToRender.pop();
+	}
+	else {
+		//_ibl_map->RecordCmdBufs(false);
+		_ibl_map->SetDrawEntities(false);
+		_ibl_map->RecordCmdBufs(_generic_probe_image);
+		_ibl_map->SetDrawEntities(true);
+	}
+}
+
+void VulkanRenderer::EnqueueLightProbe(const LightProbeRenderRequest& component)
+{
+	this->probesToRender.push(component);
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) 
@@ -363,12 +389,14 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 	Camera* main_camera = nullptr;
 
 	if (cam) {
+		// Main Camera is overrided by arg, usually this done in Editor
 		main_camera = cam;
 		_shadowmapper->SetCamera(cam);
 		_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
 		_cameras_buffer->SetCamera(0, cam);
 	}
 	else if(_cameras.size() > 0) {
+		// Main camera is not specified by caller, use the first one in list
 		Camera* camera = _cameras[0]->GetComponent<Camera>();
 		if (camera) {
 			main_camera = camera;
@@ -377,11 +405,19 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 		}
 	}
 
+	// We are going to render light probe
+	if (!probesToRender.empty()) {
+		const LightProbeRenderRequest& probe = probesToRender.front();
+		_cameras_buffer->SetEnvmapCameras(probe.pos, probe.farPlane);
+	}
+
 	_cameras_buffer->UpdateGpuBuffer();
 
 	while (_render_targets.size() < _cameras.size()) {
 		VulkanRenderTarget* render_target = new VulkanRenderTarget;
 		_render_targets.push_back(render_target);
+		// Probe with skybox
+		render_target->SetGenericLightProbe(_generic_probe_image);
 	}
 
 	for (uint32 camera_i = 0; camera_i < _cameras.size(); camera_i++) {
@@ -393,6 +429,10 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 			mTransformsShaderBuffer,
 			mAnimationTransformsShaderBuffer,
 			mParticlesTransformShaderBuffer);
+
+		render_target->GetDeferredLightRenderer()->SetLightProbes(_probes);
+		render_target->GetDeferredLightRenderer()->UpdateLightProbeBuffer();
+
 		TextureResource* resource = camera->GetTargetResource();
 		
 		//Если камере назначен Render Target

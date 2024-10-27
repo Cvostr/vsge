@@ -74,6 +74,7 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/PBR/VulkanIrradianceMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanSpecularMap.cpp
 				Graphics/Vulkan/Rendering/PBR/VulkanIBL.cpp
+				Graphics/Vulkan/Rendering/PBR/VulkanLightProbeImage.cpp
 				Graphics/Vulkan/Rendering/Postprocess/VulkanGammaCorrection.cpp
 				Graphics/Vulkan/Rendering/Postprocess/VulkanBloom.cpp
 				Graphics/Vulkan/Rendering/Postprocess/VulkanSSAO.cpp
@@ -208,6 +209,7 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Sampler.hpp
 					Graphics/Shader.hpp
 					Graphics/Texture.hpp
+					Graphics/LightProbeImage.hpp
 					Graphics/TextureFormat.hpp
 					Graphics/VertexLayout.hpp
 					Graphics/FontManager.hpp

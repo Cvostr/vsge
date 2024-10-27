@@ -11,6 +11,7 @@
 #include <Scene/EntityComponents/EntityScriptComponent.hpp>
 #include <Scene/Camera.hpp>
 #include <Scene/EntityComponents/CharacterControllerComponent.hpp>
+#include <Scene/EntityComponents/LightProbeComponent.hpp>
 
 #define TERRAIN_EDITOR_EDIT_MODE_HEIGHT 1
 #define TERRAIN_EDITOR_EDIT_MODE_TEXTURES 2
@@ -28,4 +29,5 @@ namespace VSGEditor {
 	void DrawScriptComponent(VSGE::EntityScriptComponent* esc, uint32 index);
 	void DrawCameraComponent(VSGE::Camera* cac);
 	void DrawCharControllerComponent(VSGE::CharacterControllerComponent* ccc);
+	void DrawLightProbeComponent(VSGE::LightProbeComponent* ccc);
 }

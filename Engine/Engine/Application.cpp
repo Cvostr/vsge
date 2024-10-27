@@ -104,15 +104,17 @@ IRenderer* Application::GetRenderer() {
 
 int main(int argc, char* argv[]) {
 
-	try {
-		Application* app = VSGEMain(argc, argv);
+	Application* app = nullptr;
 
-		app->Run();
+	try {
+		app = VSGEMain(argc, argv);
 	}
 	catch (const std::exception& ex) {
 		std::cerr << "Error initializing VSGE Application: " << ex.what();
 		return 1;
 	}
+
+	app->Run();
 
 	return 0;
 }

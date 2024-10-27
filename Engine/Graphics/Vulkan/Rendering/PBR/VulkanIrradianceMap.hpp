@@ -13,7 +13,8 @@ namespace VSGE {
 		VulkanPipelineLayout* _irmap_pipeline_layout;
 
 		VulkanDescriptorPool* _irmap_descr_pool;
-		VulkanDescriptorSet* _irmap_descr_set;
+		VulkanDescriptorSet* _irmap_input_descr_set;
+		VulkanDescriptorSet* _irmap_output_descr_set;
 
 		VulkanTexture* _irmap_input_texture;
 		VulkanTexture* _irmap_output_texture;
@@ -30,7 +31,11 @@ namespace VSGE {
 		~VulkanIrradianceMap();
 
 		void Create();
+		
 		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer);
+		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer, VulkanDescriptorSet* out_descr_set, VulkanTexture* out, uint32 size);
+
+
 		void SetInputTexture(VulkanTexture* texture);
 		VulkanTexture* GetIrradianceMap();
 		VulkanSemaphore* GetBeginSemaphore();

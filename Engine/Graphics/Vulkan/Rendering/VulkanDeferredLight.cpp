@@ -6,8 +6,13 @@
 #include <Scene/EntityComponents/MeshComponent.hpp>
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include "VulkanRenderingGenerics.hpp"
+#include "PBR/VulkanLightProbeImage.hpp"
 
 using namespace VSGE;
+
+#define MAX_PROBES 12
+
+#define PROBES_BUFFER_SIZE (16 + MAX_PROBES * 16)
 
 VulkanDeferredLight::VulkanDeferredLight() {
 	_fb_width = 1280;
@@ -50,42 +55,67 @@ void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_fb->Create(_deferred_rp);
 }
 
-void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer){
+void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer)
+{
+
+	// PRObe info buffer
+	lightProbesInfo = new byte[PROBES_BUFFER_SIZE];
+	lightProbesInfoBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	lightProbesInfoBuffer->Create(PROBES_BUFFER_SIZE);
+
 	//Allocate pool
 	_deferred_pool = new VulkanDescriptorPool;
 
 	_deferred_descriptor = new VulkanDescriptorSet(_deferred_pool);
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Albedo
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Normal
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Pos
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Material
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//shadows
+	// Shadows
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//depth
+	// Depth
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//brdf lut
+	// brdf lut
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 9, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//specular env map
+	// specular env map
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//irradiance env map
+	// irradiance env map
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 11, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//ssao map
+	// SSAO map
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 12, VK_SHADER_STAGE_FRAGMENT_BIT);
 
+
+	// PROBES
+	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 13, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_PROBES);
+	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 14, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_PROBES);
+	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 15, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	// Create Pool and Descriptor set
 	_deferred_pool->Create();
 	_deferred_descriptor->Create();
 
+	// Add Cameras buffer
 	_deferred_descriptor->WriteDescriptorBuffer(1, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
+	// Add Light buffer
+	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)lightsBuffer->GetLightsGpuBuffer());
+	_deferred_descriptor->WriteDescriptorBuffer(15, lightProbesInfoBuffer);
+
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
+	// Shadowmap
 	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
-	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)lightsBuffer->GetLightsGpuBuffer());
+	// BRDF LUT base texture
 	_deferred_descriptor->WriteDescriptorImage(
 		9,
 		VulkanRenderingGenerics::Get()->GetBRDF()->GetTextureLut(),
 		attachment_sampler);
+	// SSAO base texture
 	_deferred_descriptor->WriteDescriptorImage(
 		12,
 		VulkanRenderingGenerics::Get()->GetWhiteTexture(),
@@ -130,6 +160,62 @@ void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
 	_deferred_descriptor->WriteDescriptorImage(6, (VulkanTexture*)fb->GetColorAttachments()[3], attachment_sampler);
 	//depth
 	_deferred_descriptor->WriteDescriptorImage(8, (VulkanTexture*)fb->GetDepthAttachment(), attachment_sampler);
+}
+
+void VulkanDeferredLight::UpdateLightProbeBuffer()
+{
+	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
+
+	uint32 writtenProbes = 0;
+
+	for (uint32 probe_i = 0; probe_i < lightProbes->size(); probe_i++) {
+		Entity* entity = (*lightProbes)[probe_i];
+
+		Vec3 absPos = entity->GetAbsolutePosition();
+
+		LightProbeComponent* lightProbe = entity->GetComponent<LightProbeComponent>();
+
+		VulkanLightProbeImage* probeImage = (VulkanLightProbeImage*) lightProbe->GetImage();
+		if (probeImage == nullptr) {
+			// Image object not created
+			probeImage = new VulkanLightProbeImage();
+			probeImage->Create(); // Create base Vulkan object (textures)
+			lightProbe->SetImage(probeImage);
+
+			if (!lightProbe->LoadImage()) {
+				// Probe isn't backed. We are going to render it in realtime, so create image views and descriptor sets
+				probeImage->CreateForRendering();
+			}
+		}
+
+		// Specular
+		_deferred_descriptor->WriteDescriptorImage(
+			13, 
+			(VulkanTexture*) probeImage->GetSpmap(),
+			VulkanRenderingGenerics::Get()->GetAttachmentSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			writtenProbes);
+
+		// Irradiance
+		_deferred_descriptor->WriteDescriptorImage(
+			14,
+			(VulkanTexture*)probeImage->GetIrmap(),
+			VulkanRenderingGenerics::Get()->GetAttachmentSampler(),
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			writtenProbes);
+
+		byte* prbinfPos = lightProbesInfo + 16 * (writtenProbes + 1 /*skip 1st 16 byte block with amount*/);
+		*((float*)prbinfPos) = absPos.x;
+		*(((float*)prbinfPos) + 1) = absPos.y;
+		*(((float*)prbinfPos) + 2) = absPos.z;
+		*(((float*)prbinfPos) + 3) = lightProbe->GetRadius();
+
+		writtenProbes++;
+	}
+
+	*((uint32*)lightProbesInfo) = writtenProbes;
+
+	lightProbesInfoBuffer->WriteData(0, PROBES_BUFFER_SIZE, lightProbesInfo);
 }
 
 void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
@@ -273,7 +359,9 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf)
 			mesh_resource->Use();
 			//Mark material resource used in this frame
 			mat_resource->Use();
-
+				
+			// 1 - offset for cameras matrices, 2 - for transform.
+			// particles transform is written to other descriptor set
 			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
 			uint32 offset2 = writtenParticleTransforms * sizeof(Mat4);
 
@@ -329,7 +417,9 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf)
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
+			// 0 - offset for cameras matrices, 1 - for entity transform.
 			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
+			// TODO: animations in post renderer?
 			uint32 offset2 = 0;
 
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[vertexDescriptorID], 2, offsets1);
@@ -353,6 +443,11 @@ void VulkanDeferredLight::Resize(uint32 width, uint32 height) {
 
 	_deferred_rp->SetClearSize(width, height);
 	_deferred_fb->Resize(width, height);
+}
+
+void VulkanDeferredLight::SetLightProbes(tEntityList& entities)
+{
+	this->lightProbes = &entities;
 }
 
 void VulkanDeferredLight::SetCameraIndex(uint32 camera_index) {

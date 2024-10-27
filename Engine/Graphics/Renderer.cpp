@@ -114,3 +114,6 @@ Texture* IRenderer::GetOutputTexture() {
 Vec2i IRenderer::GetOutputSizes() {
 	return Vec2i(mOutputWidth, mOutputHeight);
 }
+const tEntityList& IRenderer::GetEntitiesToDraw() {
+	return _entitiesToRender;
+}

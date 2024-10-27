@@ -7,11 +7,6 @@ VulkanIBL::VulkanIBL() {
 	_envmap = nullptr;
 	_irmap = nullptr;
 	_spmap = nullptr;
-	_alternately = false;
-	_prev_step = 2;
-	_enabled = true;
-	_update_queued = false;
-	_draw_entities = true;
 }
 VulkanIBL::~VulkanIBL() {
 	Destroy();
@@ -33,15 +28,11 @@ void VulkanIBL::SetInputData(tEntityList& entities,
 }
 
 void VulkanIBL::SetSpmapIrmapAlternately(bool alternately) {
-	_alternately = alternately;
-}
-
-void VulkanIBL::SetEnabled(bool enabled) {
-	_enabled = enabled;
+	//_alternately = alternately;
 }
 
 void VulkanIBL::Update() {
-	_update_queued = true;
+	//_update_queued = true;
 }
 
 void VulkanIBL::SetEnvmapStepsCount(uint32 steps) {
@@ -55,7 +46,6 @@ void VulkanIBL::SetSpmapStepsCount(uint32 steps) {
 }
 
 void VulkanIBL::SetDrawEntities(bool draw) {
-	_draw_entities = draw;
 	_envmap->SetDrawWorld(draw);
 }
 
@@ -72,7 +62,7 @@ void VulkanIBL::Create() {
 		_animations_buffer,
 		_particles_buffer,
 		_lights_buffer);
-	_envmap->SetStepsCount(6);
+	//_envmap->SetStepsCount(6);
 	_envmap->Create();
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
@@ -97,11 +87,11 @@ void VulkanIBL::Create() {
 
 	_irmap = new VulkanIrradianceMap;
 	_irmap->Create();
-	_irmap->SetStepsCount(6);
+	//_irmap->SetStepsCount(6);
 	_irmap->SetInputTexture(_envmap->GetCubeTexture());
 
 	_spmap = new VulkanSpecularMap;
-	_spmap->SetStepsCount(6);
+	//_spmap->SetStepsCount(6);
 	_spmap->SetEnvMapInputTexture(_envmap->GetCubeTexture());
 	_spmap->Create();
 }
@@ -111,45 +101,41 @@ void VulkanIBL::Destroy() {
 	SAFE_RELEASE(_envmap)
 }
 
-void VulkanIBL::RecordCmdBufs() {
-	bool is_update = _update_queued || _enabled;
+void VulkanIBL::RecordCmdBufs(bool render)
+{
 
 	_env_cmdbuf->Begin();
-	if (is_update && _draw_entities)
+	if (render)
 		_envmap->RecordCmdbuffer(_env_cmdbuf);
 	_env_cmdbuf->End();
 
 	_maps_cmdbuf->Begin();
-	if (is_update) {
-		if (_alternately) {
-			if (_prev_step == 1) {
-				_irmap->RecordCommandBuffer(_maps_cmdbuf);
-				_prev_step = 2;
-			}
-			else if (_prev_step == 2) {
-				_spmap->RecordCommandBuffer(_maps_cmdbuf);
-				_prev_step = 1;
-			}
-		}
-		else {
-			_irmap->RecordCommandBuffer(_maps_cmdbuf);
-			_spmap->RecordCommandBuffer(_maps_cmdbuf);
-		}
+	if (render) {
+		_irmap->RecordCommandBuffer(_maps_cmdbuf);
+		_spmap->RecordCommandBuffer(_maps_cmdbuf);
 	}
 	_maps_cmdbuf->End();
-	//if IBL update was queued, then unset flag
-	if (_update_queued)
-		_update_queued = false;
 }
 
 void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
-	if (!_enabled) {
-		VulkanGraphicsSubmit(*_env_cmdbuf, *_envmap_begin_semaphore, *end_semaphore);
-		return;
-	}
 
 	VulkanGraphicsSubmit(*_env_cmdbuf, *_envmap_begin_semaphore, *_envmap_end_semaphore);
 	VulkanComputeSubmit(*_maps_cmdbuf, *_envmap_end_semaphore, *end_semaphore);
+}
+
+void VulkanIBL::RecordCmdBufs(VulkanLightProbeImage* destImage)
+{
+	_env_cmdbuf->Begin();
+	_envmap->RecordCmdbuffer(_env_cmdbuf);
+	_env_cmdbuf->End();
+
+	_maps_cmdbuf->Begin();
+	//if (is_update) {
+	// TODO: const
+		_irmap->RecordCommandBuffer(_maps_cmdbuf, destImage->GetIrmapDescrSet(), (VulkanTexture*)destImage->GetIrmap(), 32U);
+		_spmap->RecordCommandBuffer(_maps_cmdbuf, destImage->GetSpmapDescrSet(), (VulkanTexture*)destImage->GetSpmap(), 256, destImage->GetSpMipmapLevelsNum());
+	//}
+	_maps_cmdbuf->End();
 }
 
 VulkanSemaphore* VulkanIBL::GetBeginSemaphore() {

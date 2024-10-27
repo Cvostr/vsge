@@ -21,6 +21,11 @@ namespace VSGE {
 
 		VulkanGBufferRenderer* _gbuffer;
 
+		tEntityList* lightProbes;
+
+		byte* lightProbesInfo;
+		VulkanBuffer* lightProbesInfoBuffer;
+
 		uint32 _fb_width;
 		uint32 _fb_height;
 		uint32 _camera_index;
@@ -47,6 +52,7 @@ namespace VSGE {
 		void SetIBL(VulkanTexture* specular, VulkanTexture* irradiance);
 		void SetSSAO(VulkanTexture* ssao_map);
 		void SetDrawWorld(bool draw_world);
+		void SetLightProbes(tEntityList& entities);
 
 		VulkanFramebuffer* GetFramebuffer();
 		VulkanRenderPass* GetRenderPass();
@@ -56,5 +62,7 @@ namespace VSGE {
 		void Resize(uint32 width, uint32 height);
 		void SetEnvmap(bool envmap);
 		TextureFormat GetOutputFormat();
+
+		void UpdateLightProbeBuffer();
 	};
 }

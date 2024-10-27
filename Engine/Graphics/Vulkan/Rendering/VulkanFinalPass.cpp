@@ -98,6 +98,7 @@ void VulkanFinalPass::RecordCmdbuffer(VulkanCommandBuffer* cmdbuffer) {
 
 	cmdbuffer->BindPipeline(*_copy_pipeline);
 	cmdbuffer->SetViewport(0, 0, _width, _height);
+	cmdbuffer->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 	cmdbuffer->BindDescriptorSets(*_copy_pl, 0, 1, _world_descr);
 	cmdbuffer->BindMesh(*mesh, 0);
 	cmdbuffer->DrawIndexed(6);

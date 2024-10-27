@@ -22,7 +22,8 @@ namespace VSGE {
 		VulkanPipelineLayout* _spmap_pipeline_layout;
 
 		VulkanDescriptorPool* _spmap_descr_pool;
-		VulkanDescriptorSet* _spmap_descr_set;
+		VulkanDescriptorSet* _spmap_input_descr_set;
+		VulkanDescriptorSet* _spmap_output_descr_set;
 
 		VulkanTexture* _envmap_input_texture;
 		VulkanTexture* _spmap_output_texture;
@@ -39,6 +40,7 @@ namespace VSGE {
 
 		void Destroy();
 
+		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer, VulkanDescriptorSet* out_descr_set, VulkanTexture* spmap_output_texture, uint32 max_size, uint32 mipmap_levels);
 		void RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer);
 
 		void SetEnvMapInputTexture(VulkanTexture* texture);

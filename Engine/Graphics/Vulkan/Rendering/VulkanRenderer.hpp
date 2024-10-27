@@ -9,6 +9,8 @@
 #include "../VulkanCommandBuffer.hpp"
 #include "../VulkanPipeline.hpp"
 
+#include <Scene/EntityComponents/LightProbeComponent.hpp>
+
 #include "VulkanMaterials.hpp"
 #include <Graphics/LightsBuffer.hpp>
 #include "VulkanUiRenderer.hpp"
@@ -18,8 +20,10 @@
 #include "VulkanFinalPass.hpp"
 
 #include "PBR/VulkanIBL.hpp"
+#include <queue>
+#include <future>
 
-#define UNI_ALIGN 256
+#define UNI_ALIGN 256ULL
 #define MATERIAL_SIZE 512
 
 namespace VSGE {
@@ -52,13 +56,13 @@ namespace VSGE {
 		VulkanRenderTarget* _main_render_target;
 		VulkanFinalPass* _final_pass;
 
+		// -------------------IBL & probes---------
 		VulkanIBL* _ibl_map;
-		std::vector<VulkanIBL*> _local_ibl_maps;
+		VulkanLightProbeImage* _generic_probe_image;
+		std::queue<LightProbeRenderRequest> probesToRender;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
-
 		VulkanMaterial* CreateVulkanMaterial(Material* material);
-
 		VulkanDescriptorSet* CreateDescriptorSetFromMaterialTemplate(MaterialTemplate* mat_template);
 	
 		uint32 _writtenBones;
@@ -102,6 +106,7 @@ namespace VSGE {
 		void DestroyRenderer();
 		void DrawScene(VSGE::Camera* cam);
 		void UpdateMaterialDescrSet(Material* mat);
+		void EnqueueLightProbe(const LightProbeRenderRequest& component);
 
 		void ResizeOutput(uint32 width, uint32 height);
 	};

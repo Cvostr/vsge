@@ -205,6 +205,7 @@ void FileBrowserWindow::OnDrawWindow() {
                 }
 
                 ImTextureID thumb = VkMaterialsThumbnails::Get()->GetMaterialThumbnailTexture(mat->getId());
+                // Rendering constantly to update preview
                 if (mat->IsReady())
                     VkMaterialsThumbnails::Get()->CreateThumbnail(mat);
                 if (thumb)

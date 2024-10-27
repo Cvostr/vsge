@@ -4,6 +4,7 @@
 #include "VulkanIrradianceMap.hpp"
 #include "../VulkanEnvMap.hpp"
 #include "../../VulkanSynchronization.hpp"
+#include "VulkanLightProbeImage.hpp"
 
 namespace VSGE {
 	class VulkanIBL {
@@ -27,11 +28,6 @@ namespace VSGE {
 		VulkanBuffer* _particles_buffer;
 		VulkanBuffer* _lights_buffer;
 
-		bool _draw_entities;
-		bool _update_queued;
-		bool _enabled;
-		bool _alternately;
-		int _prev_step; //1 - spmap, 2 - irmap
 	public:
 
 		VulkanIBL();
@@ -44,7 +40,6 @@ namespace VSGE {
 			VulkanBuffer* particles_buffer,
 			VulkanBuffer* lights);
 		void SetSpmapIrmapAlternately(bool alternately);
-		void SetEnabled(bool enabled);
 		void Update();
 
 		void SetEnvmapStepsCount(uint32 steps);
@@ -55,7 +50,9 @@ namespace VSGE {
 		void Create();
 		void Destroy();
 
-		void RecordCmdBufs();
+		void RecordCmdBufs(bool render);
+		void RecordCmdBufs(VulkanLightProbeImage* destImage);
+
 		void Execute(VulkanSemaphore* end_semaphore);
 		VulkanSemaphore* GetBeginSemaphore();
 
