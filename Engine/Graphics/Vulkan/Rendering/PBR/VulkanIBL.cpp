@@ -27,14 +27,6 @@ void VulkanIBL::SetInputData(tEntityList& entities,
 	_lights_buffer = lights;
 }
 
-void VulkanIBL::SetSpmapIrmapAlternately(bool alternately) {
-	//_alternately = alternately;
-}
-
-void VulkanIBL::Update() {
-	//_update_queued = true;
-}
-
 void VulkanIBL::SetEnvmapStepsCount(uint32 steps) {
 	_envmap->SetStepsCount(steps);
 }
@@ -45,8 +37,8 @@ void VulkanIBL::SetSpmapStepsCount(uint32 steps) {
 	_spmap->SetStepsCount(steps);
 }
 
-void VulkanIBL::SetDrawEntities(bool draw) {
-	_envmap->SetDrawWorld(draw);
+void VulkanIBL::SetDrawEntities(WorldRenderMode mode) {
+	_envmap->SetRenderMode(mode);
 }
 
 void VulkanIBL::SetScene(Scene* scene) {

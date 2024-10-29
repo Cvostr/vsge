@@ -40,15 +40,16 @@ void VulkanCamerasBuffer::UpdateGpuBuffer() {
 	_cameras_buffer->WriteData(0, GetNeededBufferSize(), _cameras_cpu_buffer);
 }
 
-void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float far_plane) {
-	Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, 0.01f, far_plane);
+void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane) {
+	Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, nearPlane, farPlane);
 
 	Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, 1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
 	Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
 
 	for (uint32 i = ENVMAP_CAMS_POS; i < ENVMAP_CAMS_POS + 6; i++) {
 		_cameras[i]->SetPosition(position);
-		_cameras[i]->SetFarPlane(far_plane);
+		_cameras[i]->SetNearPlane(nearPlane);
+		_cameras[i]->SetFarPlane(farPlane);
 
 		_cameras[i]->SetFront(fronts[i - ENVMAP_CAMS_POS]);
 		_cameras[i]->SetUp(ups[i - ENVMAP_CAMS_POS]);

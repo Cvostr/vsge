@@ -8,6 +8,7 @@
 #include "EntityComponents/AudioSourceComponent.hpp"
 #include "EntityComponents/RigidBodyComponent.hpp"
 #include "EntityComponents/ColliderComponent.hpp"
+#include "EntityComponents/LightProbeComponent.hpp"
 
 using namespace VSGE;
 
@@ -67,6 +68,9 @@ IEntityComponent* VSGE::CreateEntityComponent(EntityComponentType type) {
 	}
 	if (type == ENTITY_COMPONENT_CAMERA) {
 		component = new Camera;
+	}
+	if (type == ENTITY_COMPONENT_LIGHT_PROBE) {
+		component = new LightProbeComponent;
 	}
 
 	return component;

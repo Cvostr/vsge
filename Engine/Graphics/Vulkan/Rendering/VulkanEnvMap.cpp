@@ -158,10 +158,14 @@ void VulkanEnvMap::SetStepsCount(uint32 steps) {
 		_steps = steps;
 }
 
-void VulkanEnvMap::SetDrawWorld(bool draw) 
+void VulkanEnvMap::SetRenderMode(WorldRenderMode mode)
 {
 	for (int i = 0; i < 6; i++) {
-		_sides[i]._light->SetDrawWorld(draw);
+		_sides[i]._gbuffer->SetRenderMode(mode);
+	}
+
+	for (int i = 0; i < 6; i++) {
+		_sides[i]._light->SetDrawWorld(mode != RENDER_NONE);
 	}
 }
 

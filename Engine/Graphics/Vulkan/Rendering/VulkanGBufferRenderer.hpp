@@ -10,6 +10,13 @@
 #define VERTEX_DESCR_SETS 160
 
 namespace VSGE {
+
+	enum WorldRenderMode {
+		RENDER_NONE,
+		RENDER_STATIC_ONLY,
+		RENDER_ALL
+	};
+
 	class VulkanGBufferRenderer {
 	private:
 		VulkanFramebuffer* m_gbufferFramebuffer;
@@ -28,6 +35,7 @@ namespace VSGE {
 		uint32 _fb_width;
 		uint32 _fb_height;
 
+		WorldRenderMode renderMode;
 		uint32 _camera_index;
 		bool _reverseCull;
 		tEntityList* _entities_to_render;
@@ -50,6 +58,7 @@ namespace VSGE {
 		tEntityList* GetEntitiesToRender();
 		tEntityList* GetParticlesToRender();
 
+		void SetRenderMode(WorldRenderMode mode);
 		void SetScene(Scene* scene);
 		void SetBuffers(
 			VulkanBuffer* transforms_buffer = nullptr,

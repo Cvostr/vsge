@@ -16,6 +16,8 @@ VulkanGBufferRenderer::VulkanGBufferRenderer() {
 	_camera_index = 0;
 	_reverseCull = false;
 	_boundPipeline = nullptr;
+
+	renderMode = RENDER_ALL;
 }
 VulkanGBufferRenderer::~VulkanGBufferRenderer() {
 	SAFE_RELEASE(m_gbufferFramebuffer)
@@ -141,6 +143,11 @@ void VulkanGBufferRenderer::BindPipeline(VulkanCommandBuffer* cmdbuf, VulkanPipe
 	}
 }
 
+void VulkanGBufferRenderer::SetRenderMode(WorldRenderMode mode)
+{
+	this->renderMode = mode;
+}
+
 void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	uint32 _drawn_bones = 0;
 	uint32 _writtenParticleTransforms = 0;
@@ -150,7 +157,13 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *m_gbufferFramebuffer);
 
+	if (renderMode == RENDER_NONE) {
+		cmdbuf->EndRenderPass();
+		return;
+	}
+
 	_boundPipeline = nullptr;
+
 	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
 		Entity* entity = (*_entities_to_render)[e_i];
 

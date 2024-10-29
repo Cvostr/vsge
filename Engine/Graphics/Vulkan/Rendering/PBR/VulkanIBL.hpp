@@ -39,13 +39,11 @@ namespace VSGE {
 			VulkanBuffer* animations,
 			VulkanBuffer* particles_buffer,
 			VulkanBuffer* lights);
-		void SetSpmapIrmapAlternately(bool alternately);
-		void Update();
 
 		void SetEnvmapStepsCount(uint32 steps);
 		void SetIrmapStepsCount(uint32 steps);
 		void SetSpmapStepsCount(uint32 steps);
-		void SetDrawEntities(bool draw);
+		void SetDrawEntities(WorldRenderMode mode);
 
 		void Create();
 		void Destroy();

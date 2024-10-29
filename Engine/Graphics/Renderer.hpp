@@ -11,6 +11,7 @@ namespace VSGE {
 
 		LightProbeImage* image;
 		Vec3 pos;
+		float nearPlane;
 		float farPlane;
 	};
 

@@ -20,11 +20,19 @@ namespace VSGE {
 		void SetImage(LightProbeImage* image);
 		bool IsBaked() const;
 
+		float GetNearPlane() const;
+		void SetNearPlane(float nearPlane);
+
+		float GetFarPlane() const;
+		void SetFarPlane(float farPlane);
+
 		float GetRadius() const;
 		void SetRadius(float radius);
 
 		bool LoadImage();
-
 		void Bake();
+
+		void Serialize(ByteSerialize& serializer);
+		void Deserialize(ByteSolver& solver);
 	};
 }

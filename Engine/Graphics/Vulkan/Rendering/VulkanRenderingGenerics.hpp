@@ -33,6 +33,7 @@ namespace VSGE {
 		static VulkanRenderingGenerics* Get();
 
 		bool Init();
+		bool InitMaterialTemplates();
 
 		VulkanTexture* GetBlackTexture();
 

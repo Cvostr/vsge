@@ -196,11 +196,15 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_sampler->SetBorderColor(BORDER_COLOR_OPAQUE_WHITE);
 	_shadowmap_sampler->Create();
 
-	//write empty textures to shadowmaps
-	for (uint32 i = 0; i < 32; i++) {
-		if (i < 2) {
-			_shadowrenderer_descrSet->WriteDescriptorImage(3, VulkanRenderingGenerics::Get()->GetBlack2dArrayTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
-		}
+	// write empty texture to directional shadowmaps
+	for (uint32 i = 0; i < 2; i++) 
+	{
+		_shadowrenderer_descrSet->WriteDescriptorImage(3, VulkanRenderingGenerics::Get()->GetBlack2dArrayTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+	}
+
+	// write empty textures to point and spot shadowmaps
+	for (uint32 i = 0; i < 32; i++) 
+	{
 		_shadowrenderer_descrSet->WriteDescriptorImage(4, VulkanRenderingGenerics::Get()->GetBlackCubeTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderingGenerics::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 	}
@@ -239,7 +243,8 @@ void VulkanShadowmapping::SetEntitiesToRender(tEntityList* entities) {
 	_entitiesToRender = entities;
 }
 
-void VulkanShadowmapping::AddEntity(Entity* entity) {
+void VulkanShadowmapping::AddEntity(Entity* entity) 
+{
 	Scene* scene = VulkanRenderer::Get()->GetScene();
 	LightsourceComponent* light = entity->GetComponent<LightsourceComponent>();
 	LightType caster_type = light->GetLightType();
@@ -263,20 +268,16 @@ void VulkanShadowmapping::AddEntity(Entity* entity) {
 		image_layers_count = 1;
 
 	uint32 layers = caster->_framebuffer->GetLayersCount();
-	if (layers != image_layers_count || caster->_lightsource->GetLightType() != caster_type) {
-		bool is_point = (caster_type == LIGHT_TYPE_POINT);
-		bool is_spot = (caster_type == LIGHT_TYPE_SPOT);
+	if (layers != image_layers_count || caster->_lightsource->GetLightType() != caster_type) 
+	{
+		// if this caster was previously from other caster type, then recreate it
+		bool isCubemap = (caster_type == LIGHT_TYPE_POINT);
+
 		caster->_framebuffer->Destroy();
 		caster->_framebuffer->SetSize(MAP_SIZE, MAP_SIZE);
 		caster->_framebuffer->SetLayersCount(image_layers_count);
-		if (is_point) {
-			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count, true);
-			caster->_framebuffer->Create(_shadowmap_render_pass);
-		}
-		else {
-			caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count);
-			caster->_framebuffer->Create(_shadowmap_render_pass);
-		}
+		caster->_framebuffer->AddDepth(FORMAT_DEPTH_32, image_layers_count, isCubemap);
+		caster->_framebuffer->Create(_shadowmap_render_pass);
 	}
 
 	caster->_lightsource = light;

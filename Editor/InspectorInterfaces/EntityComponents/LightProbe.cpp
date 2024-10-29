@@ -4,9 +4,16 @@
 
 void VSGEditor::DrawLightProbeComponent(VSGE::LightProbeComponent* ccc)
 {
+	float near = ccc->GetNearPlane();
+	DrawFloatControl("Near plane", near);
+	ccc->SetNearPlane(near);
+
+	float far = ccc->GetFarPlane();
+	DrawFloatControl("Far plane", far);
+	ccc->SetFarPlane(far);
 
 	float rad = ccc->GetRadius();
-	DrawFloatControl("Near plane", rad);
+	DrawFloatControl("Radius", rad);
 	ccc->SetRadius(rad);
 
 	std::string bakedStatus = (ccc->IsBaked() ? "Yes" : "No");

@@ -72,8 +72,6 @@ void VulkanRenderer::SetupRenderer() {
 		mParticlesTransformShaderBuffer,
 		(VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
 	_ibl_map->Create();
-	_ibl_map->SetSpmapIrmapAlternately(false);
-	//_ibl_map->SetEnabled(false);
 
 	_generic_probe_image = new VulkanLightProbeImage();
 	_generic_probe_image->Create(); // Create base Vulkan object (textures)
@@ -355,15 +353,15 @@ void VulkanRenderer::FillCommandBuffers()
 	if (!probesToRender.empty()) {
 		const LightProbeRenderRequest& probe = probesToRender.front();
 
+		_ibl_map->SetDrawEntities(RENDER_STATIC_ONLY);
 		_ibl_map->RecordCmdBufs((VulkanLightProbeImage*) probe.image);
 
 		probesToRender.pop();
 	}
 	else {
 		//_ibl_map->RecordCmdBufs(false);
-		_ibl_map->SetDrawEntities(false);
+		_ibl_map->SetDrawEntities(RENDER_NONE);
 		_ibl_map->RecordCmdBufs(_generic_probe_image);
-		_ibl_map->SetDrawEntities(true);
 	}
 }
 
@@ -392,7 +390,7 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 		// Main Camera is overrided by arg, usually this done in Editor
 		main_camera = cam;
 		_shadowmapper->SetCamera(cam);
-		_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 100.f);
+		_cameras_buffer->SetEnvmapCameras(cam->GetPosition(), 0.01f, 100.f);
 		_cameras_buffer->SetCamera(0, cam);
 	}
 	else if(_cameras.size() > 0) {
@@ -401,16 +399,17 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 		if (camera) {
 			main_camera = camera;
 			_shadowmapper->SetCamera(camera);
-			_cameras_buffer->SetEnvmapCameras(camera->GetPosition(), 100.f);
+			_cameras_buffer->SetEnvmapCameras(camera->GetPosition(), 0.01f, 100.f);
 		}
 	}
 
 	// We are going to render light probe
 	if (!probesToRender.empty()) {
 		const LightProbeRenderRequest& probe = probesToRender.front();
-		_cameras_buffer->SetEnvmapCameras(probe.pos, probe.farPlane);
+		_cameras_buffer->SetEnvmapCameras(probe.pos, probe.nearPlane, probe.farPlane);
 	}
 
+	// write cpu buffer to gpu memory
 	_cameras_buffer->UpdateGpuBuffer();
 
 	while (_render_targets.size() < _cameras.size()) {
