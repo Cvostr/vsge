@@ -25,6 +25,7 @@
 
 #include "../InspectorInterfaces/EntityComponents/EntityComponents.hpp"
 #include "../InspectorInterfaces/ResourceTypes/InspectorResourceTypes.hpp"
+#include <mpi/Desktop/Dialog.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -133,14 +134,45 @@ void InspectorWindow::AddScriptButton() {
 	}
 }
 
-void InspectorWindow::DrawEntityContents() {
+void SetStaticRecursively(Entity* entity) 
+{
+	entity->SetStatic(true);
+	for (uint32 i = 0; i < entity->GetChildrenCount(); i++)
+	{
+		SetStaticRecursively(entity->GetChild(i));
+	}
+}
+
+void InspectorWindow::DrawEntityContents() 
+{
     bool IsActive = mShowingEntity->IsActive();
 	bool IsStatic = mShowingEntity->IsStatic();
+	bool IsStaticOld = IsStatic;
     ImGui::Checkbox("Active", &IsActive);
 	ImGui::SameLine();
 	ImGui::Checkbox("Static", &IsStatic);
     mShowingEntity->SetActive(IsActive);
-	mShowingEntity->SetStatic(IsStatic);
+
+	if (IsStatic != IsStaticOld) {
+		// Static changed
+		if (mShowingEntity->GetChildrenCount() == 0 || !IsStatic)
+			mShowingEntity->SetStatic(IsStatic);
+		else {
+			Mpi::MessageDialogDesc desc;
+			desc.dialogTitle = "Static Entity";
+			desc.dialogMessage = "Do you want to set children static as well?";
+			desc.buttons = Mpi::MESSAGE_DIALOG_BTN_YES_NO;
+			desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_QUESTION;
+			Mpi::DialogUserAction action = Mpi::Dialog::MessageDialog(desc);
+
+			if (action == Mpi::DIALOG_USER_ACTION_ACCEPT) {
+				SetStaticRecursively(mShowingEntity);
+			}
+			else {
+				mShowingEntity->SetStatic(true);
+			}
+		}
+	}
 
 	std::string new_name = mShowingEntity->GetName();
 	DrawStringControl("Entity Name", new_name);
