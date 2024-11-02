@@ -92,8 +92,13 @@ namespace VSGE {
 		}
 
 		void Destroy();
-
 		void DestroyDescriptors();
+
+		/// <summary>
+		/// Checks all textures resource has READY state
+		/// </summary>
+		/// <returns></returns>
+		bool isFullyLoaded() const;
 
 		void Serialize(const std::string& fpath);
 		void Deserialize(byte* data, uint32 size);

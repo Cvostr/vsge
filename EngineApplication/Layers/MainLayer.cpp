@@ -37,8 +37,12 @@ void MainLayer::OnEvent(const VSGE::IEvent& event) {
 
 void MainLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle) {
 	Scene* scene = SceneLayer::Get()->GetMainScene();
-	if (VulkanRenderer::Get())
-		VulkanRenderer::Get()->SetScene(scene);
+	
+	IRenderer* renderer = Application::Get()->GetRenderer();
+	if (renderer) {
+		renderer->SetScene(scene);
+		renderer->QueueSkyProbeUpdate();
+	}
 }
 
 void MainLayer::OnUpdate() {

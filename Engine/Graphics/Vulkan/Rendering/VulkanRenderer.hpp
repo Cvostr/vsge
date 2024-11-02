@@ -60,6 +60,7 @@ namespace VSGE {
 		VulkanIBL* _ibl_map;
 		VulkanLightProbeImage* _generic_probe_image;
 		std::queue<LightProbeRenderRequest> probesToRender;
+		bool genericProbeUpdateQueued;
 
 		VulkanPipeline* CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template);
 		VulkanMaterial* CreateVulkanMaterial(Material* material);
@@ -107,6 +108,7 @@ namespace VSGE {
 		void DrawScene(VSGE::Camera* cam);
 		void UpdateMaterialDescrSet(Material* mat);
 		void EnqueueLightProbe(const LightProbeRenderRequest& component);
+		void QueueSkyProbeUpdate();
 
 		void ResizeOutput(uint32 width, uint32 height);
 	};

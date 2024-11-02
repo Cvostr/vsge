@@ -77,6 +77,7 @@ void VulkanRenderer::SetupRenderer() {
 	_generic_probe_image->Create(); // Create base Vulkan object (textures)
 	// We are going to render it in realtime, so create image views and descriptor sets
 	_generic_probe_image->CreateForRendering();
+	genericProbeUpdateQueued = true; // Update at the first frame, why not?
 
 	//---------------------Command buffers------------------------
 	_cmdpool = new VulkanCommandPool;
@@ -359,15 +360,49 @@ void VulkanRenderer::FillCommandBuffers()
 		probesToRender.pop();
 	}
 	else {
-		//_ibl_map->RecordCmdBufs(false);
-		_ibl_map->SetDrawEntities(RENDER_NONE);
-		_ibl_map->RecordCmdBufs(_generic_probe_image);
+
+		bool skyboxReady = false;
+
+		if (mScene) {
+			SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
+			if (env_settings._skybox_material.IsResourceSpecified()) {
+				MaterialResource* resource = (MaterialResource*)env_settings._skybox_material.GetResource();
+				if (resource) {
+
+					if (resource->IsUnloaded()) {
+						resource->Load();
+					}
+
+					if (resource->IsReady()) {
+						resource->Use();
+						Material* mat = resource->GetMaterial();
+						// Wait, till skybox material got fully loaded
+						skyboxReady = mat->isFullyLoaded();
+					}
+				}
+			}
+		}
+
+		// If update queued and skybox material ready, then render
+		if (genericProbeUpdateQueued && skyboxReady) {
+			_ibl_map->SetDrawEntities(RENDER_NONE);
+			_ibl_map->RecordCmdBufs(_generic_probe_image);
+			genericProbeUpdateQueued = false;
+		}
+		else {
+			_ibl_map->RecordCmdBufs(false);
+		}
 	}
 }
 
 void VulkanRenderer::EnqueueLightProbe(const LightProbeRenderRequest& component)
 {
 	this->probesToRender.push(component);
+}
+
+void VulkanRenderer::QueueSkyProbeUpdate()
+{
+	this->genericProbeUpdateQueued = true;
 }
 
 void VulkanRenderer::DrawScene(VSGE::Camera* cam) 

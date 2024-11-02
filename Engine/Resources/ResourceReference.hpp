@@ -38,7 +38,8 @@ namespace VSGE{
 		void SetResource(Resource* resource);
 		void Unset();
 
-		bool IsResourceSpecified();
+		bool IsResourceSpecified() const;
+		bool IsResourceReady() const;
         
 		ResourceReference();
 		~ResourceReference();

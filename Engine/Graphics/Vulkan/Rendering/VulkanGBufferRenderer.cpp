@@ -164,8 +164,13 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	_boundPipeline = nullptr;
 
-	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) {
+	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) 
+	{
 		Entity* entity = (*_entities_to_render)[e_i];
+
+		if (renderMode == RENDER_STATIC_ONLY && !entity->IsStatic()) {
+			continue;
+		}
 
 		AABB bounding_box = entity->GetAABB();
 

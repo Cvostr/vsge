@@ -58,5 +58,6 @@ namespace VSGE {
 		void ProcessEntity(Entity* entity);
 
 		virtual void EnqueueLightProbe(const LightProbeRenderRequest& component) = 0;
+		virtual void QueueSkyProbeUpdate() = 0;
 	};
 }

@@ -3,6 +3,8 @@
 #include "../InspectorInterfaces/ResourcePicker.hpp"
 #include <Scene/SceneLayer.hpp>
 #include <Base/ImguiHelper.hpp>
+#include <Engine/Application.hpp>
+#include <Graphics/Renderer.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -28,6 +30,10 @@ void EnvironmentSettingsWindow::OnDrawWindow(){
 		settings.SetShadowCascadesCount(cascades_count);
 
 		settings.UpdateShadows();
+
+		if (ImGui::Button("Bake Skybox IBL Probe", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			Application::Get()->GetRenderer()->QueueSkyProbeUpdate();
+		}
 
 		ImGui::End();
 	}

@@ -140,6 +140,19 @@ void Material::DestroyDescriptors() {
 	SAFE_RELEASE(_descriptors);
 }
 
+bool Material::isFullyLoaded() const
+{
+	for (const auto& texture : _materialTextures) 
+	{
+		const ResourceReference& reference = texture->_resource;
+		if (reference.IsResourceSpecified() && !reference.IsResourceReady()) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void Material::Serialize(const std::string& fpath) {
 	ByteSerialize serializer;
 	//Записать заголовок

@@ -65,9 +65,18 @@ const Guid& ResourceReference::GetId() const
 	return _resourceId;
 }
 
-bool ResourceReference::IsResourceSpecified() 
+bool ResourceReference::IsResourceSpecified() const
 {
 	return _resourceId.isValid();
+}
+
+bool ResourceReference::IsResourceReady() const
+{
+	if (_resourcePointer) {
+		return _resourcePointer->GetState() == RESOURCE_STATE_READY;
+	}
+
+	return false;
 }
 
 void ResourceReference::SetResource(Resource* resource)

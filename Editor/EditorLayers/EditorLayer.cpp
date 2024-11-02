@@ -478,4 +478,5 @@ void EditorLayer::OnSceneLoadBeginEvent(const VSGE::SceneLoadBeginEvent& slbe) {
 
 void EditorLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& sle) {
 	ImGuiLayer::Get()->GetHoldOnWindow()->Hide();
+	Application::Get()->GetRenderer()->QueueSkyProbeUpdate();
 }

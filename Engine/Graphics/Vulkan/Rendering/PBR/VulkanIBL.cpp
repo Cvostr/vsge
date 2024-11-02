@@ -122,11 +122,10 @@ void VulkanIBL::RecordCmdBufs(VulkanLightProbeImage* destImage)
 	_env_cmdbuf->End();
 
 	_maps_cmdbuf->Begin();
-	//if (is_update) {
 	// TODO: const
-		_irmap->RecordCommandBuffer(_maps_cmdbuf, destImage->GetIrmapDescrSet(), (VulkanTexture*)destImage->GetIrmap(), 32U);
-		_spmap->RecordCommandBuffer(_maps_cmdbuf, destImage->GetSpmapDescrSet(), (VulkanTexture*)destImage->GetSpmap(), 256, destImage->GetSpMipmapLevelsNum());
-	//}
+	_irmap->RecordCommandBuffer(_maps_cmdbuf, destImage->GetIrmapDescrSet(), (VulkanTexture*)destImage->GetIrmap(), 32U);
+	_spmap->RecordCommandBuffer(_maps_cmdbuf, destImage->GetSpmapDescrSet(), (VulkanTexture*)destImage->GetSpmap(), 256, destImage->GetSpMipmapLevelsNum());
+	
 	_maps_cmdbuf->End();
 }
 
