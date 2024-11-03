@@ -45,11 +45,22 @@ void Animation::SetName(const std::string& name)
 
 uint32 Animation::GetNumChannels() { return _numChannels; }
 
-void Animation::SetNumChannels(uint32 num_channels) {
+void Animation::SetNumChannels(uint32 num_channels) 
+{
     _numChannels = num_channels;
     SAFE_RELEASE_ARR(channels)
     //allocate channels
     channels = new AnimationChannel[_numChannels];
+}
+
+AnimationChannel* Animation::GetChannels()
+{
+    return channels;
+}
+
+void Animation::SetChannels(AnimationChannel* channels) 
+{
+    this->channels = channels;
 }
 
 AnimationChannel* Animation::getChannelByNodeName(const std::string& node_name) {

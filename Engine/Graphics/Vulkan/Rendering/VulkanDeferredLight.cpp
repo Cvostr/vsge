@@ -7,6 +7,7 @@
 #include <Scene/EntityComponents/MaterialComponent.hpp>
 #include "VulkanRenderingGenerics.hpp"
 #include "PBR/VulkanLightProbeImage.hpp"
+#include "../VulkanRAPI.hpp"
 
 using namespace VSGE;
 

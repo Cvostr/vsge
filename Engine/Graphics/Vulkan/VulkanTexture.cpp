@@ -213,7 +213,9 @@ void VulkanTexture::Create(uint32 width, uint32 height, TextureFormat format, ui
 	VulkanMA* ma = rapi->GetAllocator();
 	VulkanDevice* device = rapi->GetDevice();
 
-	ma->createImage(&imageInfo, &this->_image);
+	if (!ma->createImage(&imageInfo, &this->_image)) {
+		throw std::runtime_error("Cant allocate Vulkan image");
+	}
 
 	if (IsRenderTarget() && format == TextureFormat::FORMAT_DEPTH_24_STENCIL_8)
 	{

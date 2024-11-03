@@ -3,22 +3,28 @@
 #include "VulkanCommandBuffer.hpp"
 #include <Core/Threading/Thread.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
+#include <Core/Logger.hpp>
 
 #define VMA_IMPLEMENTATION
 #include <vma/vk_mem_alloc.h>
 
 using namespace VSGE;
 
-VulkanMA::VulkanMA(VulkanInstance* inst, VulkanDevice* device) {
+VulkanMA::VulkanMA(VulkanInstance* inst, VulkanDevice* device) 
+{
+    Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan Memory Allocator instance (VMA)" << "\n";
     this->allocator = new VmaAllocator;
 
     VmaAllocatorCreateInfo allocatorInfo = {};
-    allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_2;
+    allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
     allocatorInfo.physicalDevice = device->getPhysicalDevice();
     allocatorInfo.device = device->getVkDevice();
     allocatorInfo.instance = inst->GetInstance();
 
-    vmaCreateAllocator(&allocatorInfo, (VmaAllocator*)allocator);
+    if (vmaCreateAllocator(&allocatorInfo, (VmaAllocator*)allocator) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Error creating Vulkan Memory Allocator instance (VMA)");
+    }
 
     for (auto& family_prop : device->GetQueueFamilyProperties()) {
         VulkanCommandPool* cmdpool = new VulkanCommandPool;
@@ -61,8 +67,11 @@ void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32
     //vbAllocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
 
     VmaAllocation tempBufferAlloc = VK_NULL_HANDLE;
-    //VmaAllocationInfo tempBufferAllocInfo = {};
-    vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, &tempBufferAlloc, nullptr);
+    VmaAllocationInfo tempBufferAllocInfo = {};
+    if (vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, &tempBufferAlloc, &tempBufferAllocInfo) != VK_SUCCESS) {
+        throw std::runtime_error("Error creating CPU-GPU Vulkan Buffer with size " + size);
+    }
+
     //*mapped = tempBufferAllocInfo.pMappedData;
     buffer->_allocation = tempBufferAlloc;
 
@@ -117,14 +126,20 @@ void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* dat
     vbAllocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
     vbAllocCreateInfo.flags = 0;
     //Create GPU buffer
-    vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, nullptr);
+    if (vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, nullptr) != VK_SUCCESS) 
+    {
+        throw std::runtime_error("Error creating GPU Vulkan Buffer with size " + size);
+    }
+
     //Copy data to GPU buffer
     if(data != nullptr)
         copy(buffer->Buffer, 0, data, size);
 }
 
 void VulkanMA::map(VmaVkBuffer* buf, void** mem) {
-    vmaMapMemory(*(VmaAllocator*)this->allocator, (VmaAllocation)buf->_allocation, mem);
+    if (vmaMapMemory(*(VmaAllocator*)this->allocator, (VmaAllocation)buf->_allocation, mem) != VK_SUCCESS) {
+        throw std::runtime_error("VMA: Error mapping buffer memory");
+    }
 }
 void VulkanMA::unmap(VmaVkBuffer* buf) {
     vmaUnmapMemory(*(VmaAllocator*)this->allocator, (VmaAllocation)buf->_allocation);
@@ -133,15 +148,14 @@ void VulkanMA::destroyBuffer(VmaVkBuffer* buf) {
     vmaDestroyBuffer(*((VmaAllocator*)allocator), buf->Buffer, (VmaAllocation)buf->_allocation);
 }
 
-bool VulkanMA::createImage(VkImageCreateInfo* info, VmaVkImage* image) {
+bool VulkanMA::createImage(VkImageCreateInfo* info, VmaVkImage* image) 
+{
     VmaAllocationCreateInfo vbAllocCreateInfo = {};
     vbAllocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
     vbAllocCreateInfo.flags = 0;
     
-
     if (vmaCreateImage(*((VmaAllocator*)allocator), info, &vbAllocCreateInfo, &image->Image, (VmaAllocation*)&image->_allocation, nullptr) != VK_SUCCESS)
         return false;
-
 
     return true;
 }

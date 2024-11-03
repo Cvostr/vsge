@@ -1,4 +1,5 @@
 #include "VulkanRenderingGenerics.hpp"
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -27,6 +28,9 @@ VulkanRenderingGenerics* VulkanRenderingGenerics::Get() {
 bool VulkanRenderingGenerics::Init() {
 	if (m_initialized)
 		return true;
+
+	//--------------------Shaders-----------------------
+	LoadShaders();
 
 	//---------------------Textures------------------
 
@@ -103,7 +107,18 @@ bool VulkanRenderingGenerics::Init() {
 	m_screenMesh->SetIndexBuffer(plane_inds, 6);
 	m_screenMesh->Create();
 
-	//--------------------Shaders-----------------------
+
+	//------------------BRDF LUT ------------------------------------
+	m_brdfLut = new Vulkan_BRDF_LUT;
+	m_brdfLut->Create();
+
+	m_initialized = true;
+	return false;
+}
+
+void VulkanRenderingGenerics::LoadShaders()
+{
+	Logger::Log() << "Loading Shaders\n";
 	ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
 	VulkanShader* pbr = new VulkanShader;
 	pbr->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
@@ -144,13 +159,6 @@ bool VulkanRenderingGenerics::Init() {
 	ui_shader->AddShaderFromFile("ui.vert", SHADER_STAGE_VERTEX);
 	ui_shader->AddShaderFromFile("ui.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(ui_shader, "ui");
-
-	//------------------BRDF LUT ------------------------------------
-	m_brdfLut = new Vulkan_BRDF_LUT;
-	m_brdfLut->Create();
-
-	m_initialized = true;
-	return false;
 }
 
 VulkanTexture* VulkanRenderingGenerics::GetBlackTexture() {

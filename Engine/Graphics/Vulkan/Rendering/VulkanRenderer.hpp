@@ -23,7 +23,6 @@
 #include <queue>
 #include <future>
 
-#define UNI_ALIGN 256ULL
 #define MATERIAL_SIZE 512
 
 namespace VSGE {

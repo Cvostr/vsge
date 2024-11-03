@@ -11,7 +11,7 @@ bool VulkanSemaphore::Create() {
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 	if (vkCreateSemaphore(device->getVkDevice(), &semaphoreInfo, nullptr, &_semaphore) != VK_SUCCESS) {
-		return false;
+		throw std::runtime_error("Error creating Vulkan semaphore");
 	}
 
 	mCreated = true;

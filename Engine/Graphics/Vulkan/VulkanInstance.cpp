@@ -36,7 +36,7 @@ bool VSGE::VulkanInstance::init(bool validate, const char* app_name, uint32 app_
     VkApplicationInfo vk_app_info = {};
     vk_app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     vk_app_info.pNext = nullptr;
-    vk_app_info.apiVersion = VK_MAKE_VERSION(1, 3, 0);
+    vk_app_info.apiVersion = VK_API_VERSION_1_3;
     vk_app_info.pEngineName = "VSGE";
     vk_app_info.engineVersion = 1;
     vk_app_info.pApplicationName = app_name;

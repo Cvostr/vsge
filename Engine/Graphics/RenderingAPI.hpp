@@ -7,7 +7,7 @@ namespace VSGE {
 	public:
 		IRenderingAPI(){}
 
-		virtual void Create(Window* window) = 0;
+		virtual void Create(Window* window, bool debugGraphics) = 0;
 		virtual void Destroy() = 0;
 	};
 }

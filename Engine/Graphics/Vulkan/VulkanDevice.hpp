@@ -45,6 +45,7 @@ namespace VSGE {
         std::vector<VkQueueFamilyProperties>& GetQueueFamilyProperties();
 
         VulkanDevice();
+        VulkanDevice(const VulkanDevice&) = delete;
     };
 
     VulkanDevice* CreatePrimaryDevice();

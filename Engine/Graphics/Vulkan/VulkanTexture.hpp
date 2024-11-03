@@ -42,6 +42,8 @@ namespace VSGE {
         
         ~VulkanTexture();
 
+        VulkanTexture(const VulkanTexture&) = delete;
+
         /// <summary>
         /// Get vulkan image
         /// </summary>

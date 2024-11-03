@@ -5,11 +5,21 @@ using namespace VSGE;
 
 VulkanRAPI* VulkanRAPI::_this = 0;
 
-void VSGE::VulkanRAPI::Create(Window* window) {
+VulkanRAPI::VulkanRAPI() {
+	_this = this;
+
+	Instance = nullptr;
+	Device = nullptr;
+	SwapChain = nullptr;
+	Allocator = nullptr;
+}
+
+void VSGE::VulkanRAPI::Create(Window* window, bool debugGraphics) 
+{
 	Application* app = Application::Get();
 
 	Instance = new VulkanInstance;
-	Instance->init(false, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion);
+	Instance->init(debugGraphics, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion);
 
 	Device = CreatePrimaryDevice();
 
@@ -23,4 +33,24 @@ void VSGE::VulkanRAPI::Destroy() {
 	SwapChain->Destroy();
 	Device->Destroy();
 	Instance->Destroy();
+}
+
+VulkanInstance* VulkanRAPI::GetInstance() 
+{
+	return Instance;
+}
+
+VulkanDevice* VulkanRAPI::GetDevice() 
+{
+	return Device;
+}
+
+VulkanMA* VulkanRAPI::GetAllocator() 
+{
+	return Allocator;
+}
+
+VulkanSwapChain* VulkanRAPI::GetSwapChain() 
+{
+	return SwapChain;
 }

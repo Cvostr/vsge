@@ -8,6 +8,7 @@ ArgsParser::ArgsParser(int argc, char** argv) {
 	_headless = false;
 	_server = false;
 	_port = 16273;
+	_debugGraphics = false;
 
 	for (int i = 1; i < argc; i++) {
 		char* key = argv[i];
@@ -15,8 +16,10 @@ ArgsParser::ArgsParser(int argc, char** argv) {
 			_headless = true;
 		else if (strcmp(key, "-server") == 0)
 			_server = true;
-		else if (strcmp(key, "-app_dir") == 0) {
+		else if (strcmp(key, "-app_dir") == 0)
 			_app_dir_path = std::string(argv[++i]);
+		else if (strcmp(key, "-dg") == 0) {
+			_debugGraphics = true;
 		}
 	}
 }
@@ -32,4 +35,8 @@ const std::optional<std::string>& ArgsParser::GetApplicationDirPath() {
 }
 int ArgsParser::GetServerPort() {
 	return _port;
+}
+bool ArgsParser::IsDebugGraphics()
+{
+	return _debugGraphics;
 }

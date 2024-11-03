@@ -20,6 +20,8 @@ namespace VSGE {
 
 		~VulkanPipeline();
 
+		VulkanPipeline(const VulkanPipeline&) = delete;
+
 		VkPipeline GetPipeline();
 
 		VulkanPipelineLayout* GetPipelineLayout();

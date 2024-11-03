@@ -12,6 +12,7 @@ namespace VSGE {
 		bool _headless;
 		bool _server;
 		int _port;
+		bool _debugGraphics;
 	public:
 		ArgsParser(int argc, char** argv);
 
@@ -19,5 +20,6 @@ namespace VSGE {
 		bool IsHeadless();
 		const std::optional<std::string>& GetApplicationDirPath();
 		int GetServerPort();
+		bool IsDebugGraphics();
 	};
 }

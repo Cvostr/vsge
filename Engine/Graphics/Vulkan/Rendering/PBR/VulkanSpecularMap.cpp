@@ -100,7 +100,7 @@ void VulkanSpecularMap::Create() {
 	_spmap_pipeline_layout = new VulkanPipelineLayout;
 	_spmap_pipeline_layout->PushDescriptorSet(_spmap_input_descr_set);
 	_spmap_pipeline_layout->PushDescriptorSet(_spmap_output_descr_set);
-	_spmap_pipeline_layout->AddPushConstantRange(0, 12, VK_SHADER_STAGE_COMPUTE_BIT);
+	_spmap_pipeline_layout->AddPushConstantRange(0, 16, VK_SHADER_STAGE_COMPUTE_BIT);
 	_spmap_pipeline_layout->Create();
 
 	_spmap_pipeline = new VulkanComputePipeline;

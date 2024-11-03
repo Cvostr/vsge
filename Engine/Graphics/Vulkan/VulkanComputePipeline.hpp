@@ -5,7 +5,8 @@
 #include "VulkanPipelineLayout.hpp"
 #include "VulkanShader.hpp"
 
-namespace VSGE{
+namespace VSGE 
+{
     class VulkanComputePipeline : public IGpuObject {
     private:
         VkPipeline _pipeline;

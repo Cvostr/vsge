@@ -12,12 +12,14 @@
 #include <Graphics/MaterialTemplateCache.hpp>
 #include "VulkanRenderingGenerics.hpp"
 #include <algorithm>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
 VulkanRenderer* VulkanRenderer::_this = nullptr;
 
-VulkanRenderer::VulkanRenderer() : IRenderer() {
+VulkanRenderer::VulkanRenderer() : IRenderer()
+{
 	_this = this;
 	SetupRenderer();
 }
@@ -26,7 +28,9 @@ VulkanRenderer::~VulkanRenderer() {
 	DestroyRenderer();
 }
 
-void VulkanRenderer::SetupRenderer() {
+void VulkanRenderer::SetupRenderer() 
+{
+	Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan Renderer" << "\n";
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 	//-----------------------Prepare semaphores-------------------
 	mBeginSemaphore = new VulkanSemaphore;
@@ -39,7 +43,10 @@ void VulkanRenderer::SetupRenderer() {
 	_cameras_buffer = new VulkanCamerasBuffer;
 
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN);
+	// Size of memory for 1 transform matrix
+	// NVidia pre turing cards has 256 byte alignment
+	uint32 transformMemoryBlockSize = std::max(UNI_ALIGN, sizeof(Mat4));
+	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * transformMemoryBlockSize);
 
 	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	mAnimationTransformsShaderBuffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);

@@ -45,7 +45,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	if (!descr.headless) {
 		VulkanRAPI* vk = new VulkanRAPI;
-		vk->Create(&app->GetWindow());
+		vk->Create(&app->GetWindow(), false /*parser.IsDebugGraphics()*/);
+		
 		VulkanRenderer* renderer = new VulkanRenderer;
 		renderer->GetFinalPass()->SetRenderToSwapchain(true);
 		renderer->GetFinalPass()->Create();

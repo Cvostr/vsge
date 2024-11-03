@@ -11,7 +11,6 @@
 #include "../VulkanBuffer.hpp"
 #include "../VulkanDescriptors.hpp"
 
-#define UNI_ALIGN 256
 #define MAP_SIZE 2048
 
 #define SHADOWMAP_BUFFER_ELEMENT_SIZE 768

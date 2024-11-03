@@ -31,6 +31,8 @@ namespace VSGE {
             mSurface(VK_NULL_HANDLE)
         {
         }
+
+        VulkanInstance(const VulkanInstance&) = delete;
     };
 
 }

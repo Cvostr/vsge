@@ -1,4 +1,5 @@
 #include "VulkanRTRenderer.hpp"
+#include "../VulkanRAPI.hpp"
 
 using namespace VSGE;
 

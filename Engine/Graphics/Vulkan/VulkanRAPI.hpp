@@ -19,34 +19,16 @@ namespace VSGE {
 		VulkanMA* Allocator;
 	public:
 
-		void Create(Window* window);
+		VulkanRAPI();
+
+		void Create(Window* window, bool debugGraphics = false);
 
 		void Destroy();
 
-		VulkanInstance* GetInstance() {
-			return Instance;
-		}
-
-		VulkanDevice* GetDevice() {
-			return Device;
-		}
-
-		VulkanMA* GetAllocator() {
-			return Allocator;
-		}
-
-		VulkanSwapChain* GetSwapChain() {
-			return SwapChain;
-		}
-
-		VulkanRAPI(){
-			_this = this;
-
-			Instance = nullptr;
-			Device = nullptr;
-			SwapChain = nullptr;
-			Allocator = nullptr;
-		}
+		VulkanInstance* GetInstance();
+		VulkanDevice* GetDevice();
+		VulkanMA* GetAllocator();
+		VulkanSwapChain* GetSwapChain();
 
 		static VulkanRAPI* Get() {
 			return _this;

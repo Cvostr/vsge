@@ -26,6 +26,8 @@ namespace VSGE {
 		Vulkan_BRDF_LUT* m_brdfLut;
 
 		static VulkanRenderingGenerics* _this;
+
+		void LoadShaders();
 	public:
 
 		VulkanRenderingGenerics();

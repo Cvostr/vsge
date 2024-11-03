@@ -27,13 +27,8 @@ namespace VSGE {
         uint32 GetNumChannels();
         void SetNumChannels(uint32 num_channels);
 
-        AnimationChannel* GetChannels() {
-            return channels;
-        }
-
-        void SetChannels(AnimationChannel* channels) {
-            this->channels = channels;
-        }
+        AnimationChannel* GetChannels();
+        void SetChannels(AnimationChannel* channels);
 
         //Get pointer to channel by specified node name
         AnimationChannel* getChannelByNodeName(const std::string& node_name);
