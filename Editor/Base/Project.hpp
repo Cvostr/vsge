@@ -26,6 +26,7 @@ namespace VSGEditor {
 		const std::string& GetAssetsDirectory() const;
 		const std::string& GetCacheDirectory() const;
 
+		void LoadSettings();
 		ProjectSettings& getSettings();
 		void saveSettings();
 	};

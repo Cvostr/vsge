@@ -70,15 +70,29 @@ void StartWindow::SaveProjectsList()
     fout.close();
 }
 
-void StartWindow::OnDrawWindow() {
-    if (Draw("Start Window", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) {
+void StartWindow::OnDrawWindow() 
+{
+    if (Draw("Start Window", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize)) 
+    {
         SetSize(600, 300);
 
         ImGui::Text("Projects");
 
         for (auto& str : _projects) {
             if (ImGui::Button(str.c_str())) {
-                OpenProject(str);
+                try {
+                    OpenProject(str);
+                }
+                catch (const std::exception& ex) 
+                {
+                    Mpi::MessageDialogDesc desc;
+                    desc.dialogTitle = "Error opening project";
+                    desc.dialogMessage = ex.what();
+                    desc.buttons = Mpi::MESSAGE_DIALOG_BTN_OK;
+                    desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+                    Mpi::DialogUserAction action;
+                    action = Mpi::Dialog::MessageDialog(desc);
+                }
             }
         }
 
@@ -103,18 +117,11 @@ void StartWindow::OnDrawWindow() {
     }
 }
 
-void StartWindow::OpenProject(const std::string& path) {
-    if (!fs::is_directory(path)) {
-        Mpi::MessageDialogDesc desc;
-        desc.dialogTitle = "Error opening project";
-        desc.dialogMessage = "Directory " + path + " doesn't exist!";
-        desc.buttons = Mpi::MESSAGE_DIALOG_BTN_OK;
-        desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
-        Mpi::DialogUserAction action;
-        action = Mpi::Dialog::MessageDialog(desc);
-        if (action == ::DIALOG_USER_ACTION_ACCEPT) {
-            return;
-        }
+void StartWindow::OpenProject(const std::string& path) 
+{
+    if (!fs::is_directory(path)) 
+    {
+        throw std::runtime_error("Directory " + path + " doesn't exist!");
     }
 
     VSGE::Application* app = VSGE::Application::Get();

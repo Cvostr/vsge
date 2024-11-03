@@ -91,8 +91,10 @@ void EditorLayer::OnDetach() {
 
 }
 
-bool EditorLayer::OpenProject(const Project& project) {
+bool EditorLayer::OpenProject(const Project& project) 
+{
 	_project = project;
+	_project.LoadSettings();
 
 	mResourcesWatcher = new FilesystemWatcher(File(project.GetAssetsDirectory()), true);
     mResourcesWatcher->setEventHandler([] (const FilesystemWatcherEvent& event) {

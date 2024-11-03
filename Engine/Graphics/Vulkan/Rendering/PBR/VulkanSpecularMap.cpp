@@ -150,6 +150,7 @@ void VulkanSpecularMap::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer, Vulk
 		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4, &pc_level);
 		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 4, 4, &roughness);
 		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 8, 4, &passed);
+		cmdbuffer->PushConstants(*_spmap_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 12, 4, &size);
 		cmdbuffer->Dispatch(numGroups, numGroups, per_time);
 	}
 

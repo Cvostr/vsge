@@ -18,9 +18,17 @@ Project::Project(	const std::string& root,
 	project_cache_dir = root + "/" + cache_dir;
 	m_configFilePath = root + "/" + cfgFileName;
 
+}
+
+void Project::LoadSettings()
+{
 	char* data;
 	uint32 size = 0;
-	VSGE::LoadFile(m_configFilePath, &data, &size);
+	bool confResult = VSGE::LoadFile(m_configFilePath, &data, &size);
+	if (!confResult) {
+		throw std::runtime_error("Unable to load project configuration from file " + m_configFilePath);
+	}
+
 	m_settings = ProjectSettings::loadFromJSON(std::string(data));
 	delete[] data;
 }
