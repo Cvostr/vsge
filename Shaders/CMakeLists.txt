@@ -4,6 +4,7 @@ project ("Shaders")
 
 set(SHADERS_FILES   pbr/pbr.vert
                     pbr/pbr.frag
+                    pbr/pbr_smoothness.frag
                     pbr/brdf_lut.comp
                     pbr/irmap.comp
                     pbr/spmap.comp

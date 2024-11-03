@@ -28,7 +28,7 @@ void SaveScene(std::string file) {
 
 void SaveAs() {
 	Mpi::FileDialogDesc desc;
-	desc.dialogTitle = "test";
+	desc.dialogTitle = "Save Scene As";
 	desc.addFileFilter({ "Scene", "*.scn" });
 	std::string save;
 	save = Mpi::Dialog::SaveFileDialog(desc);
@@ -49,7 +49,7 @@ void File_Menu::OnDrawMenu() {
 		if (ImGui::MenuItem("Import", NULL)) {
 			Mpi::FileDialogDesc desc;
 			desc.dialogTitle = "Import resource";
-			desc.addFileFilters({{"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}});
+			desc.addFileFilters({ {"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}, {"COLLADA .DAE 3D Model", "*.dae"}});
 			std::string path;
 			path = Mpi::Dialog::OpenFileDialog(desc);
 

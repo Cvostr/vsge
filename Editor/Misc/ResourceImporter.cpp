@@ -47,7 +47,7 @@ void VSGEditor::ImportFile(const std::string& str) {
     if (ext == "dds" || ext == "png") {
 
     }
-    if (ext == "fbx") {
+    if (ext == "fbx" || ext == "dae") {
         uint32 num_meshes = 0;
         uint32 num_anims = 0;
         uint32 num_textures = 0;

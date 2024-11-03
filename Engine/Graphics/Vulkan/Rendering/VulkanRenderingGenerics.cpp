@@ -110,6 +110,11 @@ bool VulkanRenderingGenerics::Init() {
 	pbr->AddShaderFromFile("pbr.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(pbr, "PBR");
 
+	VulkanShader* pbr_smoothness = new VulkanShader;
+	pbr_smoothness->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
+	pbr_smoothness->AddShaderFromFile("pbr_smoothness.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(pbr_smoothness, "PBR_smoothness");
+
 	VulkanShader* vegetable = new VulkanShader;
 	vegetable->AddShaderFromFile("vegetable.vert", SHADER_STAGE_VERTEX);
 	vegetable->AddShaderFromFile("vegetable.frag", SHADER_STAGE_FRAGMENT);

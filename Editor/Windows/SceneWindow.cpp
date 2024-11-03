@@ -173,11 +173,12 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
         EditorLayer::Get()->SetPickedEntity(entity);
     }
 
-    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_None) && ImGui::IsMouseDoubleClicked(0) && !isRoot)
     {
         EditorLayer* editor = EditorLayer::Get();
         Vec3 pos = entity->GetWorldTransform().GetPosition();
-        editor->GetCamera()->SetPosition(pos);
+        Vec3 front = editor->GetCamera()->GetFront();
+        editor->GetCamera()->SetPosition(pos - (front * 2));
     }
 
     if (_entityRemoved) {

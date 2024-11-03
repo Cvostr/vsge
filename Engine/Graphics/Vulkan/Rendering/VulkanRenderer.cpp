@@ -134,6 +134,22 @@ void VulkanRenderer::SetupRenderer() {
 	MaterialTemplateCache::Get()->AddTemplate(pbr_template);
 	CreatePipelineFromMaterialTemplate(pbr_template);
 
+	MaterialTemplate* pbr_smoothness_template = new MaterialTemplate;
+	pbr_smoothness_template->SetName("default_pbr_smoothness");
+	pbr_smoothness_template->SetShader("PBR_smoothness");
+	pbr_smoothness_template->AddTexture("Albedo", 1);
+	pbr_smoothness_template->AddTexture("Normal", 2);
+	pbr_smoothness_template->AddTexture("Smoothness", 3);
+	pbr_smoothness_template->AddTexture("Metallic", 4);
+	pbr_smoothness_template->AddTexture("Height", 5);
+	pbr_smoothness_template->AddTexture("Occlusion", 6);
+	pbr_smoothness_template->AddParameter("Color", Color(1, 1, 1, 1));
+	pbr_smoothness_template->AddParameter("Smoothness factor", 1.f);
+	pbr_smoothness_template->AddParameter("Metallic factor", 0.5f);
+	pbr_smoothness_template->AddParameter("Height factor", 1.f);
+	MaterialTemplateCache::Get()->AddTemplate(pbr_smoothness_template);
+	CreatePipelineFromMaterialTemplate(pbr_smoothness_template);
+
 	BlendAttachmentDesc particle_blend_desc;
 	particle_blend_desc._blending = true;
 	particle_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
