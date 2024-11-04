@@ -4,7 +4,10 @@
 
 using namespace VSGE;
 
-LightsBuffer::LightsBuffer() {
+LightsBuffer::LightsBuffer() :
+	_lights_buffer(nullptr),
+	_cpu_buffer(nullptr)
+{
 	_max_lights_count = 200;
 }
 LightsBuffer::~LightsBuffer() {

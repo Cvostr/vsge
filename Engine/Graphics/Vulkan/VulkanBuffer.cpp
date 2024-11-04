@@ -30,7 +30,7 @@ void VulkanBuffer::Create(uint32 size, BufferDeviceLocation location)
 	{
 		vulkan_ma->allocateCpu(GetBufferTypeVK(_type), &_buffer, size, (void**)&this->mCpuBuffer);
 		memset(mCpuBuffer, 0, size);
-		vulkan_ma->unmap(&_buffer);
+		//vulkan_ma->unmap(&_buffer);
 	}
 	if (location == LOCATION_GPU)
 		vulkan_ma->allocate(GetBufferTypeVK(_type), &_buffer, nullptr, size);
@@ -61,9 +61,9 @@ void VulkanBuffer::WriteData(uint32 offset, uint32 size, void* data) {
 	VulkanRAPI* vulkan_rapi = VulkanRAPI::Get();
 	VulkanMA* vulkan_ma = vulkan_rapi->GetAllocator();
 	if (_deviceLocation == LOCATION_CPU_GPU) {
-		vulkan_ma->map(&_buffer, (void**)&mCpuBuffer);
+		//vulkan_ma->map(&_buffer, (void**)&mCpuBuffer);
 		memcpy(this->mCpuBuffer + offset, data, size);
-		vulkan_ma->unmap(&_buffer);
+		//vulkan_ma->unmap(&_buffer);
 	}
 	else if (_deviceLocation == LOCATION_GPU) {
 		vulkan_ma->copy(_buffer.Buffer, offset, data, size);

@@ -249,7 +249,7 @@ void VulkanTexture::AddMipLevel(byte* data, uint32 size, uint32 width, uint32 he
 	void* temp_map;
 	ma->allocateCpu(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &temp_buf, size, &temp_map);
 	memcpy(temp_map, data, size);
-	ma->unmap(&temp_buf);
+	//ma->unmap(&temp_buf);
 	//Copy temporary buffer to image
 	Transition(temp_buf, level, layer, width, height);
 	//Free temporary buffer

@@ -64,7 +64,7 @@ void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32
 
     VmaAllocationCreateInfo vbAllocCreateInfo = {};
     vbAllocCreateInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
-    //vbAllocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+    vbAllocCreateInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
 
     VmaAllocation tempBufferAlloc = VK_NULL_HANDLE;
     VmaAllocationInfo tempBufferAllocInfo = {};
@@ -72,10 +72,10 @@ void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32
         throw std::runtime_error("Error creating CPU-GPU Vulkan Buffer with size " + size);
     }
 
-    //*mapped = tempBufferAllocInfo.pMappedData;
+    *mapped = tempBufferAllocInfo.pMappedData;
     buffer->_allocation = tempBufferAlloc;
 
-    map(buffer, mapped);
+    //map(buffer, mapped);
 }
 
 void VulkanMA::copy(VkBuffer buffer, uint32 offset, void* data, uint32 size) {
