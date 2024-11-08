@@ -3,6 +3,14 @@
 
 using namespace VSGE;
 
+VulkanPipelineLayout::VulkanPipelineLayout() :
+    _pipelineLayout(VK_NULL_HANDLE)
+{}
+
+VulkanPipelineLayout::~VulkanPipelineLayout() {
+    Destroy();
+}
+
 VkPipelineLayout VulkanPipelineLayout::GetPipelineLayout() { 
     return _pipelineLayout; 
 }

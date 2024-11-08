@@ -27,7 +27,8 @@ namespace VSGE {
 		void SetLightsCount(uint32 lights_count);
 		void SetAmbientColor(const Color& color);
 
-		void SetMaxLightsCount(uint32 lights_count);
+		void SetMaxLightsCount(uint32 lightsCount);
+		uint32 GetMaxLightsCount() const;
 
 		GpuBuffer* GetLightsGpuBuffer();
 	};

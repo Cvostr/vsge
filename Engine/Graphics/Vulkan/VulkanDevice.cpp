@@ -78,7 +78,7 @@ VulkanDevice::VulkanDevice() :
     mPhysicalDevice(VK_NULL_HANDLE),
     mDevice(VK_NULL_HANDLE)
 {
-
+    DeviceProps = {};
 }
 
 VkDevice VulkanDevice::getVkDevice() {

@@ -28,8 +28,14 @@ void LightsBuffer::Destroy() {
 	SAFE_RELEASE(_lights_buffer)
 }
 
-void LightsBuffer::SetMaxLightsCount(uint32 lights_count) {
-	_max_lights_count = lights_count;
+void LightsBuffer::SetMaxLightsCount(uint32 lightsCount)
+{
+	_max_lights_count = lightsCount;
+}
+
+uint32 LightsBuffer::GetMaxLightsCount() const
+{
+	return _max_lights_count;
 }
 
 void LightsBuffer::UpdateGpuBuffer() {

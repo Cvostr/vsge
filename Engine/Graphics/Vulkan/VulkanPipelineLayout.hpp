@@ -12,13 +12,9 @@ namespace VSGE {
 		std::vector<VulkanDescriptorSet*> _descriptor_sets;
 	public:
 
-		VulkanPipelineLayout() :
-			_pipelineLayout(VK_NULL_HANDLE)
-		{}
-
-		~VulkanPipelineLayout() {
-			Destroy();
-		}
+		VulkanPipelineLayout();
+		VulkanPipelineLayout(const VulkanPipelineLayout&) = delete;
+		~VulkanPipelineLayout();
 
 		VkPipelineLayout GetPipelineLayout();
 		void PushDescriptorSet(VulkanDescriptorSet* set);

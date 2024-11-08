@@ -7,7 +7,10 @@
 #include <Math/Mat4.hpp>
 #include <vector>
 
-namespace VSGE{
+#define MAX_SHADOW_CASCADES 10
+
+namespace VSGE
+{
     class SceneEnvironmentSettings {
 	private:
 		float _shadow_distance;

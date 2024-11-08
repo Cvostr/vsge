@@ -128,6 +128,16 @@ VulkanTexture::~VulkanTexture() {
 	Destroy();
 }
 
+VkImage VulkanTexture::GetImage() 
+{ 
+	return _image.Image;
+}
+
+VkImageView VulkanTexture::GetImageView() 
+{ 
+	return _imageView;
+}
+
 void VulkanTexture::Destroy() {
 	if (mCreated) {
 		VulkanRAPI* vulkan = VulkanRAPI::Get();

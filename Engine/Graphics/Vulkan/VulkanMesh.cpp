@@ -10,6 +10,22 @@ VulkanMesh::~VulkanMesh() {
 	Destroy();
 }
 
+VulkanBuffer** VulkanMesh::GetVertexBuffers() {
+	return vertexBuffers.data();
+}
+
+VulkanBuffer* VulkanMesh::GetIndexBuffer() {
+	return indexBuffer;
+}
+
+VkBuffer VulkanMesh::GetVertexBufferVk(uint32 i) {
+	return vertexBuffers[i]->GetBuffer();
+}
+
+VkBuffer VulkanMesh::GetIndexBufferVk() {
+	return indexBuffer->GetBuffer();
+}
+
 bool VulkanMesh::Create() {
 	for (auto vbd : _vertexBuffers) {
 		VulkanBuffer* vertexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);

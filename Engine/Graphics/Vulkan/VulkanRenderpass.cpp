@@ -5,6 +5,27 @@
 
 using namespace VSGE;
 
+VulkanRenderPass::VulkanRenderPass() :
+    mHasDepthAttachment(false),
+    _renderPass(VK_NULL_HANDLE),
+    mColorAttachmentsCount(0),
+    mClearValuesCount(0),
+    mClearValues(nullptr)
+{
+    ClearExtent.width = 0;
+    ClearExtent.height = 0;
+}
+
+VulkanRenderPass::~VulkanRenderPass() 
+{
+    Destroy();
+}
+
+VkRenderPass VulkanRenderPass::GetRenderPass() 
+{ 
+    return _renderPass;
+}
+
 bool VulkanRenderPass::Create() {
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();
@@ -65,7 +86,8 @@ bool VulkanRenderPass::Create() {
     return true;
 }
 
-void VulkanRenderPass::SetClearColor(uint32 attachment_id, const Color& color) {
+void VulkanRenderPass::SetClearColor(uint32 attachment_id, const Color& color) 
+{
     if (mClearValues && mAttachmentReferences.size() > attachment_id) {
         mClearValues[attachment_id].color = {color.r, color.g, color.b, color.a};
     }

@@ -231,16 +231,27 @@ void VulkanRenderer::DestroyRenderer() {
 	SAFE_RELEASE(_ui_renderer)
 }
 
-void VulkanRenderer::StoreWorldObjects(Camera* cam) {
+void VulkanRenderer::StoreWorldObjects(Camera* cam) 
+{
+	_shadowmapper->ResetCasters();
+
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
-		//send lights to gpu buffer
-		_lights_buffer->SetLightsCount((uint32)this->_lightsources.size());
+		// send lights to gpu buffer
+		uint32 lightSourcesCount = std::min((uint32)this->_lightsources.size(), _lights_buffer->GetMaxLightsCount());
+		_lights_buffer->SetLightsCount(lightSourcesCount);
 		_lights_buffer->SetAmbientColor(env_settings.GetAmbientColor());
-		for (uint32 light_i = 0; light_i < _lightsources.size(); light_i++) {
+
+		for (uint32 light_i = 0; light_i < lightSourcesCount; light_i++) 
+		{
 			LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
 			_lights_buffer->SetLight(light_i, light);
+
+			if (light->GetCastShadows()) {
+				_shadowmapper->AddEntity(_lightsources[light_i]);
+			}
 		}
+
 		_lights_buffer->UpdateGpuBuffer();
 	}
 
@@ -343,14 +354,8 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam) {
 		mParticlesTransformShaderBuffer->WriteData(_writtenParticleTransforms * sizeof(Mat4), sizeof(Mat4) * particles_count, ParticleTransforms);
 
 		_writtenParticleTransforms += particles_count;
-
 	}
 
-	//--------------SHADOWMAPPING------------
-	_shadowmapper->ResetCasters();
-	for (uint32 caster_i = 0; caster_i < _shadowcasters.size(); caster_i++) {
-		_shadowmapper->AddEntity(_shadowcasters[caster_i]);
-	}
 	//-----------------------------
 
 	//Обновляем данные буферов интерфейса

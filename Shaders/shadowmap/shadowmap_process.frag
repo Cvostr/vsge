@@ -7,13 +7,13 @@ layout(location = 0) in vec2 UVCoord;
 struct CasterInfo{  //688
     mat4 projections[10];
     //640
-    float ShadowBias; //4
+    float ShadowBias; // 4
     uint PcfPassNum; // 4
     float ShadowStrength; // 4
-    int caster_type; //4
+    int caster_type; // 4
     vec3 pos;
     float range;
-    uint caster_index;
+    uint image_index;
 };
 
 layout (std140, binding = 0) uniform ShadowData{
@@ -89,7 +89,7 @@ void main(){
             for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
                 for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
                     vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
-                    float shadowmap_depth = GetShadowmapSample(casters[caster_i].caster_index, cascade, uvoffset);
+                    float shadowmap_depth = GetShadowmapSample(casters[caster_i].image_index, cascade, uvoffset);
                     if(realDepth <= 1.0) 
                         shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
                 }
@@ -103,7 +103,7 @@ void main(){
         }
         if(casters[caster_i].caster_type == 1){
             vec3 dir = FragPos - casters[caster_i].pos;
-            uint texture_index = casters[caster_i].caster_index;
+            uint texture_index = casters[caster_i].image_index;
             float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r * casters[caster_i].range;
             float real_depth = length(dir);
             if(shadowmap_depth < casters[caster_i].range){
@@ -125,7 +125,7 @@ void main(){
             for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
                 for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
                     vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
-                    float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].caster_index, uvoffset);
+                    float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].image_index, uvoffset);
                     if(realDepth <= 1.0) 
                         shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
                 }

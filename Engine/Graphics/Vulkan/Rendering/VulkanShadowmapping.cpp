@@ -7,8 +7,19 @@
 #include <Scene/Scene.hpp>
 #include "VulkanRenderer.hpp"
 #include "VulkanRenderingGenerics.hpp"
+#include "Scene/SceneEnvironment.hpp"
 
 using namespace VSGE;
+
+
+#define SHADOWMAP_BUFFER_ELEMENT_SIZE		768
+#define SHADOWPROCESS_BUFFER_ELEMENT_SIZE	(MAX_SHADOW_CASCADES * sizeof(Mat4) + 48) // 688 
+
+
+#define MAX_SHADOWCASTERS					64
+#define SHADOWPROCESS_CASTERS_SIZE			(SHADOWPROCESS_BUFFER_ELEMENT_SIZE * MAX_SHADOWCASTERS)
+#define SHADOWPROCESS_BUFFER_SIZE			(SHADOWPROCESS_CASTERS_SIZE + 4)
+#define SHADOWPROCESS_SHADOWCOUNT_OFFSET	(SHADOWPROCESS_CASTERS_SIZE)
 
 VulkanShadowmapping::VulkanShadowmapping(
 	std::vector<VulkanDescriptorSet*>* vertexDescrSets,
@@ -245,6 +256,11 @@ void VulkanShadowmapping::SetEntitiesToRender(tEntityList* entities) {
 
 void VulkanShadowmapping::AddEntity(Entity* entity) 
 {
+	if (_added_casters == MAX_SHADOWCASTERS) {
+		// TODO: log reached limit
+		return;
+	}
+
 	Scene* scene = VulkanRenderer::Get()->GetScene();
 	LightsourceComponent* light = entity->GetComponent<LightsourceComponent>();
 	LightType caster_type = light->GetLightType();
@@ -287,8 +303,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity)
 	_shadowprocess_buffer->WriteData(_added_casters * SHADOWPROCESS_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * image_layers_count, cascades_projections);
 	SAFE_RELEASE_ARR(cascades_projections);
 
-	uint32 offset_casters = _added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * 10;
-	uint32 offset = _added_casters * SHADOWPROCESS_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * 10;
+	uint32 offset_casters = _added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * MAX_SHADOW_CASCADES;
+	uint32 offset = _added_casters * SHADOWPROCESS_BUFFER_ELEMENT_SIZE + sizeof(Mat4) * MAX_SHADOW_CASCADES;
 
 	float bias = light->GetShadowsBias();
 	int size = MAP_SIZE;

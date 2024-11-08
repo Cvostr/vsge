@@ -26,26 +26,15 @@ namespace VSGE {
 
 	public:
 
-		VulkanRenderPass() : 
-			mHasDepthAttachment(false),
-			_renderPass(VK_NULL_HANDLE),
-			mColorAttachmentsCount(0),
-			mClearValuesCount(0),
-			mClearValues(nullptr)
-		{
-			ClearExtent.width = 0;
-			ClearExtent.height = 0;
-		}
-
-		~VulkanRenderPass() {
-			Destroy();
-		}
+		VulkanRenderPass();
+		VulkanRenderPass(const VulkanRenderPass&) = delete;
+		~VulkanRenderPass();
 
 		/// <summary>
 		/// Get vulkan descr to created render pass
 		/// </summary>
 		/// <returns></returns>
-		VkRenderPass GetRenderPass() { return _renderPass; }
+		VkRenderPass GetRenderPass();
 		/// <summary>
 		/// Get count of color attachments on this renderpass
 		/// </summary>

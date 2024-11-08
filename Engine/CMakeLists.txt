@@ -40,6 +40,7 @@ set(SRC_FILES
 				Graphics/FontManager.cpp
 				Graphics/Vulkan/VulkanBuffer.cpp
 				Graphics/Vulkan/VulkanCommandBuffer.cpp
+				Graphics/Vulkan/VulkanDescriptorPool.cpp
 				Graphics/Vulkan/VulkanDescriptors.cpp
 				Graphics/Vulkan/VulkanQueue.cpp
 				Graphics/Vulkan/VulkanDevice.cpp

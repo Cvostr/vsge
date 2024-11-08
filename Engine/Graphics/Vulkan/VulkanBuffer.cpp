@@ -17,6 +17,18 @@ VkBufferUsageFlags GetBufferTypeVK(GpuBufferType type) {
 	return 0;
 }
 
+VulkanBuffer::VulkanBuffer(GpuBufferType type) : GpuBuffer(type)
+{
+}
+
+VulkanBuffer::~VulkanBuffer() {
+	Destroy();
+}
+
+VkBuffer VulkanBuffer::GetBuffer()
+{ 
+	return _buffer.Buffer;
+}
 
 void VulkanBuffer::Create(uint32 size, BufferDeviceLocation location) 
 {

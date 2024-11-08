@@ -81,6 +81,6 @@ int SceneEnvironmentSettings::GetCascadeByDistance(Vec3 pos, const Mat4& cam_vie
 
 void SceneEnvironmentSettings::SetShadowCascadesCount(uint32 cascades)
 {
-	if(cascades > 0 && cascades < 10)
+	if(cascades > 0 && cascades < MAX_SHADOW_CASCADES)
 		_shadow_cascades_count = cascades;
 }

@@ -11,24 +11,15 @@ namespace VSGE {
 	public:
 
 		VulkanMesh();
+		VulkanMesh(const VulkanMesh&) = delete;
 
 		virtual ~VulkanMesh();
 
-		VulkanBuffer** GetVertexBuffers() {
-			return vertexBuffers.data();
-		}
+		VulkanBuffer** GetVertexBuffers();
+		VulkanBuffer* GetIndexBuffer();
 
-		VulkanBuffer* GetIndexBuffer() {
-			return indexBuffer;
-		}
-
-		VkBuffer GetVertexBufferVk(uint32 i = 0) {
-			return vertexBuffers[i]->GetBuffer();
-		}
-
-		VkBuffer GetIndexBufferVk() {
-			return indexBuffer->GetBuffer();
-		}
+		VkBuffer GetVertexBufferVk(uint32 i = 0);
+		VkBuffer GetIndexBufferVk();
 
 		bool Create();
 		void Destroy();

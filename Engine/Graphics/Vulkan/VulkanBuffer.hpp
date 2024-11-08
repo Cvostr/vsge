@@ -11,13 +11,11 @@ namespace VSGE {
 		VmaVkBuffer _buffer;
 	public:
 
-		VkBuffer GetBuffer() { return _buffer.Buffer; }
+		VkBuffer GetBuffer();
 
-		VulkanBuffer(GpuBufferType type) : GpuBuffer(type) 
-		{
-		}
-
+		VulkanBuffer(GpuBufferType type);
 		VulkanBuffer(const VulkanBuffer&) = delete;
+		~VulkanBuffer();
 
 		void Create(uint32 size, BufferDeviceLocation location = LOCATION_CPU_GPU);
 
@@ -26,9 +24,5 @@ namespace VSGE {
 		void Destroy();
 
 		void WriteData(uint32 offset, uint32 size, void* data);
-
-		~VulkanBuffer() {
-			Destroy();
-		}
 	};
 }

@@ -48,12 +48,12 @@ namespace VSGE {
         /// Get vulkan image
         /// </summary>
         /// <returns></returns>
-        VkImage GetImage() { return _image.Image; }
+        VkImage GetImage();
         /// <summary>
         /// Get vulkan image view
         /// </summary>
         /// <returns></returns>
-        VkImageView GetImageView() { return _imageView; }
+        VkImageView GetImageView();
         /// <summary>
         /// Destroy texture and release memory
         /// </summary>

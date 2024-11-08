@@ -3,6 +3,10 @@
 
 using namespace VSGE;
 
+VulkanShader::~VulkanShader() {
+    Destroy();
+}
+
 VkShaderStageFlagBits VSGE::GetShaderStageVK(ShaderStagesBits stage) {
     switch (stage) {
     case SHADER_STAGE_VERTEX:

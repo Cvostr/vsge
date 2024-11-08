@@ -19,17 +19,11 @@ namespace VSGE {
 		bool _create_free;
 	public:
 
-		VulkanDescriptorPool() : 
-			mDescriptorSetsCount(0),
-			mDescriptorPool(VK_NULL_HANDLE),
-			_create_free(false)
-		{}
+		VulkanDescriptorPool();
+		VulkanDescriptorPool(const VulkanDescriptorPool&) = delete;
+		~VulkanDescriptorPool();
 
-		~VulkanDescriptorPool() {
-			Destroy();
-		}
-
-		VkDescriptorPool GetDescriptorPool() { return mDescriptorPool; }
+		VkDescriptorPool GetDescriptorPool();
 
 		bool Create();
 		void Destroy();
@@ -55,22 +49,11 @@ namespace VSGE {
 		VulkanDescriptorPool* mDescriptorPool;
 	public:
 
-		VulkanDescriptorSet(VulkanDescriptorPool* pool) :
-			mDescriptorPool(pool),
-			mDescriptorSet(VK_NULL_HANDLE),
-			_layout(VK_NULL_HANDLE)
-		{
-			pool->IncDescriptorSet();
-		}
+		VulkanDescriptorSet(VulkanDescriptorPool* pool);
 
-		VulkanDescriptorSet() : 
-			mDescriptorSet(VK_NULL_HANDLE),
-			_layout(VK_NULL_HANDLE),
-			mDescriptorPool(nullptr) {}
+		VulkanDescriptorSet();
 
-		~VulkanDescriptorSet() {
-			Destroy();
-		}
+		~VulkanDescriptorSet();
 
 		void SetDescriptorPool(VulkanDescriptorPool* pool);
 
