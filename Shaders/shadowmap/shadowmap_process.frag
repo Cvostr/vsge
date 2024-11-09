@@ -50,7 +50,8 @@ int GetCascadeByDistance(float dist){
     return -1;
 }
 
-int GetCascade(vec3 position){
+int GetCascade(vec3 position)
+{
     float dist = (cam_view_projection * vec4(position, 1)).z;
     return GetCascadeByDistance(dist);
 }
@@ -59,81 +60,117 @@ float GetShadowmapSample(uint shadowmap, uint cascade, vec2 uv){
     return texture(shadowmaps[shadowmap], vec3(uv, cascade)).r; 
 }
 
-float GetSpotShadowmapSample(uint shadowmap, vec2 uv){
+float GetSpotShadowmapSample(uint shadowmap, vec2 uv)
+{
     return texture(shadowmaps_spot[shadowmap], uv).r; 
 }
 
-void main(){
+float calculateDirectionalShadow(vec3 FragPos, uint caster_i)
+{
+    uint cascade = GetCascade(FragPos);
+    if (cascade < 0)
+        return 0;
+            
+    vec4 objPosLightSpace = casters[caster_i].projections[cascade] * vec4(FragPos, 1);
+    vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
+    float realDepth = shadowProjection.z;
+    vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
+    float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
+
+    float shadow = 0;
+    for (int x = 0; x < casters[caster_i].PcfPassNum; x ++)
+    {
+        for (int y = 0; y < casters[caster_i].PcfPassNum; y ++)
+        {
+            vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
+            float shadowmap_depth = GetShadowmapSample(casters[caster_i].image_index, cascade, uvoffset);
+            if (realDepth <= 1.0) 
+                shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
+        }
+    }
+
+    return shadow;
+}
+
+float calculatePointShadow(vec3 FragPos, uint caster_i)
+{
+    float shadow = 0;
+    vec3 dir = FragPos - casters[caster_i].pos;
+    uint texture_index = casters[caster_i].image_index;
+    float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r * casters[caster_i].range;
+    float real_depth = length(dir);
+    
+    if (shadowmap_depth < casters[caster_i].range)
+    {
+        shadow = (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
+    }
+
+    return shadow;
+}
+
+float calculateSpotShadow(vec3 FragPos, uint caster_i)
+{
+    vec4 objPosLightSpace = casters[caster_i].projections[0] * vec4(FragPos, 1);
+    vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
+    float realDepth = shadowProjection.z;
+    vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
+    float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
+    float shadow = 0;
+    for (int x = 0; x < casters[caster_i].PcfPassNum; x ++)
+    {
+        for (int y = 0; y < casters[caster_i].PcfPassNum; y ++)
+        {
+            vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
+            float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].image_index, uvoffset);
+            if (realDepth <= 1.0) 
+                shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
+        }
+    }
+
+    return shadow;
+}
+
+void main()
+{
     vec4 _pos = texture(gpos, UVCoord);
     vec3 FragPos = _pos.xyz;
-    if(_pos.a == 1){
+    if(_pos.a == 1)
+    {
         discard;
     }
     
     float dist = length(FragPos - cam_position);
     float result = 0;
     
-    for(uint caster_i = 0; caster_i < casters_count; caster_i ++){
-        if(casters[caster_i].caster_type == 0){
-            uint cascade = GetCascade(FragPos);
-            if(cascade < 0)
-                continue;
-            
-            vec4 objPosLightSpace = casters[caster_i].projections[cascade] * vec4(FragPos, 1);
-            vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
-            float realDepth = shadowProjection.z;
-            vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
-            float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
+    for (uint caster_i = 0; caster_i < casters_count; caster_i ++)
+    {
+        if (casters[caster_i].caster_type == 0)
+        {
+            float shadow = calculateDirectionalShadow(FragPos, caster_i);
 
-            float shadow = 0;
-            for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
-                for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
-                    vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
-                    float shadowmap_depth = GetShadowmapSample(casters[caster_i].image_index, cascade, uvoffset);
-                    if(realDepth <= 1.0) 
-                        shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
-                }
-            }
-
-            if(result < 0.01)
+            if (result < 0.01)
                 result += shadow;
-            else if(shadow > 0.01) {
+            else if (shadow > 0.01) {
                 result = casters[caster_i].ShadowStrength;
             }
         }
-        if(casters[caster_i].caster_type == 1){
-            vec3 dir = FragPos - casters[caster_i].pos;
-            uint texture_index = casters[caster_i].image_index;
-            float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r * casters[caster_i].range;
-            float real_depth = length(dir);
-            if(shadowmap_depth < casters[caster_i].range){
-                float shadow = (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
-                if(result < 0.01)
-                    result += shadow;
-                else if(shadow > 0.01) {
-                    result = casters[caster_i].ShadowStrength;
-                }
+        if (casters[caster_i].caster_type == 1)
+        {
+            float shadow = calculatePointShadow(FragPos, caster_i);
+            
+            if (result < 0.01)
+                result += shadow;
+            else if (shadow > 0.01) {
+                result = casters[caster_i].ShadowStrength;
             }
         }
-        if(casters[caster_i].caster_type == 2){
-            vec4 objPosLightSpace = casters[caster_i].projections[0] * vec4(FragPos, 1);
-            vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
-            float realDepth = shadowProjection.z;
-            vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
-            float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
-            float shadow = 0;
-            for(int x = 0; x < casters[caster_i].PcfPassNum; x ++){
-                for(int y = 0; y < casters[caster_i].PcfPassNum; y ++){
-                    vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
-                    float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].image_index, uvoffset);
-                    if(realDepth <= 1.0) 
-                        shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
-                }
-            }
+        if (casters[caster_i].caster_type == 2)
+        {
+            float shadow = calculateSpotShadow(FragPos, caster_i);
 
-            if(result < 0.01)
+            if (result < 0.01)
                 result += shadow;
-            else if(shadow > 0.01) {
+            else if (shadow > 0.01) {
                 result = casters[caster_i].ShadowStrength;
             }
         }

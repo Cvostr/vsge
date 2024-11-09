@@ -4,6 +4,8 @@
 
 using namespace VSGE;
 
+#define LIGHTSOURCE_RECORD_SIZE 64
+
 LightsBuffer::LightsBuffer() :
 	_lights_buffer(nullptr),
 	_cpu_buffer(nullptr)
@@ -15,7 +17,7 @@ LightsBuffer::~LightsBuffer() {
 }
 
 uint32 LightsBuffer::GetNeededBufferSize() {
-	return 16 + _max_lights_count * 64;
+	return 16 + _max_lights_count * LIGHTSOURCE_RECORD_SIZE;
 }
 
 void LightsBuffer::Create() {
@@ -61,14 +63,19 @@ void LightsBuffer::SetLight(uint32 light_index, LightsourceComponent* light) {
 		light->GetColor());
 }
 
-void LightsBuffer::SetLight(uint32 light_index, int type, float intensity, float range, float spot_angle, const Vec3& pos, const Vec3& dir, const Color& color) {
-	Memcpy(_cpu_buffer + 16 + light_index * 64, &type, sizeof(int));
-	Memcpy(_cpu_buffer + 16 + light_index * 64 + 4, &intensity, sizeof(float));
-	Memcpy(_cpu_buffer + 16 + light_index * 64 + 8, &range, sizeof(float));
-	Memcpy(_cpu_buffer + 16 + light_index * 64 + 12, &spot_angle, sizeof(float));
-	Memcpy(_cpu_buffer + 16 + light_index * 64 + 16, &pos, sizeof(Vec3));
-	Memcpy(_cpu_buffer + 16 + light_index * 64 + 32, &dir, sizeof(Vec3));
-	Memcpy(_cpu_buffer + 16 + light_index * 64 + 48, &color, sizeof(Color));
+void LightsBuffer::SetLight(uint32 light_index, int type, float intensity, float range, float spot_angle, const Vec3& pos, const Vec3& dir, const Color& color) 
+{
+	// Calculate base address offset of light
+	byte* lightAddress = _cpu_buffer + 16 + light_index * LIGHTSOURCE_RECORD_SIZE;
+
+	// Write params
+	Memcpy(lightAddress, &type, sizeof(int));
+	Memcpy(lightAddress + 4, &intensity, sizeof(float));
+	Memcpy(lightAddress + 8, &range, sizeof(float));
+	Memcpy(lightAddress + 12, &spot_angle, sizeof(float));
+	Memcpy(lightAddress + 16, &pos, sizeof(Vec3));
+	Memcpy(lightAddress + 32, &dir, sizeof(Vec3));
+	Memcpy(lightAddress + 48, &color, sizeof(Color));
 }
 
 GpuBuffer* LightsBuffer::GetLightsGpuBuffer() {
