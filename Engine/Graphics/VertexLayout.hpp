@@ -28,8 +28,6 @@ namespace VSGE {
 		VertexLayoutFormat format;
 	};
 
-
-
 	struct VertexLayout {
 		uint32 vertexBindingsCount;
 		std::vector<uint32> vertexSizes;

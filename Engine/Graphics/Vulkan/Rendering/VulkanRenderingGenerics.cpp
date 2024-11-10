@@ -159,6 +159,17 @@ void VulkanRenderingGenerics::LoadShaders()
 	ui_shader->AddShaderFromFile("ui.vert", SHADER_STAGE_VERTEX);
 	ui_shader->AddShaderFromFile("ui.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(ui_shader, "ui");
+
+	VulkanShader* shadowmapShader = new VulkanShader;
+	shadowmapShader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
+	shadowmapShader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
+	ShaderCache::Get()->AddShader(shadowmapShader, "shadowmap");
+
+	VulkanShader* shadowmapPointShader = new VulkanShader;
+	shadowmapPointShader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
+	shadowmapPointShader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
+	shadowmapPointShader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
+	ShaderCache::Get()->AddShader(shadowmapPointShader, "shadowmap_point");
 }
 
 VulkanTexture* VulkanRenderingGenerics::GetBlackTexture() {

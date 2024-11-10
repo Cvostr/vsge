@@ -21,6 +21,28 @@ using namespace VSGE;
 #define SHADOWPROCESS_BUFFER_SIZE			(SHADOWPROCESS_CASTERS_SIZE + 4)
 #define SHADOWPROCESS_SHADOWCOUNT_OFFSET	(SHADOWPROCESS_CASTERS_SIZE)
 
+VertexLayout shadowmap_vertex_layout = {};
+VertexLayout shadowmap_terrain_vertex_layout = {};
+
+void VSGE::InitShadowmappingPipelines()
+{
+	shadowmap_vertex_layout.AddBinding(sizeof(Vertex));
+	shadowmap_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+
+	shadowmap_vertex_layout.AddBinding(sizeof(VertexSkinningData));
+	shadowmap_vertex_layout.AddItem(5, offsetof(VertexSkinningData, ids), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
+	shadowmap_vertex_layout.AddItem(6, offsetof(VertexSkinningData, ids[4]), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
+	shadowmap_vertex_layout.AddItem(7, offsetof(VertexSkinningData, ids[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
+	shadowmap_vertex_layout.AddItem(8, offsetof(VertexSkinningData, weights), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
+	shadowmap_vertex_layout.AddItem(9, offsetof(VertexSkinningData, weights[4]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
+	shadowmap_vertex_layout.AddItem(10, offsetof(VertexSkinningData, weights[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
+	shadowmap_vertex_layout.AddItem(11, offsetof(VertexSkinningData, bones_num), VertexLayoutFormat::VL_FORMAT_R32_UINT, 1);
+
+	// For terrain rendering
+	shadowmap_terrain_vertex_layout.AddBinding(sizeof(Vertex));
+	shadowmap_terrain_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+}
+
 VulkanShadowmapping::VulkanShadowmapping(
 	std::vector<VulkanDescriptorSet*>* vertexDescrSets,
 	VulkanDescriptorSet* animsDescrSet,
@@ -39,27 +61,11 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_outputHeight = 720;
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
-	VulkanRenderer* renderer = VulkanRenderer::Get();
 
 	_shadowmap_render_pass = new VulkanRenderPass;
 	_shadowmap_render_pass->SetClearSize(MAP_SIZE, MAP_SIZE);
 	_shadowmap_render_pass->PushDepthAttachment(FORMAT_DEPTH_32);
 	_shadowmap_render_pass->Create();
-
-	shadowmap_vertex_layout.AddBinding(sizeof(Vertex));
-	shadowmap_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-
-	shadowmap_vertex_layout.AddBinding(sizeof(VertexSkinningData));
-	shadowmap_vertex_layout.AddItem(5, offsetof(VertexSkinningData, ids), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
-	shadowmap_vertex_layout.AddItem(6, offsetof(VertexSkinningData, ids[4]), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
-	shadowmap_vertex_layout.AddItem(7, offsetof(VertexSkinningData, ids[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SINT, 1);
-	shadowmap_vertex_layout.AddItem(8, offsetof(VertexSkinningData, weights), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
-	shadowmap_vertex_layout.AddItem(9, offsetof(VertexSkinningData, weights[4]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
-	shadowmap_vertex_layout.AddItem(10, offsetof(VertexSkinningData, weights[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
-	shadowmap_vertex_layout.AddItem(11, offsetof(VertexSkinningData, bones_num), VertexLayoutFormat::VL_FORMAT_R32_UINT, 1);
-
-	shadowmap_terrain_vertex_layout.AddBinding(sizeof(Vertex));
-	shadowmap_terrain_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
 	_shadowcasters_buffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 	_shadowcasters_buffer->Create(65536);
@@ -80,6 +86,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowcaster_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_ALL_GRAPHICS);
 	_shadowcaster_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_ALL_GRAPHICS);
 
+	// For shadow rendering
 	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowcasters_descPool);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -103,19 +110,9 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
-	
-	_shadowmap_shader = new VulkanShader;
-	_shadowmap_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
-	_shadowmap_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
-
 	_shadowmap_terrain_shader = new VulkanShader;
 	_shadowmap_terrain_shader->AddShaderFromFile("shadowmap_terrain.vert", SHADER_STAGE_VERTEX);
 	_shadowmap_terrain_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
-
-	_shadowmap_point_shader = new VulkanShader;
-	_shadowmap_point_shader->AddShaderFromFile("shadowmap.vert", SHADER_STAGE_VERTEX);
-	_shadowmap_point_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
-	_shadowmap_point_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
 
 	_shadowmap_terrain_point_shader = new VulkanShader;
 	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap_terrain.vert", SHADER_STAGE_VERTEX);
@@ -136,7 +133,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_pipeline->SetDynamicCullMode(false);
 	_shadowmap_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmap_pipeline->Create(
-		_shadowmap_shader, 
+		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap"),
 		_shadowmap_render_pass,
 		shadowmap_vertex_layout,
 		_shadowmap_layout);
@@ -146,7 +143,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_point_pipeline->SetDynamicCullMode(false);
 	_shadowmap_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
 	_shadowmap_point_pipeline->Create(
-		_shadowmap_point_shader,
+		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_point"),
 		_shadowmap_render_pass,
 		shadowmap_vertex_layout,
 		_shadowmap_layout);
@@ -220,7 +217,10 @@ VulkanShadowmapping::VulkanShadowmapping(
 		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderingGenerics::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 	}
 }
-VulkanShadowmapping::~VulkanShadowmapping() {
+VulkanShadowmapping::~VulkanShadowmapping() 
+{
+	SAFE_RELEASE(_shadowmap_sampler);
+
 	SAFE_RELEASE(_shadowcasters_buffer);
 	SAFE_RELEASE(_shadowprocess_buffer);
 	SAFE_RELEASE(_cascadeinfo_buffer);
@@ -237,7 +237,8 @@ VulkanShadowmapping::~VulkanShadowmapping() {
 	_casters.clear();
 }
 
-uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 caster_type) {
+uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 caster_type) 
+{
 	uint32 pcaster_index = 0;
 	for (uint32 i = 0; i < caster_index; i++) {
 		if (_casters[i]->_lightsource->GetLightType() == caster_type)
@@ -346,12 +347,25 @@ VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
 	return (VulkanTexture*)_shadowprocess_framebuffer->GetColorAttachments()[0];
 }
 
-void VulkanShadowmapping::ResetCasters() {
+void VulkanShadowmapping::ResetCasters() 
+{
 	_added_casters = 0;
 }
 
-void VulkanShadowmapping::ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer) {
-	for (uint32 caster_i = 0; caster_i < _added_casters; caster_i++) {
+uint32 VulkanShadowmapping::GetAddedCastersNum() const
+{
+	return _added_casters;
+}
+
+VulkanDescriptorSet* VulkanShadowmapping::GetShadowRendererDescriptorSet()
+{
+	return _shadowrenderer_descrSet;
+}
+
+void VulkanShadowmapping::ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer) 
+{
+	for (uint32 caster_i = 0; caster_i < _added_casters; caster_i++) 
+	{
 		ProcessShadowCaster(caster_i, cmdbuffer);
 	}
 }
@@ -462,7 +476,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 		if (mesh) {
 			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };
-			uint32 anim_offset = _writtenBones * 64;
+			uint32 anim_offset = _writtenBones * sizeof(Mat4);
 			_writtenBones += (uint32)mesh->GetBones().size();
 
 			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;

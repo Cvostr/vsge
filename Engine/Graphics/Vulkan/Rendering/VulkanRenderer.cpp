@@ -58,6 +58,7 @@ void VulkanRenderer::SetupRenderer()
 	_lights_buffer->Create();
 
 	VulkanRenderingGenerics::Get()->Init();
+	InitShadowmappingPipelines();
 
 	//----------------------Descriptors--------------------------
 	mMaterialsDescriptorPool = new VulkanDescriptorPool;

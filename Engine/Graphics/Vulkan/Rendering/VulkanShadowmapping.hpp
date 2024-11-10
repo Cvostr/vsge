@@ -31,6 +31,8 @@ namespace VSGE {
 		}
 	};
 
+	void InitShadowmappingPipelines();
+
 	class VulkanShadowmapping {
 	private:
 
@@ -38,11 +40,7 @@ namespace VSGE {
 		VulkanRenderPass* _shadowprocessRenderPass;
 
 		//-----------------Shadow Pipeline------------
-		VertexLayout shadowmap_vertex_layout;
-		VertexLayout shadowmap_terrain_vertex_layout;
 
-		VulkanShader* _shadowmap_shader;
-		VulkanShader* _shadowmap_point_shader;
 		VulkanShader* _shadowmap_terrain_shader;
 		VulkanShader* _shadowmap_terrain_point_shader;
 
@@ -107,11 +105,14 @@ namespace VSGE {
 
 		void AddEntity(Entity* entity);
 		void ResetCasters();
+		uint32 GetAddedCastersNum() const;
 		
 		void ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf);
 		void ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer);
 		
 		void UpdateShadowrenderingDescriptors();
 		void RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf);
+
+		VulkanDescriptorSet* GetShadowRendererDescriptorSet();
 	};
 }

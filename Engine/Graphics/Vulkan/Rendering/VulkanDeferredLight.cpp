@@ -125,7 +125,8 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer)
 	UnsetIBL();
 }
 
-void VulkanDeferredLight::CreatePipeline() {
+void VulkanDeferredLight::CreatePipeline() 
+{
 	_deferred_pipeline_layout = new VulkanPipelineLayout;
 	_deferred_pipeline_layout->PushDescriptorSet(_deferred_descriptor);
 	_deferred_pipeline_layout->Create();
