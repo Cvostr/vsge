@@ -95,7 +95,6 @@ void VulkanIBL::Destroy() {
 
 void VulkanIBL::RecordCmdBufs(bool render)
 {
-
 	_env_cmdbuf->Begin();
 	if (render)
 		_envmap->RecordCmdbuffer(_env_cmdbuf);
@@ -107,6 +106,11 @@ void VulkanIBL::RecordCmdBufs(bool render)
 		_spmap->RecordCommandBuffer(_maps_cmdbuf);
 	}
 	_maps_cmdbuf->End();
+}
+
+void VulkanIBL::SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane)
+{
+	_envmap->SetEnvmapCameras(position, nearPlane, farPlane);
 }
 
 void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {

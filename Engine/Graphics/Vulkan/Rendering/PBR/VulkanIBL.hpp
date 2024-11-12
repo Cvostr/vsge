@@ -58,5 +58,6 @@ namespace VSGE {
 		VulkanTexture* GetIrradianceMap();
 		VulkanTexture* GetSpecularMap();
 		void SetScene(Scene* scene);
+		void SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane);
 	};
 }

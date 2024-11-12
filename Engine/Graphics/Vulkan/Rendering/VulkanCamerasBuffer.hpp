@@ -5,7 +5,6 @@
 
 #define MAX_CAMERAS 100
 #define CAMERA_ELEM_SIZE 256
-#define ENVMAP_CAMS_POS MAX_CAMERAS
 
 namespace VSGE {
 	class VulkanCamerasBuffer {
@@ -23,7 +22,7 @@ namespace VSGE {
 
 		void Create();
 		void Destroy();
-		void SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane);
+		void SetEnvmapCameras(uint32 firstCameraIndex, const Vec3& position, float nearPlane, float farPlane);
 		void SetCamera(uint32 camera_index, Camera* camera);
 		void SetAllCamerasNull();
 		uint32 GetCameraId(Camera* camera);

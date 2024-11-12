@@ -18,28 +18,36 @@ VulkanEnvMap::~VulkanEnvMap() {
 		SAFE_RELEASE(_sides[i]._gbuffer);
 		SAFE_RELEASE(_sides[i]._light);
 	}
+
+	SAFE_RELEASE(camerasBuffer)
 }
 
-void VulkanEnvMap::Create() {
+void VulkanEnvMap::Create() 
+{
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
+	camerasBuffer = new VulkanCamerasBuffer;
+
 	for (uint32 i = 0; i < 6; i++) {
+
+		camerasBuffer->SetCamera(i, &cameras[i]);
+
 		_sides[i]._gbuffer = new VulkanGBufferRenderer;
 		_sides[i]._light = new VulkanDeferredLight;
 
-		_sides[i]._gbuffer->SetCameraIndex(ENVMAP_CAMS_POS + i);
+		_sides[i]._gbuffer->SetCameraIndex(i);
 		_sides[i]._gbuffer->CreateFramebuffer();
-		_sides[i]._gbuffer->CreateDescriptorSets(VulkanRenderer::Get()->GetCamerasBuffer());
+		_sides[i]._gbuffer->CreateDescriptorSets(camerasBuffer);
 		_sides[i]._gbuffer->SetBuffers(_transforms_buffer, _animations_buffer, _particles_buffer);
 		_sides[i]._gbuffer->SetEntitiesToRender(*_entities_to_render, *_particles_to_render);
 		_sides[i]._gbuffer->SetScene(VulkanRenderer::Get()->GetScene());
 		_sides[i]._gbuffer->Resize(_cube_size, _cube_size);
 		_sides[i]._gbuffer->EnableReverseCull();
 
-		_sides[i]._light->SetCameraIndex(ENVMAP_CAMS_POS + i);
+		_sides[i]._light->SetCameraIndex(i);
 		_sides[i]._light->SetEnvmap(true);
 		_sides[i]._light->CreateFramebuffer();
-		_sides[i]._light->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), VulkanRenderer::Get()->GetCamerasBuffer());
+		_sides[i]._light->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), camerasBuffer);
 		_sides[i]._light->CreatePipeline();
 		_sides[i]._light->SetLightsBuffer(_lights_buffer);
 		_sides[i]._light->SetGBuffer(_sides[i]._gbuffer);
@@ -51,7 +59,8 @@ void VulkanEnvMap::Create() {
 	_env_cube_texture->Create(_cube_size, _cube_size, _sides[0]._light->GetOutputFormat(), 6, 1);
 }
 
-void VulkanEnvMap::Resize(uint32 new_size) {
+void VulkanEnvMap::Resize(uint32 new_size) 
+{
 	_cube_size = new_size;
 
 	for (uint32 i = 0; i < 6; i++) {
@@ -173,4 +182,10 @@ void VulkanEnvMap::SetScene(Scene* scene) {
 	for (uint32 i = 0; i < 6; i++) {
 		_sides[i]._gbuffer->SetScene(scene);
 	}
+}
+
+void VulkanEnvMap::SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane)
+{
+	camerasBuffer->SetEnvmapCameras(0, position, nearPlane, farPlane);
+	camerasBuffer->UpdateGpuBuffer();
 }

@@ -11,24 +11,17 @@ VulkanCamerasBuffer::~VulkanCamerasBuffer() {
 }
 
 uint32 VulkanCamerasBuffer::GetNeededBufferSize() {
-	return (MAX_CAMERAS + 6) * CAMERA_ELEM_SIZE;
+	return (MAX_CAMERAS) * CAMERA_ELEM_SIZE;
 }
 
-void VulkanCamerasBuffer::Create() {
+void VulkanCamerasBuffer::Create() 
+{
 	_cameras_cpu_buffer = new byte[GetNeededBufferSize()];
 
 	_cameras_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	_cameras_buffer->Create(GetNeededBufferSize());
 
-	_cameras = new Camera* [MAX_CAMERAS + 6];
-
-	//Fill last 6 cameras with empty cameras
-	for (uint32 i = ENVMAP_CAMS_POS; i < ENVMAP_CAMS_POS + 6; i++) {
-		_cameras[i] = new Camera;
-		_cameras[i]->SetFOV(90);
-		_cameras[i]->SetAspectRatio(1.f);
-		_cameras[i]->SetNearPlane(0.1f);
-	}
+	_cameras = new Camera* [MAX_CAMERAS];
 }
 void VulkanCamerasBuffer::Destroy() {
 	SAFE_RELEASE(_cameras_buffer)
@@ -40,19 +33,20 @@ void VulkanCamerasBuffer::UpdateGpuBuffer() {
 	_cameras_buffer->WriteData(0, GetNeededBufferSize(), _cameras_cpu_buffer);
 }
 
-void VulkanCamerasBuffer::SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane) {
+void VulkanCamerasBuffer::SetEnvmapCameras(uint32 firstCameraIndex, const Vec3& position, float nearPlane, float farPlane) 
+{
 	Mat4 projection = GetPerspectiveRH_ZeroOne(90.f, 1, nearPlane, farPlane);
 
 	Vec3 fronts[6] = { Vec3(1, 0, 0), Vec3(-1, 0, 0), Vec3(0, 1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1) };
 	Vec3 ups[6] = { Vec3(0, -1, 0), Vec3(0, -1, 0), Vec3(0, 0, 1), Vec3(0, 0, -1), Vec3(0, -1, 0), Vec3(0, -1, 0) };
 
-	for (uint32 i = ENVMAP_CAMS_POS; i < ENVMAP_CAMS_POS + 6; i++) {
+	for (uint32 i = firstCameraIndex; i < firstCameraIndex + 6; i++) {
 		_cameras[i]->SetPosition(position);
 		_cameras[i]->SetNearPlane(nearPlane);
 		_cameras[i]->SetFarPlane(farPlane);
 
-		_cameras[i]->SetFront(fronts[i - ENVMAP_CAMS_POS]);
-		_cameras[i]->SetUp(ups[i - ENVMAP_CAMS_POS]);
+		_cameras[i]->SetFront(fronts[i - firstCameraIndex]);
+		_cameras[i]->SetUp(ups[i - firstCameraIndex]);
 		_cameras[i]->UpdateMatrices();
 
 		Mat4 projection = _cameras[i]->GetProjectionMatrix();
@@ -91,11 +85,14 @@ void VulkanCamerasBuffer::SetCamera(uint32 camera_index, Camera* camera) {
 		camera->GetViewMatrix(), 
 		camera->GetPosition());
 }
-void VulkanCamerasBuffer::SetAllCamerasNull() {
+
+void VulkanCamerasBuffer::SetAllCamerasNull() 
+{
 	for (uint32 i = 0; i < MAX_CAMERAS; i++) {
 		_cameras[i] = 0;
 	}
 }
+
 uint32 VulkanCamerasBuffer::GetCameraId(Camera* camera) {
 	for (uint32 i = 0; i < MAX_CAMERAS; i++) {
 		if (_cameras[i] == camera)
@@ -103,12 +100,15 @@ uint32 VulkanCamerasBuffer::GetCameraId(Camera* camera) {
 	}
 	return 0xFFFFFFFF;
 }
+
 Camera* VulkanCamerasBuffer::GetCameraByIndex(uint32 index) {
 	return _cameras[index];
 }
+
 uint32 VulkanCamerasBuffer::GetCamerasCount() {
 	return MAX_CAMERAS;
 }
+
 VulkanBuffer* VulkanCamerasBuffer::GetCamerasBuffer() {
 	return _cameras_buffer;
 }

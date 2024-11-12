@@ -23,6 +23,7 @@ namespace VSGE {
 	private:
 		VulkanTexture* _env_cube_texture;
 		EnvMapSide _sides[6];
+		Camera cameras[6];
 
 		tEntityList* _entities_to_render;
 		tEntityList* _particles_to_render;
@@ -30,6 +31,7 @@ namespace VSGE {
 		VulkanBuffer* _animations_buffer;
 		VulkanBuffer* _particles_buffer;
 		VulkanBuffer* _lights_buffer;
+		VulkanCamerasBuffer* camerasBuffer;
 		
 		uint32 _cube_size;
 		uint32 _steps;
@@ -55,5 +57,6 @@ namespace VSGE {
 		void SetScene(Scene* scene);
 		void SetStepsCount(uint32 steps);
 		void SetRenderMode(WorldRenderMode mode);
+		void SetEnvmapCameras(const Vec3& position, float nearPlane, float farPlane);
 	};
 }
