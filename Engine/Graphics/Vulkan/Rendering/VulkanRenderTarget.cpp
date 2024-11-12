@@ -14,15 +14,16 @@ VulkanRenderTarget::~VulkanRenderTarget() {
 	Destroy();
 }
 
-void VulkanRenderTarget::Create() {
+void VulkanRenderTarget::Create() 
+{
 	m_gbufferRenderer = new VulkanGBufferRenderer;
 	m_gbufferRenderer->CreateFramebuffer();
-	m_gbufferRenderer->CreateDescriptorSets();
+	m_gbufferRenderer->CreateDescriptorSets(VulkanRenderer::Get()->GetCamerasBuffer());
 	m_gbufferRenderer->SetCameraIndex(0);
 
 	_deferred_renderer = new VulkanDeferredLight;
 	_deferred_renderer->CreateFramebuffer();
-	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer());
+	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), VulkanRenderer::Get()->GetCamerasBuffer());
 	_deferred_renderer->CreatePipeline();
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 	_deferred_renderer->SetCameraIndex(0);

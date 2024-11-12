@@ -56,9 +56,9 @@ void VulkanDeferredLight::CreateFramebuffer() {
 	_deferred_fb->Create(_deferred_rp);
 }
 
-void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer)
+void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, VulkanCamerasBuffer* camerasBuffer)
 {
-
+	this->camerasBuffer = camerasBuffer;
 	// PRObe info buffer
 	lightProbesInfo = new byte[PROBES_BUFFER_SIZE];
 	lightProbesInfoBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -102,7 +102,7 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer)
 	_deferred_descriptor->Create();
 
 	// Add Cameras buffer
-	_deferred_descriptor->WriteDescriptorBuffer(1, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
+	_deferred_descriptor->WriteDescriptorBuffer(1, camerasBuffer->GetCamerasBuffer());
 	// Add Light buffer
 	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)lightsBuffer->GetLightsGpuBuffer());
 	_deferred_descriptor->WriteDescriptorBuffer(15, lightProbesInfoBuffer);
@@ -166,7 +166,7 @@ void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
 
 void VulkanDeferredLight::UpdateLightProbeBuffer()
 {
-	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
+	Camera* camera = camerasBuffer->GetCameraByIndex(_camera_index);
 
 	uint32 writtenProbes = 0;
 
@@ -264,7 +264,8 @@ void VulkanDeferredLight::SetTexture(uint32 binding, VulkanTexture* texture, Vul
 	_deferred_descriptor->WriteDescriptorImage(binding, texture, sampler);
 }
 
-void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) {
+void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf) 
+{
 	VulkanMesh* mesh = VulkanRenderingGenerics::Get()->GetScreenMesh();
 
 	_deferred_rp->CmdBegin(*cmdbuf, *_deferred_fb);

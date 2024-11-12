@@ -6,6 +6,7 @@
 #include "VulkanShadowmapping.hpp"
 #include "PBR/Vulkan_BRDF_LUT.hpp"
 #include "../../LightsBuffer.hpp"
+#include "VulkanCamerasBuffer.hpp"
 
 namespace VSGE {
 	class VulkanDeferredLight {
@@ -25,6 +26,7 @@ namespace VSGE {
 
 		byte* lightProbesInfo;
 		VulkanBuffer* lightProbesInfoBuffer;
+		VulkanCamerasBuffer* camerasBuffer;
 
 		uint32 _fb_width;
 		uint32 _fb_height;
@@ -40,7 +42,7 @@ namespace VSGE {
 		~VulkanDeferredLight();
 
 		void CreateFramebuffer();
-		void CreateDescriptorSet(LightsBuffer* lightsBuffer);
+		void CreateDescriptorSet(LightsBuffer* lightsBuffer, VulkanCamerasBuffer* camerasBuffer);
 		void CreatePipeline();
 
 		void SetLightsBuffer(VulkanBuffer* lights_buffer);

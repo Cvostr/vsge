@@ -39,6 +39,7 @@ private:
 	VSGE::VulkanBuffer* _transform_buffer;
 	VSGE::VulkanBuffer* _storage_buffer;
 	VSGE::LightsBuffer* _lights_buffer;
+	VSGE::VulkanCamerasBuffer* _cameras_buffer;
 	VSGE::VulkanSampler* _sampler;
 
 	VSGE::VulkanGammaCorrection* _gamma_correction;

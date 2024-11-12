@@ -10,6 +10,8 @@ using namespace VSGE;
 
 VkMaterialsThumbnails* VkMaterialsThumbnails::_this = nullptr;
 
+#define CAMERA_INDEX 0
+
 VkMaterialThumbnail::VkMaterialThumbnail(VulkanSampler* sampler) {
     texture = new VulkanTexture;
     texture->Create(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
@@ -34,7 +36,8 @@ VkMaterialsThumbnails::~VkMaterialsThumbnails() {
     Destroy();
 }
 
-void VkMaterialsThumbnails::Create() {
+void VkMaterialsThumbnails::Create() 
+{
     VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
     _thumb_scene = new Scene;
@@ -49,7 +52,7 @@ void VkMaterialsThumbnails::Create() {
     _transform_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
     _transform_buffer->Create(256);
     Mat4 transform = Mat4(1.f);
-    _transform_buffer->WriteData(0, 64, &transform);
+    _transform_buffer->WriteData(0, sizeof(Mat4), &transform);
 
     _storage_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE); 
     _storage_buffer->Create(256);
@@ -71,25 +74,28 @@ void VkMaterialsThumbnails::Create() {
     _camera->SetFarPlane(1000.f);
     _camera->SetFOV(90.f);
     _camera->UpdateMatrices();
-    VulkanRenderer::Get()->GetCamerasBuffer()->SetCamera(99, _camera);
+
+    _cameras_buffer = new VulkanCamerasBuffer;
+    _cameras_buffer->SetCamera(CAMERA_INDEX, _camera);
+    _cameras_buffer->UpdateGpuBuffer();
 
     _gbuffer = new VulkanGBufferRenderer;
     _gbuffer->CreateFramebuffer();
-    _gbuffer->CreateDescriptorSets();
+    _gbuffer->CreateDescriptorSets(_cameras_buffer);
     _gbuffer->SetEntitiesToRender(_entities_to_render, _particles_to_render);
-    _gbuffer->SetCameraIndex(99);
+    _gbuffer->SetCameraIndex(CAMERA_INDEX);
     _gbuffer->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
     _gbuffer->SetBuffers(_transform_buffer, _storage_buffer, _storage_buffer);
     _gbuffer->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _light = new VulkanDeferredLight;
     _light->CreateFramebuffer();
-    _light->CreateDescriptorSet(_lights_buffer);
+    _light->CreateDescriptorSet(_lights_buffer, _cameras_buffer);
     _light->CreatePipeline();
     _light->SetLightsBuffer((VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
     _light->SetGBuffer(_gbuffer);
     _light->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);
-    _light->SetCameraIndex(99);
+    _light->SetCameraIndex(CAMERA_INDEX);
     _light->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _sampler = new VulkanSampler();
@@ -108,6 +114,7 @@ void VkMaterialsThumbnails::Destroy()
     SAFE_RELEASE(_sampler)
     SAFE_RELEASE(_light)
     SAFE_RELEASE(_gbuffer)
+    SAFE_RELEASE(_cameras_buffer)
     SAFE_RELEASE(_camera)
     SAFE_RELEASE(_lights_buffer)
 }
@@ -157,8 +164,8 @@ VkMaterialThumbnail* VkMaterialsThumbnails::GetPlace(const Guid& id) {
     return _thumbnails[_thumbnails.size() - 1];
 }
 
-void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) {
-    VulkanRenderer::Get()->GetCamerasBuffer()->SetCamera(99, _camera);
+void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf) 
+{
     if (_queued.size() > 0) {
         MaterialComponent* material_component = _thumb_entity->GetComponent<MaterialComponent>();
         material_component->SetMaterialId(_queued[0]);

@@ -526,7 +526,8 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 	_ibl_map->Execute(mEndSemaphore);
 }
 
-void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) {
+void VulkanRenderer::ResizeOutput(uint32 width, uint32 height) 
+{
 	mOutputWidth = width;
 	mOutputHeight = height;
 

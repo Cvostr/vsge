@@ -3,6 +3,7 @@
 #include "../VulkanFramebuffer.hpp"
 #include "../VulkanDescriptors.hpp"
 #include <Scene/Entity.hpp>
+#include "VulkanCamerasBuffer.hpp"
 
 #define MAX_OBJECTS_RENDER 40000
 #define MAX_ANIMATION_MATRICES 20000
@@ -31,6 +32,7 @@ namespace VSGE {
 		VulkanBuffer* _transforms_buffer;
 		VulkanBuffer* _animations_buffer;
 		VulkanBuffer* _particles_buffer;
+		VulkanCamerasBuffer* camerasBuffer;
 
 		uint32 _fb_width;
 		uint32 _fb_height;
@@ -50,7 +52,7 @@ namespace VSGE {
 		~VulkanGBufferRenderer();
 
 		void CreateFramebuffer();
-		void CreateDescriptorSets();
+		void CreateDescriptorSets(VulkanCamerasBuffer* camerasBuffer);
 		void SetCameraIndex(uint32 camera_index);
 		void EnableReverseCull();
 

@@ -58,8 +58,11 @@ void VulkanGBufferRenderer::EnableReverseCull() {
 	_reverseCull = true;
 }
 
-void VulkanGBufferRenderer::CreateDescriptorSets() {
+void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuffer)
+{
 	_objects_descr_pool = new VulkanDescriptorPool;
+
+	this->camerasBuffer = camerasBuffer;
 
 	//Create base vertex descriptors sets
 	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
@@ -82,7 +85,7 @@ void VulkanGBufferRenderer::CreateDescriptorSets() {
 	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
 		VulkanDescriptorSet* set = _vertex_descriptor_sets[desc_i];
 		set->Create();
-		set->WriteDescriptorBuffer(0, VulkanRenderer::Get()->GetCamerasBuffer()->GetCamerasBuffer());
+		set->WriteDescriptorBuffer(0, camerasBuffer->GetCamerasBuffer());
 	}
 
 	_animations_descriptor_set->Create();
@@ -153,7 +156,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	uint32 _writtenParticleTransforms = 0;
 	uint32 drawn_terrains = 0;
 
-	Camera* camera = VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
+	Camera* camera = camerasBuffer->GetCameraByIndex(_camera_index);
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *m_gbufferFramebuffer);
 
