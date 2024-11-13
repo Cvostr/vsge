@@ -30,6 +30,8 @@ void VulkanEnvMap::Create()
 
 	for (uint32 i = 0; i < 6; i++) {
 
+		cameras[i].SetFOV(90.f);
+		cameras[i].SetAspectRatio(1.f);
 		camerasBuffer->SetCamera(i, &cameras[i]);
 
 		_sides[i]._gbuffer = new VulkanGBufferRenderer;

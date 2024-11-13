@@ -354,6 +354,8 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		uint32 particles_count = emitter->GetAliveParticlesCount();
 		mParticlesTransformShaderBuffer->WriteData(_writtenParticleTransforms * sizeof(Mat4), sizeof(Mat4) * particles_count, ParticleTransforms);
 
+		delete[] ParticleTransforms;
+
 		_writtenParticleTransforms += particles_count;
 	}
 
