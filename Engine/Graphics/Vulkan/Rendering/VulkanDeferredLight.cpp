@@ -406,7 +406,9 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf)
 
 		MeshResource* mesh_resource = mesh_component->GetMeshResource();
 
-		int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
+		uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
+
+		int vertexDescriptorID = (e_i * transformMemoryBlockSize) / 65535;
 
 		cmdbuf->BindPipeline(*pipl);
 		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
@@ -421,7 +423,7 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf)
 			mat_resource->Use();
 
 			// 0 - offset for cameras matrices, 1 - for entity transform.
-			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
+			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * transformMemoryBlockSize % 65535 };
 			// TODO: animations in post renderer?
 			uint32 offset2 = 0;
 

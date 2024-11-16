@@ -5,6 +5,7 @@
 #include <Math/MatrixCamera.hpp>
 #include <Math/MatrixTransform.hpp>
 #include <Graphics/FontManager.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -17,6 +18,8 @@ static Vertex ui_sprite_vertices[] = {
 };
 static uint32 plane_inds[] = { 0,1,2, 0,2,3 };
 
+#define FRAGMENT_SIZE 64ULL
+
 VulkanUiRenderer::VulkanUiRenderer() {
 	_fb_width = 1280;
 	_fb_height = 720;
@@ -26,15 +29,21 @@ VulkanUiRenderer::~VulkanUiRenderer() {
 	Destroy();
 }
 
-void VulkanUiRenderer::Create() {
+void VulkanUiRenderer::Create() 
+{
 	VulkanRAPI* rapi = VulkanRAPI::Get();
 	VulkanDevice* device = rapi->GetDevice();
 
+	// Calculate alignment for transform matrices in buffer
+	_transformBufferElementSize = std::max(UNI_ALIGN, sizeof(Mat4));
+
+	_fragmentBufferElementSize = std::max(UNI_ALIGN, FRAGMENT_SIZE);
+
 	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	_transforms_buffer->Create(256 * MAX_UI_ELEMENTS);
+	_transforms_buffer->Create(_transformBufferElementSize * MAX_UI_ELEMENTS);
 
 	_frag_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	_frag_buffer->Create(256 * MAX_UI_TEXT_ELEMENTS);
+	_frag_buffer->Create(_fragmentBufferElementSize * MAX_UI_TEXT_ELEMENTS);
 
 	_descr_pool = new VulkanDescriptorPool;
 	_descr_pool->SetDescriptorSetsCount(MAX_UI_ELEMENTS);
@@ -50,8 +59,8 @@ void VulkanUiRenderer::Create() {
 		set->SetDescriptorPool(_descr_pool);
 		set->Create();
 
-		set->WriteDescriptorBuffer(0, _transforms_buffer, i * 256, 256);
-		set->WriteDescriptorBuffer(1, _frag_buffer, i * 256, 256);
+		set->WriteDescriptorBuffer(0, _transforms_buffer, i * _transformBufferElementSize, _transformBufferElementSize);
+		set->WriteDescriptorBuffer(1, _frag_buffer, i * _fragmentBufferElementSize, _fragmentBufferElementSize);
 
 		_descr_sets.push_back(set);
 	}
@@ -125,13 +134,16 @@ VulkanTexture* VulkanUiRenderer::GetOutputTexture() {
 }
 void VulkanUiRenderer::WriteTransform(uint32 elem_id, const Mat4& transform) {
 	Mat4 total_transform = transform * _camera_transform;
-	_transforms_buffer->WriteData(256 * elem_id, sizeof(Mat4), &total_transform);
+	_transforms_buffer->WriteData(_transformBufferElementSize * elem_id, sizeof(Mat4), &total_transform);
 }
-void VulkanUiRenderer::WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color, int text) {
-	_frag_buffer->WriteData(256 * elem_id, sizeof(Color), (void*)(&color));
-	_frag_buffer->WriteData(256 * elem_id + 16, sizeof(Vec2), (void*)(&uv_min));
-	_frag_buffer->WriteData(256 * elem_id + 24, sizeof(Vec2), (void*)(&uv_max));
-	_frag_buffer->WriteData(256 * elem_id + 32, 4, &text);
+void VulkanUiRenderer::WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color, int text) 
+{
+	uint32 offset = _fragmentBufferElementSize * elem_id;
+
+	_frag_buffer->WriteData(offset, sizeof(Color), (void*)(&color));
+	_frag_buffer->WriteData(offset + 16, sizeof(Vec2), (void*)(&uv_min));
+	_frag_buffer->WriteData(offset + 24, sizeof(Vec2), (void*)(&uv_max));
+	_frag_buffer->WriteData(offset + 32, 4, &text);
 }
 void VulkanUiRenderer::WriteTexture(uint32 elem_id, VulkanTexture* texture) {
 	VulkanDescriptorSet* set = _descr_sets[elem_id];
@@ -155,8 +167,14 @@ void VulkanUiRenderer::FillBuffers() {
 			WriteTexture(written_elements, (VulkanTexture*)task._sprite->GetTexture());
 			written_elements++;
 		}
-		else if (task._type == UI_RENDER_TASK_TYPE_TEXT) {
+		else if (task._type == UI_RENDER_TASK_TYPE_TEXT) 
+		{
 			GlyphFontContainer* font = glyph_manager->GetFontByName(task.font);
+			if (font == nullptr) {
+				Logger::Log(LogType::LOG_TYPE_ERROR) << "No font '" << task.font << "'" << "\n";
+				continue;
+			}
+
 			Vec2i pix_size = font->GetSizeOfString((uint32*)task._text.c_str(), task._text.Length());
 
 			Vec2 mult = Vec2(task.bounds.Size.x / pix_size.x, task.bounds.Size.y / pix_size.y);

@@ -34,6 +34,9 @@ namespace VSGE {
 		uint32 _fb_width;
 		uint32 _fb_height;
 
+		uint32 _transformBufferElementSize;
+		uint32 _fragmentBufferElementSize;
+
 		void WriteTransform(uint32 elem_id, const Mat4& transform);
 		void WriteElement(uint32 elem_id, const Vec2& uv_min, const Vec2& uv_max, const Color& color, int text = 0);
 		void WriteTexture(uint32 elem_id, VulkanTexture* texture);

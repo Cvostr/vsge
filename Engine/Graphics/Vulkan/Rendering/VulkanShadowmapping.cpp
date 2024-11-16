@@ -397,6 +397,8 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 	VulkanFramebuffer* fb = caster->_framebuffer;
 
+	uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
+
 	uint32 vertexOffsets[] = { 0, 0 };
 	uint32 shadowmap_offset = casterIndex * SHADOWMAP_BUFFER_ELEMENT_SIZE;
 
@@ -475,11 +477,11 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		}
 
 		if (mesh) {
-			uint32 offsets[2] = { 0, e_i * UNI_ALIGN };
+			uint32 offsets[2] = { 0, e_i * transformMemoryBlockSize };
 			uint32 anim_offset = _writtenBones * sizeof(Mat4);
 			_writtenBones += (uint32)mesh->GetBones().size();
 
-			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
+			int vertexDescriptorID = (e_i * transformMemoryBlockSize) / 65535;
 
 			cmdbuf->BindDescriptorSets(*_shadowmap_layout, 0, 1, _vertexDescrSets->at(vertexDescriptorID), 2, offsets);
 			cmdbuf->BindDescriptorSets(*_shadowmap_layout, 2, 1, animsDescrSet, 1, &anim_offset);

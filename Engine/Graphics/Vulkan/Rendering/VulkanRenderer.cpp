@@ -45,7 +45,7 @@ void VulkanRenderer::SetupRenderer()
 	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	// Size of memory for 1 transform matrix
 	// NVidia pre turing cards has 256 byte alignment
-	uint32 transformMemoryBlockSize = std::max(UNI_ALIGN, sizeof(Mat4));
+	uint32 transformMemoryBlockSize = GetUniformTransformBufferElementSize();
 	mTransformsShaderBuffer->Create(MAX_OBJECTS_RENDER * transformMemoryBlockSize);
 
 	mAnimationTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
@@ -232,6 +232,11 @@ void VulkanRenderer::DestroyRenderer() {
 	SAFE_RELEASE(_ui_renderer)
 }
 
+uint32 VulkanRenderer::GetUniformTransformBufferElementSize()
+{
+	return std::max(UNI_ALIGN, sizeof(Mat4));
+}
+
 void VulkanRenderer::StoreWorldObjects(Camera* cam) 
 {
 	_shadowmapper->ResetCasters();
@@ -257,7 +262,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 	}
 
 	// на некоторых видеокартах (NVidia GTX 10** выравнивание по 256 байт)
-	uint32 alignmentFactor = std::max(UNI_ALIGN, sizeof(Mat4)) / sizeof(Mat4);
+	uint32 alignmentFactor = GetUniformTransformBufferElementSize() / sizeof(Mat4);
 
 	Mat4* transforms = new Mat4[_entitiesToRender.size() * alignmentFactor];
 	Mat4* anim = new Mat4[mAnimationTransformsShaderBuffer->GetSize() / sizeof(Mat4)];

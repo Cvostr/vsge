@@ -109,6 +109,8 @@ namespace VSGE {
 		void EnqueueLightProbe(const LightProbeRenderRequest& component);
 		void QueueSkyProbeUpdate();
 
+		static uint32 GetUniformTransformBufferElementSize();
+
 		void ResizeOutput(uint32 width, uint32 height);
 	};
 }

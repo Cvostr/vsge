@@ -156,6 +156,8 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	uint32 _writtenParticleTransforms = 0;
 	uint32 drawn_terrains = 0;
 
+	uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
+
 	Camera* camera = camerasBuffer->GetCameraByIndex(_camera_index);
 
 	_gbuffer_renderpass->CmdBegin(*cmdbuf, *m_gbufferFramebuffer);
@@ -203,7 +205,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
-			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * UNI_ALIGN % 65535 };
+			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * transformMemoryBlockSize % 65535 };
 			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
 			_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
 
@@ -213,7 +215,8 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			if (templ->GetRenderStage() != RENDER_STAGE_GBUFFER)
 				continue;
 
-			int vertexDescriptorID = (e_i * UNI_ALIGN) / 65535;
+			// Index of vertex descriptor ID
+			int vertexDescriptorID = (e_i * transformMemoryBlockSize) / 65535;
 
 			BindPipeline(cmdbuf, pipl);
 			VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
@@ -231,9 +234,12 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 	cmdbuf->EndRenderPass();
 }
 
-void VulkanGBufferRenderer::CreateBuffers() {
+void VulkanGBufferRenderer::CreateBuffers() 
+{
+	uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
+
 	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	_transforms_buffer->Create(MAX_OBJECTS_RENDER * UNI_ALIGN);
+	_transforms_buffer->Create(MAX_OBJECTS_RENDER * transformMemoryBlockSize);
 
 	_animations_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	_animations_buffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
