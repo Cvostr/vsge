@@ -9,6 +9,7 @@
 #include "EntityComponents/RigidBodyComponent.hpp"
 #include "EntityComponents/ColliderComponent.hpp"
 #include "EntityComponents/LightProbeComponent.hpp"
+#include "EntityComponents/TerrainComponent.hpp"
 
 using namespace VSGE;
 
@@ -71,6 +72,9 @@ IEntityComponent* VSGE::CreateEntityComponent(EntityComponentType type) {
 	}
 	if (type == ENTITY_COMPONENT_LIGHT_PROBE) {
 		component = new LightProbeComponent;
+	}
+	if (type == ENTITY_COMPONENT_TERRAIN) {
+		component = new TerrainComponent;
 	}
 
 	return component;

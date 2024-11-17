@@ -129,6 +129,7 @@ set(SRC_FILES
 				Scene/EntityComponents/RigidBodyComponent.cpp
 				Scene/EntityComponents/CharacterControllerComponent.cpp
 				Scene/EntityComponents/LightProbeComponent.cpp
+				Scene/EntityComponents/TerrainComponent.cpp
 				MonoScripting/MonoScriptingLayer.cpp
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
@@ -254,6 +255,14 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Scene/SceneSerialization.hpp
 					Scene/EntityComponents/AnimatorComponent.hpp
 					Scene/EntityComponents/AudioListenerComponent.hpp
+					Scene/EntityComponents/AudioSourceComponent.hpp
+					Scene/EntityComponents/CharacterControllerComponent.hpp
+					Scene/EntityComponents/ColliderComponent.hpp
+					Scene/EntityComponents/EntityScriptComponent.hpp
+					Scene/EntityComponents/LightComponent.hpp
+					Scene/EntityComponents/LightProbeComponent.hpp
+					Scene/EntityComponents/MaterialComponent.hpp
+					Scene/EntityComponents/MeshComponent.hpp
 					)
 
 add_library (Engine ${SRC_FILES} ${HEADER1_FILES})
