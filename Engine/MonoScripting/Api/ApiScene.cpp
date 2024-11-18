@@ -8,12 +8,22 @@ static void* GetRootEntity(Scene* scene) {
 	return scene->GetRootEntity();
 }
 
-static void* GetEntityByName(Scene* scene, MonoString* name) {
-	return scene->GetEntityWithName(std::string(mono_string_to_utf8(name)));
+static void* GetEntityByName(Scene* scene, MonoString* name) 
+{
+	char* pName = mono_string_to_utf8(name);
+	std::string sName(pName);
+	mono_free(pName);
+
+	return scene->GetEntityWithName(sName);
 }
 
-static void* AddNewEntity(Scene* scene, MonoString* name) {
-	return scene->AddNewEntity(std::string(mono_string_to_utf8(name)));
+static void* AddNewEntity(Scene* scene, MonoString* name) 
+{
+	char* pName = mono_string_to_utf8(name);
+	std::string sName(pName);
+	mono_free(pName);
+
+	return scene->AddNewEntity(sName);
 }
 
 static void Run(Scene* scene) {
@@ -36,9 +46,13 @@ static bool IsPaused(Scene* scene) {
 	return scene->IsScenePaused();
 }
 
-static MonoArray* GetAllEntitiesByName(Scene* scene, MonoString* name) {
-	std::string std_name = std::string(mono_string_to_utf8(name));
-	std::vector<Entity*> entities = scene->GetAllEntitiesWithName(std_name);
+static MonoArray* GetAllEntitiesByName(Scene* scene, MonoString* name) 
+{
+	char* pName = mono_string_to_utf8(name);
+	std::string sName = std::string(mono_string_to_utf8(name));
+	mono_free(pName);
+
+	std::vector<Entity*> entities = scene->GetAllEntitiesWithName(sName);
 	MonoArray* result = mono_array_new(MonoScriptingLayer::Get()->GetDomain(), 
 		mono_get_uint64_class(), entities.size());
 	

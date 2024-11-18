@@ -51,9 +51,14 @@ static bool IsActive(Entity* ptr) {
 	return ptr->IsActive();
 }
 
-static void SetName(Entity* ptr, MonoString* name) {
-	if (ptr->GetParent() != nullptr)
-		ptr->SetName(std::string(mono_string_to_utf8(name)));
+static void SetName(Entity* ptr, MonoString* name) 
+{
+	if (ptr->GetParent() != nullptr) 
+	{
+		char* pName = mono_string_to_utf8(name);
+		ptr->SetName(std::string(pName));
+		mono_free(pName);
+	}
 }
 
 static MonoString* GetName(Entity* ptr) {
@@ -116,20 +121,28 @@ static void* WComponent(void* ptr, int type, int action) {
 		return _WComponent<ParticleEmitterComponent>(ent, action);
 		break;
 	case ENTITY_COMPONENT_CHARACTER_CONTROLLER:
-		return _WComponent<ParticleEmitterComponent>(ent, action);
+		return _WComponent<CharacterControllerComponent>(ent, action);
 		break;
 	}
 	return nullptr;
 }
 
-MonoObject* GetScript(Entity* ptr, MonoString* script_class_name) {
-	std::string name = std::string(mono_string_to_utf8(script_class_name));
-	for (uint32 i = 0; i < ptr->GetScriptsCount(); i++) {
+MonoObject* GetScript(Entity* ptr, MonoString* scriptClassName) 
+{
+	char* pName = mono_string_to_utf8(scriptClassName);
+	std::string name = std::string(pName);
+	mono_free(pName);
+
+	for (uint32 i = 0; i < ptr->GetScriptsCount(); i++) 
+	{
 		EntityScriptComponent* script = ptr->GetScripts()[i];
-		if (script->GetClassName() == name) {
+
+		if (script->GetClassName() == name) 
+		{
 			return script->GetInstance()->GetObject();
 		}
 	}
+
 	return nullptr;
 }
 

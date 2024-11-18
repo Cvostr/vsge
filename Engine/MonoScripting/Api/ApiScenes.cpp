@@ -19,6 +19,7 @@ static void LoadScene(MonoString* scene_resource_name, uint32 slot) {
 	SceneResource* resource = ResourceCache::Get()->GetResource<SceneResource>(name);
 	Scene* scn = SceneLayer::Get()->GetScenes()[slot];
 	scn->Stop();
+	
 	scn->NewScene();
 	if (resource) {
 		resource->LoadAsync(slot);

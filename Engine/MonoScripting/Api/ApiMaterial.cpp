@@ -4,19 +4,31 @@
 
 using namespace VSGE;
 
-static void SetIntValue(Material* mat, MonoString* key, int value) {
-	std::string skey = std::string(mono_string_to_utf8(key));
-	mat->SetParameter(skey, value);
+static void SetIntValue(Material* mat, MonoString* key, int value) 
+{
+	char* pKey = mono_string_to_utf8(key);
+	std::string sKey = std::string(pKey);
+	mono_free(pKey);
+
+	mat->SetParameter(sKey, value);
 }
 
-static void SetFloatValue(Material* mat, MonoString* key, float value) {
-	std::string skey = std::string(mono_string_to_utf8(key));
-	mat->SetParameter(skey, value);
+static void SetFloatValue(Material* mat, MonoString* key, float value) 
+{
+	char* pKey = mono_string_to_utf8(key);
+	std::string sKey = std::string(pKey);
+	mono_free(pKey);
+
+	mat->SetParameter(sKey, value);
 }
 
-static void SetColorValue(Material* mat, MonoString* key, Color value) {
-	std::string skey = std::string(mono_string_to_utf8(key));
-	mat->SetParameter(skey, value);
+static void SetColorValue(Material* mat, MonoString* key, Color value) 
+{
+	char* pKey = mono_string_to_utf8(key);
+	std::string sKey = std::string(pKey);
+	mono_free(pKey);
+
+	mat->SetParameter(sKey, value);
 }
 
 void VSGE::BindMaterialObjectApi() {

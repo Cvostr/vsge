@@ -51,7 +51,11 @@ bool MonoScriptingLayer::CreateRootDomain() {
     if (_root_domain)
         return true;
 
-    std::vector<std::string> paths = { "../MonoScripting/MonoBinaries", "MonoScripting/MonoBinaries", "MonoBinaries" };
+    std::vector<std::string> paths = { 
+        "../MonoScripting/MonoBinaries", 
+        "../../../../MonoScripting/MonoBinaries",   // Visual Studio CMake
+        "MonoScripting/MonoBinaries", 
+        "MonoBinaries" };
 
     std::optional<std::string> monoRootDir = std::nullopt;
     for (const auto& path : paths) {
@@ -65,8 +69,9 @@ bool MonoScriptingLayer::CreateRootDomain() {
         throw std::exception("Can't find Mono directory\n");
     }
 
-    std::string monoLibDir = monoRootDir.value() + "/lib";
-    std::string monoEtcDir = monoRootDir.value() + "/etc";
+    _monoDirectoryLocation = monoRootDir.value();
+    std::string monoLibDir = _monoDirectoryLocation + "/lib";
+    std::string monoEtcDir = _monoDirectoryLocation + "/etc";
 
     mono_set_dirs(monoLibDir.c_str(), monoEtcDir.c_str());
 	//Create domain
@@ -105,6 +110,11 @@ void MonoScriptingLayer::ReleaseRootDomain() {
         mono_jit_cleanup(_root_domain);
         _root_domain = nullptr;
     }
+}
+
+const std::string& MonoScriptingLayer::GetMonoDirectoryPath() const
+{
+    return _monoDirectoryLocation;
 }
 
 MonoDomain* MonoScriptingLayer::GetDomain() {

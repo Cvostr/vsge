@@ -4,8 +4,12 @@
 
 using namespace VSGE;
 
-static void Log(MonoString* mono_string) {
-	std::string message = std::string(mono_string_to_utf8(mono_string));
+static void Log(MonoString* logString) 
+{
+	char* pLogString = mono_string_to_utf8(logString);
+	std::string message = std::string(pLogString);
+	mono_free(pLogString);
+
 	Logger::Log(LogType::LOG_TYPE_INFO) << message << "\n";
 }
 

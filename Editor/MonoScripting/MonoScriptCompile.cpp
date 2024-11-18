@@ -3,6 +3,7 @@
 #include <Core/Logger.hpp>
 #include <Engine/Application.hpp>
 #include <mpi/Os/Process.hpp>
+#include "MonoScripting/MonoScriptingLayer.hpp"
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -20,7 +21,8 @@ MonoScriptCompiler::~MonoScriptCompiler() {
     SAFE_RELEASE(_mutex)
 }
 
-std::string MonoScriptCompiler::ExecuteCompilation() {
+std::string MonoScriptCompiler::ExecuteCompilation() 
+{
     MonoScriptStorage* storage = MonoScriptStorage::Get();
     std::string input;
     for (auto& script : storage->GetScripts()) {
@@ -29,11 +31,17 @@ std::string MonoScriptCompiler::ExecuteCompilation() {
     if (input.size() > 0)
         input.pop_back(); //remove space
 
+    std::string monoPath = MonoScriptingLayer::Get()->GetMonoDirectoryPath(); //  ..\\MonoScripting\\MonoBinaries
+
     Mpi::ProcessCreateInfo compileProcCreateInfo = {};
     compileProcCreateInfo.flags = PROCESS_COMBINE_STDERR | PROCESS_REDIRECT_STREAMS;
 #ifdef _WIN32
+    for (int i = 0; i < monoPath.size(); i++) {
+        if (monoPath[i] == '/')
+            monoPath[i] = '\\';
+    }
     compileProcCreateInfo.executable = "cmd.exe";
-    compileProcCreateInfo.args.push_back("/C ..\\MonoScripting\\MonoBinaries\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input);
+    compileProcCreateInfo.args.push_back("/C " + monoPath + "\\bin\\csc.bat -target:library -nologo -reference:" + _api_dll_path + " -out:" + _dll_output_path + " " + input);
 #endif
 #ifdef __linux__
     compileProcCreateInfo.executable = "sh";

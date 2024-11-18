@@ -8,10 +8,18 @@ void DrawSprite(Rect bounds, float rotation, Resource* sprite, Vec2 uv_min, Vec2
 
 }
 
-void DrawText(Rect bounds, float rotation, MonoString* text, MonoString* font, Color color) {
-	String text32 = String(mono_string_to_utf32(text));
-	std::string font_name = std::string(mono_string_to_utf8(font));
-	UiLayer::Get()->GetRenderList()->DrawText(bounds, rotation, text32, font_name, color);
+void DrawText(Rect bounds, float rotation, MonoString* text, MonoString* font, Color color) 
+{
+	mono_unichar4* pText = mono_string_to_utf32(text);
+	char* pFont = mono_string_to_utf8(font);
+
+	String text32 = String(pText);
+	mono_free(pText);
+
+	std::string fontName = std::string(pFont);
+	mono_free(pFont);
+
+	UiLayer::Get()->GetRenderList()->DrawText(bounds, rotation, text32, fontName, color);
 }
 
 void VSGE::BindUiRenderList() {

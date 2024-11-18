@@ -30,6 +30,7 @@ namespace VSGE {
 		MonoDomain* _root_domain;
 		MonoDomain* _domain;
 		MonoScriptBlob* _scripts_blob;
+		std::string _monoDirectoryLocation;
 
 	public:
 
@@ -89,6 +90,8 @@ namespace VSGE {
 		/// Call this function from other thread to register
 		/// </summary>
 		void AttachThread();
+
+		const std::string& GetMonoDirectoryPath() const;
 
 		template<typename T> 
 		static void AddInternalCall(const std::string& decl, T func){

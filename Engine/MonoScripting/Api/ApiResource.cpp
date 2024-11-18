@@ -18,9 +18,13 @@ static ResourceType GetType(void* ptr) {
 	return ((Resource*)ptr)->GetResourceType();
 }
 
-static Resource* GetPtrByName(MonoString* name) {
-	std::string c_name = std::string(mono_string_to_utf8(name));
-	return ResourceCache::Get()->GetResource(c_name);
+static Resource* GetPtrByName(MonoString* name) 
+{
+	char* pName = mono_string_to_utf8(name);
+	std::string sName = std::string(pName);
+	mono_free(pName);
+
+	return ResourceCache::Get()->GetResource(sName);
 }
 
 void VSGE::BindResourcesApi() {
