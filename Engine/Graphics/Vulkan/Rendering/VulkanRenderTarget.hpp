@@ -53,5 +53,6 @@ namespace VSGE {
 
 		VulkanGBufferRenderer* GetGBufferRenderer();
 		VulkanDeferredLight* GetDeferredLightRenderer();
+		VulkanShadowmapping* GetShadowmapper();
 	};
 }

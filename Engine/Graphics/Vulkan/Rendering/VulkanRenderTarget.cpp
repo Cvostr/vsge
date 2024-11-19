@@ -16,18 +16,27 @@ VulkanRenderTarget::~VulkanRenderTarget() {
 
 void VulkanRenderTarget::Create() 
 {
+	VulkanCamerasBuffer* camBuffer = VulkanRenderer::Get()->GetCamerasBuffer();
+
 	m_gbufferRenderer = new VulkanGBufferRenderer;
 	m_gbufferRenderer->CreateFramebuffer();
-	m_gbufferRenderer->CreateDescriptorSets(VulkanRenderer::Get()->GetCamerasBuffer());
+	m_gbufferRenderer->CreateDescriptorSets(camBuffer);
 	m_gbufferRenderer->SetCameraIndex(0);
+
+	_shadowmapper = new VulkanShadowmapping(
+		&m_gbufferRenderer->GetVertexDescriptorSets(),
+		m_gbufferRenderer->GetAnimationsDescriptorSet(),
+		camBuffer->GetCamerasBuffer(),
+		m_gbufferRenderer->GetPositionAttachment());
 
 	_deferred_renderer = new VulkanDeferredLight;
 	_deferred_renderer->CreateFramebuffer();
-	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), VulkanRenderer::Get()->GetCamerasBuffer());
+	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), camBuffer);
 	_deferred_renderer->CreatePipeline();
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
+	_deferred_renderer->SetShadowmapper(_shadowmapper);
 
 	_gamma_correction = new VulkanGammaCorrection();
 
@@ -40,18 +49,28 @@ void VulkanRenderTarget::Create()
 void VulkanRenderTarget::Destroy() {
 	SAFE_RELEASE(_ssao)
 	SAFE_RELEASE(_bloom)
-	SAFE_RELEASE(_gamma_correction);
+	SAFE_RELEASE(_gamma_correction)
 	SAFE_RELEASE(_deferred_renderer);
+	SAFE_RELEASE(_shadowmapper)
 	SAFE_RELEASE(m_gbufferRenderer);
 }
-void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) {
+
+void VulkanRenderTarget::SetCameraIndex(uint32 camera_index) 
+{
 	_camera_index = camera_index;
 	m_gbufferRenderer->SetCameraIndex(camera_index);
 	_deferred_renderer->SetCameraIndex(camera_index);
+
+	VulkanCamerasBuffer* camBuffer = VulkanRenderer::Get()->GetCamerasBuffer();
+	_shadowmapper->SetCamera(camera_index, camBuffer->GetCameraByIndex(camera_index));
 }
-void VulkanRenderTarget::SetEntitiesToRender(tEntityList& entities, tEntityList& particles) {
+
+void VulkanRenderTarget::SetEntitiesToRender(tEntityList& entities, tEntityList& particles) 
+{
 	m_gbufferRenderer->SetEntitiesToRender(entities, particles);
+	_shadowmapper->SetEntitiesToRender(&entities);
 }
+
 void VulkanRenderTarget::SetBuffers(
 	VulkanBuffer* transforms_buffer,
 	VulkanBuffer* anims_buffer,
@@ -59,15 +78,19 @@ void VulkanRenderTarget::SetBuffers(
 {
 	m_gbufferRenderer->SetBuffers(transforms_buffer, anims_buffer, particles_buffer);
 }
+
 void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
 	_shadowmapper = shadowmapping;
 	_deferred_renderer->SetShadowmapper(shadowmapping);
 }
+
 void VulkanRenderTarget::SetGenericLightProbe(VulkanLightProbeImage* probeImage)
 {
 	_deferred_renderer->SetIBL((VulkanTexture*)probeImage->GetSpmap(), (VulkanTexture*) probeImage->GetIrmap());
 }
-void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
+
+void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) 
+{
 	if (m_width == width && m_height == height)
 		return;
 
@@ -78,6 +101,7 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	m_gbufferRenderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
+
 	//update shadowmapper (if exists)
 	if (_shadowmapper) {
 		_shadowmapper->ResizeOutput(width, height);
@@ -95,36 +119,50 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height) {
 	_ssao->SetInputTextures(GetGBufferPositionsAttachment(), GetGBufferNormalsAttachment());
 	_ssao->ResizeOutput(Vec2i(width, height));
 }
+
 void VulkanRenderTarget::SetOutput(VulkanTexture* output_texture) {
 	_output = output_texture;
 }
+
 VulkanTexture* VulkanRenderTarget::GetDeferredOutput() {
 	return _deferred_renderer->GetOutputTexture();
 }
+
 VulkanTexture* VulkanRenderTarget::GetGammaCorrectedOutput() {
 	return _gamma_correction->GetOutputTexture();
 }
+
 VulkanTexture* VulkanRenderTarget::GetGBufferNormalsAttachment() {
 	return m_gbufferRenderer->GetNormalAttachment();
 }
+
 VulkanTexture* VulkanRenderTarget::GetGBufferPositionsAttachment() {
 	return m_gbufferRenderer->GetPositionAttachment();
 }
+
 VulkanTexture* VulkanRenderTarget::GetGBufferDepthAttachment() {
 	return m_gbufferRenderer->GetDepthAttachment();
 }
+
 VulkanGBufferRenderer* VulkanRenderTarget::GetGBufferRenderer() {
 	return m_gbufferRenderer;
 }
+
 VulkanDeferredLight* VulkanRenderTarget::GetDeferredLightRenderer() {
 	return _deferred_renderer;
+}
+
+VulkanShadowmapping* VulkanRenderTarget::GetShadowmapper()
+{
+	return _shadowmapper;
 }
 
 Camera* VulkanRenderTarget::GetCamera() {
 	return VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
 }
 
-void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
+void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) 
+{
 	Camera* cam = GetCamera();
 	if (!cam)
 		return;
@@ -134,13 +172,19 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
 	m_gbufferRenderer->SetScene(vk_renderer->GetScene());
 
+	// Shadowmapping : stage 1
+	_shadowmapper->ProcessShadowCasters(cmdbuffer);
+
+	// GBuffer
 	m_gbufferRenderer->RecordCmdBuffer(cmdbuffer);
+
+	// Shadowmapping : stage 2
 	if (_shadowmapper) {
 		_shadowmapper->UpdateShadowrenderingDescriptors();
 		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
 	}
 
-
+	// SSAO
 	if (params._ssao_enabled) {
 		_ssao->SetCameraIndex(_camera_index);
 		_ssao->FillCommandBuffer(cmdbuffer);
@@ -149,17 +193,16 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer) {
 	else
 		_deferred_renderer->SetSSAO(nullptr);
 
-
-
+	// Deferred Light
 	_deferred_renderer->RecordCmdbuf(cmdbuffer);
 	
+	// Bloom
 	if (params._bloom_enabled) {
 		_bloom->RecordCommandBuffer(cmdbuffer);
 		_gamma_correction->SetInputBloomTexture(_bloom->GetBlurredBloomTextureHDR());
 	}
 	else
 		_gamma_correction->SetInputBloomTexture(nullptr);
-
 
 
 	_gamma_correction->FillCommandBuffer(cmdbuffer);

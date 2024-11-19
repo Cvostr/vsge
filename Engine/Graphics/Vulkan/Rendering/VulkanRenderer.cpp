@@ -107,17 +107,6 @@ void VulkanRenderer::SetupRenderer()
 	_render_targets.resize(1);
 	_render_targets[0] = _main_render_target;
 
-	VulkanGBufferRenderer* gbuffer = _main_render_target->GetGBufferRenderer();
-
-	_shadowmapper = new VulkanShadowmapping(
-		&gbuffer->GetVertexDescriptorSets(),
-		gbuffer->GetAnimationsDescriptorSet(),
-		_cameras_buffer->GetCamerasBuffer(),
-		gbuffer->GetPositionAttachment());
-	_shadowmapper->SetEntitiesToRender(&_entitiesToRender);
-
-	_main_render_target->SetShadowmapper(_shadowmapper);
-
 	_final_pass = new VulkanFinalPass;
 
 	VertexLayout _vertexLayout;
@@ -220,9 +209,8 @@ void VulkanRenderer::SetupRenderer()
 	CreatePipelineFromMaterialTemplate(skybox_template);
 }
 
-void VulkanRenderer::DestroyRenderer() {
-	delete _shadowmapper;
-
+void VulkanRenderer::DestroyRenderer() 
+{
 	for (auto& render_target : _render_targets) {
 		SAFE_RELEASE(render_target);
 	}
@@ -239,7 +227,11 @@ uint32 VulkanRenderer::GetUniformTransformBufferElementSize()
 
 void VulkanRenderer::StoreWorldObjects(Camera* cam) 
 {
-	_shadowmapper->ResetCasters();
+	for (uint32 target_i = 0; target_i < _render_targets.size(); target_i++)
+	{
+		VulkanRenderTarget* target = _render_targets[target_i];
+		target->GetShadowmapper()->ResetCasters();
+	}
 
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
@@ -253,8 +245,13 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 			LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
 			_lights_buffer->SetLight(light_i, light);
 
-			if (light->GetCastShadows()) {
-				_shadowmapper->AddEntity(_lightsources[light_i]);
+			if (light->GetCastShadows()) 
+			{
+				for (uint32 target_i = 0; target_i < _render_targets.size(); target_i++)
+				{
+					VulkanRenderTarget* target = _render_targets[target_i];
+					target->GetShadowmapper()->AddEntity(_lightsources[light_i]);
+				}
 			}
 		}
 
@@ -374,7 +371,7 @@ void VulkanRenderer::FillCommandBuffers()
 {
 	//Заполняем основной буфер команд отрисовки мира (тени + render targets)
 	_render_targets_cmdbuf->Begin();
-	_shadowmapper->ProcessShadowCasters(_render_targets_cmdbuf);
+	
 	for (auto& render_target : _render_targets) {
 		render_target->RecordCommandBuffers(_render_targets_cmdbuf);
 	}
@@ -460,7 +457,6 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 	if (cam) {
 		// Main Camera is overrided by arg, usually this done in Editor
 		main_camera = cam;
-		_shadowmapper->SetCamera(cam);
 		_ibl_map->SetEnvmapCameras(cam->GetPosition(), 0.01f, 100.f);
 		_cameras_buffer->SetCamera(0, cam);
 	}
@@ -469,7 +465,6 @@ void VulkanRenderer::DrawScene(VSGE::Camera* cam)
 		Camera* camera = _cameras[0]->GetComponent<Camera>();
 		if (camera) {
 			main_camera = camera;
-			_shadowmapper->SetCamera(camera);
 			_ibl_map->SetEnvmapCameras(camera->GetPosition(), 0.01f, 100.f);
 		}
 	}

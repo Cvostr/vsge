@@ -48,7 +48,6 @@ namespace VSGE {
 		VulkanBuffer* mParticlesTransformShaderBuffer;
 		LightsBuffer* _lights_buffer;
 
-		VulkanShadowmapping* _shadowmapper;
 		VulkanUiRenderer* _ui_renderer;
 		VulkanCamerasBuffer* _cameras_buffer;
 		std::vector<VulkanRenderTarget*> _render_targets;

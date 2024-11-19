@@ -220,13 +220,17 @@ void VulkanDeferredLight::UpdateLightProbeBuffer()
 	lightProbesInfoBuffer->WriteData(0, PROBES_BUFFER_SIZE, lightProbesInfo);
 }
 
-void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
+void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping) 
+{
 	if (!_deferred_descriptor)
 		return;
 
 	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 
-	_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
+	if (shadowmapping != nullptr)
+		_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
+	else 
+		_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
 }
 
 void VulkanDeferredLight::UnsetIBL() {

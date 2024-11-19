@@ -53,6 +53,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 	_added_casters = 0;
+	_cameraIndex = 0;
 	this->_vertexDescrSets = vertexDescrSets;
 	this->animsDescrSet = animsDescrSet;
 	_gbuffer_pos = pos;
@@ -90,7 +91,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowcasters_descPool);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
@@ -247,7 +248,9 @@ uint32 VulkanShadowmapping::GetShadowTextureIndex(uint32 caster_index, uint32 ca
 	return pcaster_index;
 }
 
-void VulkanShadowmapping::SetCamera(Camera* cam) {
+void VulkanShadowmapping::SetCamera(uint32 cameraIndex, Camera* cam) 
+{
+	this->_cameraIndex = cameraIndex;
 	this->cam = cam;
 }
 
@@ -299,7 +302,7 @@ void VulkanShadowmapping::AddEntity(Entity* entity)
 
 	caster->_lightsource = light;
 
-	Mat4* cascades_projections = light->GetShadowcastMatrices(cam);
+	Mat4* cascades_projections = light->GetShadowcastMatrices(this->cam);
 	_shadowcasters_buffer->WriteData(_added_casters * SHADOWMAP_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * image_layers_count, cascades_projections);
 	_shadowprocess_buffer->WriteData(_added_casters * SHADOWPROCESS_BUFFER_ELEMENT_SIZE, sizeof(Mat4) * image_layers_count, cascades_projections);
 	SAFE_RELEASE_ARR(cascades_projections);
@@ -389,7 +392,8 @@ void VulkanShadowmapping::BindPipeline(VulkanCommandBuffer* cmdbuffer, LightType
 	}
 }
 
-void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf) {
+void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandBuffer* cmdbuf) 
+{
 	Scene* scene = VulkanRenderer::Get()->GetScene();
 	VulkanShadowCaster* caster = _casters[casterIndex];
 	uint32 cascades = caster->_framebuffer->GetLayersCount();
@@ -409,7 +413,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
 		SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 		_dir_caster_frustums = new Frustum[env_settings.GetShadowCascadesCount()];
-		Mat4* cascades_projections = caster->_lightsource->GetShadowcastMatrices(cam);
+		Mat4* cascades_projections = caster->_lightsource->GetShadowcastMatrices(this->cam);
 		for (uint32 c_i = 0; c_i < env_settings.GetShadowCascadesCount(); c_i++) {
 			_dir_caster_frustums[c_i].Update(cascades_projections[c_i]);
 		}
@@ -498,11 +502,14 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	cmdbuf->EndRenderPass();
 }
 
-void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf) {
+void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf) 
+{
+	uint32 offset = _cameraIndex * CAMERA_ELEM_SIZE;
+
 	_shadowprocessRenderPass->CmdBegin(*cmdbuf, *_shadowprocess_framebuffer);
 	cmdbuf->BindPipeline(*_shadowprocess_pipeline);
 	cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
-	cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet);
+	cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet, 1, &offset);
 	VulkanMesh* screenPlane = VulkanRenderingGenerics::Get()->GetScreenMesh();
 	cmdbuf->BindMesh(*screenPlane);
 	cmdbuf->DrawIndexed(6);

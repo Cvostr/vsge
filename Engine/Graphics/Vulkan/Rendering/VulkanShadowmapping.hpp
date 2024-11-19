@@ -73,6 +73,7 @@ namespace VSGE {
 		std::vector<VulkanDescriptorSet*>* _vertexDescrSets;
 		VulkanDescriptorSet* animsDescrSet;
 
+		uint32 _cameraIndex;
 		Camera* cam;
 		tEntityList* _entitiesToRender;
 		VulkanTexture* _gbuffer_pos;
@@ -95,7 +96,7 @@ namespace VSGE {
 			VulkanTexture* pos);
 		~VulkanShadowmapping();
 	
-		void SetCamera(Camera* cam);
+		void SetCamera(uint32 cameraIndex, Camera* cam);
 		void SetEntitiesToRender(tEntityList* entities);
 		void SetTerrainsToRender(tEntityList* terrains);
 		void SetGbufferPositionsAttachment(VulkanTexture* gpos);
