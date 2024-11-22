@@ -7,8 +7,10 @@ VulkanShader::~VulkanShader() {
     Destroy();
 }
 
-VkShaderStageFlagBits VSGE::GetShaderStageVK(ShaderStagesBits stage) {
-    switch (stage) {
+VkShaderStageFlagBits VSGE::GetShaderStageVK(ShaderStagesBits stage) 
+{
+    switch (stage) 
+    {
     case SHADER_STAGE_VERTEX:
         return VK_SHADER_STAGE_VERTEX_BIT;
     case SHADER_STAGE_FRAGMENT:
@@ -23,6 +25,16 @@ VkShaderStageFlagBits VSGE::GetShaderStageVK(ShaderStagesBits stage) {
         return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
     }
     return VK_SHADER_STAGE_ALL;
+}
+
+uint32 VulkanShader::GetModulesCount() const
+{ 
+    return static_cast<uint32>(mModules.size());
+}
+
+VulkanShaderPair* VulkanShader::GetModules() 
+{ 
+    return mModules.data(); 
 }
 
 void VulkanShader::AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type) {

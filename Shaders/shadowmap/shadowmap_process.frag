@@ -17,7 +17,7 @@ struct CasterInfo{  //688
 };
 
 layout (std140, binding = 0) uniform ShadowData{
-    CasterInfo casters[64];
+    CasterInfo casters[70];
     uint casters_count;
 };
 

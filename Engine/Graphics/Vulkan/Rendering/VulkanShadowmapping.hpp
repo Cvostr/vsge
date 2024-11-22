@@ -40,10 +40,6 @@ namespace VSGE {
 		VulkanRenderPass* _shadowprocessRenderPass;
 
 		//-----------------Shadow Pipeline------------
-
-		VulkanShader* _shadowmap_terrain_shader;
-		VulkanShader* _shadowmap_terrain_point_shader;
-
 		VulkanPipelineLayout* _shadowmap_layout;
 		VulkanPipeline* _shadowmap_pipeline;
 		VulkanPipeline* _shadowmap_point_pipeline;
@@ -68,6 +64,8 @@ namespace VSGE {
 
 		VulkanDescriptorPool* _shadowcasters_descPool;
 		VulkanDescriptorSet* _shadowcaster_descrSet;
+
+		VulkanDescriptorPool* _shadowrenderer_descPool;
 		VulkanDescriptorSet* _shadowrenderer_descrSet;
 
 		std::vector<VulkanDescriptorSet*>* _vertexDescrSets;

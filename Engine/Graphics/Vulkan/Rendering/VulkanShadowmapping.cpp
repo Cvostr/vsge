@@ -16,9 +16,13 @@ using namespace VSGE;
 #define SHADOWPROCESS_BUFFER_ELEMENT_SIZE	(MAX_SHADOW_CASCADES * sizeof(Mat4) + 48) // 688 
 
 
-#define MAX_SHADOWCASTERS					64
+#define MAX_SHADOWCASTERS					70
+
+// Size of casters array in uniform buffer
 #define SHADOWPROCESS_CASTERS_SIZE			(SHADOWPROCESS_BUFFER_ELEMENT_SIZE * MAX_SHADOWCASTERS)
+// Size of uniform buffer
 #define SHADOWPROCESS_BUFFER_SIZE			(SHADOWPROCESS_CASTERS_SIZE + 4)
+// offset of 'Casters Count' integer in uniform buffer
 #define SHADOWPROCESS_SHADOWCOUNT_OFFSET	(SHADOWPROCESS_CASTERS_SIZE)
 
 VertexLayout shadowmap_vertex_layout = {};
@@ -77,48 +81,21 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_cascadeinfo_buffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
 	_cascadeinfo_buffer->Create(168);
 
+	// Shadowmap rendering
 	_shadowcasters_descPool = new VulkanDescriptorPool;
-	_shadowcasters_descPool->SetDescriptorSetsCount(2);
-	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 50);
-	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 50);
-	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100);
+	_shadowcasters_descPool->SetDescriptorSetsCount(1);
+	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1);
+	_shadowcasters_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1);
 
 	_shadowcaster_descrSet = new VulkanDescriptorSet(_shadowcasters_descPool);
 	_shadowcaster_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_ALL_GRAPHICS);
 	_shadowcaster_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_ALL_GRAPHICS);
-
-	// For shadow rendering
-	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowcasters_descPool);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	_shadowcasters_descPool->Create();
 
 	_shadowcaster_descrSet->Create();
 	_shadowcaster_descrSet->WriteDescriptorBuffer(0, _shadowcasters_buffer);
 	_shadowcaster_descrSet->WriteDescriptorBuffer(1, _cascadeinfo_buffer);
-
-	_shadowrenderer_descrSet->Create();
-	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
-	_shadowrenderer_descrSet->WriteDescriptorImage(1, 
-		_gbuffer_pos, 
-		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
-	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
-	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
-
-	_shadowmap_terrain_shader = new VulkanShader;
-	_shadowmap_terrain_shader->AddShaderFromFile("shadowmap_terrain.vert", SHADER_STAGE_VERTEX);
-	_shadowmap_terrain_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
-
-	_shadowmap_terrain_point_shader = new VulkanShader;
-	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap_terrain.vert", SHADER_STAGE_VERTEX);
-	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
-	_shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
 
 	_shadowmap_layout = new VulkanPipelineLayout;
 	_shadowmap_layout->PushDescriptorSet(vertexDescrSets->at(0));
@@ -156,7 +133,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_terrain_pipeline->SetDynamicCullMode(false);
 	_shadowmap_terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowmap_terrain_pipeline->Create(
-		_shadowmap_terrain_shader,
+		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_terrain"),
 		_shadowmap_render_pass,
 		shadowmap_terrain_vertex_layout,
 		_shadowmap_layout);
@@ -166,12 +143,33 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_terrain_point_pipeline->SetDynamicCullMode(false);
 	_shadowmap_terrain_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
 	_shadowmap_terrain_point_pipeline->Create(
-		_shadowmap_terrain_point_shader,
+		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_point_terrain"),
 		_shadowmap_render_pass,
 		shadowmap_terrain_vertex_layout,
 		_shadowmap_layout);
 
 	//-------------------------SHADOW PROCESS -----------------------------
+	
+	_shadowrenderer_descPool = new VulkanDescriptorPool;
+	_shadowrenderer_descPool->SetDescriptorSetsCount(1);
+	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1);
+	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2);
+	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100);
+
+	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowrenderer_descPool);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	// Create pool first
+	_shadowrenderer_descPool->Create();
+	// Create descriptor next
+	_shadowrenderer_descrSet->Create();
+
 	_shadowprocessRenderPass = new VulkanRenderPass;
 	_shadowprocessRenderPass->SetClearSize(_outputWidth, _outputHeight);
 	_shadowprocessRenderPass->PushColorAttachment(FORMAT_RGBA);
@@ -204,6 +202,14 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER);
 	_shadowmap_sampler->SetBorderColor(BORDER_COLOR_OPAQUE_WHITE);
 	_shadowmap_sampler->Create();
+
+	// Write buffers, images
+	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
+	_shadowrenderer_descrSet->WriteDescriptorImage(1,
+		_gbuffer_pos,
+		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
+	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
+	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
 	// write empty texture to directional shadowmaps
 	for (uint32 i = 0; i < 2; i++) 

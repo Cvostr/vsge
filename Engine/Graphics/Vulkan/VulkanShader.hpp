@@ -16,8 +16,8 @@ namespace VSGE {
 	public:
 
 		void AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type);
-		uint32 GetModulesCount() { return static_cast<uint32>(mModules.size()); }
-		VulkanShaderPair* GetModules() { return mModules.data(); }
+		uint32 GetModulesCount() const;
+		VulkanShaderPair* GetModules();
 
 		void Destroy();
 
