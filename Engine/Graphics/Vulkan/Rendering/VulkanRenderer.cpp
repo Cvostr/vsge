@@ -217,6 +217,7 @@ void VulkanRenderer::DestroyRenderer()
 
 	SAFE_RELEASE(_ibl_map)
 	SAFE_RELEASE(_ui_renderer)
+	SAFE_RELEASE(_lights_buffer)
 }
 
 uint32 VulkanRenderer::GetUniformTransformBufferElementSize()

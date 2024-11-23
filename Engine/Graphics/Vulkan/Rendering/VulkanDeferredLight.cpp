@@ -15,19 +15,52 @@ using namespace VSGE;
 
 #define PROBES_BUFFER_SIZE (16 + MAX_PROBES * 16)
 
-VulkanDeferredLight::VulkanDeferredLight() {
-	_fb_width = 1280;
-	_fb_height = 720;
-	_camera_index = 0;
-	_is_envmap = false;
+VulkanPipelineLayout* _deferred_pipeline_layout = nullptr;
+VulkanPipeline* deferredLightPipeline = nullptr;
+VulkanPipeline* deferredLightEnvmapPipeline = nullptr;
+
+bool DeferredPipelinesInitialized = false;
+
+void CreateDeferredLightPipelines(VulkanDescriptorSet* deferredDescrSet, VulkanRenderPass* renderPass)
+{
+	_deferred_pipeline_layout = new VulkanPipelineLayout;
+	_deferred_pipeline_layout->PushDescriptorSet(deferredDescrSet);
+	_deferred_pipeline_layout->Create();
+
+	VertexLayout _vertexLayout;
+	_vertexLayout.AddBinding(sizeof(Vertex));
+	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
+
+	deferredLightPipeline = new VulkanPipeline;
+	deferredLightEnvmapPipeline = new VulkanPipeline;
+	
+	deferredLightEnvmapPipeline->Create(
+		(VulkanShader*)ShaderCache::Get()->GetShader("Deferred_envmap"), 
+		renderPass,
+		_vertexLayout, 
+		_deferred_pipeline_layout);
+
+	deferredLightPipeline->Create(
+		(VulkanShader*)ShaderCache::Get()->GetShader("Deferred"), 
+		renderPass,
+		_vertexLayout,
+		_deferred_pipeline_layout);
+}
+
+
+VulkanDeferredLight::VulkanDeferredLight() :
+	_fb_width(1280),
+	_fb_height(720),
+	_camera_index(0),
+	_deferred_fb(nullptr),
+	_deferred_rp(nullptr),
+	_deferred_pipeline(nullptr),
+	camerasBuffer(nullptr),
+	_gbuffer(nullptr),
+	_is_envmap(false)
+{
 	_draw_world = true;
-	_gbuffer = nullptr;
-
-	_deferred_fb = nullptr;
-	_deferred_rp = nullptr;
-
-	_deferred_pipeline = nullptr;
-	_deferred_pipeline_layout = nullptr;
 
 	_deferred_pool = nullptr;
 	_deferred_descriptor = nullptr;
@@ -125,22 +158,19 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	UnsetIBL();
 }
 
-void VulkanDeferredLight::CreatePipeline() 
+void VulkanDeferredLight::CreatePipeline()
 {
-	_deferred_pipeline_layout = new VulkanPipelineLayout;
-	_deferred_pipeline_layout->PushDescriptorSet(_deferred_descriptor);
-	_deferred_pipeline_layout->Create();
+	if (DeferredPipelinesInitialized == false) {
 
-	VertexLayout _vertexLayout;
-	_vertexLayout.AddBinding(sizeof(Vertex));
-	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	_vertexLayout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
+		CreateDeferredLightPipelines(_deferred_descriptor, _deferred_rp);
 
-	_deferred_pipeline = new VulkanPipeline;
-	if(_is_envmap)
-		_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred_envmap"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
+		DeferredPipelinesInitialized = true;
+	}
+
+	if (_is_envmap)
+		_deferred_pipeline = deferredLightEnvmapPipeline;
 	else
-		_deferred_pipeline->Create((VulkanShader*)ShaderCache::Get()->GetShader("Deferred"), _deferred_rp, _vertexLayout, _deferred_pipeline_layout);
+		_deferred_pipeline = deferredLightPipeline;
 }
 
 void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {

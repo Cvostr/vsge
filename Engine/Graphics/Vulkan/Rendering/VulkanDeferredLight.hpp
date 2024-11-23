@@ -17,7 +17,6 @@ namespace VSGE {
 		VulkanDescriptorPool* _deferred_pool;
 		VulkanDescriptorSet* _deferred_descriptor;
 
-		VulkanPipelineLayout* _deferred_pipeline_layout;
 		VulkanPipeline* _deferred_pipeline;
 
 		VulkanGBufferRenderer* _gbuffer;
