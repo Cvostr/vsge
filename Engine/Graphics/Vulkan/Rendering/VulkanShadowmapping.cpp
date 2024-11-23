@@ -28,7 +28,15 @@ using namespace VSGE;
 VertexLayout shadowmap_vertex_layout = {};
 VertexLayout shadowmap_terrain_vertex_layout = {};
 
-void VSGE::InitShadowmappingPipelines()
+VulkanPipelineLayout* _shadowmap_layout = nullptr;
+VulkanPipeline* _shadowmap_pipeline = nullptr;
+VulkanPipeline* _shadowmap_point_pipeline = nullptr;
+VulkanPipeline* _shadowmap_terrain_pipeline = nullptr;
+VulkanPipeline* _shadowmap_terrain_point_pipeline = nullptr;
+
+bool ShadowPipelinesInitialized = false;
+
+void InitShadowmappingPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptorSet* castersSet, VulkanDescriptorSet* animSet, VulkanRenderPass* casterRenderPass)
 {
 	shadowmap_vertex_layout.AddBinding(sizeof(Vertex));
 	shadowmap_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
@@ -45,6 +53,67 @@ void VSGE::InitShadowmappingPipelines()
 	// For terrain rendering
 	shadowmap_terrain_vertex_layout.AddBinding(sizeof(Vertex));
 	shadowmap_terrain_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
+
+	if (_shadowmap_layout == nullptr) {
+		_shadowmap_layout = new VulkanPipelineLayout;
+		_shadowmap_layout->PushDescriptorSet(vertexSet);
+		_shadowmap_layout->PushDescriptorSet(castersSet);
+		_shadowmap_layout->PushDescriptorSet(animSet);
+		_shadowmap_layout->AddPushConstantRange(0, 8, VK_SHADER_STAGE_GEOMETRY_BIT);
+		_shadowmap_layout->Create();
+	}
+
+	if (_shadowmap_pipeline == nullptr) {
+		_shadowmap_pipeline = new VulkanPipeline;
+		_shadowmap_pipeline->SetDepthTest(true);
+		_shadowmap_pipeline->SetDepthClamp(true);
+		_shadowmap_pipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
+		_shadowmap_pipeline->SetDynamicCullMode(false);
+		_shadowmap_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+		_shadowmap_pipeline->Create(
+			(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap"),
+			casterRenderPass,
+			shadowmap_vertex_layout,
+			_shadowmap_layout);
+	}
+
+	if (_shadowmap_point_pipeline == nullptr) {
+		_shadowmap_point_pipeline = new VulkanPipeline;
+		_shadowmap_point_pipeline->SetDepthTest(true);
+		_shadowmap_point_pipeline->SetDynamicCullMode(false);
+		_shadowmap_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+		_shadowmap_point_pipeline->Create(
+			(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_point"),
+			casterRenderPass,
+			shadowmap_vertex_layout,
+			_shadowmap_layout);
+	}
+
+	if (_shadowmap_terrain_pipeline == nullptr) {
+		_shadowmap_terrain_pipeline = new VulkanPipeline;
+		_shadowmap_terrain_pipeline->SetDepthTest(true);
+		_shadowmap_terrain_pipeline->SetDepthClamp(true);
+		_shadowmap_terrain_pipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
+		_shadowmap_terrain_pipeline->SetDynamicCullMode(false);
+		_shadowmap_terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
+		_shadowmap_terrain_pipeline->Create(
+			(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_terrain"),
+			casterRenderPass,
+			shadowmap_terrain_vertex_layout,
+			_shadowmap_layout);
+	}
+
+	if (_shadowmap_terrain_point_pipeline) {
+		_shadowmap_terrain_point_pipeline = new VulkanPipeline;
+		_shadowmap_terrain_point_pipeline->SetDepthTest(true);
+		_shadowmap_terrain_point_pipeline->SetDynamicCullMode(false);
+		_shadowmap_terrain_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
+		_shadowmap_terrain_point_pipeline->Create(
+			(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_point_terrain"),
+			casterRenderPass,
+			shadowmap_terrain_vertex_layout,
+			_shadowmap_layout);
+	}
 }
 
 VulkanShadowmapping::VulkanShadowmapping(
@@ -97,56 +166,16 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowcaster_descrSet->WriteDescriptorBuffer(0, _shadowcasters_buffer);
 	_shadowcaster_descrSet->WriteDescriptorBuffer(1, _cascadeinfo_buffer);
 
-	_shadowmap_layout = new VulkanPipelineLayout;
-	_shadowmap_layout->PushDescriptorSet(vertexDescrSets->at(0));
-	_shadowmap_layout->PushDescriptorSet(_shadowcaster_descrSet);
-	_shadowmap_layout->PushDescriptorSet(animsDescrSet);
-	_shadowmap_layout->AddPushConstantRange(0, 8, VK_SHADER_STAGE_GEOMETRY_BIT);
-	_shadowmap_layout->Create();
+	// Initialize shadowcasting pipelines, this is done once
+	if (ShadowPipelinesInitialized == false) {
+		InitShadowmappingPipelines(
+			vertexDescrSets->at(0),
+			_shadowcaster_descrSet,
+			animsDescrSet,
+			_shadowmap_render_pass);
 
-	_shadowmap_pipeline = new VulkanPipeline;
-	_shadowmap_pipeline->SetDepthTest(true);
-	_shadowmap_pipeline->SetDepthClamp(true);
-	_shadowmap_pipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
-	_shadowmap_pipeline->SetDynamicCullMode(false);
-	_shadowmap_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
-	_shadowmap_pipeline->Create(
-		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap"),
-		_shadowmap_render_pass,
-		shadowmap_vertex_layout,
-		_shadowmap_layout);
-
-	_shadowmap_point_pipeline = new VulkanPipeline;
-	_shadowmap_point_pipeline->SetDepthTest(true);
-	_shadowmap_point_pipeline->SetDynamicCullMode(false);
-	_shadowmap_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
-	_shadowmap_point_pipeline->Create(
-		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_point"),
-		_shadowmap_render_pass,
-		shadowmap_vertex_layout,
-		_shadowmap_layout);
-
-	_shadowmap_terrain_pipeline = new VulkanPipeline;
-	_shadowmap_terrain_pipeline->SetDepthTest(true);
-	_shadowmap_terrain_pipeline->SetDepthClamp(true);
-	_shadowmap_terrain_pipeline->SetCompareOp(CompareOp::COMPARE_OP_LESS_OR_EQUAL);
-	_shadowmap_terrain_pipeline->SetDynamicCullMode(false);
-	_shadowmap_terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
-	_shadowmap_terrain_pipeline->Create(
-		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_terrain"),
-		_shadowmap_render_pass,
-		shadowmap_terrain_vertex_layout,
-		_shadowmap_layout);
-
-	_shadowmap_terrain_point_pipeline = new VulkanPipeline;
-	_shadowmap_terrain_point_pipeline->SetDepthTest(true);
-	_shadowmap_terrain_point_pipeline->SetDynamicCullMode(false);
-	_shadowmap_terrain_point_pipeline->SetCullMode(CullMode::CULL_MODE_BACK);
-	_shadowmap_terrain_point_pipeline->Create(
-		(VulkanShader*)ShaderCache::Get()->GetShader("shadowmap_point_terrain"),
-		_shadowmap_render_pass,
-		shadowmap_terrain_vertex_layout,
-		_shadowmap_layout);
+		ShadowPipelinesInitialized = true;
+	}
 
 	//-------------------------SHADOW PROCESS -----------------------------
 	

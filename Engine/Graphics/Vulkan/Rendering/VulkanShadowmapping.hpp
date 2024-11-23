@@ -31,20 +31,11 @@ namespace VSGE {
 		}
 	};
 
-	void InitShadowmappingPipelines();
-
 	class VulkanShadowmapping {
 	private:
 
 		VulkanRenderPass* _shadowmap_render_pass;
 		VulkanRenderPass* _shadowprocessRenderPass;
-
-		//-----------------Shadow Pipeline------------
-		VulkanPipelineLayout* _shadowmap_layout;
-		VulkanPipeline* _shadowmap_pipeline;
-		VulkanPipeline* _shadowmap_point_pipeline;
-		VulkanPipeline* _shadowmap_terrain_pipeline;
-		VulkanPipeline* _shadowmap_terrain_point_pipeline;
 
 		VulkanPipeline* _bound_pipeline;
 		//-----------------Shadowprocess pipeline
