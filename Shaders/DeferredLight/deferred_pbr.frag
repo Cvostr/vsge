@@ -31,6 +31,7 @@ struct Light {
     vec3 position;      //16
     vec3 direction;     //32
     vec3 color;         //48
+    int casterIndex;    //60
 };
 
 struct LightProbe {
@@ -38,26 +39,60 @@ struct LightProbe {
     float radius;
 };
 
-layout (std140, binding = 1) uniform CamMatrices {
+layout (std140, set = 0, binding = 1) uniform CamMatrices {
     mat4 cam_view_projection;
     mat4 cam_view;
     mat4 cam_projection;
     vec3 cam_position;
 };
 
-layout (std140, binding = 2) uniform Lights {
+layout (std140, set = 0, binding = 2) uniform Lights {
     vec3 ambient_light;
     int lights_count;
     Light lights[200];
 };
 
-layout (std140, binding = 15) uniform LightProbes {
+layout (std140, set = 0, binding = 15) uniform LightProbes {
     int probes_count;
     int pad1;
     int pad2;
     int pad3;
     LightProbe probes[12];
 };
+
+/////////// SHADOWS  //////////////
+
+struct CasterInfo{  //688
+    mat4 projections[10];
+    //640
+    float ShadowBias; // 4
+    uint PcfPassNum; // 4
+    float ShadowStrength; // 4
+    int caster_type; // 4
+    vec3 pos;
+    float range;
+    uint image_index;
+};
+
+layout (std140, set = 1, binding = 0) uniform ShadowData{
+    CasterInfo casters[70];
+    uint casters_count;
+};
+
+//layout(binding = 1) uniform sampler2D gpos;
+
+layout(set = 1, binding = 3) uniform sampler2DArray shadowmaps[2];
+layout(set = 1, binding = 4) uniform samplerCube shadowmaps_point[32];
+layout(set = 1, binding = 5) uniform sampler2D shadowmaps_spot[32];
+
+
+layout(set = 1, binding = 6) uniform dir_shadow_cascades{
+    float distances[10];
+    uint cascades_count;
+    uint shadowmap_size;
+};
+
+////////////////////////////////////////////////////////////////
 
 vec3 CalculateLightning(vec3 color, vec3 normal, vec3 pos, float roughness, float metallic, vec3 F0);
 

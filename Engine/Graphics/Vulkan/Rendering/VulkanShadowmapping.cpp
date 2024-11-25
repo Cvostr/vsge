@@ -54,6 +54,7 @@ void InitShadowmappingPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptor
 	shadowmap_terrain_vertex_layout.AddBinding(sizeof(Vertex));
 	shadowmap_terrain_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
 
+	// Create shadowmapping pipelines
 	if (_shadowmap_layout == nullptr) {
 		_shadowmap_layout = new VulkanPipelineLayout;
 		_shadowmap_layout->PushDescriptorSet(vertexSet);
@@ -293,11 +294,11 @@ void VulkanShadowmapping::SetEntitiesToRender(tEntityList* entities) {
 	_entitiesToRender = entities;
 }
 
-void VulkanShadowmapping::AddEntity(Entity* entity) 
+bool VulkanShadowmapping::AddEntity(Entity* entity) 
 {
 	if (_added_casters == MAX_SHADOWCASTERS) {
 		// TODO: log reached limit
-		return;
+		return false;
 	}
 
 	Scene* scene = VulkanRenderer::Get()->GetScene();
@@ -367,6 +368,8 @@ void VulkanShadowmapping::AddEntity(Entity* entity)
 	_shadowcasters_buffer->WriteData(offset_casters + 16, 4, &range);
 
 	_added_casters++;
+
+	return true;
 }
 
 void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {

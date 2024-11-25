@@ -10,6 +10,7 @@ VulkanEnvMap::VulkanEnvMap() {
 	_steps = 1;
 	_processed = 0;
 	_enabled = true;
+	_shadowmapper = nullptr;
 }
 VulkanEnvMap::~VulkanEnvMap() {
 	SAFE_RELEASE(_env_cube_texture);
@@ -46,11 +47,22 @@ void VulkanEnvMap::Create()
 		_sides[i]._gbuffer->Resize(_cube_size, _cube_size);
 		_sides[i]._gbuffer->EnableReverseCull();
 
+		if (_shadowmapper == nullptr) {
+			_shadowmapper = new VulkanShadowmapping(
+				&_sides[i]._gbuffer->GetVertexDescriptorSets(),
+				_sides[i]._gbuffer->GetAnimationsDescriptorSet(),
+				camerasBuffer->GetCamerasBuffer(),
+				_sides[i]._gbuffer->GetPositionAttachment());
+			// TODO: figure out
+			_shadowmapper->SetCamera(0, &cameras[0]);
+		}
+
 		_sides[i]._light->SetCameraIndex(i);
 		_sides[i]._light->SetEnvmap(true);
 		_sides[i]._light->CreateFramebuffer();
 		_sides[i]._light->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), camerasBuffer);
-		_sides[i]._light->CreatePipeline();
+		_sides[i]._light->SetShadowMapDescriptorSet(_shadowmapper->GetShadowRendererDescriptorSet());
+		_sides[i]._light->CreatePipeline(_shadowmapper->GetShadowRendererDescriptorSet());
 		_sides[i]._light->SetLightsBuffer(_lights_buffer);
 		_sides[i]._light->SetGBuffer(_sides[i]._gbuffer);
 		_sides[i]._light->Resize(_cube_size, _cube_size);

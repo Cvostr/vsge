@@ -60,7 +60,7 @@ void VkMaterialsThumbnails::Create()
     _lights_buffer = new LightsBuffer;
     _lights_buffer->SetMaxLightsCount(1);
     _lights_buffer->Create();
-    _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0.f, 0.f, 0.f), Vec3(0.4f, 0.3f, -0.7f), Color());
+    _lights_buffer->SetLight(0, 0, 10, 0, 0, Vec3(0.f, 0.f, 0.f), Vec3(0.4f, 0.3f, -0.7f), Color(), -1);
     _lights_buffer->SetLightsCount(1);
     _lights_buffer->SetAmbientColor(Color());
     _lights_buffer->UpdateGpuBuffer();
@@ -88,10 +88,18 @@ void VkMaterialsThumbnails::Create()
     _gbuffer->SetBuffers(_transform_buffer, _storage_buffer, _storage_buffer);
     _gbuffer->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
+    _shadowmapper = new VulkanShadowmapping(
+        &_gbuffer->GetVertexDescriptorSets(),
+        _gbuffer->GetAnimationsDescriptorSet(),
+        _cameras_buffer->GetCamerasBuffer(),
+        _gbuffer->GetPositionAttachment());
+    _shadowmapper->SetCamera(CAMERA_INDEX, _camera);
+
     _light = new VulkanDeferredLight;
     _light->CreateFramebuffer();
     _light->CreateDescriptorSet(_lights_buffer, _cameras_buffer);
-    _light->CreatePipeline();
+    _light->SetShadowMapDescriptorSet(_shadowmapper->GetShadowRendererDescriptorSet());
+    _light->CreatePipeline(_shadowmapper->GetShadowRendererDescriptorSet());
     _light->SetLightsBuffer((VulkanBuffer*)_lights_buffer->GetLightsGpuBuffer());
     _light->SetGBuffer(_gbuffer);
     _light->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);

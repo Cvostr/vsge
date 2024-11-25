@@ -32,7 +32,8 @@ void VulkanRenderTarget::Create()
 	_deferred_renderer = new VulkanDeferredLight;
 	_deferred_renderer->CreateFramebuffer();
 	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), camBuffer);
-	_deferred_renderer->CreatePipeline();
+	_deferred_renderer->SetShadowMapDescriptorSet(_shadowmapper->GetShadowRendererDescriptorSet());
+	_deferred_renderer->CreatePipeline(_shadowmapper->GetShadowRendererDescriptorSet());
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
@@ -79,10 +80,13 @@ void VulkanRenderTarget::SetBuffers(
 	m_gbufferRenderer->SetBuffers(transforms_buffer, anims_buffer, particles_buffer);
 }
 
-void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
+/*
+void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) 
+{
 	_shadowmapper = shadowmapping;
 	_deferred_renderer->SetShadowmapper(shadowmapping);
 }
+*/
 
 void VulkanRenderTarget::SetGenericLightProbe(VulkanLightProbeImage* probeImage)
 {

@@ -16,6 +16,7 @@ namespace VSGE {
 
 		VulkanDescriptorPool* _deferred_pool;
 		VulkanDescriptorSet* _deferred_descriptor;
+		VulkanDescriptorSet* _shadowmapDescriptorSet;
 
 		VulkanPipeline* _deferred_pipeline;
 
@@ -42,9 +43,10 @@ namespace VSGE {
 
 		void CreateFramebuffer();
 		void CreateDescriptorSet(LightsBuffer* lightsBuffer, VulkanCamerasBuffer* camerasBuffer);
-		void CreatePipeline();
+		void CreatePipeline(VulkanDescriptorSet* shadowDescriptorSet);
 
 		void SetLightsBuffer(VulkanBuffer* lights_buffer);
+		void SetShadowMapDescriptorSet(VulkanDescriptorSet* set);
 		void SetGBuffer(VulkanGBufferRenderer* gbuffer);
 		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
 		void SetTexture(uint32 binding, VulkanTexture* texture, VulkanSampler* sampler = nullptr);

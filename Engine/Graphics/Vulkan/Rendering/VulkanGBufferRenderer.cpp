@@ -19,12 +19,14 @@ VulkanGBufferRenderer::VulkanGBufferRenderer() {
 
 	renderMode = RENDER_ALL;
 }
-VulkanGBufferRenderer::~VulkanGBufferRenderer() {
+VulkanGBufferRenderer::~VulkanGBufferRenderer() 
+{
 	SAFE_RELEASE(m_gbufferFramebuffer)
 	SAFE_RELEASE(_gbuffer_renderpass)
 }
 
-void VulkanGBufferRenderer::CreateFramebuffer() {
+void VulkanGBufferRenderer::CreateFramebuffer() 
+{
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
 	_gbuffer_renderpass = new VulkanRenderPass;

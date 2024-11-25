@@ -21,10 +21,11 @@ VulkanPipeline* deferredLightEnvmapPipeline = nullptr;
 
 bool DeferredPipelinesInitialized = false;
 
-void CreateDeferredLightPipelines(VulkanDescriptorSet* deferredDescrSet, VulkanRenderPass* renderPass)
+void CreateDeferredLightPipelines(VulkanDescriptorSet* deferredDescrSet, VulkanDescriptorSet* shadowDescrSet, VulkanRenderPass* renderPass)
 {
 	_deferred_pipeline_layout = new VulkanPipelineLayout;
 	_deferred_pipeline_layout->PushDescriptorSet(deferredDescrSet);
+	_deferred_pipeline_layout->PushDescriptorSet(shadowDescrSet);
 	_deferred_pipeline_layout->Create();
 
 	VertexLayout _vertexLayout;
@@ -66,7 +67,8 @@ VulkanDeferredLight::VulkanDeferredLight() :
 	_deferred_descriptor = nullptr;
 }
 
-VulkanDeferredLight::~VulkanDeferredLight() {
+VulkanDeferredLight::~VulkanDeferredLight() 
+{
 	SAFE_RELEASE(_deferred_pipeline);
 	SAFE_RELEASE(_deferred_pipeline_layout);
 
@@ -77,7 +79,8 @@ VulkanDeferredLight::~VulkanDeferredLight() {
 	SAFE_RELEASE(_deferred_rp);
 }
 
-void VulkanDeferredLight::CreateFramebuffer() {
+void VulkanDeferredLight::CreateFramebuffer() 
+{
 	_deferred_rp = new VulkanRenderPass;
 	_deferred_rp->SetClearSize(_fb_width, _fb_height);
 	_deferred_rp->PushColorAttachment(FORMAT_RGBA16F);
@@ -158,11 +161,11 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	UnsetIBL();
 }
 
-void VulkanDeferredLight::CreatePipeline()
+void VulkanDeferredLight::CreatePipeline(VulkanDescriptorSet* shadowDescriptorSet)
 {
 	if (DeferredPipelinesInitialized == false) {
 
-		CreateDeferredLightPipelines(_deferred_descriptor, _deferred_rp);
+		CreateDeferredLightPipelines(_deferred_descriptor, shadowDescriptorSet, _deferred_rp);
 
 		DeferredPipelinesInitialized = true;
 	}
@@ -173,8 +176,14 @@ void VulkanDeferredLight::CreatePipeline()
 		_deferred_pipeline = deferredLightPipeline;
 }
 
-void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) {
+void VulkanDeferredLight::SetLightsBuffer(VulkanBuffer* lights_buffer) 
+{
 	_deferred_descriptor->WriteDescriptorBuffer(2, lights_buffer);
+}
+
+void VulkanDeferredLight::SetShadowMapDescriptorSet(VulkanDescriptorSet* set)
+{
+	this->_shadowmapDescriptorSet = set;
 }
 
 void VulkanDeferredLight::SetGBuffer(VulkanGBufferRenderer* gbuffer) {
@@ -313,6 +322,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf)
 		cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
 		uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
 		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
+		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 1, 1, _shadowmapDescriptorSet);
 		cmdbuf->BindMesh(*mesh, 0);
 		cmdbuf->DrawIndexed(6);
 		//draw entities with deferred materials

@@ -93,7 +93,8 @@ namespace VSGE {
 		void ResizeOutput(uint32 width, uint32 height);
 		VulkanTexture* GetOutputTexture();
 
-		void AddEntity(Entity* entity);
+		// Register lightcaster entity
+		bool AddEntity(Entity* entity);
 		void ResetCasters();
 		uint32 GetAddedCastersNum() const;
 		
