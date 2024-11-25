@@ -85,12 +85,109 @@ layout(set = 1, binding = 3) uniform sampler2DArray shadowmaps[2];
 layout(set = 1, binding = 4) uniform samplerCube shadowmaps_point[32];
 layout(set = 1, binding = 5) uniform sampler2D shadowmaps_spot[32];
 
-
 layout(set = 1, binding = 6) uniform dir_shadow_cascades{
     float distances[10];
     uint cascades_count;
     uint shadowmap_size;
 };
+
+int GetCascadeByDistance(float dist){
+	for(int i = 0; i < int(cascades_count); ++i) {
+		if(dist < distances[i]) {	
+			return i;
+		}
+	}
+    return -1;
+}
+
+int GetCascade(vec3 position)
+{
+    float dist = (cam_view_projection * vec4(position, 1)).z;
+    return GetCascadeByDistance(dist);
+}
+
+float GetShadowmapSample(uint shadowmap, uint cascade, vec2 uv){
+    return texture(shadowmaps[shadowmap], vec3(uv, cascade)).r; 
+}
+
+float GetSpotShadowmapSample(uint shadowmap, vec2 uv)
+{
+    return texture(shadowmaps_spot[shadowmap], uv).r; 
+}
+
+float calculateDirectionalShadow(vec3 FragPos, int caster_i)
+{
+    if (caster_i == -1)
+        return 0;
+
+    uint cascade = GetCascade(FragPos);
+    if (cascade < 0)
+        return 0;
+            
+    vec4 objPosLightSpace = casters[caster_i].projections[cascade] * vec4(FragPos, 1);
+    vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
+    float realDepth = shadowProjection.z;
+    vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
+    float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
+
+    float shadow = 0;
+    for (int x = 0; x < casters[caster_i].PcfPassNum; x ++)
+    {
+        for (int y = 0; y < casters[caster_i].PcfPassNum; y ++)
+        {
+            vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
+            float shadowmap_depth = GetShadowmapSample(casters[caster_i].image_index, cascade, uvoffset);
+            if (realDepth <= 1.0) 
+                shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
+        }
+    }
+
+    return shadow;
+}
+
+float calculatePointShadow(vec3 FragPos, int caster_i)
+{
+    float shadow = 0;
+    if (caster_i == -1)
+        return shadow;
+
+    vec3 dir = FragPos - casters[caster_i].pos;
+    uint texture_index = casters[caster_i].image_index;
+    float shadowmap_depth = texture(shadowmaps_point[texture_index], dir).r * casters[caster_i].range;
+    float real_depth = length(dir);
+    
+    if (shadowmap_depth < casters[caster_i].range)
+    {
+        shadow = (real_depth - casters[caster_i].ShadowBias * 10 >= shadowmap_depth) ? casters[caster_i].ShadowStrength : 0.0;
+    }
+
+    return shadow;
+}
+
+float calculateSpotShadow(vec3 FragPos, int caster_i)
+{
+    float shadow = 0;
+    if (caster_i == -1)
+        return shadow;
+
+    vec4 objPosLightSpace = casters[caster_i].projections[0] * vec4(FragPos, 1);
+    vec3 shadowProjection = (objPosLightSpace.xyz / objPosLightSpace.w);
+    float realDepth = shadowProjection.z;
+    vec2 start_offset = (shadowProjection.xy / 2) + 0.5;
+    float shadowFactor = casters[caster_i].ShadowStrength / (casters[caster_i].PcfPassNum * casters[caster_i].PcfPassNum);
+    for (int x = 0; x < casters[caster_i].PcfPassNum; x ++)
+    {
+        for (int y = 0; y < casters[caster_i].PcfPassNum; y ++)
+        {
+            vec2 uvoffset = start_offset + (vec2(x, y) / shadowmap_size);
+            float shadowmap_depth = GetSpotShadowmapSample(casters[caster_i].image_index, uvoffset);
+            if (realDepth <= 1.0) 
+                shadow += (realDepth - casters[caster_i].ShadowBias > shadowmap_depth) ? shadowFactor : 0.0;
+        }
+    }
+
+    return shadow;
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -212,8 +309,10 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
     //iterate over all lights and calculate them
     for(int light_i = 0; light_i < lights_count; light_i ++) {
 
-        if(lights[light_i].type == LIGHTSOURCE_DIR){
+        if (lights[light_i].type == LIGHTSOURCE_DIR)
+        {
 			vec3 L = lights[light_i].direction;
+            float shadow = calculateDirectionalShadow(pos, lights[light_i].casterIndex);
             result += CalculateLight(L, 
                                     lights[light_i].intensity, 
                                     Lo,
@@ -222,14 +321,16 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
                                     normal,
                                     roughness,
                                     metallic,
-                                    F0);
+                                    F0) * (1 - shadow);
         }
-        if(lights[light_i].type == LIGHTSOURCE_POINT){
+        if (lights[light_i].type == LIGHTSOURCE_POINT)
+        {
             vec3 L = normalize(lights[light_i].position - pos);
 
             float distance = length(lights[light_i].position - pos);
             float attenuation = 1.0 / ( 1.0 + 1.0 / lights[light_i].range * distance + 1.0 / lights[light_i].range * distance * distance) * lights[light_i].intensity;
-            
+            float shadow = calculatePointShadow(pos, lights[light_i].casterIndex);
+
             result += CalculateLight(L, 
                                     attenuation, 
                                     Lo,
@@ -238,10 +339,11 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
                                     normal,
                                     roughness,
                                     metallic,
-                                    F0);
+                                    F0) * (1 - shadow);
         }
 
-        if(lights[light_i].type == LIGHTSOURCE_SPOT){
+        if (lights[light_i].type == LIGHTSOURCE_SPOT)
+        {
             vec3 L = normalize(lights[light_i].position - pos);
             vec3 direction = lights[light_i].direction;
 
@@ -252,6 +354,8 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
             float epsilon   = inner - outer;
             float intensity = clamp((theta - outer) / epsilon, 0.0, 1.0);  
 
+            float shadow = calculateSpotShadow(pos, lights[light_i].casterIndex);
+
             result += CalculateLight(L, 
                                     intensity * lights[light_i].intensity, 
                                     Lo,
@@ -260,7 +364,7 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
                                     normal,
                                     roughness,
                                     metallic,
-                                    F0);
+                                    F0) * (1 - shadow);
         }
     }
 
@@ -279,7 +383,7 @@ void main() {
         vec3 normal = normal_map.rgb;
         vec3 pos = texture(pos, UVCoord).rgb;
         vec4 material = texture(material, UVCoord);
-        float shadow = texture(shadows, UVCoord).r;
+        //float shadow = texture(shadows, UVCoord).r;
         float ssao = texture(ssao_map, UVCoord).r;
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
@@ -293,7 +397,7 @@ void main() {
         vec3 Lo = normalize(cam_position - pos);
 
         vec3 lightning = CalculateLightning(Lo, albedo, normal, pos, roughness, metallic, F0) * ao;
-        vec3 color = vec3(0.03) * albedo + lightning * (1 - shadow);
+        vec3 color = vec3(0.03) * albedo + lightning;
         
         float cosLo = max(0.0, dot(normal, Lo));
         vec3 ambient = CalculateIBL(pos, normal, F0, Lo, cosLo, roughness, metallic, albedo);

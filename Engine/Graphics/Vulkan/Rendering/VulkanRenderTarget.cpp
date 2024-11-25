@@ -185,7 +185,7 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer)
 	// Shadowmapping : stage 2
 	if (_shadowmapper) {
 		_shadowmapper->UpdateShadowrenderingDescriptors();
-		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
+		//_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
 	}
 
 	// SSAO

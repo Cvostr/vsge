@@ -5,12 +5,15 @@
 
 using namespace VSGE;
 
-VulkanEnvMap::VulkanEnvMap() {
+VulkanEnvMap::VulkanEnvMap() :
+	_env_cube_texture(nullptr),
+	_shadowmapper(nullptr),
+	camerasBuffer(nullptr)
+{
 	_cube_size = 256;
 	_steps = 1;
 	_processed = 0;
 	_enabled = true;
-	_shadowmapper = nullptr;
 }
 VulkanEnvMap::~VulkanEnvMap() {
 	SAFE_RELEASE(_env_cube_texture);
