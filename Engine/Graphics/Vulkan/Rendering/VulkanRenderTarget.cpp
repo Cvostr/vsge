@@ -80,14 +80,6 @@ void VulkanRenderTarget::SetBuffers(
 	m_gbufferRenderer->SetBuffers(transforms_buffer, anims_buffer, particles_buffer);
 }
 
-/*
-void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) 
-{
-	_shadowmapper = shadowmapping;
-	_deferred_renderer->SetShadowmapper(shadowmapping);
-}
-*/
-
 void VulkanRenderTarget::SetGenericLightProbe(VulkanLightProbeImage* probeImage)
 {
 	_deferred_renderer->SetIBL((VulkanTexture*)probeImage->GetSpmap(), (VulkanTexture*) probeImage->GetIrmap());

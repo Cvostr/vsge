@@ -169,7 +169,7 @@ void VulkanDeferredLight::CreatePipeline(VulkanDescriptorSet* shadowDescriptorSe
 
 		DeferredPipelinesInitialized = true;
 	}
-
+	
 	if (_is_envmap)
 		_deferred_pipeline = deferredLightEnvmapPipeline;
 	else
@@ -263,13 +263,16 @@ void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping)
 {
 	if (!_deferred_descriptor)
 		return;
+	
+	this->_shadowmapDescriptorSet = shadowmapping->GetShadowRendererDescriptorSet();
 
-	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
+	/*VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 
 	if (shadowmapping != nullptr)
 		_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
 	else 
 		_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
+		*/
 }
 
 void VulkanDeferredLight::UnsetIBL() {
@@ -322,7 +325,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf)
 		cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
 		uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
 		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
-		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 1, 1, _shadowmapDescriptorSet);
+		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 1, 1, _shadowmapDescriptorSet, 1, &cam_offset);
 		cmdbuf->BindMesh(*mesh, 0);
 		cmdbuf->DrawIndexed(6);
 		//draw entities with deferred materials

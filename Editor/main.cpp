@@ -37,7 +37,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	app->GetWindow().CreateWindow(settings->_windowWidth, settings->_windowHeight, "Editor");
 
 	VulkanRAPI* vk = new VulkanRAPI;
-	vk->Create(&app->GetWindow());
+	vk->Create(&app->GetWindow(), true);
 
 	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
 	app->AddLayer(mono_scripting_layer);

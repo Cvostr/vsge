@@ -35,15 +35,15 @@ namespace VSGE {
 	private:
 
 		VulkanRenderPass* _shadowmap_render_pass;
-		VulkanRenderPass* _shadowprocessRenderPass;
+		//VulkanRenderPass* _shadowprocessRenderPass;
 
 		VulkanPipeline* _bound_pipeline;
 		//-----------------Shadowprocess pipeline
-		VertexLayout _shadowprocess_vertex_layout;
-		VulkanShader* _shadowprocess_shader;
-		VulkanPipelineLayout* _shadowprocess_layout;
-		VulkanPipeline* _shadowprocess_pipeline;
-		VulkanFramebuffer* _shadowprocess_framebuffer;
+		//VertexLayout _shadowprocess_vertex_layout;
+		//VulkanShader* _shadowprocess_shader;
+		//VulkanPipelineLayout* _shadowprocess_layout;
+		//VulkanPipeline* _shadowprocess_pipeline;
+		//VulkanFramebuffer* _shadowprocess_framebuffer;
 
 		std::vector<VulkanShadowCaster*> _casters;
 		uint32 _added_casters;
@@ -66,7 +66,6 @@ namespace VSGE {
 		Camera* cam;
 		tEntityList* _entitiesToRender;
 		VulkanTexture* _gbuffer_pos;
-		VulkanSampler* _shadowmap_sampler;
 
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
@@ -91,7 +90,6 @@ namespace VSGE {
 		void SetGbufferPositionsAttachment(VulkanTexture* gpos);
 
 		void ResizeOutput(uint32 width, uint32 height);
-		VulkanTexture* GetOutputTexture();
 
 		// Register lightcaster entity
 		bool AddEntity(Entity* entity);

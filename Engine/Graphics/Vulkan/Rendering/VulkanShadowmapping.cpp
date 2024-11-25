@@ -34,6 +34,8 @@ VulkanPipeline* _shadowmap_point_pipeline = nullptr;
 VulkanPipeline* _shadowmap_terrain_pipeline = nullptr;
 VulkanPipeline* _shadowmap_terrain_point_pipeline = nullptr;
 
+VulkanSampler* _shadowmap_sampler = nullptr;
+
 bool ShadowPipelinesInitialized = false;
 
 void InitShadowmappingPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptorSet* castersSet, VulkanDescriptorSet* animSet, VulkanRenderPass* casterRenderPass)
@@ -114,6 +116,14 @@ void InitShadowmappingPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptor
 			casterRenderPass,
 			shadowmap_terrain_vertex_layout,
 			_shadowmap_layout);
+	}
+	
+	if (_shadowmap_sampler == nullptr) {
+		_shadowmap_sampler = new VulkanSampler;
+		_shadowmap_sampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
+		_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER);
+		_shadowmap_sampler->SetBorderColor(BORDER_COLOR_OPAQUE_WHITE);
+		_shadowmap_sampler->Create();
 	}
 }
 
@@ -200,6 +210,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	// Create descriptor next
 	_shadowrenderer_descrSet->Create();
 
+	/*
 	_shadowprocessRenderPass = new VulkanRenderPass;
 	_shadowprocessRenderPass->SetClearSize(_outputWidth, _outputHeight);
 	_shadowprocessRenderPass->PushColorAttachment(FORMAT_RGBA);
@@ -209,8 +220,9 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowprocess_framebuffer->SetSize(_outputWidth, _outputHeight);
 	_shadowprocess_framebuffer->AddAttachment();
 	_shadowprocess_framebuffer->Create(_shadowprocessRenderPass);
+	*/
 
-	_shadowprocess_shader = new VulkanShader;
+	/*_shadowprocess_shader = new VulkanShader;
 	_shadowprocess_shader->AddShaderFromFile("shadowmap_process.vert", SHADER_STAGE_VERTEX);
 	_shadowprocess_shader->AddShaderFromFile("shadowmap_process.frag", SHADER_STAGE_FRAGMENT);
 	
@@ -226,13 +238,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowprocess_pipeline->SetDynamicCullMode(false);
 	_shadowprocess_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 	_shadowprocess_pipeline->Create(_shadowprocess_shader, _shadowprocessRenderPass, _shadowprocess_vertex_layout, _shadowprocess_layout);
-
-	_shadowmap_sampler = new VulkanSampler;
-	_shadowmap_sampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
-	_shadowmap_sampler->SetWrapModes(SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER, SAMPLER_WRAP_CLAMP_TO_BORDER);
-	_shadowmap_sampler->SetBorderColor(BORDER_COLOR_OPAQUE_WHITE);
-	_shadowmap_sampler->Create();
-
+	*/
+	
 	// Write buffers, images
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorImage(1,
@@ -264,9 +271,9 @@ VulkanShadowmapping::~VulkanShadowmapping()
 
 	//Destroy renderpasses
 	SAFE_RELEASE(_shadowmap_render_pass);
-	SAFE_RELEASE(_shadowprocessRenderPass);
+	//SAFE_RELEASE(_shadowprocessRenderPass);
 
-	SAFE_RELEASE(_shadowprocess_framebuffer)
+	//SAFE_RELEASE(_shadowprocess_framebuffer)
 	//Release all casters
 	for (auto& caster : _casters) {
 		SAFE_RELEASE(caster);
@@ -375,17 +382,13 @@ bool VulkanShadowmapping::AddEntity(Entity* entity)
 void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
 	_outputWidth = width;
 	_outputHeight = height;
-	_shadowprocessRenderPass->SetClearSize(width, height);
-	_shadowprocess_framebuffer->Resize(width, height);
+	//_shadowprocessRenderPass->SetClearSize(width, height);
+	//_shadowprocess_framebuffer->Resize(width, height);
 }
 
 void VulkanShadowmapping::SetGbufferPositionsAttachment(VulkanTexture* gpos) {
 	_shadowrenderer_descrSet->WriteDescriptorImage(1, gpos,
 		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
-}
-
-VulkanTexture* VulkanShadowmapping::GetOutputTexture() {
-	return (VulkanTexture*)_shadowprocess_framebuffer->GetColorAttachments()[0];
 }
 
 void VulkanShadowmapping::ResetCasters() 
@@ -539,7 +542,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 	cmdbuf->EndRenderPass();
 }
-
+/*
 void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf) 
 {
 	uint32 offset = _cameraIndex * CAMERA_ELEM_SIZE;
@@ -552,7 +555,7 @@ void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdb
 	cmdbuf->BindMesh(*screenPlane);
 	cmdbuf->DrawIndexed(6);
 	cmdbuf->EndRenderPass();
-}
+}*/
 
 void VulkanShadowmapping::UpdateShadowrenderingDescriptors() {
 	//Write shadowmaps to descriptor set
