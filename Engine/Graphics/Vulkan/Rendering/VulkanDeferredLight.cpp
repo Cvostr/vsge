@@ -265,14 +265,6 @@ void VulkanDeferredLight::SetShadowmapper(VulkanShadowmapping* shadowmapping)
 		return;
 	
 	this->_shadowmapDescriptorSet = shadowmapping->GetShadowRendererDescriptorSet();
-
-	/*VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
-
-	if (shadowmapping != nullptr)
-		_deferred_descriptor->WriteDescriptorImage(7, shadowmapping->GetOutputTexture(), attachment_sampler);
-	else 
-		_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
-		*/
 }
 
 void VulkanDeferredLight::UnsetIBL() {

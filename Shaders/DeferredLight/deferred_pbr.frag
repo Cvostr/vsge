@@ -79,8 +79,6 @@ layout (std140, set = 1, binding = 0) uniform ShadowData{
     uint casters_count;
 };
 
-//layout(binding = 1) uniform sampler2D gpos;
-
 layout(set = 1, binding = 3) uniform sampler2DArray shadowmaps[2];
 layout(set = 1, binding = 4) uniform samplerCube shadowmaps_point[32];
 layout(set = 1, binding = 5) uniform sampler2D shadowmaps_spot[32];

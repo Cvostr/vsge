@@ -132,18 +132,18 @@ VulkanShadowmapping::VulkanShadowmapping(
 	VulkanDescriptorSet* animsDescrSet,
 	VulkanBuffer* cam_buffer,
 	VulkanTexture* pos
-){
-	_bound_pipeline = nullptr;
+) :
+	cam(nullptr),
+	_vertexDescrSets(vertexDescrSets),
+	animsDescrSet(animsDescrSet),
+	_bound_pipeline(nullptr),
+	_cameraIndex(0),
+	_entitiesToRender(nullptr)
+{
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 	_added_casters = 0;
-	_cameraIndex = 0;
-	this->_vertexDescrSets = vertexDescrSets;
-	this->animsDescrSet = animsDescrSet;
 	_gbuffer_pos = pos;
-
-	_outputWidth = 1280;
-	_outputHeight = 720;
 
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
@@ -198,8 +198,8 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowrenderer_descPool);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
@@ -209,43 +209,13 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descPool->Create();
 	// Create descriptor next
 	_shadowrenderer_descrSet->Create();
-
-	/*
-	_shadowprocessRenderPass = new VulkanRenderPass;
-	_shadowprocessRenderPass->SetClearSize(_outputWidth, _outputHeight);
-	_shadowprocessRenderPass->PushColorAttachment(FORMAT_RGBA);
-	_shadowprocessRenderPass->Create();
-
-	_shadowprocess_framebuffer = new VulkanFramebuffer;
-	_shadowprocess_framebuffer->SetSize(_outputWidth, _outputHeight);
-	_shadowprocess_framebuffer->AddAttachment();
-	_shadowprocess_framebuffer->Create(_shadowprocessRenderPass);
-	*/
-
-	/*_shadowprocess_shader = new VulkanShader;
-	_shadowprocess_shader->AddShaderFromFile("shadowmap_process.vert", SHADER_STAGE_VERTEX);
-	_shadowprocess_shader->AddShaderFromFile("shadowmap_process.frag", SHADER_STAGE_FRAGMENT);
-	
-	_shadowprocess_vertex_layout.AddBinding(sizeof(Vertex));
-	_shadowprocess_vertex_layout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
-	_shadowprocess_vertex_layout.AddItem(1, offsetof(Vertex, uv), VertexLayoutFormat::VL_FORMAT_RG32_SFLOAT);
-
-	_shadowprocess_layout = new VulkanPipelineLayout;
-	_shadowprocess_layout->PushDescriptorSet(_shadowrenderer_descrSet);
-	_shadowprocess_layout->Create();
-
-	_shadowprocess_pipeline = new VulkanPipeline;
-	_shadowprocess_pipeline->SetDynamicCullMode(false);
-	_shadowprocess_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
-	_shadowprocess_pipeline->Create(_shadowprocess_shader, _shadowprocessRenderPass, _shadowprocess_vertex_layout, _shadowprocess_layout);
-	*/
 	
 	// Write buffers, images
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
-	_shadowrenderer_descrSet->WriteDescriptorImage(1,
-		_gbuffer_pos,
-		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
-	_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
+	//_shadowrenderer_descrSet->WriteDescriptorImage(1,
+	//	_gbuffer_pos,
+	//	VulkanRenderingGenerics::Get()->GetAttachmentSampler());
+	//_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
 	// write empty texture to directional shadowmaps
@@ -271,9 +241,7 @@ VulkanShadowmapping::~VulkanShadowmapping()
 
 	//Destroy renderpasses
 	SAFE_RELEASE(_shadowmap_render_pass);
-	//SAFE_RELEASE(_shadowprocessRenderPass);
 
-	//SAFE_RELEASE(_shadowprocess_framebuffer)
 	//Release all casters
 	for (auto& caster : _casters) {
 		SAFE_RELEASE(caster);
@@ -377,18 +345,6 @@ bool VulkanShadowmapping::AddEntity(Entity* entity)
 	_added_casters++;
 
 	return true;
-}
-
-void VulkanShadowmapping::ResizeOutput(uint32 width, uint32 height) {
-	_outputWidth = width;
-	_outputHeight = height;
-	//_shadowprocessRenderPass->SetClearSize(width, height);
-	//_shadowprocess_framebuffer->Resize(width, height);
-}
-
-void VulkanShadowmapping::SetGbufferPositionsAttachment(VulkanTexture* gpos) {
-	_shadowrenderer_descrSet->WriteDescriptorImage(1, gpos,
-		VulkanRenderingGenerics::Get()->GetAttachmentSampler());
 }
 
 void VulkanShadowmapping::ResetCasters() 
@@ -542,20 +498,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 	cmdbuf->EndRenderPass();
 }
-/*
-void VulkanShadowmapping::RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf) 
-{
-	uint32 offset = _cameraIndex * CAMERA_ELEM_SIZE;
-
-	_shadowprocessRenderPass->CmdBegin(*cmdbuf, *_shadowprocess_framebuffer);
-	cmdbuf->BindPipeline(*_shadowprocess_pipeline);
-	cmdbuf->SetViewport(0, 0, _outputWidth, _outputHeight);
-	cmdbuf->BindDescriptorSets(*_shadowprocess_layout, 0, 1, _shadowrenderer_descrSet, 1, &offset);
-	VulkanMesh* screenPlane = VulkanRenderingGenerics::Get()->GetScreenMesh();
-	cmdbuf->BindMesh(*screenPlane);
-	cmdbuf->DrawIndexed(6);
-	cmdbuf->EndRenderPass();
-}*/
 
 void VulkanShadowmapping::UpdateShadowrenderingDescriptors() {
 	//Write shadowmaps to descriptor set
