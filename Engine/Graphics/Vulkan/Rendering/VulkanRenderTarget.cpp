@@ -32,7 +32,8 @@ void VulkanRenderTarget::Create()
 	_deferred_renderer = new VulkanDeferredLight;
 	_deferred_renderer->CreateFramebuffer();
 	_deferred_renderer->CreateDescriptorSet(VulkanRenderer::Get()->GetLightsBuffer(), camBuffer);
-	_deferred_renderer->CreatePipeline();
+	_deferred_renderer->SetShadowMapDescriptorSet(_shadowmapper->GetShadowRendererDescriptorSet());
+	_deferred_renderer->CreatePipeline(_shadowmapper->GetShadowRendererDescriptorSet());
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 	_deferred_renderer->SetCameraIndex(0);
 	_deferred_renderer->UnsetIBL();
@@ -79,11 +80,6 @@ void VulkanRenderTarget::SetBuffers(
 	m_gbufferRenderer->SetBuffers(transforms_buffer, anims_buffer, particles_buffer);
 }
 
-void VulkanRenderTarget::SetShadowmapper(VulkanShadowmapping* shadowmapping) {
-	_shadowmapper = shadowmapping;
-	_deferred_renderer->SetShadowmapper(shadowmapping);
-}
-
 void VulkanRenderTarget::SetGenericLightProbe(VulkanLightProbeImage* probeImage)
 {
 	_deferred_renderer->SetIBL((VulkanTexture*)probeImage->GetSpmap(), (VulkanTexture*) probeImage->GetIrmap());
@@ -101,13 +97,6 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height)
 	m_gbufferRenderer->Resize(width, height);
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
-
-	//update shadowmapper (if exists)
-	if (_shadowmapper) {
-		_shadowmapper->ResizeOutput(width, height);
-		_shadowmapper->SetGbufferPositionsAttachment(GetGBufferPositionsAttachment());
-		_deferred_renderer->SetShadowmapper(_shadowmapper);
-	}
 
 	//resize posteffects
 	_gamma_correction->SetInputTexture(_deferred_renderer->GetOutputTexture());
@@ -157,7 +146,8 @@ VulkanShadowmapping* VulkanRenderTarget::GetShadowmapper()
 	return _shadowmapper;
 }
 
-Camera* VulkanRenderTarget::GetCamera() {
+Camera* VulkanRenderTarget::GetCamera() 
+{
 	return VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
 }
 
@@ -172,17 +162,11 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer)
 	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
 	m_gbufferRenderer->SetScene(vk_renderer->GetScene());
 
-	// Shadowmapping : stage 1
+	// Shadowmapping : rendering world
 	_shadowmapper->ProcessShadowCasters(cmdbuffer);
 
 	// GBuffer
 	m_gbufferRenderer->RecordCmdBuffer(cmdbuffer);
-
-	// Shadowmapping : stage 2
-	if (_shadowmapper) {
-		_shadowmapper->UpdateShadowrenderingDescriptors();
-		_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
-	}
 
 	// SSAO
 	if (params._ssao_enabled) {

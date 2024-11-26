@@ -22,8 +22,17 @@ namespace VSGE {
 		void Destroy();
 
 		void UpdateGpuBuffer();
-		void SetLight(uint32 light_index, LightsourceComponent* light);
-		void SetLight(uint32 light_index, int type, float intensity, float range, float spot_angle, const Vec3& pos, const Vec3& dir, const Color& color);
+		void SetLight(uint32 lightIndex, LightsourceComponent* light, int casterIndex);
+		void SetLight(uint32 light_index,
+			int type,
+			float intensity,
+			float range,
+			float spot_angle,
+			const Vec3& pos,
+			const Vec3& dir,
+			const Color& color,
+			int casterIndex);
+
 		void SetLightsCount(uint32 lights_count);
 		void SetAmbientColor(const Color& color);
 

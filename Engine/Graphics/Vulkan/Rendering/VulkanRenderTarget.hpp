@@ -12,6 +12,7 @@ namespace VSGE {
 	class VulkanRenderTarget : public RenderTarget {
 	private:
 		VulkanGBufferRenderer* m_gbufferRenderer;
+		VulkanShadowmapping* _shadowmapper;
 		VulkanDeferredLight* _deferred_renderer;
 
 		VulkanGammaCorrection* _gamma_correction;
@@ -19,8 +20,6 @@ namespace VSGE {
 		VulkanSSAO* _ssao;
 
 		VulkanTexture* _output;
-
-		VulkanShadowmapping* _shadowmapper;
 
 		void CopyDeferredToOutput(VulkanCommandBuffer* cmdbuf);
 	public:
@@ -36,7 +35,6 @@ namespace VSGE {
 			VulkanBuffer* transforms_buffer = nullptr,
 			VulkanBuffer* anims_buffer = nullptr,
 			VulkanBuffer* particles_buffer = nullptr);
-		void SetShadowmapper(VulkanShadowmapping* shadowmapping);
 		void SetGenericLightProbe(VulkanLightProbeImage* probeImage);
 		void ResizeOutput(uint32 width, uint32 height);
 		void SetOutput(VulkanTexture* output_texture);

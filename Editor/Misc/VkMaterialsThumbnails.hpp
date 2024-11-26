@@ -29,6 +29,7 @@ private:
 	static VkMaterialsThumbnails* _this;
 
 	VSGE::VulkanGBufferRenderer* _gbuffer;
+	VSGE::VulkanShadowmapping* _shadowmapper;
 	VSGE::VulkanDeferredLight* _light;
 
 	VSGE::Camera* _camera;

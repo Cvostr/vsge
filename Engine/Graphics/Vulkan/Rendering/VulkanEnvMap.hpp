@@ -21,6 +21,7 @@ namespace VSGE {
 
 	class VulkanEnvMap {
 	private:
+		VulkanShadowmapping* _shadowmapper;
 		VulkanTexture* _env_cube_texture;
 		EnvMapSide _sides[6];
 		Camera cameras[6];

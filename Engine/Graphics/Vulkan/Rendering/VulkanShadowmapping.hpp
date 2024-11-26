@@ -35,15 +35,8 @@ namespace VSGE {
 	private:
 
 		VulkanRenderPass* _shadowmap_render_pass;
-		VulkanRenderPass* _shadowprocessRenderPass;
 
 		VulkanPipeline* _bound_pipeline;
-		//-----------------Shadowprocess pipeline
-		VertexLayout _shadowprocess_vertex_layout;
-		VulkanShader* _shadowprocess_shader;
-		VulkanPipelineLayout* _shadowprocess_layout;
-		VulkanPipeline* _shadowprocess_pipeline;
-		VulkanFramebuffer* _shadowprocess_framebuffer;
 
 		std::vector<VulkanShadowCaster*> _casters;
 		uint32 _added_casters;
@@ -66,13 +59,9 @@ namespace VSGE {
 		Camera* cam;
 		tEntityList* _entitiesToRender;
 		VulkanTexture* _gbuffer_pos;
-		VulkanSampler* _shadowmap_sampler;
 
 		uint32 _writtenBones;
 		uint32 _writtenParticleTransforms;
-
-		uint32 _outputWidth;
-		uint32 _outputHeight;
 
 		uint32 GetShadowTextureIndex(uint32 caster_index, uint32 caster_type);
 
@@ -88,12 +77,9 @@ namespace VSGE {
 		void SetCamera(uint32 cameraIndex, Camera* cam);
 		void SetEntitiesToRender(tEntityList* entities);
 		void SetTerrainsToRender(tEntityList* terrains);
-		void SetGbufferPositionsAttachment(VulkanTexture* gpos);
 
-		void ResizeOutput(uint32 width, uint32 height);
-		VulkanTexture* GetOutputTexture();
-
-		void AddEntity(Entity* entity);
+		// Register lightcaster entity
+		bool AddEntity(Entity* entity);
 		void ResetCasters();
 		uint32 GetAddedCastersNum() const;
 		
@@ -101,7 +87,6 @@ namespace VSGE {
 		void ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer);
 		
 		void UpdateShadowrenderingDescriptors();
-		void RecordShadowProcessingCmdbuf(VulkanCommandBuffer* cmdbuf);
 
 		VulkanDescriptorSet* GetShadowRendererDescriptorSet();
 	};

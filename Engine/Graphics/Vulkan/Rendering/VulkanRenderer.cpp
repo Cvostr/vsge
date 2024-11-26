@@ -243,19 +243,30 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		for (uint32 light_i = 0; light_i < lightSourcesCount; light_i++) 
 		{
 			LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
-			_lights_buffer->SetLight(light_i, light);
+			int casterIndex = -1;
 
 			if (light->GetCastShadows()) 
 			{
 				for (uint32 target_i = 0; target_i < _render_targets.size(); target_i++)
 				{
 					VulkanRenderTarget* target = _render_targets[target_i];
-					target->GetShadowmapper()->AddEntity(_lightsources[light_i]);
+					if (target->GetShadowmapper()->AddEntity(_lightsources[light_i])) 
+					{
+						casterIndex = target->GetShadowmapper()->GetAddedCastersNum() - 1;
+					}
 				}
 			}
+
+			_lights_buffer->SetLight(light_i, light, casterIndex);
 		}
 
 		_lights_buffer->UpdateGpuBuffer();
+	}
+
+	for (uint32 target_i = 0; target_i < _render_targets.size(); target_i++)
+	{
+		VulkanRenderTarget* target = _render_targets[target_i];
+		target->GetShadowmapper()->UpdateShadowrenderingDescriptors();
 	}
 
 	// на некоторых видеокартах (NVidia GTX 10** выравнивание по 256 байт)

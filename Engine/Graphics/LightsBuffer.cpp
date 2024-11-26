@@ -52,18 +52,29 @@ void LightsBuffer::SetAmbientColor(const Color& color) {
 	Memcpy(_cpu_buffer, &color.r, 12);
 }
 
-void LightsBuffer::SetLight(uint32 light_index, LightsourceComponent* light) {
-	SetLight(light_index,
+void LightsBuffer::SetLight(uint32 lightIndex, LightsourceComponent* light, int casterIndex) 
+{
+	SetLight(lightIndex,
 		light->GetLightType(),
 		light->GetIntensity(),
 		light->GetRange(),
 		light->GetSpotAngle(),
 		light->GetEntity()->GetAbsolutePosition(),
 		light->GetDirection(),
-		light->GetColor());
+		light->GetColor(), 
+		casterIndex);
 }
 
-void LightsBuffer::SetLight(uint32 light_index, int type, float intensity, float range, float spot_angle, const Vec3& pos, const Vec3& dir, const Color& color) 
+void LightsBuffer::SetLight(
+	uint32 light_index,
+	int type,
+	float intensity,
+	float range,
+	float spot_angle,
+	const Vec3& pos,
+	const Vec3& dir,
+	const Color& color,
+	int casterIndex)
 {
 	// Calculate base address offset of light
 	byte* lightAddress = _cpu_buffer + 16 + light_index * LIGHTSOURCE_RECORD_SIZE;
@@ -76,6 +87,7 @@ void LightsBuffer::SetLight(uint32 light_index, int type, float intensity, float
 	Memcpy(lightAddress + 16, &pos, sizeof(Vec3));
 	Memcpy(lightAddress + 32, &dir, sizeof(Vec3));
 	Memcpy(lightAddress + 48, &color, sizeof(Color));
+	Memcpy(lightAddress + 60, &casterIndex, sizeof(int));
 }
 
 GpuBuffer* LightsBuffer::GetLightsGpuBuffer() {
