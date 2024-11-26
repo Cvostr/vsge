@@ -30,9 +30,6 @@ set(SHADERS_FILES   pbr/pbr.vert
                     shadowmap/shadowmap.frag
                     shadowmap/shadowmap.geom
 
-                    shadowmap/shadowmap_process.vert
-                    shadowmap/shadowmap_process.frag
-
                     grass/grass.vert
                     grass/grass.frag
 

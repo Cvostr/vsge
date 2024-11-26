@@ -98,12 +98,6 @@ void VulkanRenderTarget::ResizeOutput(uint32 width, uint32 height)
 	_deferred_renderer->Resize(width, height);
 	_deferred_renderer->SetGBuffer(m_gbufferRenderer);
 
-	//update shadowmapper (if exists)
-	/*if (_shadowmapper) {
-		//_shadowmapper->SetGbufferPositionsAttachment(GetGBufferPositionsAttachment());
-		_deferred_renderer->SetShadowmapper(_shadowmapper);
-	}*/
-
 	//resize posteffects
 	_gamma_correction->SetInputTexture(_deferred_renderer->GetOutputTexture());
 	_gamma_correction->ResizeOutput(Vec2i(width, height));
@@ -152,7 +146,8 @@ VulkanShadowmapping* VulkanRenderTarget::GetShadowmapper()
 	return _shadowmapper;
 }
 
-Camera* VulkanRenderTarget::GetCamera() {
+Camera* VulkanRenderTarget::GetCamera() 
+{
 	return VulkanRenderer::Get()->GetCamerasBuffer()->GetCameraByIndex(_camera_index);
 }
 
@@ -167,17 +162,11 @@ void VulkanRenderTarget::RecordCommandBuffers(VulkanCommandBuffer* cmdbuffer)
 	VulkanRenderer* vk_renderer = VulkanRenderer::Get()->Get();
 	m_gbufferRenderer->SetScene(vk_renderer->GetScene());
 
-	// Shadowmapping : stage 1
+	// Shadowmapping : rendering world
 	_shadowmapper->ProcessShadowCasters(cmdbuffer);
 
 	// GBuffer
 	m_gbufferRenderer->RecordCmdBuffer(cmdbuffer);
-
-	// Shadowmapping : stage 2
-	if (_shadowmapper) {
-		_shadowmapper->UpdateShadowrenderingDescriptors();
-		//_shadowmapper->RecordShadowProcessingCmdbuf(cmdbuffer);
-	}
 
 	// SSAO
 	if (params._ssao_enabled) {

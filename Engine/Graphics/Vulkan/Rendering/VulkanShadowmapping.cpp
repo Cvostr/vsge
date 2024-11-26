@@ -198,8 +198,6 @@ VulkanShadowmapping::VulkanShadowmapping(
 
 	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowrenderer_descPool);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-	//_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
@@ -212,10 +210,6 @@ VulkanShadowmapping::VulkanShadowmapping(
 	
 	// Write buffers, images
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(0, _shadowprocess_buffer);
-	//_shadowrenderer_descrSet->WriteDescriptorImage(1,
-	//	_gbuffer_pos,
-	//	VulkanRenderingGenerics::Get()->GetAttachmentSampler());
-	//_shadowrenderer_descrSet->WriteDescriptorBuffer(2, cam_buffer);
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
 	// write empty texture to directional shadowmaps
@@ -499,7 +493,8 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	cmdbuf->EndRenderPass();
 }
 
-void VulkanShadowmapping::UpdateShadowrenderingDescriptors() {
+void VulkanShadowmapping::UpdateShadowrenderingDescriptors() 
+{
 	//Write shadowmaps to descriptor set
 	std::vector<VulkanTexture*> shadowmaps;
 	std::vector<VulkanTexture*> shadowmaps_point;

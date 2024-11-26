@@ -263,6 +263,12 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		_lights_buffer->UpdateGpuBuffer();
 	}
 
+	for (uint32 target_i = 0; target_i < _render_targets.size(); target_i++)
+	{
+		VulkanRenderTarget* target = _render_targets[target_i];
+		target->GetShadowmapper()->UpdateShadowrenderingDescriptors();
+	}
+
 	// на некоторых видеокартах (NVidia GTX 10** выравнивание по 256 байт)
 	uint32 alignmentFactor = GetUniformTransformBufferElementSize() / sizeof(Mat4);
 

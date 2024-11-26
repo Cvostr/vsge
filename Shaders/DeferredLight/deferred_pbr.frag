@@ -74,7 +74,8 @@ struct CasterInfo{  //688
     uint image_index;
 };
 
-layout (std140, set = 1, binding = 0) uniform ShadowData{
+layout (std140, set = 1, binding = 0) uniform ShadowData
+{
     CasterInfo casters[70];
     uint casters_count;
 };
@@ -83,18 +84,23 @@ layout(set = 1, binding = 3) uniform sampler2DArray shadowmaps[2];
 layout(set = 1, binding = 4) uniform samplerCube shadowmaps_point[32];
 layout(set = 1, binding = 5) uniform sampler2D shadowmaps_spot[32];
 
-layout(set = 1, binding = 6) uniform dir_shadow_cascades{
+layout(set = 1, binding = 6) uniform dir_shadow_cascades
+{
     float distances[10];
     uint cascades_count;
     uint shadowmap_size;
 };
 
-int GetCascadeByDistance(float dist){
-	for(int i = 0; i < int(cascades_count); ++i) {
-		if(dist < distances[i]) {	
+int GetCascadeByDistance(float dist)
+{
+	for (int i = 0; i < int(cascades_count); ++i) 
+    {
+		if (dist < distances[i]) 
+        {	
 			return i;
 		}
 	}
+
     return -1;
 }
 
