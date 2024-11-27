@@ -20,11 +20,10 @@ namespace VSGE {
 		VkCommandPool mCommandPool;
 	public:
 
-		VulkanCommandPool() : 
-			mCommandPool(VK_NULL_HANDLE)
-		{}
+		VulkanCommandPool();
+		VulkanCommandPool(const VulkanCommandPool&) = delete;
 
-		VkCommandPool GetCommandPool() { return mCommandPool; }
+		VkCommandPool GetCommandPool();
 
 		bool Create(uint32 queueFamilyIndex);
 
@@ -37,12 +36,10 @@ namespace VSGE {
 		VulkanCommandPool* mPoolPtr;
 	public:
 
-		VulkanCommandBuffer() : 
-			mCommandBuffer(VK_NULL_HANDLE),
-			mPoolPtr(nullptr)
-		{}
+		VulkanCommandBuffer();
+		VulkanCommandBuffer(const VulkanCommandBuffer&) = delete;
 
-		VkCommandBuffer GetCommandBuffer() { return mCommandBuffer; }
+		VkCommandBuffer GetCommandBuffer();
 
 		bool Create(VulkanCommandPool* pool);
 

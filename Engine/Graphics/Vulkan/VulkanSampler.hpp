@@ -8,18 +8,14 @@ namespace VSGE {
 	private:
 		VkSampler _sampler;
 	public:
-		VkSampler GetSampler() { return _sampler; }
+		VkSampler GetSampler();
 
 		bool Create();
 
 		void Destroy();
 
-		VulkanSampler() :
-			_sampler(VK_NULL_HANDLE)
-		{}
-
-		~VulkanSampler() {
-			Destroy();
-		}
+		VulkanSampler();
+		VulkanSampler(const VulkanSampler&) = delete;
+		~VulkanSampler();
 	};
 }

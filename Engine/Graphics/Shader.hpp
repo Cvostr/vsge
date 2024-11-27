@@ -62,6 +62,7 @@ namespace VSGE {
 
 		Shader() : mStages(SHADER_STAGE_NULL)
 		{}
+		virtual ~Shader() {}
 	};
 
 	typedef std::pair<std::string, Shader*> ShaderStringPair;

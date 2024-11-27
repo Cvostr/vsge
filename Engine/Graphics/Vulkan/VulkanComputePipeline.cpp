@@ -8,6 +8,20 @@ VulkanComputePipeline::VulkanComputePipeline() :
 	_pipelineLayout(nullptr)
 {}
 
+VulkanComputePipeline::~VulkanComputePipeline() {
+    Destroy();
+}
+
+VkPipeline VulkanComputePipeline::GetPipeline()
+{ 
+    return _pipeline; 
+}
+
+VulkanPipelineLayout* VulkanComputePipeline::GetPipelineLayout()
+{
+    return _pipelineLayout;
+}
+
 bool VulkanComputePipeline::Create(VulkanShader* shader, VulkanPipelineLayout* layout){
     VkComputePipelineCreateInfo info = { VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO };
     info.stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

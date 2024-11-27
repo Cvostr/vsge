@@ -23,15 +23,10 @@ namespace VSGE {
         bool init(bool validate, const char* app_name, uint32 app_ver);
         void Destroy();
 
-        VkInstance GetInstance() { return mInstance; }
-        VkSurfaceKHR GetSurface() { return mSurface; }
+        VkInstance GetInstance();
+        VkSurfaceKHR GetSurface();
 
-        VulkanInstance() :
-            mInstance(VK_NULL_HANDLE),
-            mSurface(VK_NULL_HANDLE)
-        {
-        }
-
+        VulkanInstance();
         VulkanInstance(const VulkanInstance&) = delete;
     };
 

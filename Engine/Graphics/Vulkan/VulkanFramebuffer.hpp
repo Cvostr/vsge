@@ -14,11 +14,10 @@ namespace VSGE {
 		std::vector<VkImageView> _views;
 	public:
 		VulkanFramebuffer();
-
+		VulkanFramebuffer(const VulkanFramebuffer&) = delete;
 		~VulkanFramebuffer();
 
 		VkFramebuffer GetFramebuffer();
-
 		VulkanRenderPass* GetRenderPass();
 
 		void PushOutputAttachment(uint32_t Index);

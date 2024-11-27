@@ -5,6 +5,16 @@ using namespace VSGE;
 
 #define MAX_TEMP_DESCRIPTORS_SETS 7
 
+VulkanCommandPool::VulkanCommandPool() :
+    mCommandPool(VK_NULL_HANDLE)
+{
+}
+
+VkCommandPool VulkanCommandPool::GetCommandPool()
+{ 
+    return mCommandPool;
+}
+
 bool VulkanCommandPool::Create(uint32 queueFamilyIndex) {
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -33,6 +43,17 @@ void VulkanCommandPool::Destroy() {
 
         mCreated = false;
     }
+}
+
+VulkanCommandBuffer::VulkanCommandBuffer() :
+    mCommandBuffer(VK_NULL_HANDLE),
+    mPoolPtr(nullptr)
+{
+}
+
+VkCommandBuffer VulkanCommandBuffer::GetCommandBuffer()
+{ 
+    return mCommandBuffer;
 }
 
 bool VulkanCommandBuffer::Create(VulkanCommandPool* pool) {

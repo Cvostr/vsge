@@ -14,20 +14,14 @@ namespace VSGE
     public:
 
         VulkanComputePipeline();
+        VulkanComputePipeline(const VulkanComputePipeline&) = delete;
+        ~VulkanComputePipeline();
 
-        VkPipeline GetPipeline() { return _pipeline; }
+        VkPipeline GetPipeline();
 
-		VulkanPipelineLayout* GetPipelineLayout() {
-			return _pipelineLayout;
-		}
+        VulkanPipelineLayout* GetPipelineLayout();
 
         bool Create(VulkanShader* shader, VulkanPipelineLayout* layout);
-
 		void Destroy();
-
-		~VulkanComputePipeline() {
-			Destroy();
-		}
-
     };
 }

@@ -20,6 +20,23 @@ std::vector<const char*> extensions = {
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 };
 
+VSGE::VulkanInstance::VulkanInstance() :
+    mInstance(VK_NULL_HANDLE),
+    mSurface(VK_NULL_HANDLE),
+    debugMessenger(VK_NULL_HANDLE)
+{
+}
+
+VkInstance VSGE::VulkanInstance::GetInstance()
+{ 
+    return mInstance; 
+}
+
+VkSurfaceKHR VSGE::VulkanInstance::GetSurface()
+{ 
+    return mSurface; 
+}
+
 bool VSGE::VulkanInstance::init(bool validate, const char* app_name, uint32 app_ver){
     Window* win = &Application::Get()->GetWindow();
     SDL_Window* window = win->GetSdlWinPtr();

@@ -65,6 +65,20 @@ VkCompareOp GetCompareOp(CompareOp cop) {
 	return result;
 }
 
+VulkanSampler::VulkanSampler() :
+	_sampler(VK_NULL_HANDLE)
+{
+}
+
+VulkanSampler::~VulkanSampler() {
+	Destroy();
+}
+
+VkSampler VulkanSampler::GetSampler()
+{ 
+	return _sampler; 
+}
+
 bool VulkanSampler::Create() {
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();
