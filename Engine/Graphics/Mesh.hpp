@@ -73,13 +73,11 @@ namespace VSGE {
 		/// Get count of mesh indices
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetVertexBuffersCount() { return (uint32)_vertexBuffers.size(); }
+		uint32 GetVertexBuffersCount() const;
 		/// <summary>
 		/// get aabb of this mesh
 		/// </summary>
-		Vec3* GetPositions() {
-			return _positions_array;
-		}
+		Vec3* GetPositions();
 		/// <summary>
 		/// Get AABB of mesh
 		/// </summary>

@@ -50,9 +50,8 @@ namespace VSGE {
 	public:
 
 		VulkanDescriptorSet(VulkanDescriptorPool* pool);
-
 		VulkanDescriptorSet();
-
+		VulkanDescriptorSet(const VulkanDescriptorSet&) = delete;
 		~VulkanDescriptorSet();
 
 		void SetDescriptorPool(VulkanDescriptorPool* pool);

@@ -20,15 +20,8 @@ namespace VSGE {
 		LightsourceComponent* _lightsource;
 		VulkanFramebuffer* _framebuffer;
 
-		VulkanShadowCaster() {
-			_framebuffer = new VulkanFramebuffer;
-			_framebuffer->SetLayersCount(0);
-			_lightsource = nullptr;
-		}
-
-		~VulkanShadowCaster() {
-			delete _framebuffer;
-		}
+		VulkanShadowCaster();
+		~VulkanShadowCaster();
 	};
 
 	class VulkanShadowmapping {

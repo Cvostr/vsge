@@ -34,11 +34,11 @@ namespace VSGE {
 
         virtual ~Texture();
 
-        TextureFormat GetFormat() { return _format; }
-        uint32 GetMipsCount() { return _mipLevels; }
-        uint32 GetLayersCount() { return _layers; }
-        uint32 GetWidth() { return _maxWidth; }
-        uint32 GetHeight() { return _maxHeight; }
+        TextureFormat GetFormat() const;
+        uint32 GetMipsCount() const { return _mipLevels; }
+        uint32 GetLayersCount() const { return _layers; }
+        uint32 GetWidth() const;
+        uint32 GetHeight() const;
 
         void SetRenderTargetFlag(bool renderTarget);
         bool IsRenderTarget();

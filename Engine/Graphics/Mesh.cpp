@@ -60,6 +60,15 @@ uint32 Mesh::GetIndexCount() const
 	return m_indicesCount; 
 }
 
+uint32 Mesh::GetVertexBuffersCount() const
+{ 
+	return (uint32)_vertexBuffers.size(); 
+}
+
+Vec3* Mesh::GetPositions() {
+	return _positions_array;
+}
+
 const AABB& Mesh::GetBoundingBox() const
 { 
 	return _meshBoundingBox; 

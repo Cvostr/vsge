@@ -39,16 +39,12 @@ namespace VSGE {
 		/// Get vector of textures
 		/// </summary>
 		/// <returns></returns>
-		tMaterialTexturesList& GetTextures() {
-			return _materialTextures;
-		}
+		tMaterialTexturesList& GetTextures();
 		/// <summary>
 		/// Get vector of parameters
 		/// </summary>
 		/// <returns></returns>
-		tMaterialParamsList& GetParams() {
-			return _materialParams;
-		}
+		tMaterialParamsList& GetParams();
 		/// <summary>
 		/// Generate buffer of params that ready to send on gpu shader
 		/// </summary>

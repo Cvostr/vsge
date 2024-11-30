@@ -47,6 +47,8 @@ namespace VSGE {
 	public:
 
 		VulkanMA(VulkanInstance* inst, VulkanDevice* device);
+		VulkanMA(const VulkanMA&) = delete;
+
 		void allocate(const VkBufferCreateInfo createInfo, VkBuffer* buffer);
 		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size);
 		void allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size, void** mapped);

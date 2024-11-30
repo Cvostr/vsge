@@ -195,7 +195,8 @@ void VulkanEnvMap::SetRenderMode(WorldRenderMode mode)
 	}
 }
 
-void VulkanEnvMap::SetScene(Scene* scene) {
+void VulkanEnvMap::SetScene(Scene* scene) 
+{
 	for (uint32 i = 0; i < 6; i++) {
 		_sides[i]._gbuffer->SetScene(scene);
 	}

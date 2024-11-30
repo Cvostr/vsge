@@ -21,6 +21,16 @@ Material::~Material() {
 	DestroyDescriptors();
 }
 
+tMaterialTexturesList& Material::GetTextures()
+{
+	return _materialTextures;
+}
+
+tMaterialParamsList& Material::GetParams() 
+{
+	return _materialParams;
+}
+
 void Material::SetDescriptors(MaterialDescriptor* descriptors) {
 	_descriptors = descriptors;
 }

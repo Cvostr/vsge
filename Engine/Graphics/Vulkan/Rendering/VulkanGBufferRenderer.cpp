@@ -171,9 +171,9 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 
 	_boundPipeline = nullptr;
 
-	for (uint32 e_i = 0; e_i < _entities_to_render->size(); e_i++) 
+	for (uint32 entity_i = 0; entity_i < _entities_to_render->size(); entity_i ++)
 	{
-		Entity* entity = (*_entities_to_render)[e_i];
+		Entity* entity = (*_entities_to_render)[entity_i];
 
 		if (renderMode == RENDER_STATIC_ONLY && !entity->IsStatic()) {
 			continue;
@@ -207,7 +207,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
-			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * transformMemoryBlockSize % 65535 };
+			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, entity_i * transformMemoryBlockSize % 65535 };
 			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
 			_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
 
@@ -218,7 +218,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 				continue;
 
 			// Index of vertex descriptor ID
-			int vertexDescriptorID = (e_i * transformMemoryBlockSize) / 65535;
+			int vertexDescriptorID = (entity_i * transformMemoryBlockSize) / 65535;
 
 			BindPipeline(cmdbuf, pipl);
 			VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();

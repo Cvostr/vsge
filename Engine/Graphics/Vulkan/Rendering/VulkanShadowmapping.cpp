@@ -127,6 +127,18 @@ void InitShadowmappingPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptor
 	}
 }
 
+VulkanShadowCaster::VulkanShadowCaster() 
+{
+	_framebuffer = new VulkanFramebuffer;
+	_framebuffer->SetLayersCount(0);
+	_lightsource = nullptr;
+}
+
+VulkanShadowCaster::~VulkanShadowCaster() 
+{
+	delete _framebuffer;
+}
+
 VulkanShadowmapping::VulkanShadowmapping(
 	std::vector<VulkanDescriptorSet*>* vertexDescrSets,
 	VulkanDescriptorSet* animsDescrSet,
@@ -464,11 +476,20 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 			cmdbuf->PushConstants(*_shadowmap_layout, VK_SHADER_STAGE_GEOMETRY_BIT, 0, 8, pconstants);
 		}
 
-		//Check distance
-		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) {
-			float distance = caster->_lightsource->GetEntity()->GetPosition().DistanceTo(entity->GetAbsolutePosition());
-			if (distance > caster->_lightsource->GetRange() * 3)
-				continue;
+		// Check distance for point and spot lights
+		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_POINT || caster->_lightsource->GetLightType() == LIGHT_TYPE_SPOT) 
+		{
+			// TODO: So simple and bad solution
+			const Vec3& casterPos = caster->_lightsource->GetEntity()->GetPosition();
+			const AABB& entityBB = entity->GetAABB();
+			if (!entityBB.IsInside(casterPos)) {
+
+				float distance = casterPos.DistanceTo(entity->GetAbsolutePosition()) - entityBB.GetMin().DistanceTo(entityBB.GetMax());
+				float range = caster->_lightsource->GetRange();
+
+				if (distance > range)
+					continue;
+			}
 		}
 
 		if (mesh) {

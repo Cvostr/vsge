@@ -74,5 +74,6 @@ namespace VSGE {
 		virtual bool Create() = 0;
 
 		explicit TextureSampler();
+		virtual ~TextureSampler() = default;
 	};
 }

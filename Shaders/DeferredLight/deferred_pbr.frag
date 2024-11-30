@@ -354,9 +354,11 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
             float inner = cos(lights[light_i].spot_angle * RADIANS);
             float outer = cos((lights[light_i].spot_angle + 12) * RADIANS);
             
+            float distance = length(lights[light_i].position - pos);
+            float attenuation = 1.0 / ( 1.0 + 1.0 / lights[light_i].range * distance + 1.0 / lights[light_i].range * distance * distance) * lights[light_i].intensity;
             float theta     = dot(L, normalize(-direction));
             float epsilon   = inner - outer;
-            float intensity = clamp((theta - outer) / epsilon, 0.0, 1.0);  
+            float intensity = clamp((theta - outer) / epsilon, 0.0, 1.0) * attenuation;  
 
             float shadow = calculateSpotShadow(pos, lights[light_i].casterIndex);
 

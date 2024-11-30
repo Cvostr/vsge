@@ -16,6 +16,21 @@ Texture::~Texture() {
     Destroy();
 }
 
+TextureFormat Texture::GetFormat() const
+{ 
+    return _format; 
+}
+
+uint32 Texture::GetWidth() const 
+{ 
+    return _maxWidth; 
+}
+
+uint32 Texture::GetHeight() const 
+{ 
+    return _maxHeight; 
+}
+
 void Texture::SetRenderTargetFlag(bool renderTarget) {
     _flags |= renderTarget * TEXTURE_FLAG_IS_RENDER_TARGET;
 }
