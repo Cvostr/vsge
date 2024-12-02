@@ -12,23 +12,23 @@ public class IEntityComponent : InternalObject {
     {
     }
 
-    Entity GetEntity(){
+    Entity GetEntity() {
         return new Entity(i_GetEntity(handle));
     }
 
-    bool IsActive(){
+    bool IsActive() {
         return i_IsActive(handle);
     }
 
-    void SetActive(bool active){
+    void SetActive(bool active) {
         i_SetActive(handle, active);
     }
 
-    int GetComponentType(){
+    int GetComponentType() {
         return i_GetType(handle);
     }
 
-    public static int GetComponentID<T>(){
+    public static int GetComponentID<T>() {
         if(typeof(T).Equals(typeof(LightSourceComponent)))
             return 1;
         if(typeof(T).Equals(typeof(MaterialComponent)))

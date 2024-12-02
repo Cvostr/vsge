@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 
 public class MaterialComponent : IEntityComponent {
 
+    public MaterialComponent() : base(0)
+    {
+    }
+
     public MaterialComponent(ulong handle) : base(handle)
     {
     }

@@ -7,6 +7,10 @@ public class CameraComponent : IEntityComponent {
     {
     }
 
+    public CameraComponent() : base(0)
+    {
+    }
+
     public float GetNearPlane(){
         return i_GetNearPlane(handle);
     }

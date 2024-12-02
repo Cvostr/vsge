@@ -9,35 +9,35 @@ public class Entity : InternalObject {
     {
     }
 
-    public void SetActive(bool active){
+    public void SetActive(bool active) {
         i_SetActive(handle, active);
     }
 
-    bool IsActive(){
+    bool IsActive() {
         return i_IsActive(handle);
     }
 
-    public void SetName(string name){
+    public void SetName(string name) {
         i_SetName(handle, name);
     }
 
-    public string GetName(){
+    public string GetName() {
         return i_GetName(handle);
     }
 
-    public Entity GetParent(){
+    public Entity GetParent() {
         return new Entity(i_GetParent(handle));
     }
 
-    public void AddChild(Entity entity){
+    public void AddChild(Entity entity) {
         i_AddChild(handle, entity.handle);
     }
 
-    public void RemoveChild(Entity entity){
+    public void RemoveChild(Entity entity) {
         i_RemoveChild(handle, entity.handle);
     }
 
-    public Entity[] GetChildren(){
+    public Entity[] GetChildren() {
         ulong[] children_handles = i_GetChildren(handle);
         Entity[] result = new Entity[children_handles.Length];
 
@@ -48,35 +48,35 @@ public class Entity : InternalObject {
         return result;
     }    
 
-    public AABB GetAABB(){
+    public AABB GetAABB() {
         return i_GetAABB(handle);
     }
 
-    public Scene GetScene(){
+    public Scene GetScene() {
         return new Scene(i_GetScene(handle));
     }
 
-    public Vec3 GetPosition(){
+    public Vec3 GetPosition() {
         return i_GetPosition(handle);
     }
 
-    public void SetPosition(Vec3 position){
+    public void SetPosition(Vec3 position) {
         i_SetPosition(handle, position);
     }
 
-    public Vec3 GetScale(){
+    public Vec3 GetScale() {
         return i_GetScale(handle);
     }
 
-    public void SetScale(Vec3 scale){
+    public void SetScale(Vec3 scale) {
         i_SetScale(handle, scale);
     }
 
-    public Quat GetRotation(){
+    public Quat GetRotation() {
         return i_GetRotation(handle);
     }
 
-    public void SetRotation(Quat rotation){
+    public void SetRotation(Quat rotation) {
         i_SetRotation(handle, rotation);
     }
 
@@ -98,7 +98,7 @@ public class Entity : InternalObject {
         return result;
     }
 
-    public T GetScript<T>(){
+    public T GetScript<T>() {
         return (T)((object)i_GetScript(handle, typeof(T).Name));
     }
 
