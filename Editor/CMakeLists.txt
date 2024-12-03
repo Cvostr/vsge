@@ -11,6 +11,7 @@ set(SRC_FILES
                 Base/ImGuiWindow.cpp
                 Base/Project.cpp
                 Base/ProjectSettings.cpp
+                Base/CSProjGenerator.cpp
                 EditorLayers/EditorLayer.cpp
                 EditorLayers/EditorSettingsLayer.cpp
                 EditorLayers/ImGuiLayer.cpp

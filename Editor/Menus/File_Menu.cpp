@@ -12,6 +12,7 @@
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include <Windows/ProjectBuildingWindow.hpp>
 #include <mpi/Desktop/Dialog.hpp>
+#include <mpi/Desktop/Desktop.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -37,7 +38,10 @@ void SaveAs() {
 	SaveScene(save);
 }
 
-void File_Menu::OnDrawMenu() {
+const std::string CreateProjectFiles(const VSGEditor::Project& proj);
+
+void File_Menu::OnDrawMenu() 
+{
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("Save", NULL)) {
@@ -54,6 +58,11 @@ void File_Menu::OnDrawMenu() {
 			path = Mpi::Dialog::OpenFileDialog(desc);
 
 			ImportFile(path);
+		}
+		if (ImGui::MenuItem("Open C# Project", NULL)) {
+			EditorLayer* el = EditorLayer::Get();
+			std::string csprojPath = CreateProjectFiles(el->GetProject());
+			Mpi::Desktop::openFile(Mpi::File(csprojPath));
 		}
 		if (ImGui::MenuItem("Build", NULL)) {
 			ImGuiLayer::Get()->GetWindow<ProjectBuildingWindow>()->Show();

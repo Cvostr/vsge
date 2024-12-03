@@ -5,19 +5,20 @@
 using namespace VSGEditor;
 
 Project::Project(	const std::string& root,
-					const std::string& assets_dir,
-					const std::string& cache_dir,
-					const std::string& cfgFileName) 
+					const std::string& assetsDir,
+					const std::string& cacheDir,
+					const std::string& cfgFileName,
+					const std::string& csprojDir)
 {
 	m_rootDirectory = root;
 	for (uint32 i = 0; i < m_rootDirectory.size(); i++) {
 		if (m_rootDirectory[i] == '\\')
 			m_rootDirectory[i] = '/';
 	}
-	m_assetsDirectory = root + "/" + assets_dir;
-	project_cache_dir = root + "/" + cache_dir;
+	m_assetsDirectory = root + "/" + assetsDir;
+	project_cache_dir = root + "/" + cacheDir;
 	m_configFilePath = root + "/" + cfgFileName;
-
+	m_csprojDirectory = root + "/" + csprojDir;
 }
 
 void Project::LoadSettings()
@@ -48,6 +49,10 @@ void Project::saveSettings()
 	fout_app.close();
 }
 
+const std::string& Project::GetName() const
+{
+	return m_settings.getProjectName();
+}
 const std::string& Project::GetRootDirectory() const {
 	return m_rootDirectory;
 }
@@ -56,4 +61,8 @@ const std::string& Project::GetAssetsDirectory() const {
 }
 const std::string& Project::GetCacheDirectory() const {
 	return project_cache_dir;
+}
+const std::string& Project::GetCsprojDirectory() const
+{
+	return m_csprojDirectory;
 }
