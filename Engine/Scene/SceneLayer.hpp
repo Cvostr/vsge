@@ -7,13 +7,16 @@ namespace VSGE {
 
 	class SceneLoadedEvent : public IEvent {
 	private:
+		uint32 slot;
 		Scene* scene;
 	public:
 		EVENT_CLASS_TYPE(EventType::EventSceneLoaded)
-		SceneLoadedEvent(Scene* scene) :
+		SceneLoadedEvent(uint32 slot, Scene* scene) :
+			slot(slot),
 			scene(scene)
 		{}
 		Scene* GetScene() const { return scene; }
+		uint32 GetSlot() const { return slot; }
 	};
 
 	class SceneLoadBeginEvent : public IEvent {

@@ -5,6 +5,7 @@
 #include <vector>
 #include <Core/VarTypes/String.hpp>
 #include <Resources/ResourceTypes/TextureResource.hpp>
+#include <Graphics/Fonts.hpp>
 
 namespace VSGE {
 
@@ -24,7 +25,7 @@ namespace VSGE {
 		TextureResource* _sprite;
 		String _text;
 		Color _color;
-		std::string font;
+		GlyphFontContainer* font;
 	};
 
 	class UiRenderList {
@@ -50,7 +51,7 @@ namespace VSGE {
 			const Rect& bounds, 
 			float rotation, 
 			const String& text, 
-			const std::string& font, 
+			const std::string& fontName, 
 			const Color& text_color);
 	};
 }

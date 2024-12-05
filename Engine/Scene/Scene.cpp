@@ -18,12 +18,22 @@ Scene::~Scene() {
 	Destroy();
 }
 
-void Scene::Destroy() {
+Scene::Scene(const Scene&& scene)
+{
+	_rootEntity = scene._rootEntity;
+	_environment_settings = scene._environment_settings;
+	_physics_world = scene._physics_world;
+}
+
+void Scene::Destroy() 
+{
 	if (_rootEntity) {
 		_rootEntity->Destroy();
 	}
-	if (_physics_world)
-		SAFE_RELEASE(_physics_world)
+
+	_scene_tree.clear();
+	
+	SAFE_RELEASE(_physics_world)
 }
 
 void Scene::NewScene() {

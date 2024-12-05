@@ -1,4 +1,6 @@
 #include "UiRenderList.hpp"
+#include <Graphics/FontManager.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -24,7 +26,15 @@ void UiRenderList::DrawSprite(const Rect& bounds,
 	task.uv_max = uv_max;
 	_tasks.push_back(task);
 }
-void UiRenderList::DrawText(const Rect& bounds, float rotation, const String& text, const std::string& font, const Color& color) {
+void UiRenderList::DrawText(const Rect& bounds, float rotation, const String& text, const std::string& fontName, const Color& color) 
+{
+	GlyphManager* glyph_manager = GlyphManager::Get();
+	GlyphFontContainer* font = glyph_manager->GetFontByName(fontName);
+	if (font == nullptr) {
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "No font '" << fontName << "'" << "\n";
+		return;
+	}
+	
 	UiRenderTask task;
 	task._type = UI_RENDER_TASK_TYPE_TEXT;
 	task.rotation = rotation;

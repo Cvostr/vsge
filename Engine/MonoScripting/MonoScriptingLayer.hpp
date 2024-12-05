@@ -32,6 +32,8 @@ namespace VSGE {
 		MonoScriptBlob* _scripts_blob;
 		std::string _monoDirectoryLocation;
 
+		void SetupDebugging();
+
 	public:
 
 		MonoScriptingLayer();

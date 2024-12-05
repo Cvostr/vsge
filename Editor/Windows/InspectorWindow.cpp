@@ -100,6 +100,9 @@ void InspectorWindow::DrawComponent() {
 		if (typeid(T) == typeid(Camera)) {
 			DrawCameraComponent((Camera*)component);
 		}
+		if (typeid(T) == typeid(TerrainComponent)) {
+			DrawTerrainComponent((TerrainComponent*)component);
+		}
 		if (typeid(T) == typeid(CharacterControllerComponent)) {
 			DrawCharControllerComponent((CharacterControllerComponent*)component);
 		}
@@ -211,6 +214,7 @@ void InspectorWindow::DrawEntityContents()
 	DrawComponent<VSGE::RigidBodyComponent>();
 	DrawComponent<VSGE::Camera>();
 	DrawComponent<VSGE::AudioListenerComponent>();
+	DrawComponent<VSGE::TerrainComponent>();
 	DrawComponent<VSGE::CharacterControllerComponent>();
 	DrawComponent<VSGE::LightProbeComponent>();
 

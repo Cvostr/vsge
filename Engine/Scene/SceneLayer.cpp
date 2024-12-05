@@ -99,7 +99,7 @@ void SceneLayer::LoadSceneBinary(byte* data, uint32 size, uint32 index) {
 	bool rc = ss.DeserializeBinary(data, size);
 
 	dest_scene->setLoading(false);
-	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(dest_scene);
+	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(index, dest_scene);
 	Application::Get()->QueueEvent(loaded_event);
 }
 

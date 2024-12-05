@@ -32,6 +32,7 @@ set(SRC_FILES
                 InspectorInterfaces/EntityComponents/CharacterController.cpp
                 InspectorInterfaces/EntityComponents/EntityScript.cpp
                 InspectorInterfaces/EntityComponents/LightProbe.cpp
+                InspectorInterfaces/EntityComponents/Terrain.cpp
                 InspectorInterfaces/ResourceTypes/AudioResource.cpp
                 InspectorInterfaces/ResourceTypes/TextureResource.cpp
                 Menus/File_Menu.cpp

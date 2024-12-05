@@ -27,6 +27,12 @@ namespace VSGE {
 		void CallOnStop(Entity* entity);
 		void Destroy();
 	public:
+
+		Scene();
+		Scene(const Scene&) = delete;
+		Scene(const Scene&&);
+		~Scene();
+
 		/// <summary>
 		/// Clear all objects and setup new empty scene
 		/// </summary>
@@ -115,8 +121,5 @@ namespace VSGE {
 		void GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, Entity* first = nullptr);
 
 		void UpdateSceneTree(const Vec3& size = Vec3(100, 50, 100));
-
-		Scene();
-		~Scene();
 	};
 }

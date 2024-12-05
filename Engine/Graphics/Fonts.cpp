@@ -38,6 +38,16 @@ GlyphFontContainer::~GlyphFontContainer() {
         });
 }
 
+uint32 GlyphFontContainer::GetFontSize() const
+{
+    return _font_size;
+}
+
+uint32 GlyphFontContainer::GetTextureMapSize() const
+{
+    return texSize;
+}
+
 void GlyphFontContainer::loadGlyphs(uint32& WorkX,
     uint32& WorkY,
     uint32& MaxY) {

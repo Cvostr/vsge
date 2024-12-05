@@ -78,5 +78,7 @@ namespace VSGE {
         /// <param name="strlen">- length of string</param>
         /// <returns></returns>
         Vec2i GetSizeOfString(uint32* str, uint32 strlen);
+        uint32 GetFontSize() const;
+        uint32 GetTextureMapSize() const;
     };
 }

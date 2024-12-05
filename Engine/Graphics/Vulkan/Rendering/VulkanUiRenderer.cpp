@@ -5,7 +5,6 @@
 #include <Math/MatrixCamera.hpp>
 #include <Math/MatrixTransform.hpp>
 #include <Graphics/FontManager.hpp>
-#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -150,8 +149,8 @@ void VulkanUiRenderer::WriteTexture(uint32 elem_id, VulkanTexture* texture) {
 	set->WriteDescriptorImage(2, texture, _ui_sampler);
 }
 
-void VulkanUiRenderer::FillBuffers() {
-	GlyphManager* glyph_manager = GlyphManager::Get();
+void VulkanUiRenderer::FillBuffers() 
+{
 	UiLayer* ui_layer = UiLayer::Get();
 	written_elements = 0;
 
@@ -169,11 +168,8 @@ void VulkanUiRenderer::FillBuffers() {
 		}
 		else if (task._type == UI_RENDER_TASK_TYPE_TEXT) 
 		{
-			GlyphFontContainer* font = glyph_manager->GetFontByName(task.font);
-			if (font == nullptr) {
-				Logger::Log(LogType::LOG_TYPE_ERROR) << "No font '" << task.font << "'" << "\n";
-				continue;
-			}
+			GlyphFontContainer* font = task.font;
+			uint32 fontTextureMapSize = font->GetTextureMapSize();
 
 			Vec2i pix_size = font->GetSizeOfString((uint32*)task._text.c_str(), task._text.Length());
 
@@ -189,8 +185,8 @@ void VulkanUiRenderer::FillBuffers() {
 				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, -glyph->mGlyphBearing.y) * mult;
 				bounds.Size = glyph->mGlyphSize * mult;
 				//calculate uvs from size
-				Vec2 uv_start = glyph->mGlyphTextureStart / 2048;
-				Vec2 uv_size = glyph->mGlyphSize / 2048;
+				Vec2 uv_start = glyph->mGlyphTextureStart / fontTextureMapSize;
+				Vec2 uv_size = glyph->mGlyphSize / fontTextureMapSize;
 				//rotate uvs
 				uv_start.y += uv_size.y;
 				uv_size.y *= -1;

@@ -8,6 +8,8 @@ using namespace VSGE;
 
 MonoScriptingLayer* MonoScriptingLayer::_this = nullptr;
 
+#define RUNTIME_VERSION "v4.0.30319"
+
 MonoScriptingLayer::MonoScriptingLayer() :
     _root_domain(nullptr),
 	_domain(nullptr),
@@ -47,6 +49,16 @@ MonoString* MonoScriptingLayer::CreateMonoString(const String& str) {
     return mono_string_new_utf32(_domain, str.c_str(), str.Length());
 }
 
+void MonoScriptingLayer::SetupDebugging()
+{
+    const char* options[] = {
+        "--soft-breakpoints",
+        "--debugger-agent=transport=dt_socket,address=127.0.0.1:55555,embedding=1,server=y,suspend=n"
+    };
+    mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+    mono_jit_parse_options(sizeof(options) / sizeof(char*), (char**)options);
+}
+
 bool MonoScriptingLayer::CreateRootDomain() {
     if (_root_domain)
         return true;
@@ -74,8 +86,12 @@ bool MonoScriptingLayer::CreateRootDomain() {
     std::string monoEtcDir = _monoDirectoryLocation + "/etc";
 
     mono_set_dirs(monoLibDir.c_str(), monoEtcDir.c_str());
-	//Create domain
-    _root_domain = mono_jit_init_version(MONO_ROOT_DOMAIN_NAME, "v4.0.30319");
+
+    // Init debugging, should be done before domain creation
+    SetupDebugging();
+
+	// Create domain
+    _root_domain = mono_jit_init_version(MONO_ROOT_DOMAIN_NAME, RUNTIME_VERSION);
     if (!_root_domain) {
         throw std::exception("Error creating mono domain");
     }
@@ -86,7 +102,7 @@ bool MonoScriptingLayer::CreateRootDomain() {
     }
     mono_thread_set_main(mono_thread_current());
     Logger::Log(LogType::LOG_TYPE_INFO) << "Mono Domain initialized\n";
-    
+
     CreateDomain();
 
     //bind API
@@ -117,16 +133,22 @@ const std::string& MonoScriptingLayer::GetMonoDirectoryPath() const
     return _monoDirectoryLocation;
 }
 
-MonoDomain* MonoScriptingLayer::GetDomain() {
+MonoDomain* MonoScriptingLayer::GetDomain() 
+{
     return _domain;
 }
-void MonoScriptingLayer::CreateDomain() {
+
+void MonoScriptingLayer::CreateDomain() 
+{
     if (_domain)
         return;
+
     _domain = mono_domain_create_appdomain(MONO_DOMAIN_NAME, NULL);
     mono_domain_set(_domain, false);
 }
-void MonoScriptingLayer::ReleaseDomain() {
+
+void MonoScriptingLayer::ReleaseDomain() 
+{
     if (_domain) {
         mono_domain_set(_root_domain, 0);
         #ifndef __linux__
@@ -135,6 +157,7 @@ void MonoScriptingLayer::ReleaseDomain() {
         _domain = nullptr;
     }
 }
+
 void MonoScriptingLayer::AttachThread(){
     mono_thread_attach(mono_get_root_domain());
 }
