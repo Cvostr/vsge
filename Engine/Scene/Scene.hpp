@@ -10,6 +10,13 @@ namespace VSGE {
 
 	typedef std::pair<Guid, Guid> tGuidPair;
 
+	enum SceneState {
+		SCENE_STATE_LOADING,
+		SCENE_STATE_IDLE,		// Scene was just loaded, not running before
+		SCENE_STATE_PAUSED,
+		SCENE_STATE_RUNNING
+	};
+
 	class Scene {
 	private:
 		Entity* _rootEntity;
@@ -18,9 +25,7 @@ namespace VSGE {
 		PhysicsWorld* _physics_world;
 
 		bool _delayed_run;
-		bool _running;
-		bool _paused;
-		bool _loading;
+		SceneState _state;
 
 		void CallOnStart(Entity* entity);
 		void CallOnUpdate(Entity* entity);

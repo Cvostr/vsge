@@ -7,11 +7,9 @@ using namespace VSGE;
 
 Scene::Scene() :
 	_rootEntity(nullptr) ,
-	_running(false),
-	_paused(false),
+	_state(SCENE_STATE_IDLE),
 	_delayed_run(false),
-	_physics_world(nullptr),
-	_loading(false)
+	_physics_world(nullptr)
 {}
 
 Scene::~Scene() {
@@ -167,29 +165,34 @@ void Scene::CallOnStop(Entity* entity) {
 }
 
 bool Scene::IsSceneRunning() {
-	return _running;
+	return _state == SCENE_STATE_RUNNING;
 }
 
 bool Scene::IsScenePaused() {
-	return _paused;
+	return _state == SCENE_STATE_PAUSED;
 }
 
-void Scene::setLoading(bool loading) {
-	this->_loading = loading;
+void Scene::setLoading(bool loading) 
+{
+	if (loading)
+		this->_state = SCENE_STATE_LOADING;
+	else
+		this->_state = SCENE_STATE_IDLE;
 }
 
-bool Scene::isLoading() {
-	return _loading;
+bool Scene::isLoading() 
+{
+	return _state == SCENE_STATE_LOADING;
 }
 
-void Scene::Run() {
-	if (_running)
+void Scene::Run() 
+{
+	if (IsSceneRunning())
 		return;
 
-	bool was_paused = _paused;
+	bool was_paused = IsScenePaused();
 
-	_running = true;
-	_paused = false;
+	_state = SCENE_STATE_RUNNING;
 	_delayed_run = false;
 
 	_physics_world->SetActive(true);
@@ -207,30 +210,31 @@ bool Scene::IsDelayedRun() {
 	return _delayed_run;
 }
 
-void Scene::Pause() {
-	if (!_running)
+void Scene::Pause() 
+{
+	if (!IsSceneRunning())
 		return;
 
-	_running = false;
-	_paused = true;
+	_state = SCENE_STATE_PAUSED;
 
 	_physics_world->SetActive(false);
 }
 
 void Scene::Stop() {
-	if (!_running)
+	if (!IsSceneRunning())
 		return;
 
-	_running = false;
-	_paused = false;
+	_state = SCENE_STATE_IDLE;
 
 	_physics_world->SetActive(false);
 
 	CallOnStop(GetRootEntity());
 }
 
-void Scene::Update() {
-	if (_running) {
+void Scene::Update() 
+{
+	if (IsSceneRunning()) 
+	{
 		CallOnUpdate(GetRootEntity());
 	}
 }

@@ -1,6 +1,7 @@
 #include "ApiBindings.hpp"
 #include <Graphics/Material.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -33,6 +34,12 @@ static void SetColorValue(Material* mat, MonoString* key, Color value)
 
 static void SetMaterialTexture(Material* mat, MonoString* key, Resource* res)
 {
+	if (res == nullptr) 
+	{
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Setting NULL texture to material slot" << "\n";
+		return;
+	}
+
 	char* pKey = mono_string_to_utf8(key);
 	std::string sKey = std::string(pKey);
 	mono_free(pKey);

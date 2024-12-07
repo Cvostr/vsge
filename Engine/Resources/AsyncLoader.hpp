@@ -7,8 +7,6 @@
 #include <string>
 #include <queue>
 
-#define LOADER_QUEUE_SIZE 3000
-
 namespace VSGE {
 
 	class AsyncLoader : public Thread {
