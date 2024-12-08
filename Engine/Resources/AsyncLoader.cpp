@@ -17,36 +17,14 @@ AsyncLoader::~AsyncLoader() {
 }
 
 void AsyncLoader::LoadResource(Resource* resource) {
-    resource->SetState(RESOURCE_STATE_LOADING);
-    //Declare blob loader stream
-    std::ifstream stream;
-    //Get absolute path to blob file
-    DataDescription desc = resource->GetDataDescription();
-    std::string file_path = desc.file_path;
-    //Check, if size explicitly specified
-    if (desc.size == 0) {
-        //Если размер не указан (равен 0)
-        Mpi::File file(file_path);
-        desc.size = static_cast<uint32>(file.getFileSize());
-        resource->SetDataDescription(desc);
+
+    try {
+        resource->ReadData();
     }
-
-    stream.open(file_path, std::ofstream::binary);
-    stream.seekg(static_cast<long>(desc.offset));
-
-    if (!stream.is_open()) {
-        resource->SetState(RESOURCE_STATE_LOADING_FAILED);
-        Logger::Log(LogType::LOG_TYPE_ERROR) << "Error loading resource " << resource->GetName() << "\n";
+    catch (std::exception& ex) {
+        Logger::Log(LogType::LOG_TYPE_ERROR) << ex.what() << "\n";
         return;
     }
-
-    byte* data = new byte[desc.size];
-    stream.read(reinterpret_cast<char*>(data), desc.size);
-    stream.close();
-
-    resource->SetLoadedData(data);
-    //Set resource state to loaded
-    resource->SetState(RESOURCE_STATE_LOADED);
 
     //Вызов обработки ресурса из этого потока
     resource->Prepare();

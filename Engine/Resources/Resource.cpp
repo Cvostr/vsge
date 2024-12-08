@@ -1,8 +1,27 @@
 #include "Resource.hpp"
 #include "ResourceCache.hpp"
 #include <Core/Time.hpp>
+#include <mpi/Filesystem/File.hpp>
+#include <fstream>
 
 using namespace VSGE;
+
+#define DEFAULT_RESOURCE_PATH_STRING "@d"
+
+Resource::Resource() :
+	m_parent(nullptr),
+	m_resourceState(RESOURCE_STATE_UNLOADED),
+	_memoryUse(0),
+	_lastUseTime(0),
+	_loadedData(nullptr)
+{
+}
+
+Resource::~Resource()
+{
+	FreeLoadedData();
+	// TODO: add more
+}
 
 const Guid& Resource::getId() const
 {
@@ -32,6 +51,11 @@ const ResourceState& Resource::GetState() const
 void Resource::SetState(const ResourceState& State)
 { 
 	m_resourceState = State;
+}
+
+bool Resource::IsReady() const 
+{
+	return m_resourceState == RESOURCE_STATE_READY; 
 }
 
 Resource* Resource::GetParent() {
@@ -66,22 +90,59 @@ Resource* Resource::GetSubresourceWithName(const std::string& name) const
 	return nullptr;
 }
 
-byte* Resource::GetLoadedData() {
-	return _loadedData;
+bool Resource::IsUnloaded() const
+{
+	return m_resourceState == RESOURCE_STATE_UNLOADED; 
 }
 
-void Resource::SetLoadedData(byte* data) {
-	_loadedData = data;
+byte* Resource::GetLoadedData() {
+	return _loadedData;
 }
 
 void Resource::Use() {
 	_lastUseTime = TimePerf::Get()->GetCurrentTime();
 }
 
-void Resource::Load(bool just_read) {
+uint64 Resource::GetLastUseTime() const
+{
+	return _lastUseTime;
+}
+
+void Resource::Load(bool just_read) 
+{
 	if (IsUnloaded()) {
 		ResourceCache::Get()->GetAsyncLoader()->AddToQueue(this);
 	}
+}
+
+void Resource::ReadData()
+{
+	SetState(RESOURCE_STATE_LOADING);
+	//Declare blob loader stream
+	std::ifstream stream;
+	//Get absolute path to blob file
+	std::string file_path = _description.file_path;
+	//Check, if size explicitly specified
+	if (_description.size == 0) {
+		//Если размер не указан (равен 0)
+		Mpi::File file(file_path);
+		_description.size = static_cast<uint32>(file.getFileSize());
+	}
+
+	stream.open(file_path, std::ofstream::binary);
+	stream.seekg(static_cast<long>(_description.offset));
+
+	if (!stream.is_open()) {
+		SetState(RESOURCE_STATE_LOADING_FAILED);
+		throw std::runtime_error("Error loading resource: " + GetName());
+	}
+
+	_loadedData = new byte[_description.size];
+	stream.read(reinterpret_cast<char*>(_loadedData), _description.size);
+	stream.close();
+
+	//Set resource state to loaded
+	SetState(RESOURCE_STATE_LOADED);
 }
 
 void Resource::FreeLoadedData() {
@@ -97,10 +158,11 @@ void Resource::Release(){
 	_lastUseTime = 0;
 }
 
-bool Resource::IsDefault() {
-	return _description.file_path == "@d";
+bool Resource::IsDefault() const 
+{
+	return _description.file_path == DEFAULT_RESOURCE_PATH_STRING;
 }
 
 void Resource::SetDefault() {
-	_description.file_path = "@d";
+	_description.file_path = DEFAULT_RESOURCE_PATH_STRING;
 }

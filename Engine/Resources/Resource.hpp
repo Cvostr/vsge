@@ -59,6 +59,9 @@ namespace VSGE {
 		std::vector<Resource*> _subresources; //Resources, that created from this resource
 	public:
 
+		Resource();
+		virtual ~Resource();
+
 		const Guid& getId() const;
 
 		void SetId(const Guid& id);
@@ -87,12 +90,12 @@ namespace VSGE {
 		/// Is resource fully unloaded
 		/// </summary>
 		/// <returns></returns>
-		bool IsUnloaded() { return m_resourceState == RESOURCE_STATE_UNLOADED; }
+		bool IsUnloaded() const;
 		/// <summary>
 		/// Is resource loaded and ready to use
 		/// </summary>
 		/// <returns></returns>
-		bool IsReady() { return m_resourceState == RESOURCE_STATE_READY; }
+		bool IsReady() const;
 		/// <summary>
 		/// Get size of memory, allocated for this resource
 		/// </summary>
@@ -127,11 +130,6 @@ namespace VSGE {
 		/// <returns></returns>
 		const DataDescription& GetDataDescription();
 		/// <summary>
-		/// Set pointer to loaded bytes array, used in AsyncLoader
-		/// </summary>
-		/// <param name="data"></param>
-		void SetLoadedData(byte* data);
-		/// <summary>
 		/// Free memory of loaded data
 		/// </summary>
 		void FreeLoadedData();
@@ -144,9 +142,7 @@ namespace VSGE {
 		/// Get last frame number, where this resource was used
 		/// </summary>
 		/// <returns></returns>
-		uint64 GetLastUseTime() {
-			return _lastUseTime;
-		}
+		uint64 GetLastUseTime() const;
 		/// <summary>
 		/// Mark texture as used in this frame
 		/// </summary>
@@ -157,9 +153,10 @@ namespace VSGE {
 		void Release();
 
 		void SetDefault();
-		bool IsDefault();
+		bool IsDefault() const;
 
 		virtual void Load(bool just_read = false);
+		void ReadData();
 		/// <summary>
 		/// Work to do on resource release
 		/// </summary>
@@ -168,14 +165,6 @@ namespace VSGE {
 		virtual void PostLoad() {}
 		 
 		virtual ResourceType GetResourceType() const = 0;
-
-		Resource() :
-			m_parent(nullptr),
-			m_resourceState(RESOURCE_STATE_UNLOADED),
-			_memoryUse(0),
-			_lastUseTime(0),
-			_loadedData(nullptr)
-		{}
 	};
 
 }
