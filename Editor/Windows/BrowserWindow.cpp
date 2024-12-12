@@ -103,7 +103,8 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
 
         SceneLayer::Get()->GetMainScene()->NewScene();
         resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path);
-        ((SceneResource*)resource)->LoadAsync();
+
+        SceneLayer::Get()->LoadSceneAsync((SceneResource*) resource, 0, false);
     }
     else if((resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path)) != nullptr) {
         InspectorWindow* insp = ImGuiLayer::Get()->GetWindow<InspectorWindow>();

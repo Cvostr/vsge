@@ -20,6 +20,15 @@ Application::Application(ApplicationCreateInfo descr) :
 	_this = this;
 }
 
+const ApplicationCreateInfo& Application::GetDescription() const
+{ 
+	return _description; 
+}
+
+const GraphicsApi Application::GetGraphicsApi() const {
+	return _description.graphicsApi;
+}
+
 Application::~Application() {
 	SAFE_RELEASE(_window)
 	SAFE_RELEASE(_queuedEventsMutex)

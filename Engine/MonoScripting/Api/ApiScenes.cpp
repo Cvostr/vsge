@@ -3,6 +3,7 @@
 #include <MonoScripting/MonoScriptingLayer.hpp>
 #include <Resources/ResourceCache.hpp>
 #include <Resources/ResourceTypes/SceneResource.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -14,17 +15,18 @@ static Scene* GetMainScene() {
 	return SceneLayer::Get()->GetMainScene();
 }
 
-static void LoadScene(MonoString* scene_resource_name, uint32 slot) {
+static void LoadScene(MonoString* scene_resource_name, uint32 slot) 
+{
 	std::string name = std::string(mono_string_to_utf8(scene_resource_name));
 	SceneResource* resource = ResourceCache::Get()->GetResource<SceneResource>(name);
-	Scene* scn = SceneLayer::Get()->GetScenes()[slot];
-	scn->Stop();
-	
-	scn->NewScene();
-	if (resource) {
-		resource->LoadAsync(slot);
+
+	if (resource == nullptr)
+	{
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Can't find scene with name " << name << "\n";
+		return;
 	}
-	scn->RunOnLoad();
+
+	SceneLayer::Get()->LoadSceneAsync(resource, slot, true);
 }
 
 static MonoArray* GetScenes() {

@@ -9,9 +9,16 @@ namespace VSGE {
 	class SceneSerializer {
 	private:
 		Scene* _scene;
+		Scene* _permanentScene;
 	public:
+		
+		SceneSerializer();
+
 		void SetScene(Scene* scn) {
 			_scene = scn;
+		}
+		void SetPermanentScene(Scene* scn) {
+			_permanentScene = scn;
 		}
 
 		void SerializeBinary(byte** data, uint32& size);

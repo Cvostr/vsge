@@ -6,6 +6,11 @@
 
 using namespace VSGE;
 
+SceneSerializer::SceneSerializer() :
+	_scene(nullptr),
+	_permanentScene(nullptr)
+{}
+
 void SceneSerializer::SerializeBinary(const std::string& path) {
 	byte* data = nullptr;
 	uint32 size = 0;
@@ -105,9 +110,19 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size)
 
 	uint32 entity_count = solver.GetValue<uint32>();
 
-	for (uint32 entity_i = 0; entity_i < entity_count; entity_i++) {
+	if (entity_count == 0) {
+		throw std::runtime_error("Zero entities in scene");
+	}
+
+	// If We have permanent scene, the _scene acts as a temporary container
+	Scene* entityScene = _permanentScene ? _permanentScene : _scene;
+
+	for (uint32 entity_i = 0; entity_i < entity_count; entity_i++) 
+	{
 		Entity* ent = new Entity;
 		DeserializeEntityBinary(ent, solver);
+		ent->SetScene(entityScene);
+
 		if (entity_i == 0) {
 			_scene->GetRootEntity()->RemoveChild(ent);
 			delete ent;
@@ -117,8 +132,8 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size)
 	return true;
 }
 
-void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) {
-	ent->SetScene(_scene);
+void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) 
+{
 	ent->SetName(solver.ReadNextString());
 	ent->SetGuid(solver.GetValue<Guid>());
 	ent->SetActive(solver.GetValue<bool>());

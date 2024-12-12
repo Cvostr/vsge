@@ -2,6 +2,7 @@
 
 #include <Engine/ApplicationLayer.hpp>
 #include "Scene.hpp"
+#include "Resources/ResourceTypes/SceneResource.hpp"
 
 namespace VSGE {
 
@@ -9,14 +10,17 @@ namespace VSGE {
 	private:
 		uint32 slot;
 		Scene* scene;
+		bool runOnLoad;
 	public:
 		EVENT_CLASS_TYPE(EventType::EventSceneLoaded)
-		SceneLoadedEvent(uint32 slot, Scene* scene) :
+		SceneLoadedEvent(uint32 slot, Scene* scene, bool runOnLoad) :
 			slot(slot),
-			scene(scene)
+			scene(scene),
+			runOnLoad(runOnLoad)
 		{}
 		Scene* GetScene() const { return scene; }
 		uint32 GetSlot() const { return slot; }
+		bool IsRunOnLoad() const { return runOnLoad; }
 	};
 
 	class SceneLoadBeginEvent : public IEvent {
@@ -85,7 +89,7 @@ namespace VSGE {
 		void RestoreScene();
 		void RestoreScene(byte* data, uint32 size);
 
-		void LoadSceneBinary(byte* data, uint32 size, uint32 index = 0);
+		void LoadSceneAsync(SceneResource* resource, uint32 index = 0, bool runOnLoad = true);
 
 		void OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& event);
 		void OnEvent(const VSGE::IEvent& event);
