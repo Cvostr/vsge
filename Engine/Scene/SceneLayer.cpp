@@ -73,8 +73,15 @@ void SceneLayer::BackupScene(byte** data, uint32& size) {
 	sc.SetScene(_scenes[0]);
 	sc.SerializeBinary(data, size);
 }
-void SceneLayer::RestoreScene() {
-	RestoreScene(_scene_backup_data, _scene_backup_size);
+void SceneLayer::RestoreScene() 
+{
+	try {
+		RestoreScene(_scene_backup_data, _scene_backup_size);
+	}
+	catch (...) {
+
+	}
+
 	SAFE_RELEASE_ARR(_scene_backup_data)
 }
 void SceneLayer::RestoreScene(byte* data, uint32 size) {
@@ -102,14 +109,19 @@ void SceneLayer::LoadSceneAsync(SceneResource* resource, uint32 index, bool runO
 		VSGE::SceneSerializer ss;
 		ss.SetScene(newScene);
 		ss.SetPermanentScene(_scenes[index]);
-		bool rc = ss.DeserializeBinary(resource->GetLoadedData(), resource->GetDataDescription().size);
+		
+		try {
+			ss.DeserializeBinary(resource->GetLoadedData(), resource->GetDataDescription().size);
+			newScene->setLoading(false);
+			SceneLoadedEvent* loaded_event = new SceneLoadedEvent(index, newScene, runOnLoad);
+			Application::Get()->QueueEvent(loaded_event);
+		}
+		catch (const std::exception& ex) {
+			delete newScene;
+		}
 
 		// Clean up
 		resource->Release();
-
-		newScene->setLoading(false);
-		SceneLoadedEvent* loaded_event = new SceneLoadedEvent(index, newScene, runOnLoad);
-		Application::Get()->QueueEvent(loaded_event);
 	});
 }
 
