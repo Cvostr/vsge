@@ -8,7 +8,6 @@ using namespace VSGE;
 Scene::Scene() :
 	_rootEntity(nullptr) ,
 	_state(SCENE_STATE_IDLE),
-	_delayed_run(false),
 	_physics_world(nullptr)
 {}
 
@@ -16,11 +15,28 @@ Scene::~Scene() {
 	Destroy();
 }
 
-Scene::Scene(const Scene&& scene)
+Scene::Scene(Scene&& scene):
+	_state(SCENE_STATE_IDLE)
 {
 	_rootEntity = scene._rootEntity;
 	_environment_settings = scene._environment_settings;
 	_physics_world = scene._physics_world;
+
+	scene._rootEntity = nullptr;
+	scene._physics_world = nullptr;
+}
+
+Scene& Scene::operator=(Scene&& other)
+{
+	Destroy();
+	_rootEntity = other._rootEntity;
+	_environment_settings = other._environment_settings;
+	_physics_world = other._physics_world;
+
+	other._rootEntity = nullptr;
+	other._physics_world = nullptr;
+
+	return *this;
 }
 
 void Scene::Destroy() 
@@ -193,21 +209,12 @@ void Scene::Run()
 	bool was_paused = IsScenePaused();
 
 	_state = SCENE_STATE_RUNNING;
-	_delayed_run = false;
 
 	_physics_world->SetActive(true);
 
 	if (!was_paused) {
 		CallOnStart(GetRootEntity());
 	}
-}
-
-void Scene::RunOnLoad() {
-	_delayed_run = true;
-}
-
-bool Scene::IsDelayedRun() {
-	return _delayed_run;
 }
 
 void Scene::Pause() 

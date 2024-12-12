@@ -27,8 +27,7 @@ void MainLayer::OnAttach() {
 
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");
 
-	sc_res->LoadAsync(0);
-	Application::Get()->GetLayer<SceneLayer>()->GetMainScene()->RunOnLoad();
+	SceneLayer::Get()->LoadSceneAsync(sc_res, 0, true);
 }
 
 void MainLayer::OnEvent(const VSGE::IEvent& event) {

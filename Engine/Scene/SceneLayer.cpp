@@ -73,8 +73,15 @@ void SceneLayer::BackupScene(byte** data, uint32& size) {
 	sc.SetScene(_scenes[0]);
 	sc.SerializeBinary(data, size);
 }
-void SceneLayer::RestoreScene() {
-	RestoreScene(_scene_backup_data, _scene_backup_size);
+void SceneLayer::RestoreScene() 
+{
+	try {
+		RestoreScene(_scene_backup_data, _scene_backup_size);
+	}
+	catch (...) {
+
+	}
+
 	SAFE_RELEASE_ARR(_scene_backup_data)
 }
 void SceneLayer::RestoreScene(byte* data, uint32 size) {
@@ -83,31 +90,54 @@ void SceneLayer::RestoreScene(byte* data, uint32 size) {
 	sc.DeserializeBinary(data, size);
 }
 
-void SceneLayer::LoadSceneBinary(byte* data, uint32 size, uint32 index) {
+void SceneLayer::LoadSceneAsync(SceneResource* resource, uint32 index, bool runOnLoad)
+{
 	if (_scenes.size() <= index)
 		return;
 
-	Scene* dest_scene = _scenes[index];
-	dest_scene->setLoading(true);
+	Application::Get()->QueueTask([&, resource, index, runOnLoad] {
 
-	SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
-	Application::Get()->QueueEvent(load_event);
+		SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
+		Application::Get()->QueueEvent(load_event);
 
-	VSGE::SceneSerializer ss;
-	dest_scene->NewScene();
-	ss.SetScene(dest_scene);
-	bool rc = ss.DeserializeBinary(data, size);
+		if (resource->IsUnloaded())
+		{
+			resource->ReadData();
+		}
 
-	dest_scene->setLoading(false);
-	SceneLoadedEvent* loaded_event = new SceneLoadedEvent(index, dest_scene);
-	Application::Get()->QueueEvent(loaded_event);
+		Scene* newScene = new Scene();
+		newScene->NewScene();
+		newScene->setLoading(true);
+
+		VSGE::SceneSerializer ss;
+		ss.SetScene(newScene);
+		ss.SetPermanentScene(_scenes[index]);
+		
+		try {
+			ss.DeserializeBinary(resource->GetLoadedData(), resource->GetDataDescription().size);
+			newScene->setLoading(false);
+			SceneLoadedEvent* loaded_event = new SceneLoadedEvent(index, newScene, runOnLoad);
+			Application::Get()->QueueEvent(loaded_event);
+		}
+		catch (const std::exception& ex) {
+			delete newScene;
+		}
+
+		// Clean up
+		resource->Release();
+	});
 }
 
 void SceneLayer::OnEvent(const VSGE::IEvent& event) {
 	DispatchEvent<VSGE::SceneLoadedEvent>(event, EVENT_FUNC(SceneLayer::OnSceneLoadedEvent));
 }
 
-void SceneLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& event) {
-	if (event.GetScene()->IsDelayedRun())
-		event.GetScene()->Run();
+void SceneLayer::OnSceneLoadedEvent(const VSGE::SceneLoadedEvent& event) 
+{
+	Scene& scn = *_scenes[event.GetSlot()];
+	scn = std::move(*event.GetScene());
+	delete event.GetScene();
+
+	if (event.IsRunOnLoad())
+		scn.Run();
 }

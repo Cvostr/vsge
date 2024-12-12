@@ -24,7 +24,6 @@ namespace VSGE {
 		std::map<AABB, std::vector<Entity*>> _scene_tree;
 		PhysicsWorld* _physics_world;
 
-		bool _delayed_run;
 		SceneState _state;
 
 		void CallOnStart(Entity* entity);
@@ -35,8 +34,10 @@ namespace VSGE {
 
 		Scene();
 		Scene(const Scene&) = delete;
-		Scene(const Scene&&);
+		Scene(Scene&&);
 		~Scene();
+
+		Scene& operator=(Scene&& other);
 
 		/// <summary>
 		/// Clear all objects and setup new empty scene
@@ -104,10 +105,6 @@ namespace VSGE {
 		/// Run this scene
 		/// </summary>
 		void Run();
-		
-		void RunOnLoad();
-
-		bool IsDelayedRun();
 
 		void Pause();
 

@@ -6,6 +6,11 @@
 
 using namespace VSGE;
 
+SceneSerializer::SceneSerializer() :
+	_scene(nullptr),
+	_permanentScene(nullptr)
+{}
+
 void SceneSerializer::SerializeBinary(const std::string& path) {
 	byte* data = nullptr;
 	uint32 size = 0;
@@ -78,26 +83,30 @@ void SceneSerializer::SerializeEntityComponentBinary(IEntityComponent* component
 
 //DESERIALIZE
 
-bool SceneSerializer::DeserializeBinary(const std::string& path)
+void SceneSerializer::DeserializeBinary(const std::string& path)
 {
 	byte* file_data = nullptr;
 	uint32 file_size = 0;
 	bool result = LoadFile(path, (char**)&file_data, &file_size);
 
-	if (result)
-		return DeserializeBinary(file_data, file_size);
+	if (!result)
+	{
+		throw std::runtime_error("Error reading file " + path);
+	}
 
-	return false;
+	DeserializeBinary(file_data, file_size);
 }
 
-bool SceneSerializer::DeserializeBinary(byte* data, uint32 size) 
+void SceneSerializer::DeserializeBinary(byte* data, uint32 size) 
 {
 	ByteSolver solver(data, size);
 
 	std::string header = solver.ReadNextString();
 
-	if (header != "vsgebscene")
-		return false;
+	if (header != "vsgebscene") 
+	{
+		throw std::runtime_error("Incorrect scene header");
+	}
 
 	SceneEnvironmentSettings& settings = _scene->GetEnvironmentSettings();
 	settings.SetAmbientColor(solver.GetValue<Color>());
@@ -105,20 +114,30 @@ bool SceneSerializer::DeserializeBinary(byte* data, uint32 size)
 
 	uint32 entity_count = solver.GetValue<uint32>();
 
-	for (uint32 entity_i = 0; entity_i < entity_count; entity_i++) {
-		Entity* ent = new Entity;
-		DeserializeEntityBinary(ent, solver);
-		if (entity_i == 0) {
-			_scene->GetRootEntity()->RemoveChild(ent);
-			delete ent;
-		}
+	if (entity_count == 0) {
+		throw std::runtime_error("Zero entities in scene");
 	}
 
-	return true;
+	// If We have permanent scene, the _scene acts as a temporary container
+	Scene* entityScene = _permanentScene ? _permanentScene : _scene;
+
+	// Load root entity, that always first in file
+	Entity* ent = new Entity;
+	DeserializeEntityBinary(ent, solver);
+	_scene->GetRootEntity()->RemoveChild(ent);
+	delete ent;
+
+	// Read all entities except first
+	for (uint32 entity_i = 1; entity_i < entity_count; entity_i++) 
+	{
+		Entity* ent = new Entity;
+		DeserializeEntityBinary(ent, solver);
+		ent->SetScene(entityScene);
+	}
 }
 
-void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) {
-	ent->SetScene(_scene);
+void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) 
+{
 	ent->SetName(solver.ReadNextString());
 	ent->SetGuid(solver.GetValue<Guid>());
 	ent->SetActive(solver.GetValue<bool>());

@@ -4,6 +4,7 @@
 #include "Window.hpp"
 #include <string>
 #include <mpi/Os/Mutex.hpp>
+#include "Core/Threading/AsyncWorker.hpp"
 #include <typeinfo>
 
 namespace VSGE {
@@ -45,6 +46,7 @@ namespace VSGE {
 
 		Window* _window;
 		IRenderer* _renderer;
+		AsyncWorker asyncWorker;
 
 		bool _running;
 	public:
@@ -54,7 +56,7 @@ namespace VSGE {
 		Application(ApplicationCreateInfo descr);
 		~Application();
 
-		const ApplicationCreateInfo& GetDescription() { return _description; }
+		const ApplicationCreateInfo& GetDescription() const;
 
 		void Run();
 		void Stop();
@@ -100,9 +102,13 @@ namespace VSGE {
 			return nullptr;
 		}
 
-		GraphicsApi GetGraphicsApi() {
-			return _description.graphicsApi;
+		template<typename F, typename ...Args>
+		void QueueTask(const F& func, Args... args)
+		{
+			asyncWorker.QueueTask(func, args...);
 		}
+
+		const GraphicsApi GetGraphicsApi() const;
 
 		static Application* Get() {
 			return _this;

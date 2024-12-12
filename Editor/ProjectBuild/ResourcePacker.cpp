@@ -39,7 +39,8 @@ void ResourcePacker::THRFunc() {
     }
 }
 
-void ResourcePacker::Write(){
+void ResourcePacker::Write()
+{
     _output_log.clear();
     _finished = false;
     _written_bytes = 0;
@@ -128,9 +129,12 @@ void ResourcePacker::Write(){
     //write __data__ header
     serializer.Serialize(std::string("__data__"));
     serializer.Serialize((uint64)_map_entries.size());
-    for (MapEntry& entry : _map_entries) {
+
+    for (MapEntry& entry : _map_entries) 
+    {
         serializer.Serialize(entry.resourceId);
         serializer.Serialize(entry.type);
+        serializer.Serialize(entry.resource_name);
         serializer.Serialize(entry.bundle_index);
         serializer.Serialize(entry.offset);
         serializer.Serialize(entry.size);

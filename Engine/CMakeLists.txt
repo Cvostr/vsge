@@ -17,6 +17,7 @@ set(SRC_FILES
 				Core/Logger.cpp
 				Core/Time.cpp
 				Core/Threading/Thread.cpp
+				Core/Threading/AsyncWorker.cpp
 				Core/VarTypes/String.cpp
 				Core/VarTypes/Variant.cpp
 				Core/VarTypes/StringHash.cpp

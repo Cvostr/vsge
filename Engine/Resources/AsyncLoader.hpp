@@ -13,6 +13,9 @@ namespace VSGE {
 	private:
 		Mpi::Mutex * mMutex;
 		std::queue<Resource*> loadQueue;
+
+		void THRFunc();
+		void LoadResource(Resource* resource);
 	public:
 		AsyncLoader();
 
@@ -23,9 +26,5 @@ namespace VSGE {
 		void AddToQueue(Resource* resource);
 
 		void WaitForLoading(Resource* resource);
-
-		void THRFunc();
-
-		void LoadResource(Resource* resource);
 	};
 }

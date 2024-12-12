@@ -284,11 +284,13 @@ bool ResourceCache::AddResourceBundle(const std::string& bundle_map_path) {
     for (uint64 i = 0; i < count; i++) {
         Guid id = solver.GetGuid();
         ResourceType type = solver.GetValue<ResourceType>();
+        std::string name = solver.ReadNextString();
         DataDescription descr;
         descr.file_path = directory + bundle_names[solver.GetValue<uint32>()];
         descr.offset = solver.GetValue<uint32>();
         descr.size = solver.GetValue<uint32>();
         Resource* res = CreateResource(descr, type);
+        res->SetName(name);
         res->SetId(id);
     }
 
