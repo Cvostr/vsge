@@ -29,7 +29,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	descr.server = parser.IsServer();
 	const auto& appDirOpt = parser.GetApplicationDirPath();
 	// if argument not provided, use current workdir
-	descr.application_dir = /*parser.GetApplicationDirPath().value_or(".")*/ "D:\\MyDev\\vsge_test\\built";
+	descr.application_dir = parser.GetApplicationDirPath().value_or(".");
 
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");

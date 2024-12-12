@@ -100,7 +100,10 @@ void SceneLayer::LoadSceneAsync(SceneResource* resource, uint32 index, bool runO
 		SceneLoadBeginEvent* load_event = new SceneLoadBeginEvent;
 		Application::Get()->QueueEvent(load_event);
 
-		resource->ReadData();
+		if (resource->IsUnloaded())
+		{
+			resource->ReadData();
+		}
 
 		Scene* newScene = new Scene();
 		newScene->NewScene();
