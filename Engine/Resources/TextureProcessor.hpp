@@ -6,20 +6,25 @@
 
 namespace VSGE {
 
-	struct TextureMipLevel {
+	class TextureMipLevel {
+	private:
+		byte* _mip_data;
+		uint32 _mip_data_size;
+	public:
 		uint32 _mip_width;
 		uint32 _mip_height;
 
-		byte* _mip_data;
-		uint32 _mip_data_size;
-
 		TextureMipLevel();
-
 		~TextureMipLevel();
+		TextureMipLevel(const TextureMipLevel&) = delete;
+		TextureMipLevel(TextureMipLevel&& level);
 
 		void Allocate(uint32 size);
 		void SetMipLevelData(byte* data, uint32 size);
 		void Destroy();
+
+		byte* GetMipData() const;
+		uint32 GetMipDataSize() const;
 	};
 
 	struct ProcessedTexture {
