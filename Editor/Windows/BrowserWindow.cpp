@@ -247,7 +247,7 @@ void FileBrowserWindow::OnDrawWindow() {
                 if (ImGui::MenuItem("Add to scene")) {
                     EditorLayer* el = EditorLayer::Get();
                     char* out = nullptr;
-                    uint32 size = 0;
+                    uint64 size = 0;
                     //read prefab file
                     LoadFile(e->abs_path, &out, &size);
                     //Create entities from prefab
@@ -406,6 +406,8 @@ VSGE::ByteSerialize* FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType
     if (res_type == RESOURCE_TYPE_TEXTURE) {
         int size = 256;
         int layers = 1;
+        int mips = 0;
+        bool target = true;   // is target
         TextureFormat fmt = FORMAT_RGBA;
 
         serializer->WriteBytes("VSTX", 4);
@@ -413,6 +415,8 @@ VSGE::ByteSerialize* FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType
         serializer->Serialize(size);
         serializer->Serialize(fmt);
         serializer->Serialize(layers);
+        serializer->Serialize(mips);
+        serializer->Serialize(target);
     }
     return serializer;
 }

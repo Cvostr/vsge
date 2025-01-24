@@ -6,6 +6,9 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include <stb/stb_image_resize.h>
 
+#include "Core/ByteSerialize.hpp"
+#include "Core/ByteSolver.hpp"
+
 using namespace VSGE;
 
 TextureMipLevel::TextureMipLevel() 
@@ -65,6 +68,43 @@ void ProcessedTexture::Destroy()
     _mip_levels.clear();
 }
 
+void ProcessedTexture::DumpAsVSTX(byte** out, size_t& out_size)
+{
+    ByteSerialize* serializer = new ByteSerialize;
+
+    serializer->WriteBytes("VSTX", 4);
+    serializer->Serialize(_width);
+    serializer->Serialize(_height);
+    serializer->Serialize(_format);
+    serializer->Serialize(1);
+    serializer->Serialize((uint32)_mip_levels.size());
+    serializer->Serialize(_target); // non target
+
+    // Write mips to dictionary
+    size_t offset_acc = 0;
+    for (size_t mip_i = 0; mip_i < _mip_levels.size(); mip_i++)
+    {
+        const TextureMipLevel& mip = _mip_levels[mip_i];
+        serializer->Serialize(mip._mip_width);
+        serializer->Serialize(mip._mip_height);
+        serializer->Serialize(mip.GetMipDataSize());
+        serializer->Serialize(offset_acc);
+
+        offset_acc += mip.GetMipDataSize();
+    }
+
+    // Write mips data contigiously
+    for (size_t mip_i = 0; mip_i < _mip_levels.size(); mip_i++)
+    {
+        const TextureMipLevel& mip = _mip_levels[mip_i];
+        serializer->WriteBytes(mip.GetMipData(), mip.GetMipDataSize());
+    }
+
+    out_size = serializer->GetSerializedSize();
+    *out = new byte[out_size];
+    memcpy(*out, serializer->GetBytes(), out_size);
+}
+
 void VSGE::ProcessTexture(byte* data, uint32 size, ProcessedTexture& out) {
     if (data == nullptr || size == 0)
         return;
@@ -74,18 +114,40 @@ void VSGE::ProcessTexture(byte* data, uint32 size, ProcessedTexture& out) {
     bool is_dds = data[0] == 'D' && data[1] == 'D' && data[2] == 'S';
     bool is_vstx = data[0] == 'V' && data[1] == 'S' && data[2] == 'T' && data[3] == 'X';
 
-    if (is_vstx) {
+    if (is_vstx) 
+    {
+        ByteSolver vstx_solver(data, size);
+        vstx_solver.move(4); // skip VSTX header
+        out._width = vstx_solver.GetValue<uint32>();
+        out._height = vstx_solver.GetValue<uint32>();
+        out._format = vstx_solver.GetValue<TextureFormat>();
+        uint32 layers = vstx_solver.GetValue<uint32>();
+        uint32 mips = vstx_solver.GetValue<uint32>();
+        out._target = vstx_solver.GetValue<bool>();
 
-        out._format = *(reinterpret_cast<TextureFormat*>(&(data[12])));
-        out._width = *(reinterpret_cast<int*>(&(data[4])));
-        out._height = *(reinterpret_cast<int*>(&(data[8])));
-        uint32 layers = *(reinterpret_cast<uint32*>(&(data[16])));
+        if (out._target == true)
+        {
+            // This texture is render target for cameras
+            TextureMipLevel main_level;
+            main_level._mip_width = 512;
+            main_level._mip_height = 512;
+            out._mip_levels.push_back(std::move(main_level));
+        }
+        else {
+            size_t start_offset = vstx_solver.offset() + mips * (4 + 4 + 4 + 8);
+            // read dictionary
+            for (size_t mip_i = 0; mip_i < mips; mip_i++)
+            {
+                TextureMipLevel mip_level;
+                mip_level._mip_width = vstx_solver.GetValue<uint32>();
+                mip_level._mip_height = vstx_solver.GetValue<uint32>();
+                uint32 mip_data_size = vstx_solver.GetValue<uint32>();
+                size_t offset = vstx_solver.GetValue<size_t>();
 
-        TextureMipLevel main_level;
-        main_level._mip_width = 512;
-        main_level._mip_height = 512;
-        //main_level.SetMipLevelData(image_data, width * height * 4);
-        out._mip_levels.push_back(std::move(main_level));
+                mip_level.SetMipLevelData(data + start_offset + offset, mip_data_size);
+                out._mip_levels.push_back(std::move(mip_level));
+            }
+        }
     }
     else if (is_png || is_jpg) {
         int width = 0;
@@ -107,8 +169,8 @@ void VSGE::ProcessTexture(byte* data, uint32 size, ProcessedTexture& out) {
 
         int cur_width = width;
         int cur_height = height;
-        int minw = width / 2;
-        int minh = height / 2;
+        int minw = 8;
+        int minh = 8;
 
         while (cur_width > minw && cur_height > minh)
         {

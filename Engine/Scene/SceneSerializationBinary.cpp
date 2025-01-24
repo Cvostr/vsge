@@ -86,7 +86,7 @@ void SceneSerializer::SerializeEntityComponentBinary(IEntityComponent* component
 void SceneSerializer::DeserializeBinary(const std::string& path)
 {
 	byte* file_data = nullptr;
-	uint32 file_size = 0;
+	uint64 file_size = 0;
 	bool result = LoadFile(path, (char**)&file_data, &file_size);
 
 	if (!result)

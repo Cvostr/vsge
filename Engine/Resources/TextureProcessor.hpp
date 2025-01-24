@@ -27,15 +27,23 @@ namespace VSGE {
 		uint32 GetMipDataSize() const;
 	};
 
-	struct ProcessedTexture {
+	class ProcessedTexture {
+	public:
 		TextureFormat _format;
 
 		uint32 _width;
 		uint32 _height;
+		bool _target;
 
 		std::vector<TextureMipLevel> _mip_levels;
 
+		ProcessedTexture() 
+		{
+			_target = false;
+		}
+
 		void Destroy();
+		void DumpAsVSTX(byte** out, size_t& out_size);
 	};
 
 	void ProcessTexture(byte* data, uint32 size, ProcessedTexture& out);

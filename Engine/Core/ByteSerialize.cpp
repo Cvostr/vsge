@@ -34,7 +34,7 @@ void ByteSerialize::Reallocate(uint32 newSize) {
 
 void ByteSerialize::WriteBytes(void* data, uint32 size) {
 	if (mAllocatedSize < mSerializedSize + size) {
-		Reallocate(mAllocatedSize * 2);
+		Reallocate(mAllocatedSize + size + size / 2);
 	}
 	memcpy(mOutputBytes + mSerializedSize, data, size);
 	mSerializedSize += size;

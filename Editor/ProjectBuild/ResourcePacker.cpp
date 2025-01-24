@@ -68,8 +68,18 @@ void ResourcePacker::Write()
 
         //Прочитать файл
         byte* file_data = nullptr;
-        uint32 file_size = 0;
+        size_t file_size = 0;
         bool result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
+        
+        if (resource->GetResourceType() == RESOURCE_TYPE_TEXTURE)
+        {
+            // Convert to VSTX and compress
+            ProcessedTexture texture;
+            ProcessTexture(file_data, file_size, texture);
+            SAFE_RELEASE_ARR(file_data);
+
+            texture.DumpAsVSTX(&file_data, file_size);
+        }
 
         if (result) {
             CheckForBundleOverflow();
@@ -91,7 +101,7 @@ void ResourcePacker::Write()
     //write scripts dll
     {
         byte* file_data = nullptr;
-        uint32 file_size = 0;
+        uint64 file_size = 0;
         
         bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
         if (result) {

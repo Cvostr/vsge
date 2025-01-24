@@ -16,7 +16,7 @@ void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
 	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
 
 	byte* data = nullptr;
-	uint32 size = 0;
+	uint64 size = 0;
 
 	if (item == nullptr) {
 		LoadFile(file_path, (char**)&data, &size);

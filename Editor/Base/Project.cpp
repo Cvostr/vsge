@@ -24,7 +24,7 @@ Project::Project(	const std::string& root,
 void Project::LoadSettings()
 {
 	char* data;
-	uint32 size = 0;
+	uint64 size = 0;
 	bool confResult = VSGE::LoadFile(m_configFilePath, &data, &size);
 	if (!confResult) {
 		throw std::runtime_error("Unable to load project configuration from file " + m_configFilePath);

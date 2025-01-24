@@ -4,7 +4,7 @@
 #include "stdio.h"
 #include "string.h"
 
-bool VSGE::LoadFile(const std::string& FilePath, char** out, uint32* Size, bool Terminate) {
+bool VSGE::LoadFile(const std::string& FilePath, char** out, uint64* Size, bool Terminate) {
 	//Try to open file with read binary
 	FILE* pFile = fopen(FilePath.c_str(), "rb");
 

@@ -24,7 +24,11 @@ namespace VSGE {
 
 		bool end() const;
 
+		uint64 offset() const;
+
 		void move(uint32 offset);
+
+		byte* current();
 
 		Guid GetGuid();
 

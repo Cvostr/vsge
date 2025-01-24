@@ -23,7 +23,7 @@ void GlyphManager::AddFontContainer(GlyphFontContainer* ptr) {
 
 void GlyphManager::AddFontContainer(const std::string& filePath, const std::string& name) {
     byte* data = nullptr;
-    uint32 size = 0;
+    uint64 size = 0;
     bool result = LoadFile(filePath, (char**)&data, &size);
     if (result)
     {

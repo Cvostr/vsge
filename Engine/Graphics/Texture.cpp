@@ -68,7 +68,7 @@ void Texture::SetFlags(uint32 flags){
 
 bool Texture::CreateFromFile(std::string filePath) {
     byte* texture_data;
-    uint32 size;
+    uint64 size;
     if (!LoadFile(filePath, (char**)&texture_data, &size))
         return false;
     if (!CreateFromBuffer(texture_data, size))

@@ -26,9 +26,19 @@ bool ByteSolver::end() const
 	return mOffset >= mSize;
 }
 
+uint64 ByteSolver::offset() const
+{
+	return mOffset;
+}
+
 void ByteSolver::move(uint32 offset)
 {
 	mOffset += offset;
+}
+
+byte* ByteSolver::current()
+{
+	return mBytes + mOffset;
 }
 
 Guid ByteSolver::GetGuid()
