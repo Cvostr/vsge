@@ -12,6 +12,7 @@ namespace VSGE {
 		LOG_TYPE_INFO,
 		LOG_TYPE_WARN,
 		LOG_TYPE_ERROR,
+		LOG_TYPE_DEBUG,
 		LOG_TYPE_SCRIPT_COMPILE_ERROR
 	};
 
@@ -45,6 +46,8 @@ namespace VSGE {
 	class Logger {
 	private:
 		static OpLogger mOpLogger;
+
+		static void PrintPrefix(LogType type);
 	public:
 		static void Log(const std::string& msg, LogType type = LogType::LOG_TYPE_INFO);
 		static OpLogger& Log(LogType type = LogType::LOG_TYPE_INFO);

@@ -60,6 +60,19 @@ void TextureMipLevel::Destroy()
     SAFE_RELEASE_ARR(_mip_data);
 }
 
+ProcessedTexture::ProcessedTexture()
+{
+    _format = FORMAT_RGBA;
+    _target = false;
+    _width = 0;
+    _height = 0;
+}
+
+ProcessedTexture::~ProcessedTexture()
+{
+    Destroy();
+}
+
 void ProcessedTexture::Destroy() 
 {
     for (auto& mip : _mip_levels) {

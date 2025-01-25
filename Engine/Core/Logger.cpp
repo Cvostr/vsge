@@ -14,6 +14,7 @@ using namespace std;
 #define INFO_PREFIX std::string("{INFO} ")
 #define WARN_PREFIX string("{WARNING} ")
 #define ERROR_PREFIX string("{ERROR} ")
+#define DEBUG_PREFIX string("{DEBUG} ")
 
 OpLogger Logger::mOpLogger = OpLogger();
 
@@ -28,8 +29,8 @@ void PrintText(std::string text) {
 	printf(text.c_str());
 }
 
-void Logger::Log(const std::string& msg, LogType type) {
-
+void Logger::PrintPrefix(LogType type)
+{
 	switch (type) {
 	case LogType::LOG_TYPE_INFO:
 		PrintText(INFO_PREFIX);
@@ -40,29 +41,29 @@ void Logger::Log(const std::string& msg, LogType type) {
 	case LogType::LOG_TYPE_ERROR:
 		PrintText(ERROR_PREFIX);
 		break;
+	case LogType::LOG_TYPE_DEBUG:
+		PrintText(DEBUG_PREFIX);
+		break;
 	}
+}
+
+void Logger::Log(const std::string& msg, LogType type) 
+{
+	PrintPrefix(type);
 
 	PrintText(msg + "\n");
 }
 
-OpLogger& Logger::Log(LogType type) {
+OpLogger& Logger::Log(LogType type) 
+{
 	time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	MessageEvent* _event = new MessageEvent(type, now);
 
 	mOpLogger.SetEvent(_event);
 	Application::Get()->OnEvent(*_event);
 
-	switch (type) {
-	case LogType::LOG_TYPE_INFO:
-		PrintText(INFO_PREFIX);
-		break;
-	case LogType::LOG_TYPE_WARN:
-		PrintText(WARN_PREFIX);
-		break;
-	case LogType::LOG_TYPE_ERROR:
-		PrintText(ERROR_PREFIX);
-		break;
-	}
+	PrintPrefix(type);
+
 	return mOpLogger;
 }
 

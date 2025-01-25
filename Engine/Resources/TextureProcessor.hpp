@@ -37,10 +37,8 @@ namespace VSGE {
 
 		std::vector<TextureMipLevel> _mip_levels;
 
-		ProcessedTexture() 
-		{
-			_target = false;
-		}
+		ProcessedTexture();
+		~ProcessedTexture();
 
 		void Destroy();
 		void DumpAsVSTX(byte** out, size_t& out_size);

@@ -368,7 +368,8 @@ void EditorLayer::OnSceneViewResizedEvent(const VSGE::EventSceneViewResized& svr
     renderer->ResizeOutput((uint32)svr.GetSizeX(), (uint32)svr.GetSizeY());
 }
 
-void EditorLayer::fileEvent(const FilesystemEvent& event) {
+void EditorLayer::fileEvent(const FilesystemEvent& event) 
+{
 	ImGuiLayer::Get()->GetWindow<FileBrowserWindow>()->UpdateDirectoryContent();
 	Mpi::FilesystemWatcherEvent fwe = event.getFilesystemWatcherEvent();
 	std::string fileAbsPath = fwe.getFile().getAbsolutePath();
@@ -377,16 +378,22 @@ void EditorLayer::fileEvent(const FilesystemEvent& event) {
 		if (MonoScriptStorage::Get()->GetScriptWithFilePath(fileAbsPath))
 			MonoScriptStorage::Get()->Compile();
 	}
-	if (fwe.getAction() == FILESYSTEM_ACTION_CREATE) {
+	if (fwe.getAction() == FILESYSTEM_ACTION_CREATE) 
+	{
+		Logger::Log(LogType::LOG_TYPE_DEBUG) << "Created new file " << fwe.getFile().getAbsolutePath() << "\n";
 		//Try to add this file as resource
 		ResourceCache::Get()->AddResourceFile(fileAbsPath);
 		std::string fileExt = fwe.getFile().getExtension();
-		if (fileExt == "cs") {
+		if (fileExt == "cs") 
+		{
+			// If it is a C# script, register it in MonoScriptStorage and recompile all
 			MonoScriptStorage::Get()->AddScript(fileAbsPath);
 			MonoScriptStorage::Get()->Compile();
 		}
 	}
-	if (fwe.getAction() == FILESYSTEM_ACTION_DELETE) {
+	if (fwe.getAction() == FILESYSTEM_ACTION_DELETE) 
+	{
+		Logger::Log(LogType::LOG_TYPE_DEBUG) << "Deleted file " << fwe.getFile().getAbsolutePath() << "\n";
 		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(fileAbsPath);
 		if (res) {
 			res->Release();

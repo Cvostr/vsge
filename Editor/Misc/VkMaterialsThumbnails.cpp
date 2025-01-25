@@ -179,25 +179,29 @@ void VkMaterialsThumbnails::RecordCmdBuffer(VSGE::VulkanCommandBuffer* cmdbuf)
         material_component->SetMaterialId(_queued[0]);
 
         MaterialResource* resource = (MaterialResource*)material_component->GetResourceReference().GetResource();
-        Material* mat = resource->GetMaterial();
-        if (resource->GetState() == RESOURCE_STATE_READY)
-            VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
+        if (resource)
+        {
+            Material* mat = resource->GetMaterial();
+            if (resource->GetState() == RESOURCE_STATE_READY)
+                VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
 
-        _gbuffer->RecordCmdBuffer(cmdbuf);
-        _light->RecordCmdbuf(cmdbuf);
-        _gamma_correction->FillCommandBuffer(cmdbuf);
+            _gbuffer->RecordCmdBuffer(cmdbuf);
+            _light->RecordCmdbuf(cmdbuf);
+            _gamma_correction->FillCommandBuffer(cmdbuf);
 
-        VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
-        thumb->material_id = _queued[0];
-        VulkanTexture* src = _gamma_correction->GetOutputTexture();
-        VulkanTexture* dst = thumb->texture;
+            VkMaterialThumbnail* thumb = GetPlace(_queued[0]);
+            thumb->material_id = _queued[0];
+            VulkanTexture* src = _gamma_correction->GetOutputTexture();
+            VulkanTexture* dst = thumb->texture;
 
-        src->CmdCopyTexture(cmdbuf, dst, 0, 1);
+            src->CmdCopyTexture(cmdbuf, dst, 0, 1);
+        }
 
         //shrink array to left
         for (uint32 q_i = 1; q_i < _queued.size(); q_i++) {
             _queued[q_i - 1] = _queued[q_i];
         }
+
         _queued.pop_back();
     }
 }
