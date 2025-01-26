@@ -12,6 +12,27 @@ ShaderCache* ShaderCache::_this = nullptr;
 ShaderStorage storage;
 ShaderCache shaderCache;
 
+ShaderStorageItem::ShaderStorageItem() :
+	shaderData(nullptr),
+	shaderDataSize(0)
+{
+}
+
+ShaderStorageItem::ShaderStorageItem(ShaderStorageItem&& item)
+{
+	name = item.name;
+	shaderData = item.shaderData;
+	shaderDataSize = item.shaderDataSize;
+
+	item.shaderData = nullptr;
+	item.shaderDataSize = 0;
+}
+
+ShaderStorageItem::~ShaderStorageItem() 
+{
+	SAFE_RELEASE_ARR(shaderData)
+}
+
 void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
 	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
 
@@ -60,7 +81,8 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 
 	ByteSolver solver(data, map_size);
 
-	while (!solver.end()) {
+	while (!solver.end()) 
+	{
 		ShaderStorageItem item;
 
 		item.name = solver.ReadNextString();
@@ -70,7 +92,7 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 		item.shaderData = new byte[item.shaderDataSize];
 		bundle_stream.read((char*)item.shaderData, item.shaderDataSize);
 
-		this->shaders.push_back(item);
+		this->shaders.push_back(std::move(item));
 	}
 }
 

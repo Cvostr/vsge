@@ -146,24 +146,28 @@ bool VulkanPipeline::Create(VulkanShader* shader, VulkanRenderPass* rpass, Verte
 
 	std::vector<VkVertexInputBindingDescription> vertexInputBindingDescrs;
 
-	for (uint32 vertexBinding = 0; vertexBinding < vl.vertexBindingsCount; vertexBinding ++) {
+	for (uint32 vertexBinding = 0; vertexBinding < vl.GetVertexBindingsCount(); vertexBinding ++) 
+	{
 		VkVertexInputBindingDescription bindingDescription{};
 		bindingDescription.binding = vertexBinding;
-		bindingDescription.stride = vl.vertexSizes[vertexBinding];
+		bindingDescription.stride = vl.GetVertexBindingSize(vertexBinding);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
 		vertexInputBindingDescrs.push_back(bindingDescription);
 	}
 
+	const auto& layoutItems = vl.GetItems();
+
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescrs.size());
 	vertexInputInfo.pVertexBindingDescriptions = vertexInputBindingDescrs.data(); // Optional
-	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(vl.items.size());
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(layoutItems.size());
 
 	std::vector<VkVertexInputAttributeDescription> attrDescriptions;
 
-	for (auto vertexItem : vl.items) {
+	for (const auto& vertexItem : layoutItems) 
+	{
 		VkVertexInputAttributeDescription descr = {};
 		descr.binding = vertexItem.binding;
 		descr.location = vertexItem.location;

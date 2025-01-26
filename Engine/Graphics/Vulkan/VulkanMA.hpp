@@ -13,6 +13,8 @@ namespace VSGE {
 			_allocation(nullptr)
 		{
 		}
+
+		VmaVkBuffer(const VmaVkBuffer& buffer) = delete;
 	};
 
 	struct VmaVkImage {

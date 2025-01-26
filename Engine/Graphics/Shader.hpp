@@ -14,10 +14,13 @@ namespace VSGE {
 		byte* shaderData;
 		unsigned int shaderDataSize;
 
-		ShaderStorageItem() :
-			shaderData(nullptr),
-			shaderDataSize(0)
-		{}
+		ShaderStorageItem();
+
+		ShaderStorageItem(const ShaderStorageItem& item) = delete;
+
+		ShaderStorageItem(ShaderStorageItem&& item);
+
+		~ShaderStorageItem();
 	};
 
 	class ShaderStorage {

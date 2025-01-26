@@ -35,8 +35,8 @@ namespace VSGE {
         virtual ~Texture();
 
         TextureFormat GetFormat() const;
-        uint32 GetMipsCount() const { return _mipLevels; }
-        uint32 GetLayersCount() const { return _layers; }
+        uint32 GetMipsCount() const;
+        uint32 GetLayersCount() const;
         uint32 GetWidth() const;
         uint32 GetHeight() const;
 

@@ -31,6 +31,16 @@ uint32 Texture::GetHeight() const
     return _maxHeight; 
 }
 
+uint32 Texture::GetMipsCount() const 
+{ 
+    return _mipLevels; 
+}
+
+uint32 Texture::GetLayersCount() const 
+{ 
+    return _layers; 
+}
+
 void Texture::SetRenderTargetFlag(bool renderTarget) {
     _flags |= renderTarget * TEXTURE_FLAG_IS_RENDER_TARGET;
 }

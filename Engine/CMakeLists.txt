@@ -39,6 +39,7 @@ set(SRC_FILES
 				Graphics/Texture.cpp
 				Graphics/LightsBuffer.cpp
 				Graphics/FontManager.cpp
+				Graphics/VertexLayout.cpp
 				Graphics/Vulkan/VulkanBuffer.cpp
 				Graphics/Vulkan/VulkanCommandBuffer.cpp
 				Graphics/Vulkan/VulkanDescriptorPool.cpp

@@ -28,30 +28,21 @@ namespace VSGE {
 		VertexLayoutFormat format;
 	};
 
-	struct VertexLayout {
+	class VertexLayout {
+	private:
 		uint32 vertexBindingsCount;
-		std::vector<uint32> vertexSizes;
+		std::vector<uint32> vertexBindingsSizes;
 		std::vector<VertexLayoutItem> items;
+	public:
 
-		void AddBinding(uint32 vertexSize) {
-			vertexSizes.push_back(vertexSize);
-			vertexBindingsCount++;
-		}
+		uint32 GetVertexBindingsCount() const;
+		uint32 GetVertexBindingSize(uint32 bindingIndex) const;
 
-		void AddItem(uint32 location, uint32 offset, VertexLayoutFormat format, uint32 binding = 0) {
-			VertexLayoutItem item = {};
-			item.binding = binding;
-			item.location = location;
-			item.offset = offset;
-			item.format = format;
+		const std::vector<VertexLayoutItem>& GetItems() const;
 
-			items.push_back(item);
-		}
+		void AddBinding(uint32 vertexSize);
+		void AddItem(uint32 location, uint32 offset, VertexLayoutFormat format, uint32 binding = 0);
 
-		VertexLayout()
-		{
-			vertexBindingsCount = 0;
-		}
-
+		VertexLayout();
 	};
 }
