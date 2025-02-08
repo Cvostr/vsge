@@ -12,6 +12,14 @@ ByteSerialize::ByteSerialize() :
 	Reallocate(1000);
 }
 
+ByteSerialize::ByteSerialize(const ByteSerialize& val) :
+	mAllocatedSize(val.mAllocatedSize),
+	mSerializedSize(val.mSerializedSize)
+{
+	mOutputBytes = new byte[val.mAllocatedSize];
+	memcpy(mOutputBytes, val.mOutputBytes, val.mSerializedSize);
+}
+
 ByteSerialize::~ByteSerialize() {
 	SAFE_RELEASE_ARR(mOutputBytes);
 }

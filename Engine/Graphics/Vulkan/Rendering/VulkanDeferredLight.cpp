@@ -429,6 +429,9 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf)
 		Entity* entity = (*_gbuffer->GetEntitiesToRender())[e_i];
 		
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();		
+		if (!mesh_component)
+			continue;
+
 		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
 
 		MaterialResource* mat_resource = material_component->GetMaterialResource();

@@ -184,6 +184,24 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
 		MaterialComponent* material_component = entity->GetComponent<MaterialComponent>();
 
+		if (!mesh_component && !material_component) 
+		{
+			TerrainComponent* terrain = entity->GetComponent<TerrainComponent>();
+			if (terrain) 
+			{
+				Vec3 bb_max = bounding_box.GetMax();
+				bb_max.y = terrain->GetMaxTerrainHeight();
+				bounding_box.Extend(bb_max);
+				if (camera->IsVisibleInFrustum(bounding_box)) 
+				{
+					VulkanTerrainRenderer::DrawTerrain(cmdbuf, terrain, _camera_index, &_vertex_descriptor_sets, entity_i, _fb_width, _fb_height, _reverseCull);
+					//need to rebind pipeline
+					_boundPipeline = nullptr;
+				}
+			}
+			continue;
+		}
+
 		MeshResource* mesh_resource = mesh_component->GetMeshResource();
 		MaterialResource* mat_resource = material_component->GetMaterialResource();
 

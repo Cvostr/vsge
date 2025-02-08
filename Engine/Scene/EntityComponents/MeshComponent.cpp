@@ -29,6 +29,15 @@ Mesh* MeshComponent::GetMesh() {
 	return nullptr;
 }
 
+const AABB MeshComponent::GetAABB()
+{
+	if (GetMeshResource()) {
+		return GetMeshResource()->GetMesh()->GetBoundingBox();
+	}
+
+	return AABB(0, 0);
+}
+
 ResourceReference& MeshComponent::GetResourceReference() {
 	return _meshResource;
 }

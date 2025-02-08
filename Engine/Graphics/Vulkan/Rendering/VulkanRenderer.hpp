@@ -13,6 +13,7 @@
 
 #include "VulkanMaterials.hpp"
 #include <Graphics/LightsBuffer.hpp>
+#include "VulkanTerrainRenderer.hpp"
 #include "VulkanUiRenderer.hpp"
 #include "VulkanCamerasBuffer.hpp"
 #include "PBR/VulkanIrradianceMap.hpp"
@@ -50,6 +51,7 @@ namespace VSGE {
 
 		VulkanUiRenderer* _ui_renderer;
 		VulkanCamerasBuffer* _cameras_buffer;
+		VulkanTerrainRenderer* _terrain_renderer;
 		std::vector<VulkanRenderTarget*> _render_targets;
 		VulkanRenderTarget* _main_render_target;
 		VulkanFinalPass* _final_pass;

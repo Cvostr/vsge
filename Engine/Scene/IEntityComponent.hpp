@@ -3,6 +3,7 @@
 #include <vector>
 #include <Core/ByteSerialize.hpp>
 #include <Core/ByteSolver.hpp>
+#include <Math/AABB.hpp>
 
 namespace VSGE {
 
@@ -36,6 +37,7 @@ namespace VSGE {
 	public:
 
 		IEntityComponent();
+		virtual ~IEntityComponent() = default;
 		/// <summary>
 		/// Calls on scene start if object and component are both active
 		/// </summary>
@@ -95,4 +97,9 @@ namespace VSGE {
 	IEntityComponent* CreateEntityComponent(EntityComponentType type);
 
 	typedef std::vector<IEntityComponent*> tComponentList;
+
+	class GeometricalComponent {
+	public:
+		virtual const AABB GetAABB() = 0;
+	};
 }

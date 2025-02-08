@@ -2,6 +2,7 @@
 
 #include "VulkanGBufferRenderer.hpp"
 #include "VulkanDeferredLight.hpp"
+#include "VulkanTerrainRenderer.hpp"
 #include "Postprocess/VulkanGammaCorrection.hpp"
 #include "Postprocess/VulkanBloom.hpp"
 #include "Postprocess/VulkanSSAO.hpp"

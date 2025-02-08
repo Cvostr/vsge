@@ -27,7 +27,7 @@ VkBuffer VulkanMesh::GetIndexBufferVk() {
 }
 
 bool VulkanMesh::Create() {
-	for (auto vbd : _vertexBuffers) {
+	for (const auto& vbd : _vertexBuffers) {
 		VulkanBuffer* vertexBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_VERTEX);
 		vertexBuffer->Create(vbd.mVertexSize * m_verticesCount, LOCATION_CPU_GPU);
 		vertexBuffer->WriteData(0, vbd.mVertexSize * m_verticesCount, vbd.mVertices);

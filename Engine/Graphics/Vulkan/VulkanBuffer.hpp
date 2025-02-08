@@ -3,7 +3,7 @@
 #include "../GpuBuffer.hpp"
 #include "VulkanMA.hpp"
 
-#define UNI_ALIGN (uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetUniformBufferMinAlignment()
+#define UNI_ALIGN ((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetUniformBufferMinAlignment())
 
 namespace VSGE {
 	class VulkanBuffer : public GpuBuffer {

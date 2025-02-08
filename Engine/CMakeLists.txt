@@ -61,6 +61,7 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanTexture.cpp
 				Graphics/Vulkan/VulkanComputePipeline.cpp
 				Graphics/Vulkan/VulkanPresenter.cpp
+				Graphics/Vulkan/VulkanTerrain.cpp
 				Graphics/Vulkan/Rendering/VulkanMaterials.cpp
 				Graphics/Vulkan/Rendering/VulkanRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanRTRenderer.cpp
@@ -69,6 +70,7 @@ set(SRC_FILES
 				Graphics/Vulkan/Rendering/VulkanDeferredLight.cpp
 				Graphics/Vulkan/Rendering/VulkanGBufferRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanShadowmapping.cpp
+				Graphics/Vulkan/Rendering/VulkanTerrainRenderer.cpp
 				Graphics/Vulkan/Rendering/VulkanEnvMap.cpp
 				Graphics/Vulkan/Rendering/VulkanCamerasBuffer.cpp
 				Graphics/Vulkan/Rendering/VulkanUiRenderer.cpp
@@ -132,6 +134,7 @@ set(SRC_FILES
 				Scene/EntityComponents/CharacterControllerComponent.cpp
 				Scene/EntityComponents/LightProbeComponent.cpp
 				Scene/EntityComponents/TerrainComponent.cpp
+				Scene/EntityComponents/TerrainTexturesFactors.cpp
 				MonoScripting/MonoScriptingLayer.cpp
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp
@@ -237,8 +240,10 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Vulkan/VulkanSwapchain.hpp
 					Graphics/Vulkan/VulkanTexture.hpp
 					Graphics/Vulkan/VulkanSynchronization.hpp
+					Graphics/Vulkan/VulkanTerrain.hpp
 					Graphics/Vulkan/Rendering/VulkanRTRenderer.hpp
 					Graphics/Vulkan/Rendering/PBR/VulkanIBL.hpp
+					Graphics/Vulkan/Rendering/VulkanTerrainRenderer.hpp
 					Core/VarTypes/Base.hpp
 					Core/VarTypes/String.hpp
 					Core/VarTypes/StringHash.hpp

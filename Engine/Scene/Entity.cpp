@@ -2,6 +2,7 @@
 #include "Scene.hpp"
 #include <algorithm>
 #include "EntityComponents/MeshComponent.hpp"
+#include "EntityComponents/TerrainComponent.hpp"
 #include "EntityComponents/AnimatorComponent.hpp"
 #include <Math/MatrixTransform.hpp>
 #include "SceneSerialization.hpp"
@@ -217,7 +218,8 @@ bool Entity::HasComponent(IEntityComponent* component) {
 	return false;
 }
 
-void Entity::RemoveComponent(IEntityComponent* component) {
+void Entity::RemoveComponent(IEntityComponent* component) 
+{
 	if (component) {
 		if (HasComponent(component)) {
 			tComponentList::iterator it = std::remove(_components.begin(), _components.end(), component);
@@ -227,9 +229,13 @@ void Entity::RemoveComponent(IEntityComponent* component) {
 	}
 }
 
-void Entity::RemoveAllComponents() {
-	while(GetComponentsCount() > 0){
-		RemoveComponent(_components[0]);
+void Entity::RemoveAllComponents() 
+{
+	while (GetComponentsCount() > 0)
+	{
+		auto component = _components[0];
+		RemoveComponent(component);
+		SAFE_RELEASE(component)
 	}
 }
 
@@ -243,13 +249,18 @@ void Entity::SetRotation(const Quat& rotation) {
 	_rotation = rotation;
 }
 
-const AABB& Entity::GetAABB(bool extendChildren) {
+const AABB& Entity::GetAABB(bool extendChildren) 
+{
 	MeshComponent* mesh = GetComponent<MeshComponent>();
+	TerrainComponent* terrain;
 
-	if (mesh) {
-		if (mesh->GetMeshResource()) {
-			_boundingBox = mesh->GetMeshResource()->GetMesh()->GetBoundingBox();
-		}
+	if (mesh) 
+	{
+		_boundingBox = mesh->GetAABB();
+	}
+	else if ((terrain = GetComponent<TerrainComponent>()) != nullptr) 
+	{
+		_boundingBox = terrain->GetAABB();
 	}
 	else
 		_boundingBox.SetZero();

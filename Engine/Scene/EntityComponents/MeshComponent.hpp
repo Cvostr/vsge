@@ -6,7 +6,7 @@
 #include <string>
 
 namespace VSGE {
-	class MeshComponent : public IEntityComponent {
+	class MeshComponent : public IEntityComponent, GeometricalComponent {
 	private:
 		ResourceReference _meshResource;
 	public:
@@ -26,5 +26,7 @@ namespace VSGE {
 		ResourceReference& GetResourceReference();
 
 		Mesh* GetMesh();
+
+		const AABB GetAABB();
 	};
 }

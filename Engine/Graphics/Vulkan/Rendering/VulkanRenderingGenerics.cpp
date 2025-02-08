@@ -91,6 +91,13 @@ bool VulkanRenderingGenerics::Init() {
 	m_attachmentSampler->SetFilteringModes(SAMPLER_FILTERING_NEAREST, SAMPLER_FILTERING_NEAREST);
 	m_attachmentSampler->Create();
 
+	_terrain_masks_sampler = new VulkanSampler;
+	_terrain_masks_sampler->Create();
+
+	_terrain_textures_sampler = new VulkanSampler;
+	_terrain_textures_sampler->SetWrapModes(SAMPLER_WRAP_REPEAT, SAMPLER_WRAP_REPEAT);
+	_terrain_textures_sampler->Create();
+
 	//---------------------Meshes----------------------------------
 	m_screenMesh = new VulkanMesh;
 	Vertex plane_verts[] = {
@@ -181,6 +188,16 @@ void VulkanRenderingGenerics::LoadShaders()
 	shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap.frag", SHADER_STAGE_FRAGMENT);
 	shadowmap_terrain_point_shader->AddShaderFromFile("shadowmap.geom", SHADER_STAGE_GEOMETRY);
 	ShaderCache::Get()->AddShader(shadowmap_terrain_point_shader, "shadowmap_point_terrain");
+
+	VulkanShader* terrain_shader = new VulkanShader;
+	terrain_shader->AddShaderFromFile("terrain.vert", SHADER_STAGE_VERTEX);
+	terrain_shader->AddShaderFromFile("terrain.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(terrain_shader, "terrain");
+
+	VulkanShader* grass_shader = new VulkanShader;
+	grass_shader->AddShaderFromFile("grass.vert", SHADER_STAGE_VERTEX);
+	grass_shader->AddShaderFromFile("grass.frag", SHADER_STAGE_FRAGMENT);
+	ShaderCache::Get()->AddShader(grass_shader, "grass");
 }
 
 VulkanTexture* VulkanRenderingGenerics::GetBlackTexture() {
@@ -217,6 +234,14 @@ VulkanMesh* VulkanRenderingGenerics::GetScreenMesh() {
 
 VulkanSampler* VulkanRenderingGenerics::GetAttachmentSampler() {
 	return m_attachmentSampler;
+}
+
+VulkanSampler* VulkanRenderingGenerics::GetTerrainMasksTextureSampler() {
+	return _terrain_masks_sampler;
+}
+
+VulkanSampler* VulkanRenderingGenerics::GetTerrainTextureSampler() {
+	return _terrain_textures_sampler;
 }
 
 Vulkan_BRDF_LUT* VulkanRenderingGenerics::GetBRDF() {

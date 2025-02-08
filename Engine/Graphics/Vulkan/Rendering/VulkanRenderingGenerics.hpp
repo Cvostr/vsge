@@ -20,6 +20,9 @@ namespace VSGE {
 		VulkanSampler* m_samplerIBL;
 		VulkanSampler* m_materialMapsSampler;
 
+		VulkanSampler* _terrain_masks_sampler;
+		VulkanSampler* _terrain_textures_sampler;
+
 		//--------------------Meshes--------------------
 		VulkanMesh* m_screenMesh;
 
@@ -52,6 +55,9 @@ namespace VSGE {
 		VulkanSampler* GetSpecularIBLSampler();
 
 		VulkanSampler* GetMaterialMapsSampler();
+
+		VulkanSampler* GetTerrainMasksTextureSampler();
+		VulkanSampler* GetTerrainTextureSampler();
 
 		VulkanMesh* GetScreenMesh();
 

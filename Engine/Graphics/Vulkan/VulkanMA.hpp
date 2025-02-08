@@ -26,6 +26,8 @@ namespace VSGE {
 		{
 			
 		}
+
+		VmaVkImage(const VmaVkImage& image) = delete;
 	};
 
 	class VulkanCommandPool;

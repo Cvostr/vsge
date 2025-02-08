@@ -14,6 +14,7 @@ namespace VSGE {
 		float farPlane;
 	public:
 		LightProbeComponent();
+		~LightProbeComponent();
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_LIGHT_PROBE, "Light Probe")
 
 		LightProbeImage* GetImage() const;

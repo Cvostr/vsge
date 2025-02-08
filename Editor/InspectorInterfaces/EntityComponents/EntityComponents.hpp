@@ -14,10 +14,6 @@
 #include <Scene/EntityComponents/LightProbeComponent.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 
-#define TERRAIN_EDITOR_EDIT_MODE_HEIGHT 1
-#define TERRAIN_EDITOR_EDIT_MODE_TEXTURES 2
-#define TERRAIN_EDITOR_EDIT_MODE_GRASS 3
-
 namespace VSGEditor {
 	void DrawLightsourceComponent(VSGE::LightsourceComponent* light);
 	void DrawMeshComponent(VSGE::MeshComponent* light);

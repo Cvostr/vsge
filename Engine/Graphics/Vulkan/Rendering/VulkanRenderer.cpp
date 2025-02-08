@@ -108,6 +108,9 @@ void VulkanRenderer::SetupRenderer()
 
 	_final_pass = new VulkanFinalPass;
 
+	_terrain_renderer = new VulkanTerrainRenderer();
+	_terrain_renderer->Create(_main_render_target->GetGBufferRenderer()->GetRenderPass(), _main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets());
+
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
 	_vertexLayout.AddItem(0, offsetof(Vertex, pos), VertexLayoutFormat::VL_FORMAT_RGB32_SFLOAT);
@@ -215,6 +218,8 @@ void VulkanRenderer::DestroyRenderer()
 	}
 	_render_targets.clear();
 
+	SAFE_RELEASE(_terrain_renderer)
+
 	SAFE_RELEASE(_ibl_map)
 	SAFE_RELEASE(_ui_renderer)
 	SAFE_RELEASE(_lights_buffer)
@@ -240,6 +245,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		_lights_buffer->SetLightsCount(lightSourcesCount);
 		_lights_buffer->SetAmbientColor(env_settings.GetAmbientColor());
 
+		// Iterate through all lighcasters
 		for (uint32 light_i = 0; light_i < lightSourcesCount; light_i++) 
 		{
 			LightsourceComponent* light = _lightsources[light_i]->GetComponent<LightsourceComponent>();
@@ -261,6 +267,10 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		}
 
 		_lights_buffer->UpdateGpuBuffer();
+	}
+
+	for (uint32 terrain_i = 0; terrain_i < _terrains.size(); terrain_i++) {
+		_terrain_renderer->ProcessTerrain(_terrains[terrain_i]);
 	}
 
 	for (uint32 target_i = 0; target_i < _render_targets.size(); target_i++)

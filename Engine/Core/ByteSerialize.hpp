@@ -16,6 +16,7 @@ namespace VSGE {
 	public:
 
 		ByteSerialize();
+		ByteSerialize(const ByteSerialize& val);
 
 		~ByteSerialize();
 		/// <summary>

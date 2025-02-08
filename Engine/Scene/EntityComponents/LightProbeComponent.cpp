@@ -13,6 +13,11 @@ LightProbeComponent::LightProbeComponent() {
 	farPlane = 100.f;
 }
 
+LightProbeComponent::~LightProbeComponent()
+{
+	SAFE_RELEASE(image)
+}
+
 LightProbeImage* LightProbeComponent::GetImage() const
 {
 	return image;

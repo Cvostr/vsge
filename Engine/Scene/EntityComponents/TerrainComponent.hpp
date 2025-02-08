@@ -1,22 +1,95 @@
 #pragma once
 
 #include "../IEntityComponent.hpp"
+#include <Resources/ResourceReference.hpp>
+
+#include <Graphics/Mesh.hpp>
+#include <Graphics/Texture.hpp>
+#include <Graphics/Terrain.hpp>
+
+#define MAX_TEXTURES_PER_TERRAIN 16
 
 namespace VSGE {
 
-	class TerrainComponent : public IEntityComponent {
+	class TerrainTexture {
+	public:
+		ResourceReference _albedo_reference;
+		ResourceReference _normal_reference;
+		ResourceReference _roughness_reference;
+		ResourceReference _metallic_reference;
+		ResourceReference _ao_reference;
+		ResourceReference _height_reference;
+		float _roughness_factor;
+		float _metallic_factor;
+		float _height_factor;
+		TerrainTexture();
+		~TerrainTexture() = default;
+	};
+
+	class TerrainTexturesFactors {
+	private:
+		byte* _textures_masks;
+		uint32 height;
+		uint32 width;
+		uint32 layers;
+	public:
+		TerrainTexturesFactors();
+		~TerrainTexturesFactors();
+		TerrainTexturesFactors(const TerrainTexturesFactors&) = delete;
+
+		void Allocate(uint32 width, uint32 height, uint32 layers_count = 16);
+		void Free();
+		byte* GetArray();
+		byte* GetPointerToCoord(uint32 x, uint32 y, uint32 texture);
+		byte* GetPointerToCoord(uint32 index, uint32 texture);
+		void set(uint32 x, uint32 y, uint32 texture_id, uint32 val);
+		void set(uint32 index, uint32 texture_id, uint32 val);
+		uint8 get(uint32 index, uint32 texture_id);
+		void add(uint32 x, uint32 y, uint32 texture_id, uint32 val);
+		void reduce(uint32 x, uint32 y, uint32 texture_id, uint32 val);
+	};
+
+	class TerrainComponent : public IEntityComponent, GeometricalComponent {
 	private:
 		uint32 _width;
 		uint32 _length;
 		bool _castShadows;
+		bool _physics_enabled;
+
+		TerrainTexturesFactors _texture_factors;
+		std::vector<TerrainTexture> _terrain_textures;
+
+		// auto-updated value
+		float _max_terrain_height;
 
 		// state for update
 		bool _mesh_dirty;
 		bool _texturemaps_dirty;
+
+		// -- Ñomputed geometry state
+		Vertex* _heightmap;
+		uint32* _indices;
+
+		// -- Graphics Objects
+		Mesh* _heightmap_mesh;
+		Texture* _texture_masks;
+
+		// Graphics terrain object
+		Terrain* _terrain;
+
+		void CreateIndicesArray();
+		void CreateVerticesArray();
+		void UpdateNormals();
+
+		void UpdateGraphicsTextureMasks();
+		void UpdateGraphicsMesh();
+
+		void UpdateMaxHeight();
 	public:
 
 		TerrainComponent();
 		~TerrainComponent();
+		TerrainComponent(const TerrainComponent&) = delete;
 
 		uint32 GetWidth() const;
 		uint32 GetLength() const;
@@ -29,7 +102,22 @@ namespace VSGE {
 		bool IsShadowCastEnabled() const;
 		void SetShadowCastEnabled(bool cast);
 
+		float GetMaxTerrainHeight();
+		void AddTexture();
+		void Flat(float height);
+
+		const AABB GetAABB();
+
+		void SetTerrain(Terrain* terrain);
+		Terrain* GetTerrain();
+		Texture* GetTerrainMasksTexture();
+		Mesh* GetTerrainMesh();
+
+		std::vector<TerrainTexture>& GetTerrainTextures();
+
 		void OnUpdate();
+		void OnPreRender();
+
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);
 
