@@ -43,7 +43,8 @@ namespace fs = std::filesystem;
 
 EditorLayer* EditorLayer::_this = nullptr;
 
-EditorLayer::EditorLayer() {
+EditorLayer::EditorLayer() 
+{
 	mEditorCamera = new VSGE::Camera;
 	mEditorCamera->SetFarPlane(5000);
 	_this = this;
@@ -54,9 +55,14 @@ EditorLayer::EditorLayer() {
 	_pickedEntity = nullptr;
 	_transformMode = 7;
 	_camera_mode = EDITOR_CAMERA_MODE_EDIT_CAMERA;
+
+	_terrain_editor = new TerrainThreadedEditor;
+	_terrain_editor->Run();
 }
 
-EditorLayer::~EditorLayer() {
+EditorLayer::~EditorLayer() 
+{
+	delete _terrain_editor;
 	delete mEditorCamera;
 	delete mResourcesWatcher;
 }
@@ -146,7 +152,8 @@ Project& EditorLayer::GetProject() {
 	return _project;
 }
 
-void EditorLayer::OnEvent(const VSGE::IEvent& event) {
+void EditorLayer::OnEvent(const VSGE::IEvent& event) 
+{
 	DispatchEvent<VSGE::EventMouseMotion>(event, EVENT_FUNC(EditorLayer::OnMouseMotion));
 	DispatchEvent<VSGE::EventWindowClose>(event, EVENT_FUNC(EditorLayer::OnWindowClose));
 	DispatchEvent<VSGE::EventMouseScrolled>(event, EVENT_FUNC(EditorLayer::OnMouseScroll));
@@ -186,6 +193,23 @@ void EditorLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
 			front.y = -sin(to_radians(CameraState.cam_pitch));
 			front.z = sin(to_radians(CameraState.cam_yaw)) * cos(to_radians(CameraState.cam_pitch));
 			mEditorCamera->SetFront(front.GetNormalized());
+		}
+
+		if (win->IsInFocus() && win->isInsideWindow(motion.GetMouseX(), motion.GetMouseY())
+			&& Input::Get()->IsMouseButtonHold(MouseButton::MOUSE_BUTTON_LEFT)) 
+		{
+			Ray ray;
+			if (GetPickingRay(ray)) 
+			{
+				if (_pickedEntity) 
+				{
+					TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
+					if (terrain) 
+					{
+						_terrain_editor->QueueRay(ray);
+					}
+				}
+			}
 		}
 	}
 }
@@ -248,7 +272,8 @@ bool EditorLayer::GetPickingRay(VSGE::Ray& result) {
 	return false;
 }
 
-void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
+void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) 
+{
 	if (mbd.GetMouseButton() == MOUSE_BUTTON_LEFT) {
 		ImGuiLayer* imgui = ImGuiLayer::Get();
 		InspectorWindow* insp = imgui->GetWindow<InspectorWindow>();
@@ -256,7 +281,19 @@ void EditorLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 
 		//Try to pick object
 		Ray ray;
-		if (GetPickingRay(ray)) {
+		if (GetPickingRay(ray)) 
+		{
+			if (_pickedEntity) 
+			{
+				TerrainComponent* terrain = _pickedEntity->GetComponent<TerrainComponent>();
+				if (terrain) {
+					_terrain_editor->SetTerrain(terrain);
+					_terrain_editor->QueueRay(ray);
+				}
+				else
+					_terrain_editor->SetTerrain(nullptr);
+			}
+
 			std::vector<RayHit> hits;
 
 			Entity* picked = nullptr;

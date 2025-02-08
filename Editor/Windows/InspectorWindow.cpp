@@ -70,6 +70,7 @@ void InspectorWindow::DrawComponent() {
 
 		if (removeComponent) {
 			mShowingEntity->RemoveComponent(component);
+			delete component;
 			return;
 		}
 
@@ -242,6 +243,7 @@ void InspectorWindow::DrawEntityContents()
 		AddComponentButton<VSGE::ColliderComponent>();
 		AddComponentButton<VSGE::RigidBodyComponent>();
 		AddComponentButton<VSGE::Camera>();
+		AddComponentButton<VSGE::TerrainComponent>();
 		AddComponentButton<VSGE::CharacterControllerComponent>();
 		AddComponentButton<VSGE::LightProbeComponent>();
 

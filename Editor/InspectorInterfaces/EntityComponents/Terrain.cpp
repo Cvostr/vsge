@@ -11,10 +11,6 @@ using namespace VSGEditor;
 
 #define TERRAIN_TEXTURE_BTN_SIZE 48
 
-#define TERRAIN_EDITOR_EDIT_MODE_HEIGHT 1
-#define TERRAIN_EDITOR_EDIT_MODE_TEXTURES 2
-#define TERRAIN_EDITOR_EDIT_MODE_GRASS 3
-
 float brush_size = 20;
 float opacity = 15;
 int edit_mode = TERRAIN_EDITOR_EDIT_MODE_HEIGHT;
@@ -127,4 +123,20 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc)
 				tc->AddTexture();
 		}
 	}
+}
+
+int VSGEditor::GetTerrainEditorMode() {
+	return edit_mode;
+}
+float VSGEditor::GetTerrainEditorOpacity() {
+	return opacity;
+}
+float VSGEditor::GetTerrainEditorBrushSize() {
+	return brush_size;
+}
+uint32 VSGEditor::GetTerrainEditorTextureIndex() {
+	return picked_texture_index;
+}
+uint32 VSGEditor::GetTerrainEditorVegetableIndex() {
+	return picked_grass_index;
 }

@@ -12,6 +12,7 @@
 #include <Math/Ray.hpp>
 #include <Base/Events.hpp>
 #include <mpi/Filesystem/FilesystemWatcher.hpp>
+#include <Misc/TerrainThreadedEditor.hpp>
 
 namespace VSGEditor {
 
@@ -25,6 +26,7 @@ namespace VSGEditor {
 		static EditorLayer* _this;
 		VSGE::Camera* mEditorCamera;
 		Mpi::FilesystemWatcher* mResourcesWatcher;
+		TerrainThreadedEditor* _terrain_editor;
 
 		struct {
 			float cam_yaw;

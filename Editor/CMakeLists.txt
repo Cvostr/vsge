@@ -46,6 +46,7 @@ set(SRC_FILES
                 Misc/VkGizmos.cpp
                 Misc/EditorIcons.cpp
                 Misc/DialogWindows.cpp
+                Misc/TerrainThreadedEditor.cpp
                 ProjectBuild/ResourcePacker.cpp
                 Windows/BrowserWindow.cpp
                 Windows/ConsoleWindow.cpp
@@ -97,6 +98,7 @@ set(HEADER_FILES   Base/Events.hpp
                     Misc/Thumbnails.hpp
                     Misc/VkGizmos.hpp
                     Misc/VkMaterialsThumbnails.hpp
+                    Misc/TerrainThreadedEditor.hpp
                     
                     MonoScripting/MonoScriptCompile.hpp
                     MonoScripting/MonoScriptStorage.hpp

@@ -6,6 +6,7 @@
 #include <Graphics/Mesh.hpp>
 #include <Graphics/Texture.hpp>
 #include <Graphics/Terrain.hpp>
+#include <Math/Ray.hpp>
 
 #define MAX_TEXTURES_PER_TERRAIN 16
 
@@ -105,7 +106,10 @@ namespace VSGE {
 		float GetMaxTerrainHeight();
 		void AddTexture();
 		void Flat(float height);
+		void ModifyHeight(const Vec2i& position, float height, uint32 range);
+		void ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id);
 
+		Vec2i GetRayIntersectionTraingle(const Ray& ray);
 		const AABB GetAABB();
 
 		void SetTerrain(Terrain* terrain);

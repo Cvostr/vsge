@@ -1,4 +1,5 @@
 #include "TerrainComponent.hpp"
+#include <Scene/Entity.hpp>
 
 using namespace VSGE;
 
@@ -184,6 +185,36 @@ void TerrainComponent::CreateIndicesArray()
 	}
 }
 
+Vec2i TerrainComponent::GetRayIntersectionTraingle(const Ray& ray) 
+{
+	if (!_heightmap || !_indices)
+		return Vec2i(-1);
+
+	Mat4 entity_transform = GetEntity()->GetWorldTransform();
+
+	for (uint32 index_i = 0; index_i < GetIndicesCount(); index_i += 3) 
+	{
+		Vec3 v0 = _heightmap[_indices[index_i]].pos;
+		Vec3 v1 = _heightmap[_indices[index_i + 1]].pos;
+		Vec3 v2 = _heightmap[_indices[index_i + 2]].pos;
+		Vec4 v01 = entity_transform * Vec4(v0, 1);
+		Vec4 v11 = entity_transform * Vec4(v1, 1);
+		Vec4 v21 = entity_transform * Vec4(v2, 1);
+		
+		float dist = 0;
+		Vec2 pos;
+
+		bool intersects = ray.IntersectTriangle(v01.Vec3(), v11.Vec3(), v21.Vec3(), dist, pos);
+		
+		if (intersects) 
+		{
+			return Vec2i(v0.z, v0.x);
+		}
+	}
+
+	return Vec2i(-1);
+}
+
 void TerrainComponent::Flat(float height) 
 {
 	SAFE_RELEASE_ARR(_heightmap);
@@ -211,6 +242,56 @@ void TerrainComponent::Flat(float height)
 	_mesh_dirty = true;
 }
 
+void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) 
+{
+	//Iterate over all pixels
+	for (int y = 0; y < _width; y++) 
+	{
+		for (int x = 0; x < _length; x++) 
+		{
+			//if pixel is in circle
+			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
+			if (dist <= range) {
+				//calculate modifier
+				float toApply = (height)-static_cast<float>(dist * dist) / (float)range;
+				if (toApply > 0) {
+					_heightmap[y * _length + x].pos.y += (toApply);
+				}
+			}
+		}
+	}
+
+	_mesh_dirty = true;
+}
+
+void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id)
+{
+	// Iterate over all pixels
+	for (int y = 0; y < _width; y++) 
+	{
+		for (int x = 0; x < _length; x++) 
+		{
+			//if pixel is in circle
+			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
+			//if vertex is inside circle
+			if (dist <= range) 
+			{
+				float toApply = opacity - static_cast<float>(dist * dist) / (float)range;
+				int _toApply = (int)(toApply);
+				if (_toApply <= 0)
+					continue;
+				for (uint32 texture_f = 0; texture_f < MAX_TEXTURES_PER_TERRAIN; texture_f++) {
+					if (texture_f != texture_id)
+						_texture_factors.reduce(y, x, texture_f, _toApply);
+				}
+				_texture_factors.add(y, x, texture_id, _toApply);
+			}
+		}
+	}
+	// enqueue update
+	_texturemaps_dirty = true;
+}
+
 void TerrainComponent::CreateVerticesArray()
 {
 	SAFE_RELEASE_ARR(_heightmap)
@@ -236,7 +317,7 @@ void TerrainComponent::UpdateNormals()
 	ProcessTangentSpace(_heightmap, _indices, GetIndicesCount());
 }
 
-void TerrainComponent::UpdateGraphicsTextureMasks()
+void TerrainComponent::UpdateGraphicsMesh()
 {
 	if (!_heightmap_mesh) 
 	{
@@ -251,7 +332,7 @@ void TerrainComponent::UpdateGraphicsTextureMasks()
 	_heightmap_mesh->Create();
 }
 
-void TerrainComponent::UpdateGraphicsMesh()
+void TerrainComponent::UpdateGraphicsTextureMasks()
 {
 	uint32 layers_count = MAX_TEXTURES_PER_TERRAIN / 4;
 
