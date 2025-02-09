@@ -370,7 +370,14 @@ void TerrainComponent::UpdateGraphicsTextureMasks()
 
 	if (!_texture_masks) 
 	{
+		// Texture was not created before - then create it
 		_texture_masks = Texture::NewTexture();
+		_texture_masks->Create(_width, _length, FORMAT_RGBA, layers_count, 1);
+	} 
+	else if (_texture_masks->GetWidth() != _width || _texture_masks->GetHeight() != _length)
+	{
+		// Texture was already created, but terrain sizes changed - then recreate it
+		_texture_masks->Destroy();
 		_texture_masks->Create(_width, _length, FORMAT_RGBA, layers_count, 1);
 	}
 	

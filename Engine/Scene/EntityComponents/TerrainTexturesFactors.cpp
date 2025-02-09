@@ -22,6 +22,7 @@ void TerrainTexturesFactors::Allocate(uint32 width, uint32 height, uint32 layers
 	this->layers = layers;
 	uint32 buffer_size = width * height * 4 * layers_count;
 	_textures_masks = new byte[buffer_size];
+	memset(_textures_masks, 0, buffer_size);
 }
 
 void TerrainTexturesFactors::Free()
