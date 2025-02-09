@@ -196,7 +196,6 @@ void VulkanTerrainRenderer::DrawTerrain(
 			cmdbuffer->SetCullMode(VK_CULL_MODE_FRONT_BIT);
 
 		cmdbuffer->SetViewport(0, 0, (float)output_width, (float)output_height);
-		//uint32 terrain_data_offset = terrain_index * TERRAIN_DATA_ELEM_SIZE;
 
 		cmdbuffer->BindDescriptorSets(*terrain_pipeline_layout, 0, 1, entity_descr_sets->at(vertexDescriptorID), 2, offsets);
 		// info about terrain

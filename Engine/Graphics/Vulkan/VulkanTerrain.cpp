@@ -40,6 +40,12 @@ std::vector<VulkanTerrainGrass>& VulkanTerrain::GetVegetables()
 	return _grass_descriptor_sets;
 }
 
+#define TEXTURE_TYPE_ALBEDO 0
+#define TEXTURE_TYPE_NORMAL 1
+#define TEXTURE_TYPE_ROUGHNESS 2
+#define TEXTURE_TYPE_METALLIC 3
+#define TEXTURE_TYPE_AO 4
+
 void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index) 
 {
 	TextureResource* texture_res = static_cast<TextureResource*>(texture);
@@ -47,8 +53,11 @@ void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type,
 		//if no texture bound, then bind default texture
 
 		VulkanTexture* default_texture = VulkanRenderingGenerics::Get()->GetBlackTexture();
-		if (texture_type == 2 || texture_type == 3 || texture_type == 4)
+
+		if (texture_type == TEXTURE_TYPE_ROUGHNESS || texture_type == TEXTURE_TYPE_METALLIC || texture_type == TEXTURE_TYPE_AO)
+		{
 			default_texture = VulkanRenderingGenerics::Get()->GetWhiteTexture();
+		}
 
 		_terrain_descr_set->WriteDescriptorImage(texture_type + 2,
 			default_texture,
@@ -123,23 +132,23 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain)
 		Resource* height_resource = terrain->GetTerrainTextures()[i]._height_reference.GetResource();
 		//albedo
 		SetDescriptorTexture(albedo_resource,
-			0,
+			TEXTURE_TYPE_ALBEDO,
 			i);
 		//normal
 		SetDescriptorTexture(normal_resource,
-			1,
+			TEXTURE_TYPE_NORMAL,
 			i);
 		//roughness
 		SetDescriptorTexture(roughness_resource,
-			2,
+			TEXTURE_TYPE_ROUGHNESS,
 			i);
 		//metallic
 		SetDescriptorTexture(metallic_resource,
-			3,
+			TEXTURE_TYPE_METALLIC,
 			i);
 		//ao
 		SetDescriptorTexture(ao_resource,
-			4,
+			TEXTURE_TYPE_AO,
 			i);
 		//height
 		SetDescriptorTexture(height_resource,
@@ -227,28 +236,30 @@ void VulkanTerrain::UpdateInfo(TerrainComponent* terrain)
 	}
 }
 
-void VulkanTerrain::SetImagesToEmpty() {
-	for (uint32 i = 0; i < MAX_TEXTURES_PER_TERRAIN; i++) {
+void VulkanTerrain::SetImagesToEmpty() 
+{
+	for (uint32 i = 0; i < MAX_TEXTURES_PER_TERRAIN; i++) 
+	{
 		//bind default black texture
 		//albedo
 		SetDescriptorTexture(nullptr,
-			0,
+			TEXTURE_TYPE_ALBEDO,
 			i);
 		//normal
 		SetDescriptorTexture(nullptr,
-			1,
+			TEXTURE_TYPE_NORMAL,
 			i);
 		//roughness
 		SetDescriptorTexture(nullptr,
-			2,
+			TEXTURE_TYPE_ROUGHNESS,
 			i);
 		//metallic
 		SetDescriptorTexture(nullptr,
-			3,
+			TEXTURE_TYPE_METALLIC,
 			i);
 		//ao
 		SetDescriptorTexture(nullptr,
-			4,
+			TEXTURE_TYPE_AO,
 			i);
 		//height
 		SetDescriptorTexture(nullptr,

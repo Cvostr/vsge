@@ -8,6 +8,10 @@
 #include <Graphics/Terrain.hpp>
 #include <Math/Ray.hpp>
 
+#include <BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h>
+#include <BulletCollision/CollisionShapes/btTriangleIndexVertexArray.h>
+#include <BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h>
+
 #define MAX_TEXTURES_PER_TERRAIN 16
 
 namespace VSGE {
@@ -55,7 +59,6 @@ namespace VSGE {
 		uint32 _width;
 		uint32 _length;
 		bool _castShadows;
-		bool _physics_enabled;
 
 		TerrainTexturesFactors _texture_factors;
 		std::vector<TerrainTexture> _terrain_textures;
@@ -78,6 +81,10 @@ namespace VSGE {
 		// Graphics terrain object
 		Terrain* _terrain;
 
+		// Physics
+		btBvhTriangleMeshShape* _physical_shape;
+		btRigidBody* _rigidbody;
+
 		void CreateIndicesArray();
 		void CreateVerticesArray();
 		void UpdateNormals();
@@ -86,6 +93,11 @@ namespace VSGE {
 		void UpdateGraphicsMesh();
 
 		void UpdateMaxHeight();
+
+		// Physics methods
+		void CreatePhysicsAndAddToWorld();
+		btTransform GetEntityBtTransform();
+		btBvhTriangleMeshShape* MakePhysicalShape();
 	public:
 
 		TerrainComponent();
@@ -121,6 +133,8 @@ namespace VSGE {
 
 		void OnUpdate();
 		void OnPreRender();
+		void OnActivate();
+		void OnDeactivate();
 
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);

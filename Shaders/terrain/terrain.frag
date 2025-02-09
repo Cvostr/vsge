@@ -77,7 +77,8 @@ float GetHeight(vec2 uv, uint texture_id){
     return texture(height[texture_id], uv).r;
 }
 
-vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir, uint texture_id){
+vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir, uint texture_id)
+{
     // number of depth layers
     const float minLayers = 8;
     const float maxLayers = 64;
@@ -117,7 +118,8 @@ vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir, uint texture_id){
     return finalTexCoords;
 }
 
-void CalculateTextures(vec2 uv){
+void CalculateTextures(vec2 uv)
+{
     vec2 terrain_uv = vec2(0);
     terrain_uv.x = uv.x * texture_uv_x;
     terrain_uv.y = uv.y * texture_uv_y;
@@ -128,9 +130,11 @@ void CalculateTextures(vec2 uv){
     result_metallic = 0;
     result_ao = 1;
 
-    for(uint i = 0; i < textures_count; i ++){
+    for (uint i = 0; i < textures_count; i ++)
+    {
         float factor = GetFactor(uv, i);
-        if(factor > 0.001){
+        if (factor > 0.001)
+        {
             //height
             mat3 transposed_tbn = transpose(TBN);
             vec3 view_dir = normalize(transposed_tbn * cam_position - transposed_tbn * FragPos);
@@ -167,5 +171,5 @@ void main() {
     tColor = vec4(result_albedo, result_ao);
     tNormal = vec4(result_normal, result_roughness);
     tPos = FragPos;
-    tMaterial = vec4(0, 0, 0, result_metallic);
+    tMaterial = vec4(result_roughness, result_metallic, 1, 1);
 }

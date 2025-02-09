@@ -1,5 +1,7 @@
 #include "TerrainComponent.hpp"
 #include <Scene/Entity.hpp>
+#include <Scene/Scene.hpp>
+#include <Physics/PhysicsLayer.hpp>
 
 using namespace VSGE;
 
@@ -13,7 +15,6 @@ TerrainComponent::TerrainComponent():
 	_width(256),
 	_length(256),
 	_castShadows(true),
-	_physics_enabled(true),
 	// Set graphics objects to null
 	_terrain(nullptr),
 	_heightmap_mesh(nullptr),
@@ -21,6 +22,9 @@ TerrainComponent::TerrainComponent():
 	// Intermediate heightmap structs
 	_heightmap(nullptr),
 	_indices(nullptr),
+	// Physics
+	_physical_shape(nullptr),
+	_rigidbody(nullptr),
 
 	_max_terrain_height(0)
 {
@@ -33,6 +37,13 @@ TerrainComponent::TerrainComponent():
 
 TerrainComponent::~TerrainComponent()
 {
+	if (_rigidbody)
+	{
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
+		SAFE_RELEASE(_rigidbody)
+	}
+	SAFE_RELEASE(_physical_shape)
+
 	SAFE_RELEASE_ARR(_heightmap);
 	SAFE_RELEASE_ARR(_indices);
 	_texture_factors.Free();
@@ -130,7 +141,28 @@ const AABB TerrainComponent::GetAABB() {
 
 void TerrainComponent::OnUpdate()
 {
+	if (!_rigidbody)
+		CreatePhysicsAndAddToWorld();
 
+	if (_rigidbody) 
+	{
+		btTransform transform = GetEntityBtTransform();
+		_rigidbody->setWorldTransform(transform);
+	}
+}
+
+void TerrainComponent::OnActivate() 
+{
+	if (_rigidbody) {
+		_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
+	}
+}
+
+void TerrainComponent::OnDeactivate()
+{
+	if (_rigidbody) {
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
+	}
 }
 
 void TerrainComponent::OnPreRender()
@@ -364,16 +396,25 @@ void TerrainComponent::Serialize(ByteSerialize& serializer)
 
 	for (auto& texture : _terrain_textures) 
 	{
-		serializer.Serialize(texture._albedo_reference.GetResourceName());
-		serializer.Serialize(texture._normal_reference.GetResourceName());
-		serializer.Serialize(texture._roughness_reference.GetResourceName());
-		serializer.Serialize(texture._metallic_reference.GetResourceName());
-		serializer.Serialize(texture._ao_reference.GetResourceName());
-		serializer.Serialize(texture._height_reference.GetResourceName());
+		serializer.Serialize(texture._albedo_reference.GetId());
+		serializer.Serialize(texture._normal_reference.GetId());
+		serializer.Serialize(texture._roughness_reference.GetId());
+		serializer.Serialize(texture._metallic_reference.GetId());
+		serializer.Serialize(texture._ao_reference.GetId());
+		serializer.Serialize(texture._height_reference.GetId());
 		//write factors
 		serializer.Serialize(texture._roughness_factor);
 		serializer.Serialize(texture._metallic_factor);
 		serializer.Serialize(texture._height_factor);
+	}
+
+	for (uint32 i = 0; i < GetVerticesCount(); i++) 
+	{
+		serializer.Serialize(_heightmap[i].pos.y);
+		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) 
+		{
+			serializer.Serialize(_texture_factors.get(i, texture_i));
+		}
 	}
 }
 
@@ -383,18 +424,19 @@ void TerrainComponent::Deserialize(ByteSolver& solver)
 	_length = solver.GetValue<uint32>();
 	_castShadows = solver.GetValue<bool>();
 
+	Flat(0);
 
 	uint32 textures_count = solver.GetValue<uint32>();
 
 
 	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) 
 	{
-		std::string albedo = solver.ReadNextString();
-		std::string normal = solver.ReadNextString();
-		std::string roughness = solver.ReadNextString();
-		std::string metallic = solver.ReadNextString();
-		std::string ao = solver.ReadNextString();
-		std::string height = solver.ReadNextString();
+		auto albedo = solver.GetGuid();
+		auto normal = solver.GetGuid();
+		auto roughness = solver.GetGuid();
+		auto metallic = solver.GetGuid();
+		auto ao = solver.GetGuid();
+		auto height = solver.GetGuid();
 
 		TerrainTexture texture;
 		texture._albedo_reference.SetResource(albedo);
@@ -408,4 +450,62 @@ void TerrainComponent::Deserialize(ByteSolver& solver)
 		texture._height_factor = solver.GetValue<float>();
 		_terrain_textures.push_back(texture);
 	}
+
+	for (uint32 i = 0; i < GetVerticesCount(); i++) 
+	{
+		_heightmap[i].pos.y = solver.GetValue<float>();
+		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) 
+		{
+			_texture_factors.set(i, texture_i, solver.GetValue<uint8>());
+		}
+	}
+}
+
+void TerrainComponent::CreatePhysicsAndAddToWorld() 
+{
+	btVector3 local_intertia(0, 0, 0);
+	if (_rigidbody)
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
+
+	//release old collider shape
+	SAFE_RELEASE(_physical_shape);
+	//release old rigidbody
+	SAFE_RELEASE(_rigidbody);
+	//Create new collision shape
+	_physical_shape = MakePhysicalShape();
+	//check new shape
+	if (_physical_shape == nullptr)
+		//shape wasn't created, exiting
+		return;
+	btTransform startTransform = GetEntityBtTransform();
+	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
+	//rigidbody info
+	btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, motionState, _physical_shape, local_intertia);
+	_rigidbody = new btRigidBody(constructionInfo);
+	_rigidbody->setUserPointer(_entity);
+	//apply gravity
+	_rigidbody->setGravity(btVector3(0, 0, 0));
+	//add rigidbody to world
+	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_rigidbody);
+}
+
+btTransform TerrainComponent::GetEntityBtTransform() 
+{
+	btTransform result;
+	Vec3 abs_pos = _entity->GetAbsolutePosition();
+	Quat abs_rot = _entity->GetAbsoluteRotation();
+	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));
+	result.setRotation(btQuaternion(abs_rot.x, abs_rot.y, abs_rot.z, abs_rot.w));
+	return result;
+}
+
+btBvhTriangleMeshShape* TerrainComponent::MakePhysicalShape()
+{
+	int numFaces = (_width - 1) * (_length - 1) * 2;
+	int vertStride = sizeof(Vertex);
+	int indexStride = 3 * sizeof(uint32);
+	btTriangleIndexVertexArray* va = new btTriangleIndexVertexArray(numFaces, (int*)_indices, indexStride, _width * _length, reinterpret_cast<btScalar*>(_heightmap), vertStride);
+	//Allocate Shape with geometry
+	return new btBvhTriangleMeshShape(va, false, true);
 }

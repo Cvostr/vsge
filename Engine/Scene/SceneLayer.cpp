@@ -1,6 +1,7 @@
 #include "SceneLayer.hpp"
 #include "SceneSerialization.hpp"
 #include <Engine/Application.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -120,6 +121,7 @@ void SceneLayer::LoadSceneAsync(SceneResource* resource, uint32 index, bool runO
 			Application::Get()->QueueEvent(loaded_event);
 		}
 		catch (const std::exception& ex) {
+			Logger::Log(LogType::LOG_TYPE_ERROR) << "Error loading scene: " << ex.what() << "\n";
 			delete newScene;
 		}
 
