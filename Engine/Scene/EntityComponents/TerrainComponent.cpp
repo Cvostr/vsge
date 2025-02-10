@@ -255,7 +255,7 @@ void TerrainComponent::Flat(float height)
 	uint32 vertices_count = GetVerticesCount();
 	CreateVerticesArray();
 	CreateIndicesArray();
-	_texture_factors.Allocate(_width, _length, 16);
+	_texture_factors.Allocate(_width, _length, MAX_TEXTURES_PER_TERRAIN);
 	//_vegetables_data = new GRASS_ID[vertices_count];
 	for (uint32 i = 0; i < vertices_count; i++) {
 		_heightmap[i].pos.y = height;
