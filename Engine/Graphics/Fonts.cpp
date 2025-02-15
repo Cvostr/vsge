@@ -28,7 +28,10 @@ GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     delete[] _glyph_texture_buffer;
 }
 
-GlyphFontContainer::~GlyphFontContainer() {
+GlyphFontContainer::~GlyphFontContainer() 
+{
+    SAFE_RELEASE(_glyph_texture)
+
     FT_Done_Face(this->_ft_font);
 
     std::for_each(_characters.begin(), _characters.end(),

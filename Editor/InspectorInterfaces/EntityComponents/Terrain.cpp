@@ -112,7 +112,12 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc)
 	ImGui::Separator();
 
 
-	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_TEXTURES) {
+	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_TEXTURES) 
+	{
+		Vec2i tileSize = tc->GetTexturesTileSize();
+		DrawVec2iControl("Tile Size", tileSize);
+		tc->SetTexturesTileSize(tileSize);
+
 		uint32 textures_count = static_cast<uint32>(tc->GetTerrainTextures().size());
 		for (uint32 i = 0; i < textures_count; i++) {
 			VSGE::TerrainTexture* texture = &(tc->GetTerrainTextures()[i]);

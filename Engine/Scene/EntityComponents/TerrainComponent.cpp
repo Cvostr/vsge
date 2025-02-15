@@ -15,6 +15,7 @@ TerrainComponent::TerrainComponent():
 	_width(256),
 	_length(256),
 	_castShadows(true),
+	_textureTileSize(8, 8),
 	// Set graphics objects to null
 	_terrain(nullptr),
 	_heightmap_mesh(nullptr),
@@ -87,9 +88,19 @@ bool TerrainComponent::IsShadowCastEnabled() const
 	return _castShadows;
 }
 
+void TerrainComponent::SetTexturesTileSize(const Vec2i& size)
+{
+	this->_textureTileSize = size;
+}
+
 void TerrainComponent::SetShadowCastEnabled(bool cast)
 {
 	this->_castShadows = cast;
+}
+
+const Vec2i& TerrainComponent::GetTexturesTileSize() const
+{
+	return _textureTileSize;
 }
 
 float TerrainComponent::GetMaxTerrainHeight() 
@@ -395,6 +406,8 @@ void TerrainComponent::Serialize(ByteSerialize& serializer)
 	serializer.Serialize(_width);
 	serializer.Serialize(_length);
 	serializer.Serialize(_castShadows);
+	serializer.Serialize(_textureTileSize.x);
+	serializer.Serialize(_textureTileSize.y);
 
 	uint32 textures_count = _terrain_textures.size();
 	//uint32 vegetables_count = _terrain_grass.size();
@@ -430,6 +443,8 @@ void TerrainComponent::Deserialize(ByteSolver& solver)
 	_width = solver.GetValue<uint32>();
 	_length = solver.GetValue<uint32>();
 	_castShadows = solver.GetValue<bool>();
+	_textureTileSize.x = solver.GetValue<int>();
+	_textureTileSize.y = solver.GetValue<int>();
 
 	Flat(0);
 

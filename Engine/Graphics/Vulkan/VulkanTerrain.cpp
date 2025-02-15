@@ -218,8 +218,8 @@ void VulkanTerrain::UpdateInfo(TerrainComponent* terrain)
 {
 	uint32 offset = 0;
 
-	float uv_x = (float)terrain->GetWidth() / 64;
-	float uv_y = (float)terrain->GetLength() / 64;
+	float uv_x = (float)terrain->GetWidth() / terrain->GetTexturesTileSize().x;
+	float uv_y = (float)terrain->GetLength() / terrain->GetTexturesTileSize().y;
 	uint32 textures_count = (uint32)terrain->GetTerrainTextures().size();
 
 	info_buffer->WriteData(offset, 4, &uv_x);

@@ -59,6 +59,7 @@ namespace VSGE {
 		uint32 _width;
 		uint32 _length;
 		bool _castShadows;
+		Vec2i _textureTileSize;
 
 		TerrainTexturesFactors _texture_factors;
 		std::vector<TerrainTexture> _terrain_textures;
@@ -114,6 +115,9 @@ namespace VSGE {
 
 		bool IsShadowCastEnabled() const;
 		void SetShadowCastEnabled(bool cast);
+
+		void SetTexturesTileSize(const Vec2i& size);
+		const Vec2i& GetTexturesTileSize() const;
 
 		float GetMaxTerrainHeight();
 		void AddTexture();

@@ -66,6 +66,15 @@ void VSGEditor::DrawVec2Control(const std::string& text, Vec2& value, bool drag)
 	ImGui::PopID();
 }
 
+void VSGEditor::DrawVec2iControl(const std::string& text, Vec2i& value, bool drag) {
+	DrawControlHeader(text);
+	if (drag)
+		ImGui::DragInt2("##v", &value.x);
+	else
+		ImGui::InputInt2("##v", &value.x);
+	ImGui::PopID();
+}
+
 void VSGEditor::DrawColorControl(const std::string& text, VSGE::Color& value) {
 	DrawControlHeader(text);
 	ImGui::ColorEdit3("##v", &value.r);
