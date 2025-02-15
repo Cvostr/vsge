@@ -40,11 +40,12 @@ std::vector<VulkanTerrainGrass>& VulkanTerrain::GetVegetables()
 	return _grass_descriptor_sets;
 }
 
-#define TEXTURE_TYPE_ALBEDO 0
-#define TEXTURE_TYPE_NORMAL 1
-#define TEXTURE_TYPE_ROUGHNESS 2
-#define TEXTURE_TYPE_METALLIC 3
-#define TEXTURE_TYPE_AO 4
+#define TEXTURE_TYPE_ALBEDO		0
+#define TEXTURE_TYPE_NORMAL		1
+#define TEXTURE_TYPE_ROUGHNESS	2
+#define TEXTURE_TYPE_METALLIC	3
+#define TEXTURE_TYPE_AO			4
+#define TEXTURE_TYPE_HEIGHT		5
 
 void VulkanTerrain::SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index) 
 {
@@ -123,7 +124,8 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain)
 			(VulkanTexture*)terrain->GetTerrainMasksTexture(),
 			VulkanRenderingGenerics::Get()->GetTerrainMasksTextureSampler());
 
-	for (uint32 i = 0; i < terrain->GetTerrainTextures().size(); i++) {
+	for (uint32 i = 0; i < terrain->GetTerrainTextures().size(); i++) 
+	{
 		Resource* albedo_resource = terrain->GetTerrainTextures()[i]._albedo_reference.GetResource();
 		Resource* normal_resource = terrain->GetTerrainTextures()[i]._normal_reference.GetResource();
 		Resource* roughness_resource = terrain->GetTerrainTextures()[i]._roughness_reference.GetResource();
@@ -152,7 +154,7 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain)
 			i);
 		//height
 		SetDescriptorTexture(height_resource,
-			5,
+			TEXTURE_TYPE_HEIGHT,
 			i);
 	}
 
@@ -263,7 +265,7 @@ void VulkanTerrain::SetImagesToEmpty()
 			i);
 		//height
 		SetDescriptorTexture(nullptr,
-			5,
+			TEXTURE_TYPE_HEIGHT,
 			i);
 
 		continue;

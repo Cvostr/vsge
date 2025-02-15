@@ -25,6 +25,9 @@ using namespace VSGE;
 // offset of 'Casters Count' integer in uniform buffer
 #define SHADOWPROCESS_SHADOWCOUNT_OFFSET	(SHADOWPROCESS_CASTERS_SIZE)
 
+#define MESH_TYPE_DEFAULT 0
+#define MESH_TYPE_TERRAIN 1
+
 VertexLayout shadowmap_vertex_layout = {};
 VertexLayout shadowmap_terrain_vertex_layout = {};
 
@@ -376,18 +379,24 @@ void VulkanShadowmapping::ProcessShadowCasters(VulkanCommandBuffer* cmdbuffer)
 	}
 }
 
-void VulkanShadowmapping::BindPipeline(VulkanCommandBuffer* cmdbuffer, LightType light_type, int mesh_type, uint32 dyn_offset) {
+void VulkanShadowmapping::BindPipeline(VulkanCommandBuffer* cmdbuffer, LightType light_type, int mesh_type, uint32 dyn_offset) 
+{
 	VulkanPipeline* pipeline = _shadowmap_pipeline;
-	if (mesh_type == 1)
-		pipeline = _shadowmap_terrain_pipeline;
 
-	if (light_type == LIGHT_TYPE_POINT) {
+	if (mesh_type == MESH_TYPE_TERRAIN) 
+	{
+		pipeline = _shadowmap_terrain_pipeline;
+	}
+
+	if (light_type == LIGHT_TYPE_POINT) 
+	{
 		pipeline = _shadowmap_point_pipeline;
-		if (mesh_type == 1)
+		if (mesh_type == MESH_TYPE_TERRAIN)
 			pipeline = _shadowmap_terrain_point_pipeline;
 	}
 	
-	if (_bound_pipeline != pipeline) {
+	if (_bound_pipeline != pipeline) 
+	{
 		cmdbuffer->BindPipeline(*pipeline);
 		cmdbuffer->SetViewport(0, 0, MAP_SIZE, MAP_SIZE);
 		cmdbuffer->BindDescriptorSets(*_shadowmap_layout, 1, 1, _shadowcaster_descrSet, 1, &dyn_offset);
@@ -426,7 +435,8 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	_bound_pipeline = nullptr;
 	_shadowmap_render_pass->CmdBegin(*cmdbuf, *fb);
 
-	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) {
+	for (uint32 e_i = 0; e_i < _entitiesToRender->size(); e_i++) 
+	{
 		Entity* entity = _entitiesToRender->at(e_i);
 		
 		MaterialComponent* material_comp = entity->GetComponent<MaterialComponent>();
@@ -438,25 +448,44 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 		VulkanMesh* mesh = nullptr;
 
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
-		if (mesh_component) {
+		TerrainComponent* terrain = nullptr;
+
+		if (mesh_component) 
+		{
 			MeshResource* mesh_resource = mesh_component->GetMeshResource();
 			if (!mesh_resource)
 				continue;
 
-			if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
-				//Mark mesh resource used in this frame
+			if (mesh_resource->GetState() == RESOURCE_STATE_READY) 
+			{
+				// Mark mesh resource used in this frame
 				mesh_resource->Use();
 				mesh = (VulkanMesh*)mesh_resource->GetMesh();
-				BindPipeline(cmdbuf, light_type, 0, shadowmap_offset);
+				// Bind vulkan pipeline
+				BindPipeline(cmdbuf, light_type, MESH_TYPE_DEFAULT, shadowmap_offset);
+			}
+		}
+		else if ((terrain = entity->GetComponent<TerrainComponent>()) != nullptr) 
+		{	
+			// Object has no MeshComponent, but has TerrainComponent
+			// Render as terrain
+			if (terrain->IsShadowCastEnabled()) 
+			{
+				// Store terrain mesh in rendering pointer
+				mesh = (VulkanMesh*)terrain->GetTerrainMesh();
+				// Bind vulkan pipeline for terrain
+				BindPipeline(cmdbuf, light_type, MESH_TYPE_TERRAIN, shadowmap_offset);
 			}
 		}
 
-		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) {
+		if (caster->_lightsource->GetLightType() == LIGHT_TYPE_DIRECTIONAL) 
+		{
 			AABB bbox = entity->GetAABB();
 			SceneEnvironmentSettings& env_settings = scene->GetEnvironmentSettings();
 			int first = -1;
 			int last = -1;
-			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) {
+			for (uint32 i = 0; i < env_settings.GetShadowCascadesCount(); i++) 
+			{
 				if (_dir_caster_frustums[i].CheckAABB(bbox) != FRUSTUM_OUTSIDE) {
 					if (first < 0) {
 						first = i;

@@ -450,17 +450,41 @@ void EditorLayer::fileEvent(const FilesystemEvent& event)
 			}
 		}
 	}
-	if (fwe.getAction() == FILESYSTEM_ACTION_RENAMED) {
+	if (fwe.getAction() == FILESYSTEM_ACTION_RENAMED) 
+	{
 		std::string oldFileAbsPath = fwe.getOldFile().getAbsolutePath();
-		//Try to find this file as resource
-		//To change resource name
+		bool oldNameIsRegisteredScript = MonoScriptStorage::Get()->GetScriptWithFilePath(oldFileAbsPath) != nullptr;
+		bool newNameIsScript = fwe.getFile().getExtension() == "cs";
+
+		Logger::Log(LogType::LOG_TYPE_DEBUG) << "Renamed file from " << oldFileAbsPath << " to " << fwe.getFile().getAbsolutePath() << "\n";
+		
+		// If old file name was already registered as script - then rename it inside MonoScriptStorage
+		if (oldNameIsRegisteredScript && newNameIsScript)
+		{
+			MonoScriptStorage::Get()->RenameScript(oldFileAbsPath, fwe.getFile().getAbsolutePath());
+			MonoScriptStorage::Get()->Compile();
+		} 
+		else if (newNameIsScript) 
+		{
+			// we added new script by renaming old file
+			MonoScriptStorage::Get()->AddScript(fileAbsPath);
+			MonoScriptStorage::Get()->Compile();
+		}
+		// TODO: handle script rename-removal
+
+
+		// Try to find this file as resource
+		// To change resource name
 		Resource* res = ResourceCache::Get()->GetResourceWithFilePath(oldFileAbsPath);
-		if (res) {
+		if (res) 
+		{
+			// Resource found, rename path in DataDescription
 			DataDescription res_desc = res->GetDataDescription();
 			res_desc.file_path = fileAbsPath;
 			uint32 filename_pos = 0;
 			uint32 ext_pos = 0;
 
+			// Get last slash and dot '.' occurence to remove path and extension later
 			for (uint32 i = 0; i < res_desc.file_path.size(); i++) {
 				char cur_char = res_desc.file_path[i];
 				if (cur_char == '\\' || cur_char == '/')
@@ -469,17 +493,15 @@ void EditorLayer::fileEvent(const FilesystemEvent& event)
 					ext_pos = i;
 			}
 
-			std::string res_name = "";
-			for (uint32 i = filename_pos + 1; i < ext_pos; i++) {
-				char cur_char = res_desc.file_path[i];
-				res_name.push_back(cur_char);
-			}
+			// Get resource name - remove path and extension
+			std::string res_name = res_desc.file_path.substr(filename_pos + 1, ext_pos - filename_pos - 1);
 
+			// Update resource name and DataDescription
 			res->SetName(res_name);
 			res->SetDataDescription(res_desc);
 		}
 		else {
-			//Try to add this file as resource
+			// Try to add this file as resource
 			ResourceCache::Get()->AddResourceFile(fileAbsPath);
 		}
 	}

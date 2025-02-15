@@ -43,6 +43,7 @@ namespace VSGEditor {
 		const std::string& GetApiDllPath();
 		MonoScript* GetScriptWithFilePath(const std::string& file_path);
 		void AddScript(const std::string& file_path);
+		void RenameScript(const std::string& oldFilePath, const std::string& newFilePath);
 		void RemoveScript(const std::string& file_path);
 		void BuildScriptList(const std::string& root_dir);
 		void ClearScripts();

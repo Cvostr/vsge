@@ -20,15 +20,18 @@ MonoScript::~MonoScript() {
 
 }
 
-void MonoScript::SetFilePath(const std::string& file_path) {
+void MonoScript::SetFilePath(const std::string& file_path) 
+{
 	_abs_path = file_path;
 	//Calculate class name
-	uint32 last_slash_pos;
+	uint32 last_slash_pos = 0;
 	for (uint32 i = 0; i < file_path.size(); i++) {
 		if (file_path[i] == '\\' || file_path[i] == '/')
 			last_slash_pos = i;
 	}
+
 	last_slash_pos++;
+	
 	while (file_path[last_slash_pos] != '.') {
 		_class_name.push_back(file_path[last_slash_pos++]);
 	}
@@ -75,18 +78,33 @@ MonoScript* MonoScriptStorage::GetScriptWithFilePath(const std::string& file_pat
 	return nullptr;
 }
 
-void MonoScriptStorage::AddScript(const std::string& file_path) {
-	if (!GetScriptWithFilePath(file_path)) {
+void MonoScriptStorage::AddScript(const std::string& file_path) 
+{
+	if (!GetScriptWithFilePath(file_path)) 
+	{
 		MonoScript* script = new MonoScript;
 		script->SetFilePath(file_path);
 		_scripts.push_back(script);
 	}
 }
-void MonoScriptStorage::RemoveScript(const std::string& file_path) {
+void MonoScriptStorage::RemoveScript(const std::string& file_path) 
+{
 	MonoScript* script = GetScriptWithFilePath(file_path);
 	if (script) {
 		auto iter = std::remove(_scripts.begin(), _scripts.end(), script);
 		_scripts.pop_back();
+	}
+}
+
+void MonoScriptStorage::RenameScript(const std::string& oldFilePath, const std::string& newFilePath)
+{
+	MonoScript* script = GetScriptWithFilePath(oldFilePath);
+	if (script) 
+	{
+		script->SetFilePath(newFilePath);
+	}
+	else {
+		throw std::out_of_range("");
 	}
 }
 

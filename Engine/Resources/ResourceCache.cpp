@@ -217,7 +217,9 @@ Resource* ResourceCache::CreateResource(DataDescription& descr, ResourceType typ
     uint32 filename_pos = 0;
     uint32 ext_pos = 0;
 
-    for (uint32 i = 0; i < descr.file_path.size(); i++) {
+    // Get last slash and dot '.' occurence to remove path and extension later
+    for (uint32 i = 0; i < descr.file_path.size(); i++) 
+    {
         char cur_char = descr.file_path[i];
         if (cur_char == '\\' || cur_char == '/')
             filename_pos = i;
@@ -225,11 +227,8 @@ Resource* ResourceCache::CreateResource(DataDescription& descr, ResourceType typ
             ext_pos = i;
     }
 
-    std::string res_name = "";
-    for (uint32 i = filename_pos + 1; i < ext_pos; i++) {
-        char cur_char = descr.file_path[i];
-        res_name.push_back(cur_char);
-    }
+    // Get resource name - remove path and extension
+    std::string res_name = descr.file_path.substr(filename_pos + 1, ext_pos - filename_pos - 1);
 
     res->SetName(res_name);
 
