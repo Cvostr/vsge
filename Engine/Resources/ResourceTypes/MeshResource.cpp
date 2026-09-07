@@ -37,7 +37,6 @@ void MeshGroupResource::Prepare() {
 	}
 		
 	SetState(RESOURCE_STATE_UNLOADED);
-	isf.clearMeshes();
 	FreeLoadedData();
 }
 

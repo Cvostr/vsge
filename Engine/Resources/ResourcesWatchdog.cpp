@@ -58,6 +58,6 @@ void ResourcesWatchdog::THRFunc(){
             }
             _mutex->unlock();
         }
-        SleepThread(100);
+        SleepThread(1000);
     }
 }

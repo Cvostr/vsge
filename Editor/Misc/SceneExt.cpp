@@ -19,8 +19,6 @@ void VSGEditor::AddSubSceneVS3M(Scene* scn, const std::string& file) {
 
 	Entity* rootEntity = addObjectFromNode(scn, node, meshGroup);
 	rootEntity->AddComponent<AnimatorComponent>();
-
-	isf.clearMeshes();
 }
 
 Entity* VSGEditor::addObjectFromNode(Scene* w, SceneNode* node, Resource* meshGroupResource) {

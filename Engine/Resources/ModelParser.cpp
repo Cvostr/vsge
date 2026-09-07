@@ -5,11 +5,23 @@
 
 using namespace VSGE;
 
-void ImportedSceneFile::clearMeshes() {
+ImportedSceneFile::ImportedSceneFile() {
+    rootNode = nullptr;
+}
+
+ImportedSceneFile::~ImportedSceneFile() 
+{
+    // очистка мешей
     for (uint32 i = 0; i < mReadedMeshes.size(); i++) {
         delete mReadedMeshes[i];
     }
     mReadedMeshes.clear();
+
+    // очистка узлов
+    for (uint32 i = 0; i < nodes_list.size(); i++) {
+        delete nodes_list[i];
+    }
+    nodes_list.clear();
 }
 
 SceneNode* ImportedSceneFile::getSceneNodeWithName(std::string label) {

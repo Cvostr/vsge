@@ -129,15 +129,10 @@ namespace VSGE {
         SceneNode* getSceneNodeWithName(std::string label);
         void loadFromBuffer(byte* buffer, uint32 buf_size);
         void loadFromFile(std::string file);
-        void clearMeshes();
 
         void makeNodeHierarchy(SceneNode* node);
-        ImportedSceneFile() {
-            rootNode = nullptr;
-        }
-        ~ImportedSceneFile() {
-
-        }
+        ImportedSceneFile();
+        ~ImportedSceneFile();
     };
 
 }

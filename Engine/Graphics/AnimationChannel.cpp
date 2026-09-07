@@ -68,7 +68,7 @@ uint32 AnimationChannel::getPositionIndex(double Time) {
             return i;
         }
     }
-    //assert(0);
+
     return 0;
 }
 uint32 AnimationChannel::getScaleIndex(double Time) {
@@ -77,7 +77,7 @@ uint32 AnimationChannel::getScaleIndex(double Time) {
         if (_time > Time)
             return i;
     }
-    //assert(0);
+
     return 0;
 }
 uint32 VSGE::AnimationChannel::getRotationIndex(double Time) {
@@ -87,7 +87,7 @@ uint32 VSGE::AnimationChannel::getRotationIndex(double Time) {
             return i;
         }
     }
-    //assert(0);
+
     return 0;
 }
 
