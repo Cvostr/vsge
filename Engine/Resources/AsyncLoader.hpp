@@ -2,7 +2,8 @@
 
 #include <Core/VarTypes/Base.hpp>
 #include <Core/Threading/Thread.hpp>
-#include <mpi/Os/Mutex.hpp>
+#include <mutex>
+#include <condition_variable>
 #include "Resource.hpp"
 #include <string>
 #include <queue>
@@ -11,7 +12,8 @@ namespace VSGE {
 
 	class AsyncLoader : public Thread {
 	private:
-		Mpi::Mutex * mMutex;
+		std::mutex q_mtx;
+		std::condition_variable queued_event;
 		std::queue<Resource*> loadQueue;
 
 		void THRFunc();
@@ -24,7 +26,6 @@ namespace VSGE {
 		uint32 GetQueuedResourcesCount();
 
 		void AddToQueue(Resource* resource);
-
 		void WaitForLoading(Resource* resource);
 	};
 }
