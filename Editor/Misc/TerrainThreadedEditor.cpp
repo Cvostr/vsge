@@ -4,40 +4,53 @@
 using namespace VSGEditor;
 using namespace VSGE;
 
-TerrainThreadedEditor::TerrainThreadedEditor() {
-	_mutex = new Mpi::Mutex;
+TerrainThreadedEditor::TerrainThreadedEditor() 
+{
 	_terrain = nullptr;
 }
-TerrainThreadedEditor::~TerrainThreadedEditor() {
-	SAFE_RELEASE(_mutex)
+TerrainThreadedEditor::~TerrainThreadedEditor() 
+{
+	_running = false;
+	queued_event.notify_one();
+	Stop();
 }
-void TerrainThreadedEditor::SetTerrain(VSGE::TerrainComponent* terrain) {
+
+void TerrainThreadedEditor::SetTerrain(VSGE::TerrainComponent* terrain) 
+{
 	_terrain = terrain;
 }
-void TerrainThreadedEditor::QueueRay(const VSGE::Ray& ray) {
-	_mutex->lock();
-	_edit_rays.push(ray);
-	_mutex->unlock();
+void TerrainThreadedEditor::QueueRay(const VSGE::Ray& ray) 
+{
+	{
+		std::lock_guard<std::mutex> q_guard(q_mtx);
+		_edit_rays.push(ray);
+	}
+
+	queued_event.notify_one();
 }
 void TerrainThreadedEditor::THRFunc() 
 {
-	while (_running) 
+	while (_running)
 	{
-		if (_edit_rays.size() > 0) 
-		{
-			_mutex->lock();
-			//obtain next ray
-			Ray ray = _edit_rays.front();
-			_edit_rays.pop();
-			//unlock thread
-			_mutex->unlock();
-			//perform ray editing
-			if (_terrain)
-				ProcessRay(ray);
+		std::unique_lock<std::mutex> lock(q_mtx);
+
+		// wait for tasks
+		queued_event.wait(lock, [this] { return !_edit_rays.empty() || _running == false; });
+
+		if (_running == false) {
+			lock.unlock();
+			return;
 		}
-		else {
-			SleepThread(5);
-		}
+
+		// obtain next ray
+		Ray ray = _edit_rays.front();
+		_edit_rays.pop();
+		// unlock thread
+		lock.unlock();
+
+		// perform ray editing
+		if (_terrain)
+			ProcessRay(ray);
 	}
 }
 void TerrainThreadedEditor::ProcessRay(const Ray& ray) {

@@ -1,16 +1,19 @@
 #pragma once
 #include <Core/Threading/Thread.hpp>
-#include <mpi/Os/Mutex.hpp>
 #include <Math/Ray.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <queue>
+#include <mutex>
+#include <condition_variable>
 
 namespace VSGEditor {
 
 	class TerrainThreadedEditor : public VSGE::Thread {
 	private:
-		Mpi::Mutex* _mutex;
+		std::mutex q_mtx;
+		std::condition_variable queued_event;
 		std::queue<VSGE::Ray> _edit_rays;
+
 		VSGE::TerrainComponent* _terrain;
 		void ProcessRay(const VSGE::Ray& ray);
 	public:

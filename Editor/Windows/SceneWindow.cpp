@@ -10,6 +10,7 @@
 #include <Scene/EntityComponents/LightComponent.hpp>
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/AudioSourceComponent.hpp>
+#include <Scene/EntityComponents/LightProbeComponent.hpp>
 #include <Scene/Camera.hpp>
 #include <Scene/SceneLayer.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
@@ -69,6 +70,10 @@ void SceneWindow::OnDrawWindow() {
                     LightsourceComponent* light = newEntity->AddComponent<LightsourceComponent>();
                     light->GetLightType() = LIGHT_TYPE_SPOT;
                     light->SetShadowsBias(0.001f);
+                }
+                if (ImGui::MenuItem("Environment Probe")) {
+                    Entity* newEntity = scene->AddNewEntity("Env Probe");
+                    LightProbeComponent* light = newEntity->AddComponent<LightProbeComponent>();
                 }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Particle Emitter")) {

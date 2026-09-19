@@ -15,7 +15,7 @@ namespace VSGE {
 	public:
 		LightProbeComponent();
 		~LightProbeComponent();
-		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_LIGHT_PROBE, "Light Probe")
+		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_ENV_PROBE, "Environment Probe")
 
 		LightProbeImage* GetImage() const;
 		void SetImage(LightProbeImage* image);

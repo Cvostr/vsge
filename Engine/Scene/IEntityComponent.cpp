@@ -70,7 +70,7 @@ IEntityComponent* VSGE::CreateEntityComponent(EntityComponentType type) {
 	if (type == ENTITY_COMPONENT_CAMERA) {
 		component = new Camera;
 	}
-	if (type == ENTITY_COMPONENT_LIGHT_PROBE) {
+	if (type == ENTITY_COMPONENT_ENV_PROBE) {
 		component = new LightProbeComponent;
 	}
 	if (type == ENTITY_COMPONENT_TERRAIN) {
