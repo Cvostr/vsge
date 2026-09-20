@@ -73,6 +73,12 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 	case FORMAT_BC3_UNORM:
 		vk_format = VK_FORMAT_BC3_UNORM_BLOCK;
 		break;
+	case FORMAT_BC7_UNORM:
+		vk_format = VK_FORMAT_BC7_UNORM_BLOCK;
+		break;
+	case FORMAT_BC7_SRGB:
+		vk_format = VK_FORMAT_BC7_SRGB_BLOCK;
+		break;
 	}
 
 	return vk_format;

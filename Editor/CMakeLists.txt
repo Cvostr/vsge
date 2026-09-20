@@ -48,6 +48,7 @@ set(SRC_FILES
                 Misc/DialogWindows.cpp
                 Misc/TerrainThreadedEditor.cpp
                 ProjectBuild/ResourcePacker.cpp
+                ProjectBuild/TextureCompressor.cpp
                 Windows/BrowserWindow.cpp
                 Windows/ConsoleWindow.cpp
                 Windows/EditorSettingsWindow.cpp
@@ -104,6 +105,7 @@ set(HEADER_FILES   Base/Events.hpp
                     MonoScripting/MonoScriptStorage.hpp
                     
                     ProjectBuild/ResourcePacker.hpp
+                    ProjectBuild/TextureCompressor.hpp
                     
                     Windows/BrowserWindow.hpp
                     Windows/ConsoleWindow.hpp
@@ -123,6 +125,7 @@ set(HEADER_FILES   Base/Events.hpp
 include_directories("./" REQUIRED)
 include_directories(../Engine REQUIRED)
 include_directories(../ImGui/src REQUIRED)
+include_directories("../bc7enc" REQUIRED)
 include_directories("../vendor/headers/bullet" REQUIRED)
 include_directories("../vendor/headers/" REQUIRED)
 include_directories("../vendor/headers/mpi" REQUIRED)
@@ -187,6 +190,7 @@ ENDIF()
 
 target_link_libraries(Editor Engine)
 target_link_libraries(Editor ImGui)
+target_link_libraries(Editor bc7enc)
 
 
 IF(UNIX)

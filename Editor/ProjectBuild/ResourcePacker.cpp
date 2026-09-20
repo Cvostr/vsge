@@ -6,6 +6,7 @@
 #include <Scene/SceneSerialization.hpp>
 #include <Engine/Application.hpp>
 #include <EditorLayers/EditorLayer.hpp>
+#include "TextureCompressor.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -77,6 +78,9 @@ void ResourcePacker::Write()
             ProcessedTexture texture;
             ProcessTexture(file_data, file_size, texture);
             SAFE_RELEASE_ARR(file_data);
+
+            // Compress Texture to appropriate GPU format, if needed
+            CompressTexture(texture, BC7);
 
             texture.DumpAsVSTX(&file_data, file_size);
         }
