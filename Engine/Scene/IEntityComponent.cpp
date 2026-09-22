@@ -43,38 +43,41 @@ Entity* IEntityComponent::GetEntity() const {
 
 IEntityComponent* VSGE::CreateEntityComponent(EntityComponentType type) {
 	IEntityComponent* component = nullptr;
-	if (type == ENTITY_COMPONENT_MESH) {
-		component = new MeshComponent;
-	}
-	if (type == ENTITY_COMPONENT_MATERIAL) {
-		component = new MaterialComponent;
-	}
-	if (type == ENTITY_COMPONENT_ANIMATOR) {
-		component = new AnimatorComponent;
-	}
-	if (type == ENTITY_COMPONENT_LIGHTSOURCE) {
-		component = new LightsourceComponent;
-	}
-	if (type == ENTITY_COMPONENT_PARTICLE_EMITTER) {
-		component = new ParticleEmitterComponent;
-	}
-	if (type == ENTITY_COMPONENT_AUDIO_SOURCE) {
-		component = new AudioSourceComponent;
-	}
-	if (type == ENTITY_COMPONENT_RIGIDBODY) {
-		component = new RigidBodyComponent;
-	}
-	if (type == ENTITY_COMPONENT_COLLIDER) {
-		component = new ColliderComponent;
-	}
-	if (type == ENTITY_COMPONENT_CAMERA) {
-		component = new Camera;
-	}
-	if (type == ENTITY_COMPONENT_ENV_PROBE) {
-		component = new LightProbeComponent;
-	}
-	if (type == ENTITY_COMPONENT_TERRAIN) {
-		component = new TerrainComponent;
+
+	switch (type) {
+		case ENTITY_COMPONENT_MESH:
+			component = new MeshComponent;
+			break;
+		case ENTITY_COMPONENT_MATERIAL:
+			component = new MaterialComponent;
+			break;
+		case ENTITY_COMPONENT_ANIMATOR:
+			component = new AnimatorComponent;
+			break;
+		case ENTITY_COMPONENT_LIGHTSOURCE:
+			component = new LightsourceComponent;
+			break;
+		case ENTITY_COMPONENT_PARTICLE_EMITTER:
+			component = new ParticleEmitterComponent;
+			break;
+		case ENTITY_COMPONENT_AUDIO_SOURCE:
+			component = new AudioSourceComponent;
+			break;
+		case ENTITY_COMPONENT_RIGIDBODY:
+			component = new RigidBodyComponent;
+			break;
+		case ENTITY_COMPONENT_COLLIDER:
+			component = new ColliderComponent;
+			break;
+		case ENTITY_COMPONENT_CAMERA:
+			component = new Camera;
+			break;
+		case ENTITY_COMPONENT_ENV_PROBE:
+			component = new LightProbeComponent;
+			break;
+		case ENTITY_COMPONENT_TERRAIN:
+			component = new TerrainComponent;
+			break;
 	}
 
 	return component;
