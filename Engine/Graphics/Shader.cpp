@@ -94,6 +94,8 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 
 		this->shaders.push_back(std::move(item));
 	}
+
+	delete[] data;
 }
 
 void ShaderCache::AddShader(Shader* shader, const std::string& shader_name) {

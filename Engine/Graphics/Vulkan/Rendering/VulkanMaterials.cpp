@@ -141,11 +141,10 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 	}
 
 	if (mat->_paramsDirty) {
-		char* buffer = nullptr;
-		uint32 size = mat->CopyParamsToBuffer(&buffer);
+		char buffer[1024];
+		uint32 size = mat->CopyParamsToBuffer(buffer);
 
 		vmat->_paramsBuffer->WriteData(0, size, buffer);
-		delete[] buffer;
 		mat->_paramsDirty = false;
 	}
 }

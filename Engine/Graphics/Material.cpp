@@ -107,9 +107,8 @@ uint32 align(uint32 in) {
 	return in + (16 - (in % 16));
 }
 
-uint32 Material::CopyParamsToBuffer(char** out) {
-	*out = new char[1024];
-	char* bytes = *out;
+uint32 Material::CopyParamsToBuffer(char* out) {
+	char* bytes = out;
 	uint32 writtenBytes = 0;
 
 	for (MaterialParameter& param : _materialParams) {

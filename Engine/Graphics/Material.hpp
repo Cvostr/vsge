@@ -50,7 +50,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="out">- buffer to copy to</param>
 		/// <returns>size of copied data</returns>
-		uint32 CopyParamsToBuffer(char** out);
+		uint32 CopyParamsToBuffer(char* out);
 		/// <summary>
 		/// Set texture resource to slot with specified name
 		/// </summary>
