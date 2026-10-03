@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-public struct Vec3
-   {
+public struct Vec3 
+{
     public Vec3(float x, float y, float z)
     {
         this.x = x;
@@ -14,22 +14,25 @@ public struct Vec3
     public float y;
     public float z;
 
-    void Normalize(){
+    void Normalize() {
         float len = Length();
         x /= len;
         y /= len;
         z /= len;
     }
 
-    public float Dot(Vec3 v){
+    public float Dot(Vec3 v)
+    {
         return (x * v.x) + (y * v.y) + (z * v.z);
     }
 
-    public Vec3 Cross(Vec3 v){
+    public Vec3 Cross(Vec3 v)
+    {
         return new Vec3((y * v.z) - (z * v.y), (z * v.x) - (x * v.z), (x * v.y) - (y * v.x));
     }
 
-    public float Length(){
+    public float Length()
+    {
         return (float)Math.Sqrt(x * x + y * y + z * z);
     }
 
