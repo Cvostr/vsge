@@ -1,11 +1,14 @@
 #include "ResourceImporter.hpp"
 #include <Core/VarTypes/Base.hpp>
+#include <Core/FileLoader.hpp>
 #include <Resources/ModelParser.hpp>
 #include <Resources/AnimationParser.hpp>
 #include "AssimpMeshLoader.h"
 
 #include "../EditorLayers/ImGuiLayer.hpp"
 #include "../Windows/BrowserWindow.hpp"
+
+#include <fstream>
 
 using namespace VSGE;
 using namespace VSGEditor;
@@ -44,10 +47,8 @@ void VSGEditor::ImportFile(const std::string& str) {
         ext.push_back(str[i]);
     }
 
-    if (ext == "dds" || ext == "png") {
-
-    }
-    if (ext == "fbx" || ext == "dae") {
+    if (ext == "fbx" || ext == "dae" || ext == "FBX") 
+    {
         uint32 num_meshes = 0;
         uint32 num_anims = 0;
         uint32 num_textures = 0;
@@ -91,5 +92,21 @@ void VSGEditor::ImportFile(const std::string& str) {
             delete[] meshes;
             //Register new resource file
         }
+    }
+    else
+    {
+        // Direct copy file
+        char* fdata;
+        uint64 fsize;
+
+        LoadFile(str, &fdata, &fsize);
+
+        std::string new_file_name = cur_dir + "/" + res_name + "." + ext;
+
+        std::ofstream newfile_stream(new_file_name, std::ios::binary);
+        newfile_stream.write(fdata, fsize);
+        newfile_stream.close();
+
+        delete[] fdata;
     }
 }

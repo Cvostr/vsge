@@ -18,6 +18,13 @@ public struct Vec2
         return (float) Math.Sqrt(x * x + y * y);
     }
 
+    void Normalize()
+    {
+        float len = Length();
+        x /= len;
+        y /= len;
+    }
+
     public bool Equals(Vec2 other)
     {
         return x == other.x && y == other.y;
