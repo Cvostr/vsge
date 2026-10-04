@@ -288,7 +288,9 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 	_writtenBones = 0;
 	_writtenParticleTransforms = 0;
 
-	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i ++) {
+	// Write transform matrices of all objects into immediate buffer
+	for (size_t e_i = 0; e_i < _entitiesToRender.size(); e_i ++) 
+	{
 		Entity* entity = _entitiesToRender[e_i];
 		transforms[e_i * alignmentFactor] = entity->GetWorldTransform();
 
@@ -299,6 +301,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		MeshResource* mresource = mesh_component->GetMeshResource();
 		if (!mresource)
 			continue;
+
 		if (mresource->GetMesh()->GetBones().size() > 0) {
 			Entity* rootNode = entity->GetRootSkinningEntity();
 			Mat4 rootNodeTransform;
@@ -330,7 +333,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 	mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
 	delete[] anim;
 
-	for (uint32 e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
+	for (size_t e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
 		Entity* entity = _entitiesToRender[e_i];
 		MaterialComponent* component = entity->GetComponent<MaterialComponent>();
 		if (!component)
