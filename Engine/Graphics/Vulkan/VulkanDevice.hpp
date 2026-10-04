@@ -26,10 +26,11 @@ namespace VSGE {
         VkDevice getVkDevice();
         VkPhysicalDevice getPhysicalDevice();
 
-        const VkPhysicalDeviceProperties& GetProps() { return DeviceProps; }
-        void SetProperties(const VkPhysicalDeviceProperties& DeviceProps) { this->DeviceProps = DeviceProps; }
+        const VkPhysicalDeviceProperties& GetProps();
 
         uint32 GetUniformBufferMinAlignment();
+        uint32 GetStorageBufferMinAlignment();
+
         uint32 GetMaxBoundDescriptorSets();
         VkFormat GetSuitableDepthFormat(VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL);
         bool IsCompatibleDepthFormatTiling(VkFormat format, VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL);

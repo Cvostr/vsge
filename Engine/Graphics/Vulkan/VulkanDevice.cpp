@@ -67,7 +67,6 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
         vkGetPhysicalDeviceProperties(device, &device_props);
 
         VulkanDevice* Device = new VulkanDevice;
-        Device->SetProperties(device_props);
         Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan GPU " << device_props.deviceName << "\n";
         Device->initDevice(device);
         return Device;
@@ -97,8 +96,11 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     mPhysicalDevice = Device;
     uint32_t vkQueueFamilyPropsCount = 0;
+
+    // Get physical device properties
+    vkGetPhysicalDeviceProperties(Device, &this->DeviceProps);
     
-    //Obtain queue family props
+    // Obtain queue family props
     vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, nullptr);
     _vkQueueFamilyProps.resize(vkQueueFamilyPropsCount);
     vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, _vkQueueFamilyProps.data());
@@ -206,8 +208,16 @@ std::vector<VkQueueFamilyProperties>& VulkanDevice::GetQueueFamilyProperties() {
     return _vkQueueFamilyProps;
 }
 
+const VkPhysicalDeviceProperties& VulkanDevice::GetProps() {
+    return DeviceProps;
+}
+
 uint32 VulkanDevice::GetUniformBufferMinAlignment() {
     return (uint32)DeviceProps.limits.minUniformBufferOffsetAlignment;
+}
+
+uint32 VulkanDevice::GetStorageBufferMinAlignment() {
+    return (uint32)DeviceProps.limits.minStorageBufferOffsetAlignment;
 }
 
 uint32 VulkanDevice::GetMaxBoundDescriptorSets() {
