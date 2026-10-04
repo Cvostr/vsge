@@ -87,6 +87,12 @@ OpLogger& OpLogger::operator<<(int var) {
 	_lastEvent->GetContent() += std::to_string(var);
 	return *this;
 }
+OpLogger& OpLogger::operator<<(char var) {
+	if (_print_to_stdout)
+		printf("%c", var);
+	_lastEvent->GetContent() += std::to_string(var);
+	return *this;
+}
 OpLogger& OpLogger::operator<<(unsigned int var) {
 	if (_print_to_stdout)
 		printf("%u", var);

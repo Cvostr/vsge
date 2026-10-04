@@ -14,8 +14,8 @@ layout (location = 10) in vec4 Weights2;
 //Amount of bones, that control this vertex
 layout (location = 11) in uint bones;
 
-layout (std140, binding = 1) uniform Transform{
-    uniform mat4 obj_model[4];
+layout (std140, binding = 1) readonly buffer Transform{
+    mat4 obj_model[];
 };
 
 layout (std140, set = 2, binding = 0) readonly buffer Animation{

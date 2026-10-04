@@ -65,6 +65,7 @@ namespace VSGE {
 		void SetPrintToStdout(bool print);
 
 		OpLogger& operator<<(int var);
+		OpLogger& operator<<(char var);
 		OpLogger& operator<<(unsigned int var);
 		OpLogger& operator<<(float var);
 		OpLogger& operator<<(const char* var);

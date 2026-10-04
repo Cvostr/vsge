@@ -28,8 +28,8 @@ layout (std140, binding = 0) uniform CamMatrices{
     vec3 cam_position;
 };
 
-layout (std140, binding = 1) uniform Transform{
-    uniform mat4 obj_model[4];
+layout (std140, binding = 1) readonly buffer Transform{
+    mat4 obj_model[];
 };
 
 layout (std140, set = 2, binding = 0) readonly buffer Animation{
