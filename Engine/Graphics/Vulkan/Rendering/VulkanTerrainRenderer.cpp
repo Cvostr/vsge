@@ -108,7 +108,7 @@ VulkanTerrainRenderer::~VulkanTerrainRenderer()
 
 void VulkanTerrainRenderer::Create(
 	VulkanRenderPass* gbuffer_renderpass,
-	std::vector<VulkanDescriptorSet*>& descr_set
+	VulkanDescriptorSet* transform_descr_set
 ) {
 
 	//terrains descriptor pool
@@ -129,7 +129,7 @@ void VulkanTerrainRenderer::Create(
 
 	if (!TerrainPipelinesInitialized)
 	{
-		InitTerrainPipelines(descr_set.at(0), _vegetables_descr_pool, gbuffer_renderpass);
+		InitTerrainPipelines(transform_descr_set, _vegetables_descr_pool, gbuffer_renderpass);
 		TerrainPipelinesInitialized = true;
 	}
 }
@@ -174,7 +174,7 @@ void VulkanTerrainRenderer::DrawTerrain(
 	VulkanCommandBuffer* cmdbuffer,
 	TerrainComponent* component,
 	uint32 camera_index,
-	std::vector<VulkanDescriptorSet*>* entity_descr_sets,
+	VulkanDescriptorSet* entity_descr_set,
 	uint32 draw_index,
 	uint32 output_width,
 	uint32 output_height,
@@ -182,8 +182,7 @@ void VulkanTerrainRenderer::DrawTerrain(
 {
 	VulkanTerrain* vk_terrain = (VulkanTerrain*) component->GetTerrain();
 
-	uint32 offsets[2] = { camera_index * CAMERA_ELEM_SIZE, draw_index * UNI_ALIGN % 65535 };
-	int vertexDescriptorID = (draw_index * UNI_ALIGN) / 65535;
+	uint32 offsets[2] = { camera_index * CAMERA_ELEM_SIZE, draw_index * UNI_ALIGN };
 
 	VulkanMesh* terrain_mesh = (VulkanMesh*) component->GetTerrainMesh();
 	if (terrain_mesh) 
@@ -197,7 +196,7 @@ void VulkanTerrainRenderer::DrawTerrain(
 
 		cmdbuffer->SetViewport(0, 0, (float)output_width, (float)output_height);
 
-		cmdbuffer->BindDescriptorSets(*terrain_pipeline_layout, 0, 1, entity_descr_sets->at(vertexDescriptorID), 2, offsets);
+		cmdbuffer->BindDescriptorSets(*terrain_pipeline_layout, 0, 1, entity_descr_set, 2, offsets);
 		// info about terrain
 		cmdbuffer->BindDescriptorSets(*terrain_pipeline_layout, 1, 1, vk_terrain->GetDescriptorSet(), 0, nullptr);
 
@@ -207,7 +206,7 @@ void VulkanTerrainRenderer::DrawTerrain(
 
 	cmdbuffer->BindPipeline(*grass_pipeline);
 	cmdbuffer->SetViewport(0, 0, (float)output_width, (float)output_height);
-	cmdbuffer->BindDescriptorSets(*grass_pipeline_layout, 0, 1, entity_descr_sets->at(vertexDescriptorID), 2, offsets);
+	cmdbuffer->BindDescriptorSets(*grass_pipeline_layout, 0, 1, entity_descr_set, 2, offsets);
 
 	for (uint32 grass_i = 0; grass_i < vk_terrain->GetVegetables().size(); grass_i++) {
 		auto& vegetable = vk_terrain->GetVegetables()[grass_i];

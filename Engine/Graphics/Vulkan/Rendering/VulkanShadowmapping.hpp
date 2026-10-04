@@ -45,7 +45,7 @@ namespace VSGE {
 		VulkanDescriptorPool* _shadowrenderer_descPool;
 		VulkanDescriptorSet* _shadowrenderer_descrSet;
 
-		std::vector<VulkanDescriptorSet*>* _vertexDescrSets;
+		VulkanDescriptorSet* _vertexDescrSet;
 		VulkanDescriptorSet* animsDescrSet;
 
 		uint32 _cameraIndex;
@@ -61,7 +61,7 @@ namespace VSGE {
 		void BindPipeline(VulkanCommandBuffer* cmdbuffer, LightType light_type, int mesh_type, uint32 dyn_offset);
 	public:
 
-		VulkanShadowmapping(std::vector<VulkanDescriptorSet*>* vertexDescrSets,
+		VulkanShadowmapping(VulkanDescriptorSet* vertexDescrSet,
 			VulkanDescriptorSet* animsDescrSet, 
 			VulkanBuffer* cam_buffer,
 			VulkanTexture* pos);

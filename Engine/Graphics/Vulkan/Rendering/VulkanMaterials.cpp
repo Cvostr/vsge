@@ -23,7 +23,7 @@ VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTempl
 	
 	VulkanPipelineLayout* p_layout = new VulkanPipelineLayout;
 	//Add common vertex descriptor
-	p_layout->PushDescriptorSet(_main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets()[0]);
+	p_layout->PushDescriptorSet(_main_render_target->GetGBufferRenderer()->GetVertexDescriptorSet());
 	//Add materials descriptor
 	VulkanDescriptorSet* materialsDescrSet = CreateDescriptorSetFromMaterialTemplate(mat_template);
 	p_layout->PushDescriptorSet(materialsDescrSet);

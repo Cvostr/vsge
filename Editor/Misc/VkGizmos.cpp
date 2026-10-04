@@ -36,6 +36,7 @@ void VkGizmos::Create() {
 	vertexLayout.AddItem(10, offsetof(VertexSkinningData, weights[8]), VertexLayoutFormat::VL_FORMAT_RGBA32_SFLOAT, 1);
 	vertexLayout.AddItem(11, offsetof(VertexSkinningData, bones_num), VertexLayoutFormat::VL_FORMAT_R32_UINT, 1);
 
+	// Shader for rendering picked objects
 	_object_shader = new VulkanShader;
 	_object_shader->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
 	_object_shader->AddShaderFromFile("mark_gizmo_object.frag", SHADER_STAGE_FRAGMENT);
@@ -47,14 +48,15 @@ void VkGizmos::Create() {
 	//Add common vertex descriptor
 
 	_object_pipeline_layout->PushDescriptorSet(
-		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetVertexDescriptorSets()[0]);
+		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetVertexDescriptorSet());
 	_object_pipeline_layout->PushDescriptorSet(
-		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetVertexDescriptorSets()[0]);
+		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetVertexDescriptorSet());
 	_object_pipeline_layout->PushDescriptorSet(
 		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetAnimationsDescriptorSet());
 	//Create pipeline layout
 	_object_pipeline_layout->Create();
 
+	// Main pipeline for rendering picked objects
 	_object_pipeline = new VulkanPipeline;
 	_object_pipeline->SetPolygonMode(POLYGON_MODE_LINE);
 	_object_pipeline->SetCullMode(CULL_MODE_NONE);

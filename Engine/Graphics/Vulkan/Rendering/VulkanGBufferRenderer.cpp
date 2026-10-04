@@ -66,13 +66,10 @@ void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuf
 
 	this->camerasBuffer = camerasBuffer;
 
-	//Create base vertex descriptors sets
-	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
-		VulkanDescriptorSet* set = new VulkanDescriptorSet(_objects_descr_pool);
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //Camera
-		set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
-		_vertex_descriptor_sets.push_back(set);
-	}
+	//Create base vertex descriptors set
+	_transforms_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //Camera
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 
 	_animations_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
 	_animations_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Animation
@@ -84,11 +81,9 @@ void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuf
 	//Create POOL
 	_objects_descr_pool->Create();
 
-	for (uint32 desc_i = 0; desc_i < VERTEX_DESCR_SETS; desc_i++) {
-		VulkanDescriptorSet* set = _vertex_descriptor_sets[desc_i];
-		set->Create();
-		set->WriteDescriptorBuffer(0, camerasBuffer->GetCamerasBuffer());
-	}
+	// Create all descriptor sets
+	_transforms_descriptor_set->Create();
+	_transforms_descriptor_set->WriteDescriptorBuffer(0, camerasBuffer->GetCamerasBuffer());
 
 	_animations_descriptor_set->Create();
 	_particles_descriptor_set->Create();
@@ -97,15 +92,7 @@ void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuf
 void VulkanGBufferRenderer::SetBuffers(VulkanBuffer* transforms_buffer, VulkanBuffer* anims_buffer, VulkanBuffer* particles_buffer) {
 	if (transforms_buffer) {
 		_transforms_buffer = transforms_buffer;
-
-		uint32 descriptors_count = transforms_buffer->GetSize() / 65535;
-		if (transforms_buffer->GetSize() % 65535 > 0)
-			descriptors_count++;
-
-		for (uint32 desc_i = 0; desc_i < descriptors_count; desc_i++) {
-			VulkanDescriptorSet* set = _vertex_descriptor_sets[desc_i];
-			set->WriteDescriptorBuffer(1, transforms_buffer, desc_i * 1024 * 64, sizeof(Mat4) * 1024);
-		}
+		_transforms_descriptor_set->WriteDescriptorBuffer(1, transforms_buffer, 0);
 	}
 	if (anims_buffer) {
 		_animations_buffer = anims_buffer;
@@ -194,7 +181,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 				bounding_box.Extend(bb_max);
 				if (camera->IsVisibleInFrustum(bounding_box)) 
 				{
-					VulkanTerrainRenderer::DrawTerrain(cmdbuf, terrain, _camera_index, &_vertex_descriptor_sets, entity_i, _fb_width, _fb_height, _reverseCull);
+					VulkanTerrainRenderer::DrawTerrain(cmdbuf, terrain, _camera_index, _transforms_descriptor_set, entity_i, _fb_width, _fb_height, _reverseCull);
 					//need to rebind pipeline
 					_boundPipeline = nullptr;
 				}
@@ -225,7 +212,7 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			//Mark material resource used in this frame
 			mat_resource->Use();
 
-			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, entity_i * transformMemoryBlockSize % 65535 };
+			uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, entity_i * transformMemoryBlockSize };
 			uint32 anim_offset = _drawn_bones * sizeof(Mat4);
 			_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
 
@@ -235,13 +222,11 @@ void VulkanGBufferRenderer::RecordCmdBuffer(VulkanCommandBuffer* cmdbuf) {
 			if (templ->GetRenderStage() != RENDER_STAGE_GBUFFER)
 				continue;
 
-			// Index of vertex descriptor ID
-			int vertexDescriptorID = (entity_i * transformMemoryBlockSize) / 65535;
 
 			BindPipeline(cmdbuf, pipl);
 			VulkanPipelineLayout* ppl = pipl->GetPipelineLayout();
 			cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
-			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _vertex_descriptor_sets[vertexDescriptorID], 2, offsets);
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _transforms_descriptor_set, 2, offsets);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _animations_descriptor_set, 1, &anim_offset);
 			cmdbuf->BindMesh(*mesh);
 			if (mesh->GetIndexCount() > 0)
@@ -258,7 +243,7 @@ void VulkanGBufferRenderer::CreateBuffers()
 {
 	uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
 
-	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	_transforms_buffer->Create(MAX_OBJECTS_RENDER * transformMemoryBlockSize);
 
 	_animations_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
@@ -305,8 +290,8 @@ VulkanBuffer* VulkanGBufferRenderer::GetParticlesBuffer() {
 	return _particles_buffer;
 }
 
-std::vector<VulkanDescriptorSet*>& VulkanGBufferRenderer::GetVertexDescriptorSets() {
-	return _vertex_descriptor_sets;
+VulkanDescriptorSet* VulkanGBufferRenderer::GetVertexDescriptorSet() {
+	return _transforms_descriptor_set;
 }
 VulkanDescriptorSet* VulkanGBufferRenderer::GetParticlesDescriptorSet() {
 	return _particles_descriptor_set;

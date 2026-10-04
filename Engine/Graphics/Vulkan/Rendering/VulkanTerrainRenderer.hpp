@@ -20,14 +20,14 @@ namespace VSGE {
         ~VulkanTerrainRenderer();
         void Create(
             VulkanRenderPass* gbuffer_renderpass,
-            std::vector<VulkanDescriptorSet*>& descr_set);
+            VulkanDescriptorSet* transform_descr_set);
         void ProcessTerrain(Entity* terrain);
         void ResetProcessedTerrains();
         static void DrawTerrain(
             VulkanCommandBuffer* cmdbuffer,
             TerrainComponent* component,
             uint32 camera_index,
-            std::vector<VulkanDescriptorSet*>* entity_descr_sets,
+            VulkanDescriptorSet* entity_descr_set,
             uint32 draw_index,
             uint32 output_width,
             uint32 output_height,

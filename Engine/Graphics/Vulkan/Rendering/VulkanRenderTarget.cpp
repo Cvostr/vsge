@@ -24,7 +24,7 @@ void VulkanRenderTarget::Create()
 	m_gbufferRenderer->SetCameraIndex(0);
 
 	_shadowmapper = new VulkanShadowmapping(
-		&m_gbufferRenderer->GetVertexDescriptorSets(),
+		m_gbufferRenderer->GetVertexDescriptorSet(),
 		m_gbufferRenderer->GetAnimationsDescriptorSet(),
 		camBuffer->GetCamerasBuffer(),
 		m_gbufferRenderer->GetPositionAttachment());

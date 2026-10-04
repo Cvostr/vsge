@@ -8,7 +8,6 @@
 #define MAX_OBJECTS_RENDER 40000
 #define MAX_ANIMATION_MATRICES 20000
 #define MAX_PARTICLES_MATRICES 20000
-#define VERTEX_DESCR_SETS 160
 
 namespace VSGE {
 
@@ -25,7 +24,7 @@ namespace VSGE {
 
 		//---------------------DESCRIPTORS-----------------
 		VulkanDescriptorPool* _objects_descr_pool;
-		std::vector<VulkanDescriptorSet*> _vertex_descriptor_sets;
+		VulkanDescriptorSet* _transforms_descriptor_set;
 		VulkanDescriptorSet* _animations_descriptor_set;
 		VulkanDescriptorSet* _particles_descriptor_set;
 		//----------------------BUFFERS----------------------
@@ -83,7 +82,7 @@ namespace VSGE {
 		VulkanBuffer* GetAnimationsBuffer();
 		VulkanBuffer* GetParticlesBuffer();
 
-		std::vector<VulkanDescriptorSet*>& GetVertexDescriptorSets();
+		VulkanDescriptorSet* GetVertexDescriptorSet();
 		VulkanDescriptorSet* GetParticlesDescriptorSet();
 		VulkanDescriptorSet* GetAnimationsDescriptorSet();
 	};

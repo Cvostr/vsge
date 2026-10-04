@@ -143,13 +143,13 @@ VulkanShadowCaster::~VulkanShadowCaster()
 }
 
 VulkanShadowmapping::VulkanShadowmapping(
-	std::vector<VulkanDescriptorSet*>* vertexDescrSets,
+	VulkanDescriptorSet* vertexDescrSet,
 	VulkanDescriptorSet* animsDescrSet,
 	VulkanBuffer* cam_buffer,
 	VulkanTexture* pos
 ) :
 	cam(nullptr),
-	_vertexDescrSets(vertexDescrSets),
+	_vertexDescrSet(vertexDescrSet),
 	animsDescrSet(animsDescrSet),
 	_bound_pipeline(nullptr),
 	_cameraIndex(0),
@@ -195,7 +195,7 @@ VulkanShadowmapping::VulkanShadowmapping(
 	// Initialize shadowcasting pipelines, this is done once
 	if (ShadowPipelinesInitialized == false) {
 		InitShadowmappingPipelines(
-			vertexDescrSets->at(0),
+			vertexDescrSet,
 			_shadowcaster_descrSet,
 			animsDescrSet,
 			_shadowmap_render_pass);
@@ -526,9 +526,7 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 			uint32 anim_offset = _writtenBones * sizeof(Mat4);
 			_writtenBones += (uint32)mesh->GetBones().size();
 
-			int vertexDescriptorID = (e_i * transformMemoryBlockSize) / 65535;
-
-			cmdbuf->BindDescriptorSets(*_shadowmap_layout, 0, 1, _vertexDescrSets->at(vertexDescriptorID), 2, offsets);
+			cmdbuf->BindDescriptorSets(*_shadowmap_layout, 0, 1, _vertexDescrSet, 2, offsets);
 			cmdbuf->BindDescriptorSets(*_shadowmap_layout, 2, 1, animsDescrSet, 1, &anim_offset);
 			cmdbuf->BindMesh(*mesh);
 			if (mesh->GetIndexCount() > 0)

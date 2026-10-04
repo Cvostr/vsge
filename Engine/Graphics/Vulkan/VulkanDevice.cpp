@@ -28,21 +28,22 @@ VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
         VkPhysicalDeviceProperties device_props;
         vkGetPhysicalDeviceProperties(device, &device_props);
 
-        if(device_props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+        if (device_props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
             best = device;
         }
     }
-    if(best != VK_NULL_HANDLE)
+    if (best != VK_NULL_HANDLE)
         return best;
-    else{
-       for(auto device : devices) {
-        VkPhysicalDeviceProperties device_props;
-        vkGetPhysicalDeviceProperties(device, &device_props);
-        //check device name, it shouldnt be as "llvmpipe"
-        if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
-            return device;
-        }
-    }
+    else 
+    {
+       for (auto device : devices) {
+           VkPhysicalDeviceProperties device_props;
+           vkGetPhysicalDeviceProperties(device, &device_props);
+           //check device name, it shouldnt be as "llvmpipe"
+           if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
+               return device;
+           }
+       }
     }
     return VK_NULL_HANDLE;
 }
@@ -60,7 +61,8 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
     vkEnumeratePhysicalDevices(instance->GetInstance(), &gpus_count, phys_devices_list.data());
     
     VkPhysicalDevice device = GetBestDevice(phys_devices_list);
-    if(device != VK_NULL_HANDLE){
+    if (device != VK_NULL_HANDLE) 
+    {
         VkPhysicalDeviceProperties device_props;
         vkGetPhysicalDeviceProperties(device, &device_props);
 
@@ -215,7 +217,7 @@ uint32 VulkanDevice::GetMaxBoundDescriptorSets() {
 VkFormat VulkanDevice::GetSuitableDepthFormat(VkImageTiling tiling){
     std::vector<VkFormat> depthFormats = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
 
-    for(VkFormat format : depthFormats){
+    for (VkFormat format : depthFormats){
         if(IsCompatibleDepthFormatTiling(format, tiling)){
             return format;
         }
@@ -230,9 +232,9 @@ bool VulkanDevice::IsCompatibleDepthFormatTiling(VkFormat format, VkImageTiling 
 
     VkFormatFeatureFlags tilingFormatFeatureFlags = 0;
 
-    if(tiling == VK_IMAGE_TILING_LINEAR)
+    if (tiling == VK_IMAGE_TILING_LINEAR)
         tilingFormatFeatureFlags = props.linearTilingFeatures;
-    else if(tiling == VK_IMAGE_TILING_OPTIMAL)
+    else if (tiling == VK_IMAGE_TILING_OPTIMAL)
         tilingFormatFeatureFlags = props.optimalTilingFeatures;
 
     bool result = ((tilingFormatFeatureFlags & features) == features);

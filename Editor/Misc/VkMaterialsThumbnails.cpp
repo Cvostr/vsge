@@ -89,7 +89,7 @@ void VkMaterialsThumbnails::Create()
     _gbuffer->GetRenderPass()->SetClearColor(0, Color(0, 0, 0, 0));
 
     _shadowmapper = new VulkanShadowmapping(
-        &_gbuffer->GetVertexDescriptorSets(),
+        _gbuffer->GetVertexDescriptorSet(),
         _gbuffer->GetAnimationsDescriptorSet(),
         _cameras_buffer->GetCamerasBuffer(),
         _gbuffer->GetPositionAttachment());

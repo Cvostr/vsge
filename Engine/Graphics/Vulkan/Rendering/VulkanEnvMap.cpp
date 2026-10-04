@@ -52,7 +52,7 @@ void VulkanEnvMap::Create()
 
 		if (_shadowmapper == nullptr) {
 			_shadowmapper = new VulkanShadowmapping(
-				&_sides[i]._gbuffer->GetVertexDescriptorSets(),
+				_sides[i]._gbuffer->GetVertexDescriptorSet(),
 				_sides[i]._gbuffer->GetAnimationsDescriptorSet(),
 				camerasBuffer->GetCamerasBuffer(),
 				_sides[i]._gbuffer->GetPositionAttachment());

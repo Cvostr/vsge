@@ -353,7 +353,7 @@ void VulkanDeferredLight::DrawSkybox(VulkanCommandBuffer* cmdbuf) {
 					cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
 					cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
 					uint32 offsets[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
-					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[0], 2, offsets);
+					cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSet(), 2, offsets);
 					cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 					cmdbuf->BindDescriptorSets(*ppl, 3, 1, _deferred_descriptor, 1, &offsets[1]);
 
@@ -407,7 +407,7 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf)
 			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, 0 };
 			uint32 offset2 = writtenParticleTransforms * sizeof(Mat4);
 
-			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[0], 2, offsets1);
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSet(), 2, offsets1);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _gbuffer->GetParticlesDescriptorSet(), 1, &offset2);
 			cmdbuf->BindDescriptorSets(*ppl, 3, 1, _deferred_descriptor, 1, offsets1);
 			cmdbuf->BindMesh(*mesh);
@@ -450,8 +450,6 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf)
 
 		uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
 
-		int vertexDescriptorID = (e_i * transformMemoryBlockSize) / 65535;
-
 		cmdbuf->BindPipeline(*pipl);
 		cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
 		cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
@@ -465,11 +463,11 @@ void VulkanDeferredLight::DrawEntities(VulkanCommandBuffer* cmdbuf)
 			mat_resource->Use();
 
 			// 0 - offset for cameras matrices, 1 - for entity transform.
-			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * transformMemoryBlockSize % 65535 };
+			uint32 offsets1[2] = { _camera_index * CAMERA_ELEM_SIZE, e_i * transformMemoryBlockSize };
 			// TODO: animations in post renderer?
 			uint32 offset2 = 0;
 
-			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSets()[vertexDescriptorID], 2, offsets1);
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _gbuffer->GetVertexDescriptorSet(), 2, offsets1);
 			if (vmat)
 				cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _gbuffer->GetAnimationsDescriptorSet(), 1, &offset2);

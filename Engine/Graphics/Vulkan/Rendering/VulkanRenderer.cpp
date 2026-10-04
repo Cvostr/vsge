@@ -42,7 +42,7 @@ void VulkanRenderer::SetupRenderer()
 	//---------------------Buffers--------------------------------
 	_cameras_buffer = new VulkanCamerasBuffer;
 
-	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	mTransformsShaderBuffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	// Size of memory for 1 transform matrix
 	// NVidia pre turing cards has 256 byte alignment
 	uint32 transformMemoryBlockSize = GetUniformTransformBufferElementSize();
@@ -109,7 +109,7 @@ void VulkanRenderer::SetupRenderer()
 	_final_pass = new VulkanFinalPass;
 
 	_terrain_renderer = new VulkanTerrainRenderer();
-	_terrain_renderer->Create(_main_render_target->GetGBufferRenderer()->GetRenderPass(), _main_render_target->GetGBufferRenderer()->GetVertexDescriptorSets());
+	_terrain_renderer->Create(_main_render_target->GetGBufferRenderer()->GetRenderPass(), _main_render_target->GetGBufferRenderer()->GetVertexDescriptorSet());
 
 	VertexLayout _vertexLayout;
 	_vertexLayout.AddBinding(sizeof(Vertex));
