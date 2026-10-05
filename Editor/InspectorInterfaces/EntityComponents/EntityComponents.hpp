@@ -16,7 +16,7 @@
 
 #define TERRAIN_EDITOR_EDIT_MODE_HEIGHT 1
 #define TERRAIN_EDITOR_EDIT_MODE_TEXTURES 2
-#define TERRAIN_EDITOR_EDIT_MODE_GRASS 3
+#define TERRAIN_EDITOR_EDIT_MODE_VEGETABLES 3
 
 namespace VSGEditor {
 	void DrawLightsourceComponent(VSGE::LightsourceComponent* light);

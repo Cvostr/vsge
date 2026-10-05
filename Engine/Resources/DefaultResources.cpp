@@ -12,6 +12,7 @@ using namespace VSGE;
 static MeshResource* cube_mesh = nullptr;
 static MeshResource* sphere_mesh = nullptr;
 static MeshResource* plane_mesh = nullptr;
+static MeshResource* grass_mesh = nullptr;
 
 static MaterialResource* default_mat = nullptr;
 
@@ -70,10 +71,26 @@ Vertex plane_vertices[] = {
 
 unsigned int plane_indices[] = { 0,1,2, 0,2,3 };
 
+// ---- GRASS
+static Vertex grass_vertices[] = {
+    // back face
+    Vertex(Vec3(-0.5f, 0.0f, 0.0f), Vec2(0.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
+    Vertex(Vec3(0.5f, 0.0f, 0.0f), Vec2(1.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-right
+    Vertex(Vec3(0.5f, 0.5f, 0.0f), Vec2(1.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-right
+    Vertex(Vec3(-0.5f, 0.5f, 0.0f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-right
+    Vertex(Vec3(0.0f, 0.0f, 0.5f), Vec2(1.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
+    Vertex(Vec3(0.0f, 0.0f, -0.5f), Vec2(0.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-left
+    Vertex(Vec3(0.0f, 0.5f, 0.5f), Vec2(1.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f)), // bottom-left
+    Vertex(Vec3(0.0f, 0.5f, -0.5f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f)), // bottom-right
+};
+static uint32 grass_ind[] = { 0,1,2,2,1,0,  0,2,3,3,2,0,   4,5,7,7,5,4,  4,7,6,6,7,4 };
+// ------------
+
 const Guid defaultMaterialId = Guid(0, 0, 0, 1);
 const Guid cubeMeshId = Guid(0, 0, 0, 2);
 const Guid planeMeshId = Guid(0, 0, 0, 3);
 const Guid sphereMeshId = Guid(0, 0, 0, 4);
+const Guid grassMeshId = Guid(0, 0, 0, 5);
 
 void VSGE::AddDefaultMaterial() {
     default_mat = new MaterialResource;
@@ -216,5 +233,21 @@ void VSGE::AddDefaultMeshes() {
     sphere_mesh->GetMesh()->Create();
     sphere_mesh->SetState(RESOURCE_STATE_READY);
     ResourceCache::Get()->PushResource(sphere_mesh);
+    delete[] verts;
+
+
+    verts = new VertexSkinningData[8];
+    CalculateNormals(grass_vertices, grass_ind, 24);
+    ProcessTangentSpace(grass_vertices, grass_ind, 24);
+    grass_mesh = new MeshResource;
+    grass_mesh->SetName("Grass");
+    grass_mesh->SetId(grassMeshId);
+    grass_mesh->SetDefault();
+    grass_mesh->GetMesh()->SetVertexBuffer(grass_vertices, 8);
+    grass_mesh->GetMesh()->SetIndexBuffer(grass_ind, 24);
+    grass_mesh->GetMesh()->AddVertexBuffer(verts);
+    grass_mesh->GetMesh()->Create();
+    grass_mesh->SetState(RESOURCE_STATE_READY);
+    ResourceCache::Get()->PushResource(grass_mesh);
     delete[] verts;
 }

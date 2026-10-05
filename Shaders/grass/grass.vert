@@ -11,18 +11,18 @@ layout (location = 0) out vec3 FragPos;
 layout (location = 1) out vec3 Normal;
 layout (location = 2) out vec2 UVCoord;
 
-layout (std140, binding = 0) uniform CamMatrices{
+layout (std140, set = 0, binding = 0) uniform CamMatrices{
     mat4 cam_view_projection;
     mat4 cam_view;
     mat4 cam_projection;
     vec3 cam_position;
 };
 
-layout (std140, binding = 1) uniform Transform{
-    mat4 obj_model[4];
+layout (std140, set = 0, binding = 1) readonly buffer Transform {
+    mat4 obj_model[1];
 };
 
-layout (std140, set = 1, binding = 0) readonly buffer Transforms {
+layout (std140, set = 2, binding = 0) readonly buffer GrassTransforms {
     mat4 transforms[];
 };
 

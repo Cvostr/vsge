@@ -149,6 +149,13 @@ void VulkanRenderer::SetupRenderer()
 	MaterialTemplateCache::Get()->AddTemplate(pbr_smoothness_template);
 	CreatePipelineFromMaterialTemplate(pbr_smoothness_template);
 
+	MaterialTemplate* grass_template = new MaterialTemplate;
+	grass_template->SetName("default_grass");
+	grass_template->SetShader("grass");
+	grass_template->AddTexture("Albedo", 1);
+	MaterialTemplateCache::Get()->AddTemplate(grass_template);
+	CreatePipelineFromMaterialTemplate(grass_template);
+
 	BlendAttachmentDesc particle_blend_desc;
 	particle_blend_desc._blending = true;
 	particle_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;

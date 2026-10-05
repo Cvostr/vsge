@@ -15,7 +15,7 @@ float brush_size = 20;
 float opacity = 15;
 int edit_mode = TERRAIN_EDITOR_EDIT_MODE_HEIGHT;
 uint32 picked_texture_index = 0;
-uint32 picked_grass_index = 0;
+uint32 picked_vegetable_index = 0;
 
 void DrawTerrainTexturePickBtn(VSGE::ResourceReference& reference, const std::string& tex_type, uint32 texture_index) 
 {
@@ -75,6 +75,35 @@ void DrawTerrainResourcePicker(uint32 texture_index, VSGE::TerrainTexture* terra
 	DrawFloatControl(height_text, terrain_texture->_height_factor);
 }
 
+void DrawTerrainVegetableEditor(uint32 vegetable_index, VSGE::TerrainComponent* tc, VSGE::TerrainVegetable* vegetable)
+{
+	bool is_picked = vegetable_index == picked_vegetable_index;
+
+	std::string tte = "##" + std::to_string(vegetable_index);
+	is_picked = ImGui::RadioButton(tte.c_str(), is_picked);
+	if (is_picked)
+		picked_vegetable_index = vegetable_index;
+
+	DrawResourcePicker(std::string("Mesh"), vegetable->_mesh_reference, VSGE::RESOURCE_TYPE_MESH);
+	DrawResourcePicker(std::string("Material"), vegetable->_material_reference, VSGE::RESOURCE_TYPE_MATERIAL);
+
+	std::string width_text = "Width" + tte;
+	std::string height_text = "Height" + tte;
+
+	float width_f = vegetable->m_width;
+	float height_f = vegetable->m_height;
+
+	if (DrawFloatControl(width_text, width_f)) {
+		vegetable->SetWidth(width_f);
+		tc->SetVegetablesDirty();
+	}
+
+	if (DrawFloatControl(height_text, height_f)) {
+		vegetable->SetHeight(height_f);
+		tc->SetVegetablesDirty();
+	}
+}
+
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) 
 {
 	int width = tc->GetWidth();
@@ -108,7 +137,7 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc)
 		edit_mode = TERRAIN_EDITOR_EDIT_MODE_TEXTURES;
 	ImGui::SameLine();
 	if (ImGui::Button("G", ImVec2(32, 32)))
-		edit_mode = TERRAIN_EDITOR_EDIT_MODE_GRASS;
+		edit_mode = TERRAIN_EDITOR_EDIT_MODE_VEGETABLES;
 	ImGui::Separator();
 
 
@@ -118,14 +147,29 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc)
 		DrawVec2iControl("Tile Size", tileSize);
 		tc->SetTexturesTileSize(tileSize);
 
-		uint32 textures_count = static_cast<uint32>(tc->GetTerrainTextures().size());
-		for (uint32 i = 0; i < textures_count; i++) {
+		size_t textures_count = tc->GetTerrainTextures().size();
+		for (size_t i = 0; i < textures_count; i++) {
 			VSGE::TerrainTexture* texture = &(tc->GetTerrainTextures()[i]);
 			DrawTerrainResourcePicker(i, texture);
 		}
+
 		if (tc->GetTerrainTextures().size() < MAX_TEXTURES_PER_TERRAIN)
 			if (ImGui::Button("Add Texture", ImVec2(ImGui::GetWindowWidth(), 0))) {
 				tc->AddTexture();
+		}
+	}
+	else if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_VEGETABLES)
+	{
+		size_t vegetables_count = tc->GetTerrainVegetables().size();
+		for (size_t i = 0; i < vegetables_count; i++) {
+			VSGE::TerrainVegetable* veg = &(tc->GetTerrainVegetables()[i]);
+			DrawTerrainVegetableEditor(i, tc, veg);
+		}
+		
+		if (ImGui::Button("Add Vegetable", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			auto new_veg = VSGE::TerrainVegetable();
+			new_veg.Clear(tc->GetWidth(), tc->GetLength());
+			tc->GetTerrainVegetables().push_back(std::move(new_veg));
 		}
 	}
 }
@@ -143,5 +187,5 @@ uint32 VSGEditor::GetTerrainEditorTextureIndex() {
 	return picked_texture_index;
 }
 uint32 VSGEditor::GetTerrainEditorVegetableIndex() {
-	return picked_grass_index;
+	return picked_vegetable_index;
 }

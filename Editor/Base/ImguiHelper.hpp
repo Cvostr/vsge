@@ -9,7 +9,7 @@ namespace VSGEditor {
 	void DrawVec2Control(const std::string& text, Vec2& value, bool drag = false);
 	void DrawVec2iControl(const std::string& text, Vec2i& value, bool drag = false);
 	void DrawColorControl(const std::string& text, VSGE::Color& value);
-	void DrawFloatControl(const std::string& text, float& value);
+	bool DrawFloatControl(const std::string& text, float& value);
 	void DrawIntControl(const std::string& text, int& value);
 	void DrawCheckboxControl(const std::string& text, bool& value);
 	void DrawStringControl(const std::string& text, std::string& value);

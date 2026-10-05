@@ -4,33 +4,17 @@
 #include "VulkanRenderingGenerics.hpp"
 #include "../VulkanRAPI.hpp"
 
-using namespace VSGE;
+#include <Scene/EntityComponents/MeshComponent.hpp>
+#include <Scene/EntityComponents/MaterialComponent.hpp>
 
-static Vertex grass_vertices[] = {
-	// back face
-	Vertex(Vec3(-0.5f, 0.0f, 0.0f), Vec2(0.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
-	Vertex(Vec3(0.5f, 0.0f, 0.0f), Vec2(1.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-right
-	Vertex(Vec3(0.5f, 0.5f, 0.0f), Vec2(1.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-right
-	Vertex(Vec3(-0.5f, 0.5f, 0.0f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-right
-	Vertex(Vec3(0.0f, 0.0f, 0.5f), Vec2(1.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // bottom-left
-	Vertex(Vec3(0.0f, 0.0f, -0.5f), Vec2(0.0f, 1.0f), Vec3(0.0f,  0.0f, -1.0f)), // top-left
-	Vertex(Vec3(0.0f, 0.5f, 0.5f), Vec2(1.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f)), // bottom-left
-	Vertex(Vec3(0.0f, 0.5f, -0.5f), Vec2(0.0f, 0.0f), Vec3(0.0f,  0.0f,  1.0f)), // bottom-right
-};
-static uint32 grass_ind[] = { 0,1,2,2,1,0,  0,2,3,3,2,0,   4,5,7,7,5,4,  4,7,6,6,7,4 };
+using namespace VSGE;
 
 bool TerrainPipelinesInitialized = false;
 static VulkanPipelineLayout* terrain_pipeline_layout = nullptr;
 static VulkanPipeline* terrain_pipeline = nullptr;
-static VulkanPipelineLayout* grass_pipeline_layout = nullptr;
-static VulkanPipeline* grass_pipeline = nullptr;
-static VulkanMesh* terrainGrassMesh = nullptr;
 
 void InitTerrainPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptorPool* pool, VulkanRenderPass* gbuffer_renderpass)
 {
-	CalculateNormals(grass_vertices, grass_ind, 24);
-	ProcessTangentSpace(grass_vertices, grass_ind, 24);
-
 	// Fill vertex layout
 	VertexLayout terrainVertexLayout;
 	terrainVertexLayout.AddBinding(sizeof(Vertex));
@@ -61,35 +45,6 @@ void InitTerrainPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptorPool* 
 		terrain_pipeline->SetDepthTest(true);
 		terrain_pipeline->SetCullMode(CullMode::CULL_MODE_FRONT);
 		terrain_pipeline->Create(terrain_shader, gbuffer_renderpass, terrainVertexLayout, terrain_pipeline_layout);
-	}
-
-	if (terrainGrassMesh == nullptr)
-	{
-		terrainGrassMesh = new VulkanMesh;
-		terrainGrassMesh->SetVertexBuffer(grass_vertices, 8);
-		terrainGrassMesh->SetIndexBuffer(grass_ind, 24);
-		terrainGrassMesh->Create();
-	}
-
-	if (grass_pipeline_layout == nullptr)
-	{
-		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(pool);
-		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
-		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
-		grass_descr_set->Create();
-		grass_pipeline_layout = new VulkanPipelineLayout;
-		grass_pipeline_layout->PushDescriptorSet(vertexSet);
-		grass_pipeline_layout->PushDescriptorSet(grass_descr_set);
-		grass_pipeline_layout->Create();
-		delete grass_descr_set;
-	}
-
-	if (grass_pipeline == nullptr)
-	{
-		VulkanShader* grass_shader = (VulkanShader*)ShaderCache::Get()->GetShader("grass");
-		grass_pipeline = new VulkanPipeline;
-		grass_pipeline->SetDepthTest(true);
-		grass_pipeline->Create(grass_shader, gbuffer_renderpass, terrainVertexLayout, grass_pipeline_layout);
 	}
 }
 
@@ -148,7 +103,7 @@ void VulkanTerrainRenderer::ProcessTerrain(Entity* terrain)
 		terrain_component->SetTerrain(vk_terrain);
 	}
 
-	vk_terrain->SetTerrain(terrain_component);
+	vk_terrain->SetTerrain(terrain_component, _vegetables_descr_pool);
 
 	_terrains_processed++;
 }
@@ -204,15 +159,57 @@ void VulkanTerrainRenderer::DrawTerrain(
 		cmdbuffer->DrawIndexed(component->GetIndicesCount());
 	}
 
-	cmdbuffer->BindPipeline(*grass_pipeline);
-	cmdbuffer->SetViewport(0, 0, (float)output_width, (float)output_height);
-	cmdbuffer->BindDescriptorSets(*grass_pipeline_layout, 0, 1, entity_descr_set, 2, offsets);
+	for (uint32 grass_i = 0; grass_i < component->GetTerrainVegetables().size(); grass_i++)
+	{
+		auto& vegetable = component->GetTerrainVegetables()[grass_i];
+		auto& vk_vegetable = vk_terrain->GetVegetables()[grass_i];
 
-	for (uint32 grass_i = 0; grass_i < vk_terrain->GetVegetables().size(); grass_i++) {
-		auto& vegetable = vk_terrain->GetVegetables()[grass_i];
-		uint32 offset = vegetable.offset * sizeof(Mat4);
-		cmdbuffer->BindDescriptorSets(*grass_pipeline_layout, 1, 1, vegetable._descr_set, 1, &offset);
-		cmdbuffer->BindMesh(*terrainGrassMesh);
-		cmdbuffer->DrawIndexed(terrainGrassMesh->GetIndexCount(), vegetable.count);
+		// Extract material and mesh resource pointers
+		MeshResource* mesh_resource = vegetable._mesh_reference.GetResource<MeshResource>();
+		MaterialResource* mat_resource = vegetable._material_reference.GetResource<MaterialResource>();
+
+		if (!mesh_resource || !mat_resource)
+			continue;
+
+		// Do not render if material or mesh not loaded yet
+		if (mat_resource->GetState() != RESOURCE_STATE_READY || mesh_resource->GetState() != RESOURCE_STATE_READY)
+			continue;
+
+		// bind material
+		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		VulkanPipeline* pipeline = (VulkanPipeline*)templ->GetPipeline();
+		Material* mat = mat_resource->GetMaterial();
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+		VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+
+
+		//Mark mesh resource used in this frame
+		mesh_resource->Use();
+		//Mark material resource used in this frame
+		mat_resource->Use();
+
+		uint32 offsets[2] = { camera_index * CAMERA_ELEM_SIZE, draw_index * UNI_ALIGN };
+		uint32 veg_transform_offset = vk_vegetable.offset * sizeof(Mat4);
+
+		if (templ->GetRenderStage() != RENDER_STAGE_GBUFFER)
+			continue;
+
+		cmdbuffer->BindPipeline(*pipeline);
+
+		if (reverse_cull)
+			cmdbuffer->SetCullMode(VK_CULL_MODE_BACK_BIT);
+		else
+			cmdbuffer->SetCullMode(VK_CULL_MODE_FRONT_BIT);
+
+		cmdbuffer->SetViewport(0, 0, (float)output_width, (float)output_height);
+		VulkanPipelineLayout* ppl = pipeline->GetPipelineLayout();
+		cmdbuffer->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
+		cmdbuffer->BindDescriptorSets(*ppl, 0, 1, entity_descr_set, 2, offsets);
+		cmdbuffer->BindDescriptorSets(*ppl, 2, 1, vk_vegetable._descr_set, 1, &veg_transform_offset);
+		cmdbuffer->BindMesh(*mesh);
+		if (mesh->GetIndexCount() > 0)
+			cmdbuffer->DrawIndexed(mesh->GetIndexCount(), vk_vegetable.count);
+		else
+			cmdbuffer->Draw(mesh->GetVerticesCount(), vk_vegetable.count);
 	}
 }

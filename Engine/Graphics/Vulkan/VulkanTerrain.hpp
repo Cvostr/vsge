@@ -13,6 +13,8 @@ namespace VSGE {
         uint32 offset;
         uint32 count;
 
+        VulkanTerrainGrass(VulkanDescriptorSet* descrSet);
+        VulkanTerrainGrass(VulkanTerrainGrass &&other);
         ~VulkanTerrainGrass();
     };
 
@@ -22,6 +24,7 @@ namespace VSGE {
         VulkanBuffer* grass_transform_buffer;
         VulkanDescriptorSet* _terrain_descr_set;
         std::vector<VulkanTerrainGrass> _grass_descriptor_sets;
+        TerrainComponent* _boundComponent;
     public:
         
         VulkanTerrain();
@@ -30,7 +33,7 @@ namespace VSGE {
         VulkanDescriptorSet* GetDescriptorSet();
         void UpdateInfo(TerrainComponent* terrain);
         std::vector<VulkanTerrainGrass>& GetVegetables();
-        void SetTerrain(TerrainComponent* terrain);
+        void SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool *pool);
         void SetDescriptorTexture(Resource* texture, uint32 texture_type, uint32 texture_index);
         void SetDescriptorGrassTexture(Resource* texture, uint32 vegetable_index);
         void Create(VulkanDescriptorPool* pool);

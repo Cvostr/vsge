@@ -31,6 +31,31 @@ namespace VSGE {
 		~TerrainTexture() = default;
 	};
 
+	class TerrainComponent;
+
+	class TerrainVegetable {
+	private:
+		uint8* _vegetable_coeff;
+	public:
+		ResourceReference _mesh_reference;
+		ResourceReference _material_reference;
+		
+		// for mesh itself
+		float m_width;
+		float m_height;
+
+		void SetWidth(float width);
+		void SetHeight(float height);
+
+		uint8* GetCoeffs();
+
+		void Clear(size_t width, size_t height);
+		void GetTransforms(std::vector<Mat4> &out, TerrainComponent *terrain);
+		TerrainVegetable();
+		TerrainVegetable(TerrainVegetable &&);
+		~TerrainVegetable();
+	};
+
 	class TerrainTexturesFactors {
 	private:
 		byte* _textures_masks;
@@ -64,12 +89,15 @@ namespace VSGE {
 		TerrainTexturesFactors _texture_factors;
 		std::vector<TerrainTexture> _terrain_textures;
 
+		std::vector<TerrainVegetable> _vegetables;
+
 		// auto-updated value
 		float _max_terrain_height;
 
 		// state for update
 		bool _mesh_dirty;
 		bool _texturemaps_dirty;
+		bool _vegetables_dirty;
 
 		// -- Ñomputed geometry state
 		Vertex* _heightmap;
@@ -122,8 +150,13 @@ namespace VSGE {
 		float GetMaxTerrainHeight();
 		void AddTexture();
 		void Flat(float height);
+
 		void ModifyHeight(const Vec2i& position, float height, uint32 range);
 		void ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id);
+		void ModifyVegetable(const Vec2i& position, uint32 range, uint32 grass_id);
+
+		bool IsVegetablesDirtyAndClear();
+		void SetVegetablesDirty();
 
 		Vec2i GetRayIntersectionTraingle(const Ray& ray);
 		const AABB GetAABB();
@@ -132,8 +165,10 @@ namespace VSGE {
 		Terrain* GetTerrain();
 		Texture* GetTerrainMasksTexture();
 		Mesh* GetTerrainMesh();
+		Vertex* GetVertices();
 
 		std::vector<TerrainTexture>& GetTerrainTextures();
+		std::vector<TerrainVegetable>& GetTerrainVegetables();
 
 		void OnUpdate();
 		void OnPreRender();

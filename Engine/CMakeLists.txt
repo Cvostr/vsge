@@ -135,6 +135,7 @@ set(SRC_FILES
 				Scene/EntityComponents/LightProbeComponent.cpp
 				Scene/EntityComponents/TerrainComponent.cpp
 				Scene/EntityComponents/TerrainTexturesFactors.cpp
+				Scene/EntityComponents/TerrainVegetable.cpp
 				MonoScripting/MonoScriptingLayer.cpp
 				MonoScripting/MonoScript.cpp
 				MonoScripting/MonoScriptBlob.cpp

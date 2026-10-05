@@ -5,7 +5,23 @@
 using namespace VSGE;
 
 #define TERRAIN_DATA_ELEM_SIZE 512
-#define MAX_GRASS_TRANSFORMS 50000
+#define MAX_GRASS_TRANSFORMS 66000
+
+VulkanTerrainGrass::VulkanTerrainGrass(VulkanDescriptorSet* descrSet) :
+	offset(0),
+	count(0),
+	_descr_set(descrSet)
+{
+
+}
+
+VulkanTerrainGrass::VulkanTerrainGrass(VulkanTerrainGrass&& other):
+	offset(other.offset),
+	count(other.count)
+{
+	this->_descr_set = other._descr_set;
+	other._descr_set = nullptr;
+}
 
 VulkanTerrainGrass::~VulkanTerrainGrass()
 {
@@ -114,7 +130,7 @@ void VulkanTerrain::SetDescriptorGrassTexture(Resource* texture, uint32 vegetabl
 	}
 }
 
-void VulkanTerrain::SetTerrain(TerrainComponent* terrain) 
+void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* pool)
 {
 	UpdateInfo(terrain);
 
@@ -158,38 +174,50 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain)
 			i);
 	}
 
-	//Create vegetables descriptors
-	/*uint32 grass_count = static_cast<uint32>(terrain->GetTerrainVegetables().size());
-	while (_grass_descriptor_sets.size() < grass_count) {
-		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(terrain_renderer->GetGrassDescriptorPool());
-		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
-		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Create vegetables descriptors
+	size_t vegetables_count = terrain->GetTerrainVegetables().size();
+	while (_grass_descriptor_sets.size() < vegetables_count)
+	{
+		// Create descriptor set for vegetables transforms
+		VulkanDescriptorSet* grass_descr_set = new VulkanDescriptorSet(pool);
+		grass_descr_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Transform
 		grass_descr_set->Create();
-		grass_descr_set->WriteDescriptorBuffer(0, terrain_renderer->GetGrassTransformsBuffer());
+		grass_descr_set->WriteDescriptorBuffer(0, grass_transform_buffer);
 
-		VulkanTerrainGrass grass;
-		grass._descr_set = grass_descr_set;
-		_grass_descriptor_sets.push_back(grass);
+		// Construct vulkan object and save it
+		VulkanTerrainGrass grass(grass_descr_set);
+		_grass_descriptor_sets.push_back(std::move(grass));
 	}
 
-	for (uint32 veg_i = 0; veg_i < grass_count; veg_i++) {
-		auto& grass = terrain->GetTerrainVegetables()[veg_i];
-		auto& grass_transforms = terrain->GetGrassTransforms()[veg_i];
+	// If vegetable dirty or terrain component changed
+	if (terrain->IsVegetablesDirtyAndClear() || _boundComponent != terrain)
+	{
+		uint32 veg_written_transforms = 0;
 
-		SetDescriptorGrassTexture(grass._texture_reference.GetResource(), veg_i);
+		for (uint32 veg_i = 0; veg_i < vegetables_count; veg_i++)
+		{
+			auto& grass = terrain->GetTerrainVegetables()[veg_i];
 
-		uint32& grass_offset = terrain_renderer->GetWrittenGrassTransforms();
-		uint32 transforms_count = static_cast<uint32>(grass_transforms.GetTransforms().size());
-		const Mat4* transforms = grass_transforms.GetTransforms().data();
-		terrain_renderer->GetGrassTransformsBuffer()->WriteData(grass_offset * sizeof(Mat4), transforms_count * sizeof(Mat4), (void*)transforms);
+			std::vector<Mat4> veg_transforms;
+			grass.GetTransforms(veg_transforms, terrain);
+
+			// Write prepared transforms to vulkan buffer
+			uint32 transforms_count = static_cast<uint32>(veg_transforms.size());
+			const Mat4* transforms = veg_transforms.data();
+			grass_transform_buffer->WriteData(veg_written_transforms * sizeof(Mat4), transforms_count * sizeof(Mat4), (void*)transforms);
 
 
-		auto& grass_render_info = _grass_descriptor_sets[veg_i];
-		grass_render_info.offset = grass_offset;
-		grass_render_info.count = transforms_count;
+			auto& grass_render_info = _grass_descriptor_sets[veg_i];
+			grass_render_info.offset = veg_written_transforms;
+			grass_render_info.count = transforms_count;
 
-		grass_offset += transforms_count;
-	}*/
+			// add written transform count
+			veg_written_transforms += transforms_count;
+		}
+	}
+
+	// Update pointer
+	_boundComponent = terrain;
 }
 
 void VulkanTerrain::Create(VulkanDescriptorPool* pool) 

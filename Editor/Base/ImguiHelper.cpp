@@ -81,10 +81,12 @@ void VSGEditor::DrawColorControl(const std::string& text, VSGE::Color& value) {
 	ImGui::PopID();
 }
 
-void VSGEditor::DrawFloatControl(const std::string& text, float& value) {
+bool VSGEditor::DrawFloatControl(const std::string& text, float& value) {
+	bool res;
 	DrawControlHeader(text);
-	ImGui::InputFloat("##v", &value);
+	res = ImGui::InputFloat("##v", &value);
 	ImGui::PopID();
+	return res;
 }
 
 void VSGEditor::DrawIntControl(const std::string& text, int& value) {

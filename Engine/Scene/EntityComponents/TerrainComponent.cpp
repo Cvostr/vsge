@@ -137,9 +137,19 @@ Mesh* TerrainComponent::GetTerrainMesh()
 	return _heightmap_mesh;
 }
 
+Vertex* TerrainComponent::GetVertices()
+{
+	return _heightmap;
+}
+
 std::vector<TerrainTexture>& TerrainComponent::GetTerrainTextures() 
 {
 	return _terrain_textures;
+}
+
+std::vector<TerrainVegetable>& TerrainComponent::GetTerrainVegetables()
+{
+	return _vegetables;
 }
 
 const AABB TerrainComponent::GetAABB() {
@@ -262,16 +272,20 @@ void TerrainComponent::Flat(float height)
 {
 	SAFE_RELEASE_ARR(_heightmap);
 	_texture_factors.Free();
-	//SAFE_RELEASE_ARR(_vegetables_data);
+	
 	uint32 vertices_count = GetVerticesCount();
 	CreateVerticesArray();
 	CreateIndicesArray();
 	_texture_factors.Allocate(_width, _length, MAX_TEXTURES_PER_TERRAIN);
-	//_vegetables_data = new GRASS_ID[vertices_count];
+
+	// Flatten whole heighmap
 	for (uint32 i = 0; i < vertices_count; i++) {
 		_heightmap[i].pos.y = height;
-		//_vegetables_data[i] = NO_GRASS;
 	}
+
+	UpdateNormals();
+
+	// Clear texture factors
 	for (int x = 0; x < _width; x++) 
 	{
 		for (int y = 0; y < _length; y++) 
@@ -280,22 +294,27 @@ void TerrainComponent::Flat(float height)
 		}
 	}
 
-	UpdateNormals();
+	// Clear all vegetables
+	for (auto& veg : _vegetables) {
+		veg.Clear(_width, _length);
+	}
+
 	_texturemaps_dirty = true;
 	_mesh_dirty = true;
+	_vegetables_dirty = true;
 }
 
 void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) 
 {
-	//Iterate over all pixels
+	// Iterate over all pixels
 	for (int y = 0; y < _width; y++) 
 	{
 		for (int x = 0; x < _length; x++) 
 		{
-			//if pixel is in circle
+			// if pixel is in circle
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
 			if (dist <= range) {
-				//calculate modifier
+				// calculate modifier
 				float toApply = (height)-static_cast<float>(dist * dist) / (float)range;
 				if (toApply > 0) {
 					_heightmap[y * _length + x].pos.y += (toApply);
@@ -304,7 +323,10 @@ void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 
 		}
 	}
 
+	// Queue mesh update
 	_mesh_dirty = true;
+	// Queue vegetables update, because some grass may be higher or lower
+	_vegetables_dirty = true;
 }
 
 void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id)
@@ -335,6 +357,27 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 	_texturemaps_dirty = true;
 }
 
+void TerrainComponent::ModifyVegetable(const Vec2i& position, uint32 range, uint32 grass_id) 
+{
+	auto& veg = _vegetables[grass_id];
+	// Iterate over all pixels
+	for (int y = 0; y < _width; y++) 
+	{
+		for (int x = 0; x < _length; x++) 
+		{
+			//if pixel is in circle
+			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
+			if (dist <= range) 
+			{
+				veg.GetCoeffs()[y * _length + x] += 1;
+			}
+		}
+	}
+
+	// enqueue update
+	_vegetables_dirty = true;
+}
+
 void TerrainComponent::CreateVerticesArray()
 {
 	SAFE_RELEASE_ARR(_heightmap)
@@ -352,6 +395,18 @@ void TerrainComponent::CreateVerticesArray()
 			vert->pos = Vec3(fx, 0, fy);
 		}
 	}
+}
+
+bool TerrainComponent::IsVegetablesDirtyAndClear()
+{
+	bool dirty = _vegetables_dirty;
+	_vegetables_dirty = false;
+	return dirty;
+}
+
+void TerrainComponent::SetVegetablesDirty()
+{
+	_vegetables_dirty = true;
 }
 
 void TerrainComponent::UpdateNormals() 
