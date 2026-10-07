@@ -146,6 +146,14 @@ uint32 VulkanSwapChain::GetSwapChainImagesCount() {
     return static_cast<uint32>(_swapchain_images.size());
 }
 
+VkSurfaceFormatKHR VulkanSwapChain::GetChosenSurfaceFormat() {
+    return chosenSurfaceFormat;
+}
+
+VkExtent2D VulkanSwapChain::GetExtent() {
+    return swap_extend;
+}
+
 void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) {
     uint32_t swc_images;
     std::vector<VkImage> swapchain_images;

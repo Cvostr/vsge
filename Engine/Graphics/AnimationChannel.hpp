@@ -56,15 +56,9 @@ namespace VSGE {
         void SetScaleKeysCount(uint32 scaleKeys);
         void SetRotationKeysCount(uint32 rotationKeys);
 
-        TimedValues <Vec3>* GetPosValues() {
-            return &pos;
-        }
-        TimedValues <Vec3>* GetScaleValues() {
-            return &scale;
-        }
-        TimedValues <Quat>* GetRotationValues() {
-            return &rot;
-        }
+        TimedValues <Vec3>* GetPosValues();
+        TimedValues <Vec3>* GetScaleValues();
+        TimedValues <Quat>* GetRotationValues();
 
         uint32 getPositionIndex(double Time);
         uint32 getScaleIndex(double Time);

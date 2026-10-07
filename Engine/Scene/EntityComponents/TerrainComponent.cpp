@@ -465,7 +465,7 @@ void TerrainComponent::Serialize(ByteSerialize& serializer)
 	serializer.Serialize(_textureTileSize.y);
 
 	uint32 textures_count = _terrain_textures.size();
-	//uint32 vegetables_count = _terrain_grass.size();
+	uint32 vegetables_count = _vegetables.size();
 	serializer.Serialize(textures_count);
 	//serializer.Serialize(vegetables_count);
 

@@ -126,7 +126,11 @@ bool VulkanRenderingGenerics::Init() {
 void VulkanRenderingGenerics::LoadShaders()
 {
 	Logger::Log() << "Loading Shaders\n";
-	ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
+	if (ShaderStorage::Get()->LoadShaderBundle("./Shaders/shaders.bundle", "./Shaders/shaders.map") == false) {
+		// Load default shaders from alternate path
+		ShaderStorage::Get()->LoadShaderBundle("../Shaders/shaders.bundle", "../Shaders/shaders.map");
+	}
+
 	VulkanShader* pbr = new VulkanShader;
 	pbr->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
 	pbr->AddShaderFromFile("pbr.frag", SHADER_STAGE_FRAGMENT);
@@ -136,11 +140,6 @@ void VulkanRenderingGenerics::LoadShaders()
 	pbr_smoothness->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
 	pbr_smoothness->AddShaderFromFile("pbr_smoothness.frag", SHADER_STAGE_FRAGMENT);
 	ShaderCache::Get()->AddShader(pbr_smoothness, "PBR_smoothness");
-
-	VulkanShader* vegetable = new VulkanShader;
-	vegetable->AddShaderFromFile("vegetable.vert", SHADER_STAGE_VERTEX);
-	vegetable->AddShaderFromFile("vegetable.frag", SHADER_STAGE_FRAGMENT);
-	ShaderCache::Get()->AddShader(vegetable, "Vegetable");
 
 	VulkanShader* deferred_light = new VulkanShader;
 	deferred_light->AddShaderFromFile("postprocess.vert", SHADER_STAGE_VERTEX);

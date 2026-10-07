@@ -10,12 +10,10 @@ namespace VSGE {
 		VkSemaphore _semaphore;
 	public:
 
-		VulkanSemaphore() :
-			_semaphore(VK_NULL_HANDLE)
-		{}
+		VulkanSemaphore();
+		VulkanSemaphore(const VulkanSemaphore&) = delete;
 
-
-		VkSemaphore GetSemaphore() { return _semaphore; }
+		VkSemaphore GetSemaphore();
 
 		bool Create();
 		void Destroy();

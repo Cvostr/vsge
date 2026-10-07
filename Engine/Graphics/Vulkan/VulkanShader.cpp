@@ -37,24 +37,27 @@ VulkanShaderPair* VulkanShader::GetModules()
     return mModules.data(); 
 }
 
-void VulkanShader::AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type) {
+bool VulkanShader::AddShader(byte* shaderData, size_t shaderSize, ShaderStagesBits type) 
+{
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();
     
     VkShaderModule shader_module;
     
-    VkShaderModuleCreateInfo createVsInfo = {};
-    createVsInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createVsInfo.pNext = nullptr;
-    createVsInfo.codeSize = shaderSize;
-    createVsInfo.pCode = reinterpret_cast<const uint32_t*>(shaderData);
-    if (vkCreateShaderModule(device->getVkDevice(), &createVsInfo, nullptr, &shader_module) != VK_SUCCESS) {
-        return;
+    VkShaderModuleCreateInfo createShaderInfo = {};
+    createShaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createShaderInfo.pNext = nullptr;
+    createShaderInfo.codeSize = shaderSize;
+    createShaderInfo.pCode = reinterpret_cast<const uint32_t*>(shaderData);
+
+    if (vkCreateShaderModule(device->getVkDevice(), &createShaderInfo, nullptr, &shader_module) != VK_SUCCESS) {
+        return false;
     }
 
     mModules.push_back(VulkanShaderPair(shader_module, type));
 
     mStages = (ShaderStagesBits)(mStages | type);
+    return true;
 }
 
 void VulkanShader::Destroy() {

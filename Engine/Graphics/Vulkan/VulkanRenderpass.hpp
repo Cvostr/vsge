@@ -39,7 +39,7 @@ namespace VSGE {
 		/// Get count of color attachments on this renderpass
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetColorAttachmentsCount() { return mColorAttachmentsCount; }
+		uint32 GetColorAttachmentsCount();
 		/// <summary>
 		/// Try to create renderpass object
 		/// </summary>

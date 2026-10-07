@@ -15,7 +15,7 @@ namespace VSGE {
 		std::vector<VulkanShaderPair> mModules;
 	public:
 
-		void AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type);
+		bool AddShader(byte* shaderData, size_t shaderSize, ShaderStagesBits type);
 		uint32 GetModulesCount() const;
 		VulkanShaderPair* GetModules();
 

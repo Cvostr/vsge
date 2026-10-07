@@ -177,25 +177,6 @@ void VulkanRenderer::SetupRenderer()
 	CreatePipelineFromMaterialTemplate(particle_template);
 
 
-	MaterialTemplate* vegetable_template = new MaterialTemplate;
-	vegetable_template->SetRenderStage(RENDER_STAGE_POST);
-	vegetable_template->SetName("default_vegetable");
-	vegetable_template->SetShader("Vegetable");
-	vegetable_template->AddTexture("Albedo", 1);
-	vegetable_template->AddTexture("Normal", 2);
-	vegetable_template->AddTexture("Roughness", 3);
-	vegetable_template->AddTexture("Metallic", 4);
-	vegetable_template->AddTexture("Occlusion", 5);
-	vegetable_template->AddTexture("Emission", 6);
-	vegetable_template->AddParameter("Color", Color(1, 1, 1, 1));
-	vegetable_template->AddParameter("Roughness factor", 1.f);
-	vegetable_template->AddParameter("Metallic factor", 0.5f);
-	vegetable_template->AddParameter("Height factor", 1.f);
-	vegetable_template->SetBlendingAttachmentDesc(0, particle_blend_desc);
-	MaterialTemplateCache::Get()->AddTemplate(vegetable_template);
-	CreatePipelineFromMaterialTemplate(vegetable_template);
-
-
 	MaterialTemplate* skybox_template = new MaterialTemplate;
 	skybox_template->SetName("default_skybox");
 	skybox_template->SetRenderStage(RENDER_STAGE_POST);

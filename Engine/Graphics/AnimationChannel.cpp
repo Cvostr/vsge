@@ -34,6 +34,16 @@ void AnimationChannel::SetRotationKeysCount(uint32 rotationKeys)
     rot.Allocate(rotationKeys);
 }
 
+TimedValues <Vec3>* AnimationChannel::GetPosValues() {
+    return &pos;
+}
+TimedValues <Vec3>* AnimationChannel::GetScaleValues() {
+    return &scale;
+}
+TimedValues <Quat>* AnimationChannel::GetRotationValues() {
+    return &rot;
+}
+
 void AnimationChannel::CopyTo(AnimationChannel* channel) {
     channel->SetBoneName(GetBoneName());
 

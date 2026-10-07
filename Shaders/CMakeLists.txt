@@ -8,9 +8,6 @@ set(SHADERS_FILES   pbr/pbr.vert
                     pbr/brdf_lut.comp
                     pbr/irmap.comp
                     pbr/spmap.comp
-                    
-                    vegetable/vegetable.vert
-                    vegetable/vegetable.frag
 
                     terrain/terrain.vert
                     terrain/terrain.frag

@@ -67,6 +67,10 @@ void Material::SetTemplate(const std::string& template_name) {
 	SetTemplate(MaterialTemplateCache::Get()->GetTemplate(template_name));
 }
 
+MaterialTemplate* Material::GetTemplate() {
+	return _template;
+}
+
 MaterialTexture* Material::GetTextureByName(const std::string& texture_name) {
 	for (MaterialTexture* texture : _materialTextures) {
 		if (texture->_name == texture_name)

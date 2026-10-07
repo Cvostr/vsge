@@ -83,9 +83,7 @@ namespace VSGE {
 		/// Get template of this material
 		/// </summary>
 		/// <returns></returns>
-		MaterialTemplate* GetTemplate() {
-			return _template;
-		}
+		MaterialTemplate* GetTemplate();
 
 		void Destroy();
 		void DestroyDescriptors();

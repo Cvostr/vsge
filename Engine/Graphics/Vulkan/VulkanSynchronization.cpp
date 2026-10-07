@@ -3,6 +3,15 @@
 
 using namespace VSGE;
 
+VulkanSemaphore::VulkanSemaphore() :
+	_semaphore(VK_NULL_HANDLE)
+{
+}
+
+VkSemaphore VulkanSemaphore::GetSemaphore() {
+	return _semaphore; 
+}
+
 bool VulkanSemaphore::Create() {
 	VulkanRAPI* vulkan = VulkanRAPI::Get();
 	VulkanDevice* device = vulkan->GetDevice();

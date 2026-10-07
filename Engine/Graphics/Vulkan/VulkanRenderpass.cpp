@@ -26,6 +26,10 @@ VkRenderPass VulkanRenderPass::GetRenderPass()
     return _renderPass;
 }
 
+uint32 VulkanRenderPass::GetColorAttachmentsCount() {
+    return mColorAttachmentsCount; 
+}
+
 bool VulkanRenderPass::Create() {
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();

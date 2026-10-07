@@ -42,7 +42,7 @@ namespace VSGE {
 
 		ShaderStorageItem* GetItemByName(std::string& name);
 
-		void LoadShaderBundle(const std::string& bundle_path, const std::string& map_path);
+		bool LoadShaderBundle(const std::string& bundle_path, const std::string& map_path);
 	};
 
 	enum ShaderStagesBits {
@@ -59,7 +59,7 @@ namespace VSGE {
 	protected:
 		ShaderStagesBits mStages;
 	public:
-		virtual void AddShader(byte* shaderData, uint32 shaderSize, ShaderStagesBits type) = 0;
+		virtual bool AddShader(byte* shaderData, size_t shaderSize, ShaderStagesBits type) = 0;
 		void AddShaderFromFile(std::string file_path, ShaderStagesBits type);
 		virtual void Destroy() = 0;
 

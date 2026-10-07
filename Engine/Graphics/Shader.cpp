@@ -50,7 +50,8 @@ void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
 	AddShader(data, size, type);
 }
 
-ShaderStorageItem* ShaderStorage::GetItemByName(std::string& name) {
+ShaderStorageItem* ShaderStorage::GetItemByName(std::string& name) 
+{
 	for (ShaderStorageItem& shader : shaders) {
 		if (shader.name == name)
 			return &shader;
@@ -58,20 +59,24 @@ ShaderStorageItem* ShaderStorage::GetItemByName(std::string& name) {
 	return nullptr;
 }
 
-void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::string& map_path) 
+bool ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::string& map_path) 
 {
 	std::ifstream bundle_stream;
 	std::ifstream map_stream;
 
 	map_stream.open(map_path, std::ifstream::binary);
-
 	if (map_stream.fail())
 	{
 		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening shader map file " << map_path << '\n';
-		return;
+		return false;
 	}
 
 	bundle_stream.open(bundle_path, std::ifstream::binary);
+	if (bundle_stream.fail())
+	{
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error opening shader bundle file " << bundle_path << '\n';
+		return false;
+	}
 
 	map_stream.seekg(0, std::ios::end); 
 	uint32 map_size = static_cast<uint32>(map_stream.tellg());  
@@ -96,6 +101,7 @@ void ShaderStorage::LoadShaderBundle(const std::string& bundle_path, const std::
 	}
 
 	delete[] data;
+	return true;
 }
 
 void ShaderCache::AddShader(Shader* shader, const std::string& shader_name) {

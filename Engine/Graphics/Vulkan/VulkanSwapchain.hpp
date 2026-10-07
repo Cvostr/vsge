@@ -34,19 +34,18 @@ namespace VSGE {
         void CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat);
 
     public:
-        VkSurfaceFormatKHR GetChosenSurfaceFormat() { return chosenSurfaceFormat; }
         bool initSwapchain(VulkanDevice* Device);
-
         void Destroy();
 
         VkSwapchainKHR GetSwapChain();
         uint32 GetSwapChainImagesCount();
         VulkanTexture* GetImageAtIndex(uint32 index);
-        VkExtent2D GetExtent() { return swap_extend; }
+        VkSurfaceFormatKHR GetChosenSurfaceFormat();
+        VkExtent2D GetExtent();
 
         VulkanSwapChain();
-
         ~VulkanSwapChain();
+        VulkanSwapChain(const VulkanSwapChain&) = delete;
     };
 
 }
