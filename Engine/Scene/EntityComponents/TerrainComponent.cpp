@@ -304,7 +304,7 @@ void TerrainComponent::Flat(float height)
 	_vegetables_dirty = true;
 }
 
-void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range) 
+void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 range, bool up)
 {
 	// Iterate over all pixels
 	for (int y = 0; y < _width; y++) 
@@ -313,10 +313,16 @@ void TerrainComponent::ModifyHeight(const Vec2i& position, float height, uint32 
 		{
 			// if pixel is in circle
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
-			if (dist <= range) {
+			if (dist <= range) 
+			{
 				// calculate modifier
-				float toApply = (height)-static_cast<float>(dist * dist) / (float)range;
-				if (toApply > 0) {
+				float toApply = height - static_cast<float>(dist * dist) / (float)range;
+
+				if (toApply > 0) 
+				{
+					if (up == false)
+						toApply *= -1;
+
 					_heightmap[y * _length + x].pos.y += (toApply);
 				}
 			}
@@ -464,10 +470,10 @@ void TerrainComponent::Serialize(ByteSerialize& serializer)
 	serializer.Serialize(_textureTileSize.x);
 	serializer.Serialize(_textureTileSize.y);
 
-	uint32 textures_count = _terrain_textures.size();
-	uint32 vegetables_count = _vegetables.size();
-	serializer.Serialize(textures_count);
-	//serializer.Serialize(vegetables_count);
+	uint32 texturesCount = _terrain_textures.size();
+	uint32 vegetablesCount = _vegetables.size();
+	serializer.Serialize(texturesCount);
+	serializer.Serialize(vegetablesCount);
 
 	for (auto& texture : _terrain_textures) 
 	{
@@ -503,10 +509,10 @@ void TerrainComponent::Deserialize(ByteSolver& solver)
 
 	Flat(0);
 
-	uint32 textures_count = solver.GetValue<uint32>();
+	uint32 texturesCount = solver.GetValue<uint32>();
+	uint32 vegetablesCount = solver.GetValue<uint32>();
 
-
-	for (uint32 texture_i = 0; texture_i < textures_count; texture_i++) 
+	for (uint32 texture_i = 0; texture_i < texturesCount; texture_i++)
 	{
 		auto albedo = solver.GetGuid();
 		auto normal = solver.GetGuid();

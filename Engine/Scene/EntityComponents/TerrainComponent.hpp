@@ -151,7 +151,7 @@ namespace VSGE {
 		void AddTexture();
 		void Flat(float height);
 
-		void ModifyHeight(const Vec2i& position, float height, uint32 range);
+		void ModifyHeight(const Vec2i& position, float height, uint32 range, bool up = true);
 		void ModifyTexture(const Vec2i& position, float opacity, uint32 range, uint32 texture_id);
 		void ModifyVegetable(const Vec2i& position, uint32 range, uint32 grass_id);
 

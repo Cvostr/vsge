@@ -1,5 +1,6 @@
 #include "TerrainThreadedEditor.hpp"
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
+#include <Input/Input.hpp>
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -55,13 +56,15 @@ void TerrainThreadedEditor::THRFunc()
 }
 void TerrainThreadedEditor::ProcessRay(const Ray& ray) 
 {
+	bool clear = Input::Get()->IsKeyHold(KEY_CODE_LSHIFT);
 	Vec2i coord = _terrain->GetRayIntersectionTraingle(ray);
 	int editMode = GetTerrainEditorMode();
 
 	if (editMode == TERRAIN_EDITOR_EDIT_MODE_HEIGHT && coord.x >= 0) {
 		_terrain->ModifyHeight(coord,
 			GetTerrainEditorOpacity() / 10.f,
-			(uint32)GetTerrainEditorBrushSize());
+			(uint32)GetTerrainEditorBrushSize(),
+			!clear);
 	}
 	else if (editMode == TERRAIN_EDITOR_EDIT_MODE_TEXTURES && coord.x >= 0) {
 		_terrain->ModifyTexture(Vec2i(coord.y, coord.x),
