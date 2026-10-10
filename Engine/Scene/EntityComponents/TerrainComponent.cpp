@@ -483,12 +483,30 @@ void TerrainComponent::Serialize(ByteSerialize& serializer)
 		serializer.Serialize(texture._metallic_reference.GetId());
 		serializer.Serialize(texture._ao_reference.GetId());
 		serializer.Serialize(texture._height_reference.GetId());
-		//write factors
+		// write factors
 		serializer.Serialize(texture._roughness_factor);
 		serializer.Serialize(texture._metallic_factor);
 		serializer.Serialize(texture._height_factor);
 	}
+	
+	for (auto& vegetable : _vegetables)
+	{
+		{
+			Resource* parentResource = vegetable._mesh_reference.GetParentResource();
+			Guid parentResourceId = Guid(0, 0, 0, 0);
+			if (parentResource)
+				parentResourceId = vegetable._mesh_reference.GetParentResource()->getId();
+			serializer.Serialize(parentResourceId);
+			serializer.Serialize(vegetable._mesh_reference.GetResource()->GetName());
+		}
 
+		// write material
+		serializer.Serialize(vegetable._material_reference.GetId());
+		// write size
+		serializer.Serialize(vegetable.GetWidth());
+		serializer.Serialize(vegetable.GetHeight());
+	}
+	
 	for (uint32 i = 0; i < GetVerticesCount(); i++) 
 	{
 		serializer.Serialize(_heightmap[i].pos.y);
@@ -532,6 +550,26 @@ void TerrainComponent::Deserialize(ByteSolver& solver)
 		texture._metallic_factor = solver.GetValue<float>();
 		texture._height_factor = solver.GetValue<float>();
 		_terrain_textures.push_back(texture);
+	}
+	
+	for (uint32 veg_i = 0; veg_i < vegetablesCount; veg_i++)
+	{
+		// read mesh parent ID and name
+		Guid parentId = solver.GetGuid();
+		std::string childName = solver.ReadNextString();
+		// read material id
+		auto material = solver.GetGuid();
+
+		TerrainVegetable veg;
+		veg._mesh_reference.SetResource(parentId, childName);
+		veg._material_reference.SetResource(material);
+		veg.SetWidth(solver.GetValue<float>());
+		veg.SetHeight(solver.GetValue<float>());
+
+		// Create initial array for coeffs to prevent crashing
+		veg.Clear(_width, _length);
+
+		_vegetables.push_back(std::move(veg));
 	}
 
 	for (uint32 i = 0; i < GetVerticesCount(); i++) 

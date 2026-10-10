@@ -90,8 +90,8 @@ void DrawTerrainVegetableEditor(uint32 vegetable_index, VSGE::TerrainComponent* 
 	std::string width_text = "Width" + tte;
 	std::string height_text = "Height" + tte;
 
-	float width_f = vegetable->m_width;
-	float height_f = vegetable->m_height;
+	float width_f = vegetable->GetWidth();
+	float height_f = vegetable->GetHeight();
 
 	if (DrawFloatControl(width_text, width_f)) {
 		vegetable->SetWidth(width_f);

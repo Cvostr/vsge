@@ -24,9 +24,11 @@ namespace VSGE {
 		ResourceReference _metallic_reference;
 		ResourceReference _ao_reference;
 		ResourceReference _height_reference;
+		
 		float _roughness_factor;
 		float _metallic_factor;
 		float _height_factor;
+
 		TerrainTexture();
 		~TerrainTexture() = default;
 	};
@@ -36,13 +38,16 @@ namespace VSGE {
 	class TerrainVegetable {
 	private:
 		uint8* _vegetable_coeff;
-	public:
-		ResourceReference _mesh_reference;
-		ResourceReference _material_reference;
-		
+
 		// for mesh itself
 		float m_width;
 		float m_height;
+	public:
+		ResourceReference _mesh_reference;
+		ResourceReference _material_reference;
+
+		float GetWidth() const;
+		float GetHeight() const;
 
 		void SetWidth(float width);
 		void SetHeight(float height);

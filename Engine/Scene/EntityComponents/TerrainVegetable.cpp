@@ -27,6 +27,16 @@ TerrainVegetable::TerrainVegetable(TerrainVegetable&& other) :
 	other._vegetable_coeff = nullptr;
 }
 
+float TerrainVegetable::GetWidth() const
+{
+	return m_width;
+}
+
+float TerrainVegetable::GetHeight() const
+{
+	return m_height;
+}
+
 void TerrainVegetable::SetWidth(float width)
 {
 	this->m_width = width;
