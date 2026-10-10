@@ -12,6 +12,7 @@ namespace VSGEditor {
 		VSGE::ResourceType resourceType;
 		VSGE::EntityScriptComponent* script_reference;
 		bool _allow_empty_resource;
+		std::string searchStr;
 
 		void DrawResourcePicker(VSGE::ResourceType resourceType);
 		void DrawScriptPicker();
@@ -20,17 +21,13 @@ namespace VSGEditor {
 		ResourcePickerWindow();
 
 		void SetResourceReference(VSGE::ResourceReference* reference);
-
 		void SetResourceType(VSGE::ResourceType type);
-
 		void SetScriptReference(VSGE::EntityScriptComponent* script);
-
 		void SetAllowEmptyResource(bool empty_resource);
-
 		void SetResourceToReference(VSGE::Resource* resource);
-
 		void SetResourceToReference(const std::string& resource_name);
 
+		void Show();
 		void OnDrawWindow();
 	};
 }

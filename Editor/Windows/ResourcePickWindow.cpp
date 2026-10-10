@@ -31,10 +31,22 @@ void ResourcePickerWindow::OnDrawWindow()
     }
 }
 
+void ResourcePickerWindow::Show() 
+{
+    // Clear search field on each window open
+    searchStr.clear();
+    EditorWindow::Show();
+}
+
 void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
     uint32 resources_size = ResourceCache::Get()->GetResourcesCount();
     float width = ImGui::GetCurrentWindow()->Size.x;
     uint32 drawn_pix = 0;
+
+    // Field for search on all window width
+    ImGui::PushItemWidth(-1.0f);
+    ImGui::InputText("##S", &this->searchStr);
+    ImGui::PopItemWidth();
 
     if (_allow_empty_resource) {
         if (ImGui::Button("...", ImVec2(32, 32))) {
@@ -43,9 +55,13 @@ void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
         }
     }
 
-    for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) {
+    for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) 
+    {
         Resource* resource = ResourceCache::Get()->GetResources()[resource_i];
-        if (resource->GetResourceType() == resourceType) {
+        if (resource->GetResourceType() == resourceType) 
+        {
+            if (!searchStr.empty() && resource->GetName().find(searchStr) == std::string::npos)
+                continue;
 
             if (resourceType == RESOURCE_TYPE_TEXTURE) {
                 ImguiVulkanTexture* texture = TextureThumbnails::Get()->GetCheckerboardTexture();
@@ -117,12 +133,24 @@ void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
         }
     }
 }
-void ResourcePickerWindow::DrawScriptPicker() {
+void ResourcePickerWindow::DrawScriptPicker() 
+{
     MonoScriptStorage* storage = MonoScriptStorage::Get();
 
-    for (auto& script : storage->GetScripts()) {
-        if (ImGui::Button(script->GetClassName().c_str())) {
-            script_reference->SetClassName(script->GetClassName());
+    // Field for search on all window width
+    ImGui::PushItemWidth(-1.0f);
+    ImGui::InputText("##S", &this->searchStr);
+    ImGui::PopItemWidth();
+
+    for (auto& script : storage->GetScripts()) 
+    {
+        const std::string& className = script->GetClassName();
+
+        if (!searchStr.empty() && className.find(searchStr) == std::string::npos)
+            continue;
+
+        if (ImGui::Button(className.c_str())) {
+            script_reference->SetClassName(className);
             Hide();
         }
     }
