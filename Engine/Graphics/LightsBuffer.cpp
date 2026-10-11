@@ -76,6 +76,10 @@ void LightsBuffer::SetLight(
 	const Color& color,
 	int casterIndex)
 {
+	// Protect from lights buffer overflow
+	if (casterIndex > _max_lights_count)
+		return;
+
 	// Calculate base address offset of light
 	byte* lightAddress = _cpu_buffer + 16 + light_index * LIGHTSOURCE_RECORD_SIZE;
 
