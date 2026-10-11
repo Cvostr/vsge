@@ -15,8 +15,14 @@ using namespace VSGE;
 #define SHADOWMAP_BUFFER_ELEMENT_SIZE		768
 #define SHADOWPROCESS_BUFFER_ELEMENT_SIZE	(MAX_SHADOW_CASCADES * sizeof(Mat4) + 48) // 688 
 
-
+// Budget for uniform buffer arrays
 #define MAX_SHADOWCASTERS					70
+
+// Budget for DescriptorSet shadowmaps
+#define MAX_DIRSHADOWS 2
+#define MAX_POINTSHADOWS 32
+#define MAX_SPOTSHADOWS 32
+
 
 // Size of casters array in uniform buffer
 #define SHADOWPROCESS_CASTERS_SIZE			(SHADOWPROCESS_BUFFER_ELEMENT_SIZE * MAX_SHADOWCASTERS)
@@ -207,16 +213,23 @@ VulkanShadowmapping::VulkanShadowmapping(
 	
 	_shadowrenderer_descPool = new VulkanDescriptorPool;
 	_shadowrenderer_descPool->SetDescriptorSetsCount(1);
-	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1);
+	// for 2 uniforms (ShadowData + Cascades info)
 	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2);
-	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100);
+	// For Shadowmaps
+	_shadowrenderer_descPool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_DIRSHADOWS + MAX_POINTSHADOWS + MAX_SPOTSHADOWS);
 
 	_shadowrenderer_descrSet = new VulkanDescriptorSet(_shadowrenderer_descPool);
+	// ShadowData
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, VK_SHADER_STAGE_FRAGMENT_BIT);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, 2);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
-	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, 32);
+	// Directional shadowmaps
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_DIRSHADOWS);
+	// point shadowmaps
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_POINTSHADOWS);
+	// spot shadowmaps
+	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_SPOTSHADOWS);
+	// Cascades info
 	_shadowrenderer_descrSet->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
+
 
 	// Create pool first
 	_shadowrenderer_descPool->Create();
@@ -228,15 +241,20 @@ VulkanShadowmapping::VulkanShadowmapping(
 	_shadowrenderer_descrSet->WriteDescriptorBuffer(6, _cascadeinfo_buffer);
 
 	// write empty texture to directional shadowmaps
-	for (uint32 i = 0; i < 2; i++) 
+	for (uint32 i = 0; i < MAX_DIRSHADOWS; i++)
 	{
 		_shadowrenderer_descrSet->WriteDescriptorImage(3, VulkanRenderingGenerics::Get()->GetBlack2dArrayTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 	}
 
-	// write empty textures to point and spot shadowmaps
-	for (uint32 i = 0; i < 32; i++) 
+	// write empty textures to point shadowmaps
+	for (uint32 i = 0; i < MAX_POINTSHADOWS; i++) 
 	{
 		_shadowrenderer_descrSet->WriteDescriptorImage(4, VulkanRenderingGenerics::Get()->GetBlackCubeTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+	}
+
+	// write empty textures to spot shadowmaps
+	for (uint32 i = 0; i < MAX_SPOTSHADOWS; i++)
+	{
 		_shadowrenderer_descrSet->WriteDescriptorImage(5, VulkanRenderingGenerics::Get()->GetBlackTexture(), _shadowmap_sampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 	}
 }

@@ -65,13 +65,13 @@ layout (std140, set = 0, binding = 15) uniform LightProbes {
 struct CasterInfo{  //688
     mat4 projections[10];
     //640
-    float ShadowBias; // 4
-    uint PcfPassNum; // 4
-    float ShadowStrength; // 4
-    int caster_type; // 4
-    vec3 pos;
-    float range;
-    uint image_index;
+    float ShadowBias;       // 4
+    uint PcfPassNum;        // 4
+    float ShadowStrength;   // 4
+    int caster_type;        // 4
+    vec3 pos;               // 16
+    float range;            // 4
+    uint image_index;       // 4
 };
 
 layout (std140, set = 1, binding = 0) uniform ShadowData
@@ -389,7 +389,6 @@ void main() {
         vec3 normal = normal_map.rgb;
         vec3 pos = texture(pos, UVCoord).rgb;
         vec4 material = texture(material, UVCoord);
-        //float shadow = texture(shadows, UVCoord).r;
         float ssao = texture(ssao_map, UVCoord).r;
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));

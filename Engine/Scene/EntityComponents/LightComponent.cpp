@@ -68,7 +68,9 @@ void LightsourceComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_lightType);
 	serializer.Serialize(_intensity);
 	serializer.Serialize(_range);
+	if (_lightType == LIGHT_TYPE_SPOT) {
 	serializer.Serialize(_spot_angle);
+	}
 	serializer.Serialize(_lightColor);
 	serializer.Serialize(_castShadows);
 
@@ -82,7 +84,9 @@ void LightsourceComponent::Deserialize(ByteSolver& solver) {
 	_lightType = solver.GetValue<LightType>();
 	_intensity = solver.GetValue<float>();
 	_range = solver.GetValue<float>();
+	if (_lightType == LIGHT_TYPE_SPOT) {
 	_spot_angle = solver.GetValue<float>();
+	}
 	_lightColor = solver.GetValue<Color>();
 	_castShadows = solver.GetValue<bool>();
 
