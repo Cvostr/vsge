@@ -74,7 +74,8 @@ void TerrainThreadedEditor::ProcessRay(const Ray& ray)
 	}
 	else if (GetTerrainEditorMode() == TERRAIN_EDITOR_EDIT_MODE_VEGETABLES && coord.x >= 0) {
 		_terrain->ModifyVegetable(Vec2i(coord.x, coord.y),
-			(uint32)GetTerrainEditorOpacity(),
-			GetTerrainEditorVegetableIndex());
+			(uint32)GetTerrainEditorBrushSize(),
+			GetTerrainEditorVegetableIndex(),
+			!clear);
 	}
 }

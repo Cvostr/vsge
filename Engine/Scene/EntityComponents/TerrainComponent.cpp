@@ -363,7 +363,7 @@ void TerrainComponent::ModifyTexture(const Vec2i& position, float opacity, uint3
 	_texturemaps_dirty = true;
 }
 
-void TerrainComponent::ModifyVegetable(const Vec2i& position, uint32 range, uint32 grass_id) 
+void TerrainComponent::ModifyVegetable(const Vec2i& position, uint32 range, uint32 grass_id, bool add)
 {
 	auto& veg = _vegetables[grass_id];
 	// Iterate over all pixels
@@ -371,11 +371,20 @@ void TerrainComponent::ModifyVegetable(const Vec2i& position, uint32 range, uint
 	{
 		for (int x = 0; x < _length; x++) 
 		{
-			//if pixel is in circle
+			// if pixel is in circle
 			float dist = (Vec3(x, y, 0) - Vec3(position.x, position.y, 0)).Length();
 			if (dist <= range) 
 			{
-				veg.GetCoeffs()[y * _length + x] += 1;
+				uint8_t* factorPtr = &veg.GetCoeffs()[y * _length + x];
+
+				if (add) {
+					if (*factorPtr < 10)
+						*factorPtr += 1;
+				}
+				else {
+					if (*factorPtr > 0)
+						*factorPtr -= 1;
+				}
 			}
 		}
 	}
