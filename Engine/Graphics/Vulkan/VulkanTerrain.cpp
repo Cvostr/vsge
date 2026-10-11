@@ -5,7 +5,7 @@
 using namespace VSGE;
 
 #define TERRAIN_DATA_ELEM_SIZE 512
-#define MAX_GRASS_TRANSFORMS 66000
+#define MAX_GRASS_TRANSFORMS 128000u
 
 VulkanTerrainGrass::VulkanTerrainGrass(VulkanDescriptorSet* descrSet) :
 	offset(0),
@@ -201,8 +201,11 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* 
 			std::vector<Mat4> veg_transforms;
 			grass.GetTransforms(veg_transforms, terrain);
 
-			// Write prepared transforms to vulkan buffer
+			// how many transforms we gonna write?
 			uint32 transforms_count = static_cast<uint32>(veg_transforms.size());
+			// protect ourself from overflowing buffer
+			transforms_count = std::min(transforms_count, (MAX_GRASS_TRANSFORMS - veg_written_transforms));
+			// Write prepared transforms to vulkan buffer
 			const Mat4* transforms = veg_transforms.data();
 			grass_transform_buffer->WriteData(veg_written_transforms * sizeof(Mat4), transforms_count * sizeof(Mat4), (void*)transforms);
 
