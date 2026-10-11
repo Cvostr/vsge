@@ -79,24 +79,36 @@ void TerrainVegetable::GetTransforms(std::vector<Mat4>& out, TerrainComponent* t
 			if (vegetable_factor == 0)
 				continue;
 
-			Vec3 rotation = Vec3(0, Mpi::Random::random(0, 360), 0);
-			Vec3 position = Vec3(x, heightmap[x * height + y].pos.y, y);
-			Vec3 scale = Vec3(this->m_width, this->m_height, this->m_width);
+			// Vertex of heightmap
+			Vertex* height_vertex = &heightmap[x * height + y];
+			Vec3 N = height_vertex->normal;
 
-			Mat4 scale_mat = GetScaleMatrix(scale);
-			Mat4 translation_mat = GetTranslationMatrix(position);
+			for (uint8 fx = 0; fx < vegetable_factor; fx++) 
+			{
+				for (uint8 fz = 0; fz < vegetable_factor; fz++) 
+				{
+					float posX = x + (static_cast<float>(fx)) / vegetable_factor;
+					float posZ = y + (static_cast<float>(fz)) / vegetable_factor;
 
-			// rotate vegetable over heightmap
-			Vec3 N = heightmap[x * height + y].normal;
-			Vec3 FTemp = (abs(N.y) > 0.99f) ? Vec3(1.0f, 0.0f, 0.0f) : Vec3(0.0f, 0.0f, 1.0f);
-			Vec3 R = FTemp.Cross(N).GetNormalized();
-			Vec3 F = N.Cross(R);
-			// matrix for rotation over heightmap
-			Mat4 rotN = Mat4(Vec4(R, 0.f), Vec4(N, 0.f), Vec4(F, 0.f), Vec4(0.f, 0.f, 0.f, 1.f));
+					Vec3 rotation = Vec3(0, Mpi::Random::random(0, 360), 0);
+					Vec3 position = Vec3(posX, height_vertex->pos.y, posZ);
+					Vec3 scale = Vec3(this->m_width, this->m_height, this->m_width);
 
-			// resulting tranform vector
-			Mat4 transform = scale_mat * GetRotationMatrix(rotation) * rotN * translation_mat;
-			out.push_back(transform);
+					Mat4 scale_mat = GetScaleMatrix(scale);
+					Mat4 translation_mat = GetTranslationMatrix(position);
+
+					// rotate vegetable over heightmap
+					Vec3 FTemp = (abs(N.y) > 0.99f) ? Vec3(1.0f, 0.0f, 0.0f) : Vec3(0.0f, 0.0f, 1.0f);
+					Vec3 R = FTemp.Cross(N).GetNormalized();
+					Vec3 F = N.Cross(R);
+					// matrix for rotation over heightmap
+					Mat4 rotN = Mat4(Vec4(R, 0.f), Vec4(N, 0.f), Vec4(F, 0.f), Vec4(0.f, 0.f, 0.f, 1.f));
+
+					// resulting tranform vector
+					Mat4 transform = scale_mat * GetRotationMatrix(rotation) * rotN * translation_mat;
+					out.push_back(transform);
+				}
+			}
 		}
 	}
 }

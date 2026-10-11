@@ -24,7 +24,7 @@ namespace VSGE {
         VulkanBuffer* grass_transform_buffer;
         VulkanDescriptorSet* _terrain_descr_set;
         std::vector<VulkanTerrainGrass> _grass_descriptor_sets;
-        TerrainComponent* _boundComponent;
+        TerrainComponent* m_boundComponent;
     public:
         
         VulkanTerrain();

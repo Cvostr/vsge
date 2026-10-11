@@ -31,7 +31,8 @@ VulkanTerrainGrass::~VulkanTerrainGrass()
 VulkanTerrain::VulkanTerrain() :
 	info_buffer(nullptr),
 	grass_transform_buffer(nullptr),
-	_terrain_descr_set(nullptr)
+	_terrain_descr_set(nullptr),
+	m_boundComponent(nullptr)
 {
 }
 
@@ -190,7 +191,7 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* 
 	}
 
 	// If vegetable dirty or terrain component changed
-	if (terrain->IsVegetablesDirtyAndClear() || _boundComponent != terrain)
+	if (terrain->IsVegetablesDirtyAndClear() || m_boundComponent != terrain)
 	{
 		uint32 veg_written_transforms = 0;
 
@@ -220,7 +221,7 @@ void VulkanTerrain::SetTerrain(TerrainComponent* terrain, VulkanDescriptorPool* 
 	}
 
 	// Update pointer
-	_boundComponent = terrain;
+	m_boundComponent = terrain;
 }
 
 void VulkanTerrain::Create(VulkanDescriptorPool* pool) 
