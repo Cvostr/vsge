@@ -22,7 +22,9 @@ void CreateProjectWindow::OnDrawWindow() {
         ImGui::InputText("##Path", &project_directory);
         ImGui::SameLine();
         if (ImGui::Button("Browse...")) {
-
+            Mpi::FileDialogDesc desc;
+            desc.dialogTitle = "Select directory";
+            project_directory = Mpi::Dialog::BrowseDirectoryDialog(desc);
         }
 
         if (ImGui::Button("Create", ImVec2(_size.x, 0))) {
