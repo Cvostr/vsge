@@ -77,7 +77,7 @@ void LightsBuffer::SetLight(
 	int casterIndex)
 {
 	// Protect from lights buffer overflow
-	if (casterIndex > _max_lights_count)
+	if (light_index > _max_lights_count)
 		return;
 
 	// Calculate base address offset of light

@@ -13,11 +13,12 @@ layout(set = 1, binding = 1) uniform sampler2D albedo;
 
 void main() {
     vec4 color = texture(albedo, UVCoord);
-    if(color.a < 0.3)
+    if(color.a < 0.5)
         discard;
 
     tColor = vec4(color.rgb, 1);
+    //tNormal = vec4(Normal * 0.5 + 0.5, 0.3);
     tNormal = vec4(Normal, 0.3);
     tPos = FragPos;
-    tMaterial = vec4(0.7, 0, 0, 0);
+    tMaterial = vec4(0.7, 0.5, 0, 0);
 }
