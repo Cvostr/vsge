@@ -171,5 +171,5 @@ void main() {
     tColor = vec4(result_albedo, result_ao);
     tNormal = vec4(result_normal, result_roughness);
     tPos = FragPos;
-    tMaterial = vec4(result_roughness, result_metallic, 1, 1);
+    tMaterial = vec4(result_roughness, result_metallic, 0, 1);
 }

@@ -17,8 +17,8 @@ void main() {
         discard;
 
     tColor = vec4(color.rgb, 1);
-    //tNormal = vec4(Normal * 0.5 + 0.5, 0.3);
-    tNormal = vec4(Normal, 0.3);
+    tNormal = vec4(Normal * 0.5 + 0.5, 0.3);
+    //tNormal = vec4(Normal, 0.3);
     tPos = FragPos;
     tMaterial = vec4(0.7, 0.5, 0, 0);
 }
