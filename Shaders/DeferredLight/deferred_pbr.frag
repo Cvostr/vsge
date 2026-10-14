@@ -394,6 +394,7 @@ void main() {
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
         float roughness = material.r;
         float metallic = material.g;
+        float emission = material.b;
         float ao = diffuse.a * ssao;
 
         vec3 F0 = vec3(0.04); 
@@ -407,6 +408,7 @@ void main() {
         float cosLo = max(0.0, dot(normal, Lo));
         vec3 ambient = CalculateIBL(pos, normal, F0, Lo, cosLo, roughness, metallic, albedo);
         color += ambient * ambient_light;
+        color += emission;
 
         tColor = vec4(color, 1);
     }

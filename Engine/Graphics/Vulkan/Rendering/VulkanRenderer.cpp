@@ -126,6 +126,7 @@ void VulkanRenderer::SetupRenderer()
 	pbr_template->AddTexture("Metallic", 4);
 	pbr_template->AddTexture("Height", 5);
 	pbr_template->AddTexture("Occlusion", 6);
+	pbr_template->AddTexture("Emission", 7);
 	pbr_template->AddParameter("Color", Color(1, 1, 1, 1));
 	pbr_template->AddParameter("Roughness factor", 1.f);
 	pbr_template->AddParameter("Metallic factor", 0.5f);
@@ -142,6 +143,7 @@ void VulkanRenderer::SetupRenderer()
 	pbr_smoothness_template->AddTexture("Metallic", 4);
 	pbr_smoothness_template->AddTexture("Height", 5);
 	pbr_smoothness_template->AddTexture("Occlusion", 6);
+	pbr_smoothness_template->AddTexture("Emission", 7);
 	pbr_smoothness_template->AddParameter("Color", Color(1, 1, 1, 1));
 	pbr_smoothness_template->AddParameter("Smoothness factor", 1.f);
 	pbr_smoothness_template->AddParameter("Metallic factor", 0.5f);

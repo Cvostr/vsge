@@ -59,7 +59,8 @@ VulkanDeferredLight::VulkanDeferredLight() :
 	_deferred_pipeline(nullptr),
 	camerasBuffer(nullptr),
 	_gbuffer(nullptr),
-	_is_envmap(false)
+	_is_envmap(false),
+	lightProbesInfo(nullptr)
 {
 	_draw_world = true;
 
@@ -77,6 +78,8 @@ VulkanDeferredLight::~VulkanDeferredLight()
 
 	SAFE_RELEASE(_deferred_fb);
 	SAFE_RELEASE(_deferred_rp);
+
+	SAFE_RELEASE_ARR(lightProbesInfo)
 }
 
 void VulkanDeferredLight::CreateFramebuffer() 
