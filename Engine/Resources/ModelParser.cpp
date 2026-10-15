@@ -5,6 +5,44 @@
 
 using namespace VSGE;
 
+SceneNode::SceneNode() {
+}
+
+void SceneNode::SetNodeLabel(const std::string& label) {
+    mNodeLabel = label;
+}
+
+const std::string& SceneNode::GetLabel() const {
+    return mNodeLabel;
+}
+
+void SceneNode::SetNodeTransform(const Mat4& matrix) {
+    mNodeTransform = matrix;
+}
+
+const Mat4& SceneNode::GetNodeTransform() {
+    return mNodeTransform;
+}
+
+const Vec3& SceneNode::GetTranslation() {
+    return node_translation;
+}
+
+const Vec3& SceneNode::GetScale() {
+    return node_scaling;
+}
+
+const Quat& SceneNode::GetRotation() {
+    return node_rotation;
+}
+
+void SceneNode::SetTranslationScalingRotation(const Vec3& transform, const Vec3& scale, const Quat& rotation) {
+    node_translation = transform;
+    node_scaling = scale;
+    node_rotation = rotation;
+}
+
+
 ImportedSceneFile::ImportedSceneFile() {
     rootNode = nullptr;
 }
@@ -12,16 +50,26 @@ ImportedSceneFile::ImportedSceneFile() {
 ImportedSceneFile::~ImportedSceneFile() 
 {
     // очистка мешей
-    for (uint32 i = 0; i < mReadedMeshes.size(); i++) {
-        delete mReadedMeshes[i];
+    for (uint32 i = 0; i < mMeshes.size(); i++) {
+        delete mMeshes[i];
     }
-    mReadedMeshes.clear();
+    mMeshes.clear();
 
     // очистка узлов
     for (uint32 i = 0; i < nodes_list.size(); i++) {
         delete nodes_list[i];
     }
     nodes_list.clear();
+}
+
+SceneNode* ImportedSceneFile::getRootNode() const
+{
+    return rootNode;
+}
+
+const std::vector<MeshContainer*>& ImportedSceneFile::getMeshes() const
+{
+    return mMeshes;
 }
 
 SceneNode* ImportedSceneFile::getSceneNodeWithName(std::string label) {
@@ -186,7 +234,7 @@ void ImportedSceneFile::loadFromBuffer(byte* buffer, uint32 buf_size) {
             }
             
             //Push mesh as output result
-            this->mReadedMeshes.push_back(mesh);
+            this->mMeshes.push_back(mesh);
         }
     }
 

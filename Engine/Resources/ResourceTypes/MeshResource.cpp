@@ -8,9 +8,12 @@ void MeshGroupResource::Prepare() {
 	
 	ImportedSceneFile isf;
 	isf.loadFromBuffer(_loadedData, _description.size);
+
+	const auto& meshes = isf.getMeshes();
+
 	if (!mPrepared) {
-		for (uint32 mesh_i = 0; mesh_i < isf.mReadedMeshes.size(); mesh_i++) {
-			MeshContainer* mc = isf.mReadedMeshes[mesh_i];
+		for (size_t mesh_i = 0; mesh_i < meshes.size(); mesh_i++) {
+			MeshContainer* mc = meshes[mesh_i];
 			MeshResource* mres = new MeshResource;
 			mres->SetName(mc->meshName);
 			mres->SetParent(this);
@@ -21,9 +24,9 @@ void MeshGroupResource::Prepare() {
 		mPrepared = true;
 	}
 	else {
-		for (uint32 mesh_i = 0; mesh_i < _subresources.size(); mesh_i++) {
+		for (size_t mesh_i = 0; mesh_i < _subresources.size(); mesh_i++) {
 			MeshResource* mesh_res = (MeshResource*)_subresources[mesh_i];
-			MeshContainer* loadedMesh = isf.mReadedMeshes[mesh_i];
+			MeshContainer* loadedMesh = meshes[mesh_i];
 			if (mesh_res->GetState() == RESOURCE_STATE_UNLOADED) {
 				Mesh* mesh = mesh_res->GetMesh();
 				mesh->SetVertexBuffer(loadedMesh->vertexArray, loadedMesh->vertexCount);

@@ -37,7 +37,6 @@ namespace VSGE {
 
         const std::string GetDeviceName();
 
-        //VkQueue GetGenericQueue();
         uint32 GetGenericQueueFamilyIndex();
         VulkanQueueInfo* GetGenericQueue();
 

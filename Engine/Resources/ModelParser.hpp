@@ -60,46 +60,23 @@ namespace VSGE {
         Quat node_rotation;
     public:
 
-        void SetNodeLabel(const std::string& label) {
-            mNodeLabel = label;
-        }
+        void SetNodeLabel(const std::string& label);
+        const std::string& GetLabel() const;
 
-        const std::string GetLabel() {
-            return mNodeLabel;
-        }
+        void SetNodeTransform(const Mat4& matrix);
+        const Mat4& GetNodeTransform();
 
-        void SetNodeTransform(const Mat4& matrix) {
-            mNodeTransform = matrix;
-        }
+        const Vec3& GetTranslation();
+        const Vec3& GetScale();
+        const Quat& GetRotation();
 
-        const Mat4& GetNodeTransform() {
-            return mNodeTransform;
-        }
-
-        void SetTranslationScalingRotation(const Vec3& t, const Vec3& s, const Quat& r) {
-            node_translation = t;
-            node_scaling = s;
-            node_rotation = r;
-        }
-
-        const Vec3& GetTranslation() {
-            return node_translation;
-        }
-
-        const Vec3& GetScale() {
-            return node_scaling;
-        }
-
-        const Quat& GetRotation() {
-            return node_rotation;
-        }
+        void SetTranslationScalingRotation(const Vec3& transform, const Vec3& scale, const Quat& rotation);
 
         std::vector<std::string> child_node_labels;
         std::vector<SceneNode*> children;
         std::vector<std::string> mesh_names;
 
-        SceneNode() {
-        }
+        SceneNode();
     };
 
     class SceneFileExport {
@@ -122,13 +99,16 @@ namespace VSGE {
     class ImportedSceneFile {
     private:
         std::vector<SceneNode*> nodes_list;
-    public:
-        std::vector<MeshContainer*> mReadedMeshes;
+        std::vector<MeshContainer*> mMeshes;
         SceneNode* rootNode;
-
-        SceneNode* getSceneNodeWithName(std::string label);
+    public:
+  
         void loadFromBuffer(byte* buffer, uint32 buf_size);
         void loadFromFile(std::string file);
+
+        const std::vector<MeshContainer*>& getMeshes() const;
+        SceneNode* getSceneNodeWithName(std::string label);
+        SceneNode* getRootNode() const;
 
         void makeNodeHierarchy(SceneNode* node);
         ImportedSceneFile();

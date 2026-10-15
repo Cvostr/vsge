@@ -13,7 +13,7 @@ using namespace VSGE;
 void VSGEditor::AddSubSceneVS3M(Scene* scn, const std::string& file) {
 	ImportedSceneFile isf;
 	isf.loadFromFile(file);
-	SceneNode* node = isf.rootNode;
+	SceneNode* node = isf.getRootNode();
 
 	Resource* meshGroup = ResourceCache::Get()->GetResourceWithFilePath(file);
 
