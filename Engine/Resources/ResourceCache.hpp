@@ -32,24 +32,17 @@ namespace VSGE {
 		}
 
 		ResourceCache();
-
-		~ResourceCache() {
-			delete _loader;
-		}
+		~ResourceCache();
 		/// <summary>
 		/// Get count of currently cached resources
 		/// </summary>
 		/// <returns></returns>
-		uint32 GetResourcesCount() {
-			return static_cast<uint32>(_resources.size());
-		}
+		size_t GetResourcesCount();
 		/// <summary>
 		/// Get list of currently cached resources
 		/// </summary>
 		/// <returns></returns>
-		Resource** GetResources() {
-			return _resources.data();
-		}
+		Resource** GetResources();
 		/// <summary>
 		/// Add resource pointer to resources vector
 		/// </summary>

@@ -13,7 +13,6 @@ namespace VSGE{
         uint32 _resource_lifetime;
     public:
         ResourcesWatchdog();
-
 		~ResourcesWatchdog();
 
         void AddResource(Resource* resource);

@@ -31,6 +31,19 @@ ResourceCache::ResourceCache() {
     _watchdog->SetThreadName("res_watchdog");
 }
 
+ResourceCache::~ResourceCache() {
+    delete _loader;
+    delete _watchdog;
+}
+
+size_t ResourceCache::GetResourcesCount() {
+    return static_cast<size_t>(_resources.size());
+}
+
+Resource** ResourceCache::GetResources() {
+    return _resources.data();
+}
+
 Resource* ResourceCache::GetResource(const std::string& name, ResourceType type) {
     if (type == RESOURCE_TYPE_NONE) {
         for (Resource* resource : _resources) {
