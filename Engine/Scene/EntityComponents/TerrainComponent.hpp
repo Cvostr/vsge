@@ -143,8 +143,8 @@ namespace VSGE {
 		void SetWidth(uint32 width);
 		void SetLength(uint32 length);
 
-		uint32 GetVerticesCount() const;
-		uint32 GetIndicesCount() const;
+		uint64 GetVerticesCount() const;
+		uint64 GetIndicesCount() const;
 
 		bool IsShadowCastEnabled() const;
 		void SetShadowCastEnabled(bool cast);

@@ -15,7 +15,7 @@ VulkanTerrainGrass::VulkanTerrainGrass(VulkanDescriptorSet* descrSet) :
 
 }
 
-VulkanTerrainGrass::VulkanTerrainGrass(VulkanTerrainGrass&& other):
+VulkanTerrainGrass::VulkanTerrainGrass(VulkanTerrainGrass&& other) noexcept:
 	offset(other.offset),
 	count(other.count)
 {

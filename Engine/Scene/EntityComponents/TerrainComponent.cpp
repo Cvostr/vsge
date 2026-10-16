@@ -73,12 +73,12 @@ void TerrainComponent::SetLength(uint32 length)
 	_length = length;
 }
 
-uint32 TerrainComponent::GetVerticesCount() const
+uint64 TerrainComponent::GetVerticesCount() const
 {
 	return _width * _length;
 }
 
-uint32 TerrainComponent::GetIndicesCount() const
+uint64 TerrainComponent::GetIndicesCount() const
 {
 	return (_width - 1) * (_length - 1) * 2 * 3;
 }
@@ -516,12 +516,18 @@ void TerrainComponent::Serialize(ByteSerialize& serializer)
 		serializer.Serialize(vegetable.GetHeight());
 	}
 	
-	for (uint32 i = 0; i < GetVerticesCount(); i++) 
+	for (uint64 i = 0; i < GetVerticesCount(); i++) 
 	{
 		serializer.Serialize(_heightmap[i].pos.y);
+		// save texture factors
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) 
 		{
 			serializer.Serialize(_texture_factors.get(i, texture_i));
+		}
+		// save vegetable factors
+		for (auto& vegetable : _vegetables)
+		{
+			serializer.Serialize(vegetable.GetCoeffs()[i]);
 		}
 	}
 }
@@ -584,9 +590,15 @@ void TerrainComponent::Deserialize(ByteSolver& solver)
 	for (uint32 i = 0; i < GetVerticesCount(); i++) 
 	{
 		_heightmap[i].pos.y = solver.GetValue<float>();
+		// read texture factors
 		for (uint32 texture_i = 0; texture_i < _terrain_textures.size(); texture_i++) 
 		{
 			_texture_factors.set(i, texture_i, solver.GetValue<uint8>());
+		}
+		// read vegetable factors
+		for (auto& vegetable : _vegetables)
+		{
+			vegetable.GetCoeffs()[i] = solver.GetValue<uint8>();
 		}
 	}
 }

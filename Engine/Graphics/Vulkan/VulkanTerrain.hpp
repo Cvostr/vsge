@@ -14,7 +14,7 @@ namespace VSGE {
         uint32 count;
 
         VulkanTerrainGrass(VulkanDescriptorSet* descrSet);
-        VulkanTerrainGrass(VulkanTerrainGrass &&other);
+        VulkanTerrainGrass(VulkanTerrainGrass &&other) noexcept;
         ~VulkanTerrainGrass();
     };
 

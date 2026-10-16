@@ -4,6 +4,7 @@
 using namespace VSGE;
 
 #define MAX_TEMP_DESCRIPTORS_SETS 7
+#define MAX_TEMP_BUFFERS 7
 
 VulkanCommandPool::VulkanCommandPool() :
     mCommandPool(VK_NULL_HANDLE)
@@ -114,8 +115,8 @@ void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer& buffer) {
 
 void VulkanCommandBuffer::BindVertexBuffers(VulkanBuffer** buffer, uint32 size, uint32 start) 
 {
-    VkDeviceSize offsets[] = { 0, 0, 0, 0  };
-    VkBuffer temp_bufs[6];
+    VkDeviceSize offsets[MAX_TEMP_BUFFERS] = { 0, };
+    VkBuffer temp_bufs[MAX_TEMP_BUFFERS];
     
     for (uint32 buf_i = 0; buf_i < size; buf_i++) {
         temp_bufs[buf_i] = buffer[buf_i]->GetBuffer();
