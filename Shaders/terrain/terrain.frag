@@ -120,9 +120,7 @@ vec2 CalcParallaxOcclusion(vec2 uv, vec3 view_dir, uint texture_id)
 
 void CalculateTextures(vec2 uv)
 {
-    vec2 terrain_uv = vec2(0);
-    terrain_uv.x = uv.x * texture_uv_x;
-    terrain_uv.y = uv.y * texture_uv_y;
+    vec2 terrain_uv = vec2(uv.x * texture_uv_x, uv.y * texture_uv_y);
 
     result_albedo = vec3(0);
     result_normal = vec3(0);
@@ -130,14 +128,16 @@ void CalculateTextures(vec2 uv)
     result_metallic = 0;
     result_ao = 1;
 
+    // Prepare for height
+    mat3 transposed_tbn = transpose(TBN);
+    vec3 view_dir = normalize(transposed_tbn * cam_position - transposed_tbn * FragPos);
+
     for (uint i = 0; i < textures_count; i ++)
     {
         float factor = GetFactor(uv, i);
         if (factor > 0.001)
         {
-            //height
-            mat3 transposed_tbn = transpose(TBN);
-            vec3 view_dir = normalize(transposed_tbn * cam_position - transposed_tbn * FragPos);
+            // height
             terrain_uv = CalcParallaxOcclusion(terrain_uv, view_dir, i);
 
             //albedo
