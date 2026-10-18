@@ -43,13 +43,24 @@ public class Scene : InternalObject {
         i_Stop(handle);
     }
 
-    bool IsRunning(){
+    public bool IsRunning() {
         return i_IsRunning(handle);
     }
 
-    bool IsPaused(){
+    public bool IsPaused() {
         return i_IsPaused(handle);
     }
+
+    public Entity RayTestFirstEntity(Vec3 position, Vec3 direction, float far) {
+        ulong hitHandle = i_RayTestFirstEntity(handle, position, direction, far);
+        if (hitHandle == 0)
+            return null;
+
+        return new Entity(hitHandle);
+    }
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    public static extern ulong i_RayTestFirstEntity(ulong handle, Vec3 position, Vec3 direction, float far);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_GetRootNode(ulong handle);

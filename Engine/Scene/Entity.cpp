@@ -239,6 +239,22 @@ void Entity::RemoveAllComponents()
 	}
 }
 
+const Vec3& Entity::GetPosition() const { 
+	return _position; 
+}
+
+const Vec3& Entity::GetScale() const {
+	return _scale; 
+}
+
+const Quat& Entity::GetRotation() const {
+	return _rotation; 
+}
+
+Vec3 Entity::GetRotationEuler() const {
+	return _rotation.GetEulerAngles(); 
+}
+
 void Entity::SetPosition(const Vec3& position) {
 	_position = position;
 }
@@ -276,13 +292,20 @@ const AABB& Entity::GetAABB(bool extendChildren)
 	return _boundingBox;
 }
 
-const Mat4& Entity::GetWorldTransform() const
-{ 
+const Mat4& Entity::GetWorldTransform() const { 
 	return _worldTransform; 
 }
 
 void Entity::SetWorldTransform(const Mat4& transform) { 
 	_worldTransform = transform;
+}
+
+const Mat4& Entity::GetLocalTransform() const {
+	return _localTransform; 
+}
+
+void Entity::SetLocalTransform(const Mat4& transform) {
+	_localTransform = transform;
 }
 
 void Entity::CallOnStart() {

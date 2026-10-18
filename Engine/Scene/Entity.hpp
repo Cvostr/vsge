@@ -204,22 +204,22 @@ namespace VSGE {
 		/// Get local position of entity
 		/// </summary>
 		/// <returns></returns>
-		const Vec3& GetPosition() const { return _position; }
+		const Vec3& GetPosition() const;
 		/// <summary>
 		/// Get local scale of entity
 		/// </summary>
 		/// <returns></returns>
-		const Vec3& GetScale() const { return _scale; }
+		const Vec3& GetScale() const;
 		/// <summary>
 		/// Get local rotation of entity
 		/// </summary>
 		/// <returns></returns>
-		const Quat& GetRotation() const { return _rotation; }
+		const Quat& GetRotation() const;
 		/// <summary>
 		/// Get local rotation of entity in euler angles
 		/// </summary>
 		/// <returns></returns>
-		Vec3 GetRotationEuler() const { return _rotation.GetEulerAngles(); }
+		Vec3 GetRotationEuler() const;
 		/// <summary>
 		/// Get absolute position of entity
 		/// </summary>
@@ -265,12 +265,12 @@ namespace VSGE {
 		/// Get local transform matrix
 		/// </summary>
 		/// <returns></returns>
-		const Mat4& GetLocalTransform() { return _localTransform; }
+		const Mat4& GetLocalTransform() const;
 		/// <summary>
 		/// Set local transform matrix
 		/// </summary>
 		/// <param name="transform">- new transform matrix</param>
-		void SetLocalTransform(const Mat4& transform) { _localTransform = transform; }
+		void SetLocalTransform(const Mat4& transform);
 		/// <summary>
 		/// Get world transform matrix
 		/// </summary>

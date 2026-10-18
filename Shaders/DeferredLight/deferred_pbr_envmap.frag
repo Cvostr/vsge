@@ -58,7 +58,7 @@ void main() {
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
         float roughness = normal_map.a;
         float metallic = material.a;
-        vec3 emission = material.rgb * 15.0;
+        float emission = material.b;
         float ao = diffuse.a;
 
         vec3 F0 = vec3(0.04); 
@@ -66,6 +66,7 @@ void main() {
 
         vec3 lightning = CalculateLightning(albedo, normal, pos, roughness, metallic, F0) * ao;
         vec3 color = vec3(0.03) * albedo + lightning;
+        color += emission;
 
         tColor = vec4(color, 1);
     }

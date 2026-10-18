@@ -327,7 +327,7 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
                                     metallic,
                                     F0) * (1 - shadow);
         }
-        if (lights[light_i].type == LIGHTSOURCE_POINT)
+        else if (lights[light_i].type == LIGHTSOURCE_POINT)
         {
             vec3 L = normalize(lights[light_i].position - pos);
 
@@ -345,8 +345,7 @@ vec3 CalculateLightning(vec3 Lo, vec3 albedo, vec3 normal, vec3 pos, float rough
                                     metallic,
                                     F0) * (1 - shadow);
         }
-
-        if (lights[light_i].type == LIGHTSOURCE_SPOT)
+        else if (lights[light_i].type == LIGHTSOURCE_SPOT)
         {
             vec3 L = normalize(lights[light_i].position - pos);
             vec3 direction = lights[light_i].direction;

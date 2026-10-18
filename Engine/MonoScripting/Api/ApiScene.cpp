@@ -64,6 +64,11 @@ static MonoArray* GetAllEntitiesByName(Scene* scene, MonoString* name)
 	return result;
 }
 
+static Entity* i_RayTestFirstEntity(Scene* scene, Vec3 pos, Vec3 dir, float far) 
+{
+	return scene->GetPhysicalWorld()->RayTestFirstEntity(pos, dir, far);
+}
+
 void VSGE::BindSceneApi() {
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetRootNode(ulong)", GetRootEntity);
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetEntity(ulong,string)", GetEntityByName);
@@ -75,4 +80,6 @@ void VSGE::BindSceneApi() {
 	MonoScriptingLayer::AddInternalCall("Scene::i_Stop(ulong)", Stop);
 	MonoScriptingLayer::AddInternalCall("Scene::i_IsRunning(ulong)", IsRunning);
 	MonoScriptingLayer::AddInternalCall("Scene::i_IsPaused(ulong)", IsPaused);
+	// Physics
+	MonoScriptingLayer::AddInternalCall("Scene::i_RayTestFirstEntity(ulong,Vec3,Vec3,single)", i_RayTestFirstEntity);
 }
