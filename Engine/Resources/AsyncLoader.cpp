@@ -48,7 +48,7 @@ void AsyncLoader::AddToQueue(Resource* resource)
     queued_event.notify_one();
 }
 
-uint32 AsyncLoader::GetQueuedResourcesCount() {
+size_t AsyncLoader::GetQueuedResourcesCount() {
     return loadQueue.size(); 
 }
 

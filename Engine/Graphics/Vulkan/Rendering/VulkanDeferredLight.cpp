@@ -117,8 +117,8 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// Material
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
-	// Shadows
-	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Shadows (became unused in shader)
+	//_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// Depth
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// brdf lut
@@ -148,8 +148,8 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
-	// Shadowmap
-	_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
+	// Shadowmap (became unused in shader)
+	//_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
 	// BRDF LUT base texture
 	_deferred_descriptor->WriteDescriptorImage(
 		9,

@@ -15,11 +15,8 @@ namespace VSGE {
 		unsigned int shaderDataSize;
 
 		ShaderStorageItem();
-
 		ShaderStorageItem(const ShaderStorageItem& item) = delete;
-
-		ShaderStorageItem(ShaderStorageItem&& item);
-
+		ShaderStorageItem(ShaderStorageItem&& item) noexcept;
 		~ShaderStorageItem();
 	};
 
@@ -63,8 +60,7 @@ namespace VSGE {
 		void AddShaderFromFile(std::string file_path, ShaderStagesBits type);
 		virtual void Destroy() = 0;
 
-		Shader() : mStages(SHADER_STAGE_NULL)
-		{}
+		Shader();
 		virtual ~Shader() {}
 	};
 
@@ -85,8 +81,6 @@ namespace VSGE {
 		}
 
 		void AddShader(Shader* shader, const std::string& shader_name);
-
 		Shader* GetShader(const std::string& name);
-
 	};
 }

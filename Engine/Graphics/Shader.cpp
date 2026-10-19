@@ -18,7 +18,7 @@ ShaderStorageItem::ShaderStorageItem() :
 {
 }
 
-ShaderStorageItem::ShaderStorageItem(ShaderStorageItem&& item)
+ShaderStorageItem::ShaderStorageItem(ShaderStorageItem&& item) noexcept
 {
 	name = item.name;
 	shaderData = item.shaderData;
@@ -31,23 +31,6 @@ ShaderStorageItem::ShaderStorageItem(ShaderStorageItem&& item)
 ShaderStorageItem::~ShaderStorageItem() 
 {
 	SAFE_RELEASE_ARR(shaderData)
-}
-
-void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
-	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
-
-	byte* data = nullptr;
-	uint64 size = 0;
-
-	if (item == nullptr) {
-		LoadFile(file_path, (char**)&data, &size);
-	}
-	else {
-		data = item->shaderData;
-		size = item->shaderDataSize;
-	}
-
-	AddShader(data, size, type);
 }
 
 ShaderStorageItem* ShaderStorage::GetItemByName(std::string& name) 
@@ -115,4 +98,25 @@ Shader* ShaderCache::GetShader(const std::string& name) {
 			return shader.second;
 	}
 	return nullptr;
+}
+
+Shader::Shader() : mStages(SHADER_STAGE_NULL)
+{
+}
+
+void Shader::AddShaderFromFile(std::string file_path, ShaderStagesBits type) {
+	ShaderStorageItem* item = ShaderStorage::Get()->GetItemByName(file_path);
+
+	byte* data = nullptr;
+	uint64 size = 0;
+
+	if (item == nullptr) {
+		LoadFile(file_path, (char**)&data, &size);
+	}
+	else {
+		data = item->shaderData;
+		size = item->shaderDataSize;
+	}
+
+	AddShader(data, size, type);
 }

@@ -39,7 +39,7 @@ void ResourcePickerWindow::Show()
 }
 
 void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
-    uint32 resources_size = ResourceCache::Get()->GetResourcesCount();
+    size_t resources_size = ResourceCache::Get()->GetResourcesCount();
     float width = ImGui::GetCurrentWindow()->Size.x;
     uint32 drawn_pix = 0;
 
@@ -55,7 +55,7 @@ void ResourcePickerWindow::DrawResourcePicker(ResourceType resourceType) {
         }
     }
 
-    for (uint32 resource_i = 0; resource_i < resources_size; resource_i++) 
+    for (size_t resource_i = 0; resource_i < resources_size; resource_i++) 
     {
         Resource* resource = ResourceCache::Get()->GetResources()[resource_i];
         if (resource->GetResourceType() == resourceType) 

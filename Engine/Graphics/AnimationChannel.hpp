@@ -36,7 +36,6 @@ namespace VSGE {
             SAFE_RELEASE_ARR(values);
             SAFE_RELEASE_ARR(times);
         }
-
     };
 
     class AnimationChannel {

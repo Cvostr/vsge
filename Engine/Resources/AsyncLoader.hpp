@@ -23,7 +23,7 @@ namespace VSGE {
 
 		~AsyncLoader();
 
-		uint32 GetQueuedResourcesCount();
+		size_t GetQueuedResourcesCount();
 
 		void AddToQueue(Resource* resource);
 		void WaitForLoading(Resource* resource);
