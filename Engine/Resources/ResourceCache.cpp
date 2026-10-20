@@ -114,7 +114,7 @@ ResourceType GetTypeByFileExt(const std::string& ext)
         return RESOURCE_TYPE_MATERIAL;
     if (ext == ".vsanim")
         return RESOURCE_TYPE_ANIMATION;
-    if (ext == ".wav")
+    if (ext == ".wav" || ext == ".ogg")
         return RESOURCE_TYPE_AUDIOCLIP;
     if (ext == ".scn")
         return RESOURCE_TYPE_SCENE;

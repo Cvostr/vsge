@@ -17,5 +17,5 @@ void AudioClipResource::OnRelease() {
 }
 
 void AudioClipResource::PostLoad() {
-	_buffer->loadBufferWAV(_loadedData);
+	_buffer->loadBuffer(_loadedData, GetDataDescription().size);
 }

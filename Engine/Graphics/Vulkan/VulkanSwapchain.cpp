@@ -111,9 +111,13 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
     if (vkCreateSwapchainKHR(Device->getVkDevice(), &swc_create_info, nullptr, &this->mSwapChain) != VK_SUCCESS) {
         return false;
     }
-    Logger::Log(LogType::LOG_TYPE_INFO) << "Vulkan: Swapchain creation successful" << "\n";
 
-    CreateImages(Device, chosenSurfaceFormat);
+    Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Swapchain images" << "\n";
+    if (!CreateImages(Device, chosenSurfaceFormat)) {
+        return false;
+    }
+
+    Logger::Log(LogType::LOG_TYPE_INFO) << "Vulkan: Swapchain creation successful" << "\n";
 
     mCreated = true;
 
@@ -154,15 +158,21 @@ VkExtent2D VulkanSwapChain::GetExtent() {
     return swap_extend;
 }
 
-void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) {
+bool VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat) 
+{
     uint32_t swc_images;
     std::vector<VkImage> swapchain_images;
-    vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, nullptr);
+    if (vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, nullptr) != VK_SUCCESS)
+        return false;
+
     swapchain_images.resize(swc_images);
-    vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, swapchain_images.data());
+    
+    if (vkGetSwapchainImagesKHR(Device->getVkDevice(), this->mSwapChain, &swc_images, swapchain_images.data()) != VK_SUCCESS)
+        return false;
 
     //Iterate over all swapchain images and create image views
-    for (uint32 sw_i = 0; sw_i < swc_images; sw_i++) {
+    for (uint32 sw_i = 0; sw_i < swc_images; sw_i++) 
+    {
         VkImageViewCreateInfo img_view_create_info;
         img_view_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         img_view_create_info.pNext = nullptr;
@@ -183,7 +193,8 @@ void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR Chos
         img_view_create_info.subresourceRange.layerCount = 1;
 
         VkImageView imageView = VK_NULL_HANDLE;
-        vkCreateImageView(Device->getVkDevice(), &img_view_create_info, nullptr, &imageView);
+        if (vkCreateImageView(Device->getVkDevice(), &img_view_create_info, nullptr, &imageView) != VK_SUCCESS)
+            return false;
 
         VulkanTexture* texture = new VulkanTexture(
             swapchain_images[sw_i],
@@ -195,7 +206,10 @@ void VulkanSwapChain::CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR Chos
             1,
             usage_flags,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
         texture->SetSwapchain(true);
         _swapchain_images.push_back(texture);
     }
+
+    return true;
 }

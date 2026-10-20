@@ -2,6 +2,23 @@
 #include <AL/al.h>
 #include <Core/Logger.hpp>
 
+#define uint8 stb_internal_uint8
+#define int8  stb_internal_int8
+#define uint16 stb_internal_uint16
+#define int16 stb_internal_int16
+#define uint32 stb_internal_uint32
+#define int32 stb_internal_int32
+
+#define STB_VORBIS_IMPLEMENTATION
+#include "stb/stb_vorbis.h"
+
+#undef uint8
+#undef int8
+#undef uint16
+#undef int16
+#undef uint32
+#undef int32
+
 using namespace VSGE;
 
 AudioBuffer::AudioBuffer() :
@@ -59,7 +76,69 @@ uint32 AudioBuffer::GetBitRate() {
     return _bitRate;
 }
 
-bool AudioBuffer::loadBufferWAV(byte* buffer) {
+bool AudioBuffer::loadBuffer(byte* buffer, size_t size)
+{
+    if (memcmp(buffer, "OggS", 4) == 0) 
+    {
+        return loadBufferOgg(buffer, size);
+    }
+    
+    return loadBufferWAV(buffer);
+}
+
+bool AudioBuffer::loadBufferOgg(byte* buffer, size_t size)
+{
+    int channels;
+    int sampleRate;
+    short *decoded;
+    int samples = stb_vorbis_decode_memory(buffer, size, &channels, &sampleRate, &decoded);
+
+    if (samples == -1) {
+        return false;
+    }
+
+    ALenum alFormat;
+    ALsizei bufferSize;
+
+    // stb_vorbis output is always 16bit
+    if (channels == 1)
+        alFormat = AL_FORMAT_MONO16;
+    else if (channels == 2)
+        alFormat = AL_FORMAT_STEREO16;
+    else {
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Channels count " << channels << " unsupported!\n";
+        return false;
+    }
+
+    // total size of decoded buffer
+    bufferSize = samples * channels * sizeof(short);
+
+    // Fill internal variables
+    _frequency = sampleRate;
+    _channels = channels;
+    _bitsPerSample = 16;
+    _bitRate = _bitsPerSample * _channels * _frequency / 1000;
+    _duration = bufferSize / _bitRate * 8;
+
+    // Create OpenAL internal buffer
+    Create();
+
+    alBufferData(_audio_buffer, alFormat, decoded, bufferSize, sampleRate);
+
+    free(decoded);
+
+    int err = alGetError();
+    if (err != AL_NO_ERROR)
+    {
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "Error loading " << err << "\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool AudioBuffer::loadBufferWAV(byte* buffer) 
+{
 	Create();
 
     int format = AL_FORMAT_MONO16;
@@ -112,7 +191,7 @@ bool AudioBuffer::loadBufferWAV(byte* buffer) {
     //Read size
     start_offset += 4;
     //Calculate size
-    int _size = buffer[start_offset + 3] << 24; //Getting size, 32 bit value
+    uint32 _size = buffer[start_offset + 3] << 24; //Getting size, 32 bit value
     _size |= buffer[start_offset + 2] << 16;
     _size |= buffer[start_offset + 1] << 8;
     _size |= buffer[start_offset];
@@ -120,7 +199,6 @@ bool AudioBuffer::loadBufferWAV(byte* buffer) {
     start_offset += 4;
 
     _bitRate = _bitsPerSample * _channels * _frequency / 1000;
-
     _duration = _size / _bitRate * 8;
 
     //Send data to OpenAL

@@ -22,4 +22,7 @@ void VSGEditor::DrawAudioResourceUI(VSGE::Resource* resource) {
 
 	std::string bitrate_text = "Bit Rate - " + std::to_string(buffer->GetBitRate()) + " kbit/sec";
 	ImGui::Text(bitrate_text.c_str());
+
+	std::string freq_text = "Frequency - " + std::to_string(buffer->GetFrequency()) + " Hz";
+	ImGui::Text(freq_text.c_str());
 }

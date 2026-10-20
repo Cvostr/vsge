@@ -14,6 +14,9 @@ namespace VSGE {
 		uint32 _channels;
 		uint32 _bitRate;
 		uint32 _duration;
+		
+		bool loadBufferOgg(byte* buffer, size_t size);
+		bool loadBufferWAV(byte* buffer);
 	public:
 		AudioBuffer();
 		~AudioBuffer();
@@ -22,7 +25,7 @@ namespace VSGE {
 
 		void Destroy();
 
-		bool loadBufferWAV(byte* buffer);
+		bool loadBuffer(byte* buffer, size_t size);
 
 		uint32 GetBuffer();
 		/// <summary>

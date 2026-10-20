@@ -31,7 +31,7 @@ namespace VSGE {
 
         VkExtent2D swap_extend;
 
-        void CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat);
+        bool CreateImages(VulkanDevice* Device, VkSurfaceFormatKHR ChosenSurfaceFormat);
 
     public:
         bool initSwapchain(VulkanDevice* Device);
