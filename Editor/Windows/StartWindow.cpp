@@ -78,10 +78,12 @@ void StartWindow::OnDrawWindow()
 
         ImGui::Text("Projects");
 
-        for (auto& str : _projects) {
-            if (ImGui::Button(str.c_str())) {
+        for (auto& projectPath : _projects) 
+        {
+            if (ImGui::Button(projectPath.c_str())) 
+            {
                 try {
-                    OpenProject(str);
+                    OpenProject(projectPath);
                 }
                 catch (const std::exception& ex) 
                 {
@@ -94,22 +96,46 @@ void StartWindow::OnDrawWindow()
                     action = Mpi::Dialog::MessageDialog(desc);
                 }
             }
+
+            if (ImGui::BeginPopupContextItem())
+            {
+                if (ImGui::MenuItem("Remove")) {
+                    _projects.erase(std::remove(_projects.begin(), _projects.end(), projectPath), _projects.end());
+                    SaveProjectsList();
+                }
+
+                ImGui::EndPopup();
+            }
         }
 
         if (ImGui::Button("Create new project", ImVec2(_size.x / 2, 0))) {
             ImGuiLayer::Get()->GetWindow<CreateProjectWindow>()->Show();
         }
+
         ImGui::SameLine();
         if (ImGui::Button("Add existing project", ImVec2(_size.x / 2, 0))) {
             Mpi::FileDialogDesc desc;
             desc.dialogTitle = "Select project directory";
             std::string path = Mpi::Dialog::BrowseDirectoryDialog(desc);
 
-            if (!path.empty()) {
-
-                //Add project root directory to list
-                _projects.push_back(path);
-                SaveProjectsList();
+            if (!path.empty()) 
+            {
+                // check is project already exists
+                auto existent = std::find(_projects.begin(), _projects.end(), path);
+                if (existent != _projects.end()) {
+                    Mpi::MessageDialogDesc desc;
+                    desc.dialogTitle = "Error adding project";
+                    desc.dialogMessage = "Project already exists in list";
+                    desc.buttons = Mpi::MESSAGE_DIALOG_BTN_OK;
+                    desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+                    Mpi::Dialog::MessageDialog(desc);
+                }
+                else
+                {
+                    //Add project root directory to list
+                    _projects.push_back(path);
+                    SaveProjectsList();
+                }
             }
         }
 
