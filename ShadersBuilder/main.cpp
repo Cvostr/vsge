@@ -26,9 +26,14 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	if (inputShaderFiles.size() == 0) {
+		std::cerr << "No shader files specified to compile!" << std::endl << "Exiting..." << std::endl;
+		return 2;
+	}
+
 	ShaderBundleWriter writer;
 	if (!writer.Create(outputBundleFile, outputMapFile)) {
-		std::cout << "Error creating destination files!" << std::endl << "Exiting..." << std::endl;
+		std::cerr << "Error creating destination files!" << std::endl << "Exiting..." << std::endl;
 		return 2;
 	}
 

@@ -10,7 +10,6 @@ namespace VSGE {
 		VulkanBuffer* _paramsBuffer;
 
 		VulkanMaterial();
-
 		~VulkanMaterial();
 	};
 }

@@ -2,6 +2,7 @@
 #include <Scene/EntityComponents/TerrainComponent.hpp>
 #include <Scene/Entity.hpp>
 #include "VulkanRenderingGenerics.hpp"
+#include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 #include "../VulkanRAPI.hpp"
 
 #include <Scene/EntityComponents/MeshComponent.hpp>
@@ -165,28 +166,34 @@ void VulkanTerrainRenderer::DrawTerrain(
 		auto& vk_vegetable = vk_terrain->GetVegetables()[grass_i];
 
 		// Extract material and mesh resource pointers
-		MeshResource* mesh_resource = vegetable._mesh_reference.GetResource<MeshResource>();
-		MaterialResource* mat_resource = vegetable._material_reference.GetResource<MaterialResource>();
+		MeshResource* meshResource = vegetable._mesh_reference.GetResource<MeshResource>();
+		MaterialResource* materialResource = vegetable._material_reference.GetResource<MaterialResource>();
 
-		if (!mesh_resource || !mat_resource)
+		if (!meshResource || !materialResource)
 			continue;
 
+		// Load mesh and material if they are not loaded
+		materialResource->Load();
+		meshResource->Load();
+
 		// Do not render if material or mesh not loaded yet
-		if (mat_resource->GetState() != RESOURCE_STATE_READY || mesh_resource->GetState() != RESOURCE_STATE_READY)
+		if (materialResource->GetState() != RESOURCE_STATE_READY || materialResource->GetState() != RESOURCE_STATE_READY)
 			continue;
 
 		// bind material
-		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		MaterialTemplate* templ = materialResource->GetMaterial()->GetTemplate();
 		VulkanPipeline* pipeline = (VulkanPipeline*)templ->GetPipeline();
-		Material* mat = mat_resource->GetMaterial();
-		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
-		VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+		Material* mat = materialResource->GetMaterial();
 
+		VulkanRenderer::Get()->UpdateMaterialDescrSet(mat);
+
+		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
+		VulkanMesh* mesh = (VulkanMesh*)meshResource->GetMesh();
 
 		//Mark mesh resource used in this frame
-		mesh_resource->Use();
+		meshResource->Use();
 		//Mark material resource used in this frame
-		mat_resource->Use();
+		materialResource->Use();
 
 		uint32 offsets[2] = { camera_index * CAMERA_ELEM_SIZE, draw_index * UNI_ALIGN };
 		uint32 veg_transform_offset = vk_vegetable.offset * sizeof(Mat4);

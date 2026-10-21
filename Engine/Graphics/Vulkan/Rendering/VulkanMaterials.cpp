@@ -82,7 +82,7 @@ VulkanDescriptorSet* VulkanRenderer::CreateDescriptorSetFromMaterialTemplate(Mat
 }
 
 void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
-	if(mat->_templateChanged) {
+	if (mat->_templateChanged) {
 		mat->DestroyDescriptors();
 		mat->_templateChanged = false;
 	}
@@ -101,10 +101,12 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 		if (texture_res->IsReady()) {
 			//Пометить ресурс текстуры, как использованный в текущем кадре 
 			texture_res->Use();
-		}else
+		}
+		else {
 			mat->_texturesDirty = true;
-		
+		}	
 	}
+
 	bool unloaded_texture = false;
 	if (mat->_texturesDirty) {
 		for (MaterialTexture* tex : mat->GetTextures()) {
@@ -131,11 +133,14 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 					tex->_binding,
 					(VulkanTexture*)texture_res->GetTexture(),
 					VulkanRenderingGenerics::Get()->GetMaterialMapsSampler());
-			}else
+			}
+			else {
 				//Not all textures are loaded, 
 				//we have to return to this material in next frame
 				unloaded_texture = true;
+			}
 		}
+
 		if (!unloaded_texture)
 			mat->_texturesDirty = false;
 	}
