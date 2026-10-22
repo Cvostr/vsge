@@ -60,7 +60,6 @@ namespace VSGE {
 	public:
 		
 		MaterialTemplate();
-
 		~MaterialTemplate();
 		/// <summary>
 		/// Get name of template
@@ -72,9 +71,15 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="name">- name of template</param>
 		void SetName(const std::string& name);
-
+		/// <summary>
+		/// Set gpu graphics pipeline object to this material template
+		/// </summary>
+		/// <param name="pipeline"></param>
 		void SetPipeline(GraphicsPipeline* pipeline);
-
+		/// <summary>
+		/// Get gpu graphics pipeline of this material template
+		/// </summary>
+		/// <returns></returns>
 		GraphicsPipeline* GetPipeline();
 		/// <summary>
 		/// Get array of template textures
@@ -141,12 +146,8 @@ namespace VSGE {
 
 		void SetBlendingAttachmentDesc(uint32 attachment, const BlendAttachmentDesc& desc);
 
-		const BlendAttachmentDescsMap& GetBlendingAttachmentDescs() {
-			return _blendDescs;
-		}
+		const BlendAttachmentDescsMap& GetBlendingAttachmentDescs() const;
 
-		VertexLayout& GetLayout() {
-			return _vertexLayout;
-		}
+		VertexLayout& GetLayout();
 	};
 }

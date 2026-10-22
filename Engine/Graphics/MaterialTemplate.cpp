@@ -109,6 +109,14 @@ void MaterialTemplate::SetBlendingAttachmentDesc(uint32 attachment, const BlendA
 	_blendDescs.insert(std::pair(attachment, desc));
 }
 
+const BlendAttachmentDescsMap& MaterialTemplate::GetBlendingAttachmentDescs() const {
+	return _blendDescs;
+}
+
+VertexLayout& MaterialTemplate::GetLayout() {
+	return _vertexLayout;
+}
+
 void MaterialTemplate::AddParameter(const std::string& name, Variant baseValue) {
 	MaterialParameter param;
 	param.name = name;

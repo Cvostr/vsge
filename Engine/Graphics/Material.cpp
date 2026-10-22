@@ -116,27 +116,30 @@ uint32 Material::CopyParamsToBuffer(char* out) {
 	uint32 writtenBytes = 0;
 
 	for (MaterialParameter& param : _materialParams) {
-		if (param.value.GetType() == VALUE_TYPE_BOOL) {
+		switch (param.value.GetType()) {
+		case VALUE_TYPE_BOOL:
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 			writtenBytes += 4;
-		}
-		if (param.value.GetType() == VALUE_TYPE_INT32) {
+			break;
+		case VALUE_TYPE_INT32:
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 			writtenBytes += 4;
-		}
-		if (param.value.GetType() == VALUE_TYPE_FLOAT) {
+			break;
+		case VALUE_TYPE_FLOAT:
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 4);
 			writtenBytes += 4;
-		}
-		if (param.value.GetType() == VALUE_TYPE_VEC3F || param.value.GetType() == VALUE_TYPE_VEC3I) {
+			break;
+		case VALUE_TYPE_VEC3F:
+		case VALUE_TYPE_VEC3I:
 			writtenBytes = align(writtenBytes);
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 12);
 			writtenBytes += 16;
-		}
-		if (param.value.GetType() == VALUE_TYPE_COLOR) {
+			break;
+		case VALUE_TYPE_COLOR:
 			writtenBytes = align(writtenBytes);
 			memcpy(bytes + writtenBytes, param.value.GetValuePtr(), 16);
 			writtenBytes += 16;
+			break;
 		}
 	}
 
