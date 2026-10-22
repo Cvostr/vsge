@@ -35,18 +35,22 @@ void VulkanUiRenderer::Create()
 
 	// Calculate alignment for transform matrices in buffer
 	_transformBufferElementSize = std::max(UNI_ALIGN, sizeof(Mat4));
-
+	// Calculate alignment for fragment data in buffer
 	_fragmentBufferElementSize = std::max(UNI_ALIGN, FRAGMENT_SIZE);
 
+	// buffer for transforms in vertex shader
 	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
 	_transforms_buffer->Create(_transformBufferElementSize * MAX_UI_ELEMENTS);
 
+	// buffer for data in fragment shader
 	_frag_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
-	_frag_buffer->Create(_fragmentBufferElementSize * MAX_UI_TEXT_ELEMENTS);
+	_frag_buffer->Create(_fragmentBufferElementSize * MAX_UI_ELEMENTS);
 
 	_descr_pool = new VulkanDescriptorPool;
 	_descr_pool->SetDescriptorSetsCount(MAX_UI_ELEMENTS);
+	// we have 1 uniform buffer for transform + 1 for texture data, so we have to multiply by 2
 	_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2 * MAX_UI_ELEMENTS);
+	// texture itself
 	_descr_pool->AddPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_UI_ELEMENTS);
 	_descr_pool->Create();
 
@@ -154,12 +158,20 @@ void VulkanUiRenderer::FillBuffers()
 	UiLayer* ui_layer = UiLayer::Get();
 	written_elements = 0;
 
-	for (auto& task : ui_layer->GetRenderList()->GetTasks()) {
-		if (task._type == UI_RENDER_TASK_TYPE_SPRITE && task._sprite) {
+	for (auto& task : ui_layer->GetRenderList()->GetTasks()) 
+	{
+		if (task._type == UI_RENDER_TASK_TYPE_SPRITE && task._sprite) 
+		{
+			// Avoid gpu buffer overflow 
+			if (written_elements == MAX_UI_ELEMENTS) {
+				return;
+			}
+
 			if (!task._sprite->IsReady()) {
 				task._sprite->Load();
 				continue;
 			}
+
 			Mat4 transform = GetTransform(task.bounds, Vec2(0.5f), task.rotation);
 			WriteTransform(written_elements, transform);
 			WriteElement(written_elements, task.uv_min, task.uv_max, Color(1, 1, 1, 1));
@@ -171,13 +183,19 @@ void VulkanUiRenderer::FillBuffers()
 			GlyphFontContainer* font = task.font;
 			uint32 fontTextureMapSize = font->GetTextureMapSize();
 
+			// Get size of string in pixels of original font scale
 			Vec2i pix_size = font->GetSizeOfString((uint32*)task._text.c_str(), task._text.Length());
-
+			// What scale factor should we add to fit string in bounds
 			Vec2 mult = Vec2(task.bounds.Size.x / pix_size.x, task.bounds.Size.y / pix_size.y);
-
 			Vec2 drawn = Vec2(0);
 
-			for (uint32 i = 0; i < task._text.Length(); i++) {
+			for (uint32 i = 0; i < task._text.Length(); i++) 
+			{
+				// Avoid gpu buffer overflow 
+				if (written_elements == MAX_UI_ELEMENTS) {
+					return;
+				}
+
 				Char sym = task._text[i];
 				CharacterGlyph* glyph = font->GetGlyph(sym);
 

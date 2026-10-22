@@ -9,8 +9,9 @@
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Graphics/Vulkan/VulkanSynchronization.hpp>
 
-#define MAX_UI_ELEMENTS 500
-#define MAX_UI_TEXT_ELEMENTS 300
+// all ui sprites + all text glyphs combined
+// maximum allowed count of them
+#define MAX_UI_ELEMENTS 800
 
 namespace VSGE {
 	class VulkanUiRenderer {
