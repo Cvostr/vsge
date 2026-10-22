@@ -115,7 +115,7 @@ void InitShadowmappingPipelines(VulkanDescriptorSet* vertexSet, VulkanDescriptor
 			_shadowmap_layout);
 	}
 
-	if (_shadowmap_terrain_point_pipeline) {
+	if (_shadowmap_terrain_point_pipeline == nullptr) {
 		_shadowmap_terrain_point_pipeline = new VulkanPipeline;
 		_shadowmap_terrain_point_pipeline->SetDepthTest(true);
 		_shadowmap_terrain_point_pipeline->SetDynamicCullMode(false);
