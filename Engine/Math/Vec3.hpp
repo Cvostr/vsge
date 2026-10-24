@@ -21,7 +21,10 @@
 		}
 
 		void Normalize() {
-			*this = GetNormalized();
+			float coeff = 1.f / Length();
+			x *= coeff;
+			y *= coeff;
+			z *= coeff;
 		}
 
 		tVec3 Invert() const {

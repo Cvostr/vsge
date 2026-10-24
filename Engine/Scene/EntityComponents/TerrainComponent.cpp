@@ -406,7 +406,7 @@ void TerrainComponent::CreateVerticesArray()
 			float fx = static_cast<float>(x);
 			float fy = static_cast<float>(y);
 
-			vert->uv = Vec2(fx / _width, fy / _length);
+			vert->uv = Vec2(fx / (_width - 1), fy / (_length - 1));
 			vert->pos = Vec3(fx, 0, fy);
 		}
 	}
@@ -426,7 +426,7 @@ void TerrainComponent::SetVegetablesDirty()
 
 void TerrainComponent::UpdateNormals() 
 {
-	CalculateNormals(_heightmap, _indices, GetIndicesCount());
+	CalculateNormalsWithSum(_heightmap, GetVerticesCount(), _indices, GetIndicesCount());
 	ProcessTangentSpace(_heightmap, _indices, GetIndicesCount());
 }
 
