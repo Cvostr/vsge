@@ -140,7 +140,7 @@ btCollisionShape* RigidBodyComponent::CreateCollisionShape()
 				meshResource->Load();
 				return nullptr;
 			}
-
+			
 			Mesh* mesh = meshResource->GetMesh();
 			Vec3* pos = mesh->GetPositions();
 
@@ -176,18 +176,14 @@ void RigidBodyComponent::AddToWorld()
 		_collision_shape->calculateLocalInertia(_mass, local_intertia);
 
 	btTransform startTransform = GetEntityTransform();
-	//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+	// using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
 
 	// Info
 	btRigidBody::btRigidBodyConstructionInfo constructionInfo(_mass, motionState, _collision_shape, local_intertia);
-	constructionInfo.m_mass = _mass;
 	constructionInfo.m_friction = _friction;
 	constructionInfo.m_rollingFriction = _rolling_friction;
 	constructionInfo.m_restitution = _restitution;
-	constructionInfo.m_collisionShape = _collision_shape;
-	constructionInfo.m_localInertia = local_intertia;
-	constructionInfo.m_motionState = motionState;
 
 	_rigidBody = new btRigidBody(constructionInfo);
 	_rigidBody->setUserPointer(_entity);

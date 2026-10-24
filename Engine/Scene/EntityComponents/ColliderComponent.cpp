@@ -111,9 +111,15 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 		shape = new btBoxShape(btVector3(btScalar(scale.x),
 		btScalar(scale.y),
 		btScalar(scale.z)));
+		if (shape) {
+			shape->setLocalScaling(btVector3(_size.x, _size.y, _size.z));
+		}
 		break;
 	case COLLIDER_SHAPE_SPHERE:
 		shape = new btSphereShape(scale.y);
+		if (shape) {
+			shape->setLocalScaling(btVector3(_size.x, _size.y, _size.z));
+		}
 		break;
 	case COLLIDER_SHAPE_MESH:
 		// Get MeshComponent
@@ -126,8 +132,7 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 			{
 				if (!meshResource->IsReady())
 				{
-					// mesh is not ready, queue it for loading, and return with nullptr
-					// to give it another try later
+					// mesh is not ready, queue it for loading, and return with nullptr to give it another try later
 					meshResource->Load();
 					return nullptr;
 				}
@@ -142,11 +147,6 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 		break;
 	}
 
-	if (shape) 
-	{
-		shape->setLocalScaling(btVector3(_size.x, _size.y, _size.z));
-	}
-
 	return shape;
 }
 
@@ -155,7 +155,7 @@ btTransform ColliderComponent::GetEntityTransform() {
 
 	Vec3 abs_pos = _entity->GetAbsolutePosition() + _center;
 	Quat abs_rot = _entity->GetAbsoluteRotation();
-
+	
 	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));
 	result.setRotation(btQuaternion(abs_rot.x, abs_rot.y, abs_rot.z, abs_rot.w));
 
