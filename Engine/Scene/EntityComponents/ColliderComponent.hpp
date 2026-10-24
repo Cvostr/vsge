@@ -4,6 +4,7 @@
 #include <Math/Vec3.hpp>
 #include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
 #include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <unordered_set>
 
 namespace VSGE {
 
@@ -21,6 +22,8 @@ namespace VSGE {
 		btRigidBody* _rigidbody;
 		btGhostObject* _trigger;
 		btCollisionShape* _collision_shape;
+
+		std::unordered_set<Entity*> _overlapped;
 
 		Vec3 _center;
 		Vec3 _size;

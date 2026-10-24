@@ -1,4 +1,5 @@
 #include "ColliderComponent.hpp"
+#include "MeshComponent.hpp"
 #include <Scene/Entity.hpp>
 #include <Scene/Scene.hpp>
 #include <bullet/LinearMath/btDefaultMotionState.h>
@@ -115,6 +116,29 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 		shape = new btSphereShape(scale.y);
 		break;
 	case COLLIDER_SHAPE_MESH:
+		// Get MeshComponent
+		MeshComponent* meshComponent = _entity->GetComponent<MeshComponent>();
+		if (meshComponent)
+		{
+			// Get Mesh from MeshComponent
+			MeshResource* meshResource = meshComponent->GetResourceReference().GetResource<MeshResource>();
+			if (meshResource)
+			{
+				if (!meshResource->IsReady())
+				{
+					// mesh is not ready, queue it for loading, and return with nullptr
+					// to give it another try later
+					meshResource->Load();
+					return nullptr;
+				}
+
+				Mesh* mesh = meshResource->GetMesh();
+				Vec3* pos = mesh->GetPositions();
+
+				shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(Vec3));
+				shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+			}
+		}
 		break;
 	}
 
@@ -138,7 +162,8 @@ btTransform ColliderComponent::GetEntityTransform() {
 	return result;
 }
 
-void ColliderComponent::OnUpdate() {
+void ColliderComponent::OnUpdate() 
+{
 	if (!_rigidbody && !_trigger)
 		AddToWorld();
 
@@ -147,16 +172,44 @@ void ColliderComponent::OnUpdate() {
 		_rigidbody->setWorldTransform(transform);
 	}
 
-	if (_trigger) {
+	if (_trigger) 
+	{
 		btTransform transform = GetEntityTransform();
 		_trigger->setWorldTransform(transform);
 
+		std::unordered_set<Entity*> currentOverlappers;
+
 		uint32 overlaping = _trigger->getNumOverlappingObjects();
-		for (uint32 i = 0; i < overlaping; i++) {
+		for (uint32 i = 0; i < overlaping; i++) 
+		{
 			btCollisionObject* coll_obj = _trigger->getOverlappingObject(i);
-			Entity* entity = (Entity*)coll_obj->getUserPointer();
-			_entity->CallOnTriggerStay(entity);
+			Entity* entity = (Entity*) coll_obj->getUserPointer();
+
+			currentOverlappers.insert(entity);
+
+			if (_overlapped.find(entity) == _overlapped.end())
+			{
+				// Object was not in trigger before
+				_entity->CallOnTriggerEnter(entity);
+			}
+			else
+			{
+				// Object was in trigger before
+				_entity->CallOnTriggerStay(entity);
+			}
 		}
+
+		// Handle trigger exits
+		// TODO: handle object deletion correctly
+		for (Entity* ov : _overlapped)
+		{
+			if (currentOverlappers.find(ov) == currentOverlappers.end())
+			{
+				_entity->CallOnTriggerExit(ov);
+			}
+		}
+
+		_overlapped = std::move(currentOverlappers);
 	}
 }
 
