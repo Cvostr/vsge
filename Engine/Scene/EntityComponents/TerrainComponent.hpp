@@ -57,7 +57,7 @@ namespace VSGE {
 		void Clear(size_t width, size_t height);
 		void GetTransforms(std::vector<Mat4> &out, TerrainComponent *terrain);
 		TerrainVegetable();
-		TerrainVegetable(TerrainVegetable &&);
+		TerrainVegetable(TerrainVegetable &&) noexcept;
 		~TerrainVegetable();
 	};
 

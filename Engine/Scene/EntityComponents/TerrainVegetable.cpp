@@ -17,7 +17,7 @@ TerrainVegetable::~TerrainVegetable() {
 		delete[] _vegetable_coeff;
 }
 
-TerrainVegetable::TerrainVegetable(TerrainVegetable&& other) :
+TerrainVegetable::TerrainVegetable(TerrainVegetable&& other) noexcept:
 	_mesh_reference(other._mesh_reference),
 	_material_reference(other._material_reference),
 	m_width(other.m_width),
