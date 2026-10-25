@@ -16,12 +16,7 @@ PhysicsLayer* PhysicsLayer::_this = nullptr;
 PhysicsLayer::PhysicsLayer() {
     _this = this;
 
-	_broadphase = new btDbvtBroadphase();
-	_constraint_solver = new btSequentialImpulseConstraintSolver();
-
 	_collision_configuration = new btSoftBodyRigidBodyCollisionConfiguration();
-	_collision_dispatcher = new btCollisionDispatcher(_collision_configuration);
-
     _ghost_callback = new btGhostPairCallback();
 
     Logger::Log() << "Physics initialized\n";
@@ -29,10 +24,7 @@ PhysicsLayer::PhysicsLayer() {
 
 PhysicsLayer::~PhysicsLayer() {
     SAFE_RELEASE(_ghost_callback);
-    SAFE_RELEASE(_constraint_solver);
-    SAFE_RELEASE(_collision_dispatcher);
     SAFE_RELEASE(_collision_configuration);
-    SAFE_RELEASE(_broadphase);
 
     for (auto& world : _worlds) {
         SAFE_RELEASE(world);
@@ -56,15 +48,6 @@ void PhysicsLayer::OnDetach() {
 
 }
 
-btCollisionDispatcher* PhysicsLayer::GetCollisionDispatcher() {
-    return _collision_dispatcher;
-}
-btBroadphaseInterface* PhysicsLayer::GetBroadphase() {
-    return _broadphase;
-}
-btSequentialImpulseConstraintSolver* PhysicsLayer::GetConstraintSolver() {
-    return _constraint_solver;
-}
 btDefaultCollisionConfiguration* PhysicsLayer::GetCollisionConfiguration() {
     return _collision_configuration;
 }

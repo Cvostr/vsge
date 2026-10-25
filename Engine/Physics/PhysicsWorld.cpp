@@ -2,23 +2,39 @@
 #include "PhysicsLayer.hpp"
 #include <bullet/BulletCollision/NarrowPhaseCollision/btRaycastCallback.h>
 
+#include <bullet/BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h>
+#include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+
 using namespace VSGE;
 
-PhysicsWorld::PhysicsWorld() {
-	_world = nullptr;
-    _active = true;
+PhysicsWorld::PhysicsWorld():
+    _world(nullptr),
+    _constraint_solver(nullptr),
+    _broadphase(nullptr),
+    _collision_dispatcher(nullptr),
+    _active(false)
+{
 }
+
 PhysicsWorld::~PhysicsWorld() {
 	Destroy();
 }
 
-void PhysicsWorld::Create() {
-	PhysicsLayer* layer = PhysicsLayer::Get();
+void PhysicsWorld::Create() 
+{
+    PhysicsLayer* layer = PhysicsLayer::Get();
+
+    // Setup World physics caches
+    _broadphase = new btDbvtBroadphase();
+    _constraint_solver = new btSequentialImpulseConstraintSolver();
+    _collision_dispatcher = new btCollisionDispatcher(layer->GetCollisionConfiguration());
+
+    // Create bullet physics world
 	_world = new btSoftRigidDynamicsWorld(
-		layer->GetCollisionDispatcher(),
-		layer->GetBroadphase(),
-		layer->GetConstraintSolver(),
-		layer->GetCollisionConfiguration());
+        _collision_dispatcher,
+        _broadphase,
+        _constraint_solver,
+        layer->GetCollisionConfiguration());
 
     _world->getBroadphase()->getOverlappingPairCache()->
         setInternalGhostPairCallback(layer->GetGhostPairCallback());
@@ -28,6 +44,10 @@ void PhysicsWorld::Create() {
 void PhysicsWorld::Destroy() {
     PhysicsLayer::Get()->RemoveWorld(this);
 	SAFE_RELEASE(_world)
+
+    SAFE_RELEASE(_constraint_solver)
+    SAFE_RELEASE(_broadphase)
+    SAFE_RELEASE(_collision_dispatcher)
 }
 btSoftRigidDynamicsWorld* PhysicsWorld::GetWorld() {
 	return _world;

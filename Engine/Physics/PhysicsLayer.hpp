@@ -12,9 +12,6 @@
 namespace VSGE {
 	class PhysicsLayer : public IApplicationLayer {
 	private:
-		btBroadphaseInterface* _broadphase;
-		btCollisionDispatcher* _collision_dispatcher;
-		btSequentialImpulseConstraintSolver* _constraint_solver;
 		btDefaultCollisionConfiguration* _collision_configuration;
 		btGhostPairCallback* _ghost_callback;
 
@@ -34,9 +31,6 @@ namespace VSGE {
 		void OnUpdate();
 		void OnDetach();
 
-		btCollisionDispatcher* GetCollisionDispatcher();
-		btBroadphaseInterface* GetBroadphase();
-		btSequentialImpulseConstraintSolver* GetConstraintSolver();
 		btDefaultCollisionConfiguration* GetCollisionConfiguration();
 		btGhostPairCallback* GetGhostPairCallback();
 

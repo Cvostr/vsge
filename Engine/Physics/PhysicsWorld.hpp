@@ -1,6 +1,8 @@
 #pragma once
 
 #include <bullet/BulletSoftBody/btSoftRigidDynamicsWorld.h>
+#include <bullet/btBulletCollisionCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 #include <Math/Vec3.hpp>
 #include <Scene/Entity.hpp>
 
@@ -8,6 +10,10 @@ namespace VSGE {
 	class PhysicsWorld {
 	private:
 		btSoftRigidDynamicsWorld* _world;
+
+		btSequentialImpulseConstraintSolver* _constraint_solver;
+		btBroadphaseInterface* _broadphase;
+		btCollisionDispatcher* _collision_dispatcher;
 		//btSoftBodyWorldInfo* _world_info;
 		bool _active;
 	public:
