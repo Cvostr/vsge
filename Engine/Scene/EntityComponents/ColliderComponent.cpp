@@ -141,6 +141,8 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 				Vec3* pos = mesh->GetPositions();
 
 				shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(Vec3));
+				// remove redundant vertices
+				((btConvexHullShape*)shape)->optimizeConvexHull();
 				shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 			}
 		}

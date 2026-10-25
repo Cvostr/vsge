@@ -144,7 +144,9 @@ btCollisionShape* RigidBodyComponent::CreateCollisionShape()
 			Mesh* mesh = meshResource->GetMesh();
 			Vec3* pos = mesh->GetPositions();
 
-			btCollisionShape* shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(Vec3));
+			btConvexHullShape* shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(Vec3));
+			// remove redundant vertices
+			shape->optimizeConvexHull();
 			shape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 			return shape;
 		}
@@ -163,10 +165,17 @@ void RigidBodyComponent::AddToWorld()
 		_collision_shape->calculateLocalInertia(_mass, local_intertia);
 	}
 
-	//release old collider shape
+	// release old rigidbody BEFORE collision shape
+	if (_rigidBody)
+	{
+		// remove it from scene, first
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidBody);
+		// destroy object itself
+		SAFE_RELEASE(_rigidBody);
+	}
+
+	// release old collider shape
 	SAFE_RELEASE(_collision_shape);
-	//release old rigidbody
-	SAFE_RELEASE(_rigidBody);
 
 	_collision_shape = CreateCollisionShape();
 	if (_collision_shape == nullptr)
