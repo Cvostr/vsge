@@ -413,6 +413,9 @@ Entity* Entity::GetRootSkinningEntity() {
 	if (HasComponent<AnimatorComponent>())
 		return this;
 
+	if (_parent == nullptr)
+		return nullptr;
+
 	return _parent->GetRootSkinningEntity();
 }
 
