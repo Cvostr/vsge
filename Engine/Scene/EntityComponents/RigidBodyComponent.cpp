@@ -19,7 +19,8 @@ RigidBodyComponent::RigidBodyComponent():
 	_gravity(0, -9.8f, 0),
 
 	_rigidBody(nullptr),
-	_collision_shape(nullptr)
+	_collision_shape(nullptr),
+	_motionState(nullptr)
 {
 }
 
@@ -122,7 +123,7 @@ btTransform RigidBodyComponent::GetEntityTransform() {
 btCollisionShape* RigidBodyComponent::CreateCollisionShape() 
 {
 	Vec3 scale = _entity->GetAbsoluteScale();
-
+	
 	//Получить объект MeshComponent
 	MeshComponent* meshComponent = _entity->GetComponent<MeshComponent>();
 
@@ -143,7 +144,7 @@ btCollisionShape* RigidBodyComponent::CreateCollisionShape()
 			
 			Mesh* mesh = meshResource->GetMesh();
 			Vec3* pos = mesh->GetPositions();
-
+			
 			btConvexHullShape* shape = new btConvexHullShape((float*)pos, mesh->GetVerticesCount(), sizeof(Vec3));
 			// remove redundant vertices
 			shape->optimizeConvexHull();
@@ -158,7 +159,7 @@ btCollisionShape* RigidBodyComponent::CreateCollisionShape()
 void RigidBodyComponent::AddToWorld() 
 {
 	btVector3 local_intertia(0, 0, 0);
-
+	
 	if (_collision_shape && _rigidBody)
 	{
 		local_intertia = _rigidBody ? _rigidBody->getLocalInertia() : local_intertia;
@@ -174,22 +175,24 @@ void RigidBodyComponent::AddToWorld()
 		SAFE_RELEASE(_rigidBody);
 	}
 
-	// release old collider shape
+	// Release old motion state
+	SAFE_RELEASE(_motionState)
+	// Release old collider shape
 	SAFE_RELEASE(_collision_shape);
-
+	
 	_collision_shape = CreateCollisionShape();
 	if (_collision_shape == nullptr)
 		return;
 
-	if(!_rigidBody)
-		_collision_shape->calculateLocalInertia(_mass, local_intertia);
+	
+	_collision_shape->calculateLocalInertia(_mass, local_intertia);
 
 	btTransform startTransform = GetEntityTransform();
-	// using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
+	// Using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+	_motionState = new btDefaultMotionState(startTransform);
 
 	// Info
-	btRigidBody::btRigidBodyConstructionInfo constructionInfo(_mass, motionState, _collision_shape, local_intertia);
+	btRigidBody::btRigidBodyConstructionInfo constructionInfo(_mass, _motionState, _collision_shape, local_intertia);
 	constructionInfo.m_friction = _friction;
 	constructionInfo.m_rollingFriction = _rolling_friction;
 	constructionInfo.m_restitution = _restitution;
@@ -247,6 +250,8 @@ void RigidBodyComponent::OnDestroy()
 		SAFE_RELEASE(_rigidBody)
 	}
 	SAFE_RELEASE(_collision_shape)
+	// Release old motion state
+	SAFE_RELEASE(_motionState)
 }
 
 void RigidBodyComponent::OnActivate() 

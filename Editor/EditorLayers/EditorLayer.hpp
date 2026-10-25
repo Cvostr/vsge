@@ -40,54 +40,31 @@ namespace VSGEditor {
 		Project _project;
 
 		bool GetPickingRay(VSGE::Ray& result);
-
-		
 	public:
 
 		EditorLayer();
-
 		~EditorLayer();
-
-		std::string& GetOpenedSceneFile() {
-			return _openedSceneFile;
-		}
-
-		int GetTransformMode() {
-			return _transformMode;
-		}
-
-		void SetTransformMode(int mode) {
-			_transformMode = mode;
-		}
 
 		static EditorLayer* Get() {
 			return _this;
 		}
 
-		VSGE::Camera* GetCamera() {
-			return mEditorCamera;
-		}
+		VSGE::Camera* GetCamera();
+		std::string& GetOpenedSceneFile();
+		
+		int GetTransformMode();
+		void SetTransformMode(int mode);
 
-		VSGE::Entity* GetPickedEntity() {
-			return _pickedEntity;
-		}
+		VSGE::Entity* GetPickedEntity();
+		void SetPickedEntity(VSGE::Entity* entity);
 
-		void SetPickedEntity(VSGE::Entity* entity) {
-			_pickedEntity = entity;
-		}
-
-		EditorCameraMode GetEditorCameraMode() {
-			return _camera_mode;
-		}
-
-		void SetEditorCameraMode(EditorCameraMode mode) {
-			_camera_mode = mode;
-		}
-
-		void fileEvent(const VSGE::FilesystemEvent& event);
+		EditorCameraMode GetEditorCameraMode();
+		void SetEditorCameraMode(EditorCameraMode mode);
 
 		bool OpenProject(const Project& project);
 		Project& GetProject();
+
+		void fileEvent(const VSGE::FilesystemEvent& event);
 
 		void OnAttach();
 		void OnUpdate();

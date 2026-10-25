@@ -83,8 +83,8 @@ void File_Menu::OnSave() {
 			SaveAs();
 		else
 			SaveScene(el->GetOpenedSceneFile());
+		
 		//save all materials
-
 		ResourceCache* res_cache = ResourceCache::Get();
 		for (uint32 resource_i = 0; resource_i < res_cache->GetResourcesCount(); resource_i++) {
 			Resource* res = res_cache->GetResources()[resource_i];

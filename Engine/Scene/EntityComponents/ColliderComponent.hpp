@@ -2,6 +2,7 @@
 
 #include "../IEntityComponent.hpp"
 #include <Math/Vec3.hpp>
+#include <bullet/LinearMath/btDefaultMotionState.h>
 #include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
 #include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 #include <unordered_set>
@@ -22,6 +23,7 @@ namespace VSGE {
 		btRigidBody* _rigidbody;
 		btGhostObject* _trigger;
 		btCollisionShape* _collision_shape;
+		btDefaultMotionState* _motionState;
 
 		std::unordered_set<Entity*> _overlapped;
 

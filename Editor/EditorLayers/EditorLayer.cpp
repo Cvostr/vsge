@@ -152,6 +152,38 @@ Project& EditorLayer::GetProject() {
 	return _project;
 }
 
+std::string& EditorLayer::GetOpenedSceneFile() {
+	return _openedSceneFile;
+}
+
+int EditorLayer::GetTransformMode() {
+	return _transformMode;
+}
+
+void EditorLayer::SetTransformMode(int mode) {
+	_transformMode = mode;
+}
+
+VSGE::Camera* EditorLayer::GetCamera() {
+	return mEditorCamera;
+}
+
+VSGE::Entity* EditorLayer::GetPickedEntity() {
+	return _pickedEntity;
+}
+
+void EditorLayer::SetPickedEntity(VSGE::Entity* entity) {
+	_pickedEntity = entity;
+}
+
+EditorCameraMode EditorLayer::GetEditorCameraMode() {
+	return _camera_mode;
+}
+
+void EditorLayer::SetEditorCameraMode(EditorCameraMode mode) {
+	_camera_mode = mode;
+}
+
 void EditorLayer::OnEvent(const VSGE::IEvent& event) 
 {
 	DispatchEvent<VSGE::EventMouseMotion>(event, EVENT_FUNC(EditorLayer::OnMouseMotion));

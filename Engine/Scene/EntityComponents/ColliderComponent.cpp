@@ -2,7 +2,6 @@
 #include "MeshComponent.hpp"
 #include <Scene/Entity.hpp>
 #include <Scene/Scene.hpp>
-#include <bullet/LinearMath/btDefaultMotionState.h>
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
 #include <Physics/PhysicsLayer.hpp>
@@ -14,6 +13,7 @@ ColliderComponent::ColliderComponent() :
 	_rigidbody(nullptr),
 	_trigger(nullptr),
 	_collision_shape(nullptr),
+	_motionState(nullptr),
 	_size(1, 1, 1),
 	_is_trigger(false)
 {
@@ -65,11 +65,13 @@ void ColliderComponent::AddToWorld() {
 		SAFE_RELEASE(_trigger);
 	}
 
-	//release old collider shape
+	// Release old motion state
+	SAFE_RELEASE(_motionState)
+	// Release old collider shape
 	SAFE_RELEASE(_collision_shape);
-	//Create new collision shape
+	// Create new collision shape
 	_collision_shape = GetBtShape();
-	//check new shape
+	// check new shape
 	if (_collision_shape == nullptr)
 	{
 		//Создать shape не получилось, выходим
@@ -79,10 +81,10 @@ void ColliderComponent::AddToWorld() {
 	btTransform startTransform = GetEntityTransform();
 	if (!_is_trigger) 
 	{
-		//using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
-		btDefaultMotionState* motionState = new btDefaultMotionState(startTransform);
-		//rigidbody info
-		btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, motionState, _collision_shape, local_intertia);
+		// using motionState is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+		_motionState = new btDefaultMotionState(startTransform);
+		// rigidbody info
+		btRigidBody::btRigidBodyConstructionInfo constructionInfo(0, _motionState, _collision_shape, local_intertia);
 		_rigidbody = new btRigidBody(constructionInfo);
 		_rigidbody->setUserPointer(_entity);
 		//apply gravity
@@ -224,7 +226,10 @@ void ColliderComponent::OnDestroy() {
 		_entity->GetScene()->GetPhysicalWorld()->RemoveCollisionObject(_trigger);
 		SAFE_RELEASE(_trigger)
 	}
+	// Release old collider shape
 	SAFE_RELEASE(_collision_shape)
+	// Release old motion state
+	SAFE_RELEASE(_motionState)
 }
 
 void ColliderComponent::OnActivate() {

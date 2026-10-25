@@ -3,7 +3,7 @@
 #include "../IEntityComponent.hpp"
 #include <Math/Vec3.hpp>
 #include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
-
+#include <bullet/LinearMath/btDefaultMotionState.h>
 
 namespace VSGE {
 
@@ -17,6 +17,7 @@ namespace VSGE {
 
 		btRigidBody* _rigidBody;
 		btCollisionShape* _collision_shape;
+		btDefaultMotionState* _motionState;
 	public:
 		RigidBodyComponent();
 
