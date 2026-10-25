@@ -12,11 +12,6 @@ namespace VSGE {
 
 	typedef unsigned long long ViewMask;
 
-	enum DefaultOrientation {
-		CAM_ORIENTATION_Z_UP,
-		CAM_ORIENTATION_Y_UP
-	};
-
 	class PostEffectsParams {
 	public:
 		bool _bloom_enabled;
@@ -38,7 +33,6 @@ namespace VSGE {
 
 	class Camera : public IEntityComponent {
 	private:
-		DefaultOrientation _defaultOrientation;
 		float _farPlane;
 		float _nearPlane;
 		float _fov;
