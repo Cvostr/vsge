@@ -59,19 +59,19 @@ void MonoScriptInstance::CallDefaultConstructor() {
     mono_runtime_object_init(_mono_class_instance);
 }
 
-void MonoScriptInstance::SetValuePtrToField(const std::string field, void* value) {
+void MonoScriptInstance::SetValuePtrToField(const std::string& field, void* value) {
     MonoClassField* field_desc = mono_class_get_field_from_name(_mono_class_desc->GetMonoClass(), field.c_str());
     if (field_desc) {
         mono_field_set_value(_mono_class_instance, field_desc, value);
     }
 }
 
-void MonoScriptInstance::SetStringToField(const std::string field, const String& str) {
+void MonoScriptInstance::SetStringToField(const std::string& field, const String& str) {
     MonoString* mono_str = mono_string_new_utf32(MonoScriptingLayer::Get()->GetDomain(), str.c_str(), str.Length());
     SetValuePtrToField(field, mono_str);
 }
 
-void MonoScriptInstance::SetStringToField(const std::string field, const std::string& str) {
+void MonoScriptInstance::SetStringToField(const std::string& field, const std::string& str) {
     MonoString* mono_str = mono_string_new(MonoScriptingLayer::Get()->GetDomain(), str.c_str());
     SetValuePtrToField(field, mono_str);
 }

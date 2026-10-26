@@ -35,9 +35,9 @@ namespace VSGE {
 		MonoMethod* GetUpdateMethod();
 		MonoObject* GetObject();
 
-		void SetValuePtrToField(const std::string field, void* value);
-		void SetStringToField(const std::string field, const String& str);
-		void SetStringToField(const std::string field, const std::string& str);
+		void SetValuePtrToField(const std::string& field, void* value);
+		void SetStringToField(const std::string& field, const String& str);
+		void SetStringToField(const std::string& field, const std::string& str);
 
 		void* GetValueOfField(const std::string& field);
 
