@@ -478,6 +478,8 @@ Entity* Entity::DublicateInternal() {
 
 	SceneSerializer serializer;
 	serializer.SetScene(_scene);
+
+	// Copy components
 	for (auto component : _components) {
 		ByteSerialize ser;
 		serializer.SerializeEntityComponentBinary(component, ser);
@@ -486,6 +488,18 @@ Entity* Entity::DublicateInternal() {
 		serializer.DeserializeEntityComponentBinary(new_entity, solver);
 	}
 
+	// Copy scripts
+	for (auto script : _scripts) {
+		ByteSerialize ser;
+		script->Serialize(ser);
+
+		ByteSolver solver(ser.GetBytes(), ser.GetSerializedSize());
+		EntityScriptComponent* script_ptr = new EntityScriptComponent;
+		script_ptr->Deserialize(solver);
+		new_entity->AddScript(script_ptr);
+	}
+
+	// Duplicate children
 	for (uint32 child_i = 0; child_i < _children.size(); child_i ++) {
 		Entity* new_child = _children[child_i]->DublicateInternal();
 		new_entity->AddChild(new_child, false);
