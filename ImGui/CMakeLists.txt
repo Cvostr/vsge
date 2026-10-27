@@ -12,7 +12,6 @@ file(GLOB_RECURSE SRC_FILES "*.cpp")
 set(SRC_FILES 
 	src/ImageBtnText.cpp
 	src/imgui.cpp
-	src/imgui_demo.cpp
 	src/imgui_draw.cpp
 	src/imgui_impl_sdl.cpp
 	src/imgui_impl_vulkan.cpp
