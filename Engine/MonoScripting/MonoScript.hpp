@@ -17,7 +17,7 @@ namespace VSGE {
 		std::string _class_name;
 		MonoClassDesc* _mono_class_desc;
 		MonoObject* _mono_class_instance;
-		//base class methods
+		// base class methods
 		MonoMethod* _update_method;
 
 		MonoMethodDesc* GetMethodDesc(const std::string& method);

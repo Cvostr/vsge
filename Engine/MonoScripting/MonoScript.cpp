@@ -17,6 +17,7 @@ MonoScriptInstance::~MonoScriptInstance() {
 }
 
 MonoMethodDesc* MonoScriptInstance::GetMethodDesc(const std::string& method) {
+    // Format request string as ClassName:MethodName
     std::string method_str = _class_name + ":" + method;
     return mono_method_desc_new(method_str.c_str(), false);
 }
@@ -95,13 +96,27 @@ void MonoScriptInstance::CallOnUpdate() {
 }
 
 void MonoScriptInstance::CallOnTriggerStay(void* entity) {
-   
+    void* args[1];
+    args[0] = &entity;
+    MonoMethod* method = GetMethod("OnTriggerStay(ulong)");
+    if (method)
+        CallMethod(method, args);
 }
+
 void MonoScriptInstance::CallOnTriggerEnter(void* entity) {
-
+    void* args[1];
+    args[0] = &entity;
+    MonoMethod* method = GetMethod("OnTriggerEnter(ulong)");
+    if (method)
+        CallMethod(method, args);
 }
-void MonoScriptInstance::CallOnTriggerExit(void* entity) {
 
+void MonoScriptInstance::CallOnTriggerExit(void* entity) {
+    void* args[1];
+    args[0] = &entity;
+    MonoMethod* method = GetMethod("OnTriggerLeave(ulong)");
+    if (method)
+        CallMethod(method, args);
 }
 
 void MonoScriptInstance::Release() {

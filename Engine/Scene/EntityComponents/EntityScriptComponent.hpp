@@ -95,9 +95,7 @@ namespace VSGE {
 		void Deserialize(ByteSolver& solver);
 
 		void OnTriggerStay(Entity* entity);
-
 		void OnTriggerEnter(Entity* entity);
-
 		void OnTriggerExit(Entity* entity);
 
 		DEFINE_ENTITY_COMPONENT(ENTITY_COMPONENT_SCRIPT, "Script")
