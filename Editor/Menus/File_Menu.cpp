@@ -44,9 +44,10 @@ void File_Menu::OnDrawMenu()
 {
 	if (ImGui::BeginMenu("File"))
 	{
-		if (ImGui::MenuItem("Save", NULL)) {
+		if (ImGui::MenuItem("Save", "Ctrl+S")) {
 			OnSave();
 		}
+
 		if (ImGui::MenuItem("Save As..", NULL)) {
 			SaveAs();
 		}

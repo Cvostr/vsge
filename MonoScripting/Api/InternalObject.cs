@@ -23,7 +23,28 @@ public class InternalObject{
     {
         return handle;
     }
-    
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null) 
+            return false;
+
+        if (object.ReferenceEquals(this, obj)) 
+            return true;
+
+        if (this.GetType() != obj.GetType()) 
+            return false;
+
+        InternalObject other = (InternalObject)obj;
+        return this.handle == other.handle;
+    }
+
+    public override int GetHashCode()
+    {
+        // truncate to 32-bit
+        return handle.GetHashCode();
+    }
+
     public static bool operator ==(InternalObject? left, InternalObject? right)
     {
         if (left is null)

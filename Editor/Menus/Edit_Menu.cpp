@@ -7,10 +7,10 @@ void Edit_Menu::OnDrawMenu() {
 	if (ImGui::BeginMenu("Edit"))
 	{
 
-		if (ImGui::MenuItem("Undo", NULL)) {
+		if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
 			
 		}
-		if (ImGui::MenuItem("Redo", NULL)) {
+		if (ImGui::MenuItem("Redo", "Ctrl+Y")) {
 			
 		}
 
