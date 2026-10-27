@@ -66,9 +66,9 @@ void MonoClassFieldDesc::Create(MonoClassDesc* class_desc, MonoClassField* mono_
 	MonoType* field_type = mono_field_get_type(mono_field);
 	_type_class = (mono_class_from_mono_type(field_type));
 
-	int visiblity = mono_field_get_flags(mono_field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
+	int visibility = mono_field_get_flags(mono_field) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
 
-	switch (visiblity) {
+	switch (visibility) {
 	case MONO_FIELD_ATTR_PRIVATE:
 		_visibility = FIELD_PRIVATE;
 		break;
@@ -95,7 +95,8 @@ MonoClassFieldDesc::MonoClassFieldDesc(const std::string& name, ValueType type) 
 	_name(name),
 	_class(nullptr),
 	_field(nullptr),
-	_type_class(nullptr)
+	_type_class(nullptr),
+	_visibility(FIELD_PRIVATE)
 {
 	_base_value.SetType(type);
 }

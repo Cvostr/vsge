@@ -8,7 +8,8 @@ using namespace VSGE;
 MonoScriptInstance::MonoScriptInstance() :
     _mono_class_desc(nullptr),
     _mono_class_instance(nullptr),
-    _update_method(nullptr)
+    _update_method(nullptr),
+    _trigger_stay_method(nullptr)
 {
 
 }
@@ -52,6 +53,8 @@ bool MonoScriptInstance::CreateClassByName(const std::string& class_name)
     _mono_class_instance = _mono_class_desc->CreateObjectInstance();
 
     _update_method = GetMethod("OnUpdate()");
+    // this method can be called frequently
+    _trigger_stay_method = GetMethod("OnTriggerStay(ulong)");
 
     return true;
 }
@@ -98,9 +101,8 @@ void MonoScriptInstance::CallOnUpdate() {
 void MonoScriptInstance::CallOnTriggerStay(void* entity) {
     void* args[1];
     args[0] = &entity;
-    MonoMethod* method = GetMethod("OnTriggerStay(ulong)");
-    if (method)
-        CallMethod(method, args);
+    if (_trigger_stay_method)
+        CallMethod(_trigger_stay_method, args);
 }
 
 void MonoScriptInstance::CallOnTriggerEnter(void* entity) {
