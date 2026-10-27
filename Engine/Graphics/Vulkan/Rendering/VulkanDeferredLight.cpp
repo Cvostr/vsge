@@ -382,13 +382,20 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf)
 		if (meshComponent == nullptr)
 			continue;
 
-		MeshResource* mesh_resource = meshComponent->GetMeshResource();
-		MaterialResource* mat_resource = entity->GetComponent<MaterialComponent>()->GetMaterialResource();
+		MaterialComponent* matComponent = entity->GetComponent<MaterialComponent>();
+		if (matComponent == nullptr)
+			continue;
+
+		MeshResource* meshResource = meshComponent->GetMeshResource();
+		MaterialResource* matResource = matComponent->GetMaterialResource();
+
+		if (meshResource == nullptr || matResource == nullptr)
+			continue;
 
 		//bind material
-		MaterialTemplate* templ = mat_resource->GetMaterial()->GetTemplate();
+		MaterialTemplate* templ = matResource->GetMaterial()->GetTemplate();
 		VulkanPipeline* pipl = (VulkanPipeline*)templ->GetPipeline();
-		Material* mat = mat_resource->GetMaterial();
+		Material* mat = matResource->GetMaterial();
 		VulkanMaterial* vmat = (VulkanMaterial*)mat->GetDescriptors();
 
 		cmdbuf->BindPipeline(*pipl);
@@ -398,12 +405,12 @@ void VulkanDeferredLight::DrawParticles(VulkanCommandBuffer* cmdbuf)
 
 		cmdbuf->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 
-		if (mesh_resource->GetState() == RESOURCE_STATE_READY) {
-			VulkanMesh* mesh = (VulkanMesh*)mesh_resource->GetMesh();
+		if (meshResource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)meshResource->GetMesh();
 			//Mark mesh resource used in this frame
-			mesh_resource->Use();
+			meshResource->Use();
 			//Mark material resource used in this frame
-			mat_resource->Use();
+			matResource->Use();
 				
 			// 1 - offset for cameras matrices, 2 - for transform.
 			// particles transform is written to other descriptor set

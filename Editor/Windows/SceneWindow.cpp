@@ -145,9 +145,15 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
         ImGui::SetNextItemOpen(true);
     }
 
-    //Draw Tree Node
+    // Draw Tree Node
     string _unique_name = entity->GetName().c_str() + string("##") + to_string(_drawn_entities);
     bool tree_open = ImGui::TreeNodeEx(_unique_name.c_str(), flags);
+
+    // Return back to white color
+    if (!entity->IsActive()) {
+        ImGui::PopStyleColor();
+    }
+
     if (!isRoot) {
         if (ImGui::BeginPopupContextItem())
         {
@@ -160,7 +166,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
                 InspectorWindow::Get()->SetShowingEntity(nullptr);
                 _entityRemoved = true;
             }
-            if (ImGui::MenuItem("Dublicate")) {
+            if (ImGui::MenuItem("Duplicate")) {
                 entity->Dublicate();
             }
             if (ImGui::MenuItem("Save prefab")) {
@@ -206,10 +212,6 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
         return;
     }
 
-    //Return back to white color
-    if (!entity->IsActive()) {
-        ImGui::PopStyleColor();
-    }
     ImGuiDragDropFlags src_flags = 0;
     src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
     src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
