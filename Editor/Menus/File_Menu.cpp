@@ -17,7 +17,7 @@
 using namespace VSGEditor;
 using namespace VSGE;
 
-void SaveScene(std::string file) {
+void SaveScene(const std::string& file) {
 	EditorLayer* el = EditorLayer::Get();
 
 	VSGE::SceneSerializer sc;

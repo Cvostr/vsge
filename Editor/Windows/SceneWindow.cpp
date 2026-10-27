@@ -20,6 +20,11 @@ using namespace VSGEditor;
 using namespace VSGE;
 using namespace std;
 
+SceneWindow::SceneWindow() {
+    _drawn_entities = 0;
+    _entityRemoved = false;
+}
+
 void SceneWindow::OnDrawWindow() {
     Scene* scene = SceneLayer::Get()->GetMainScene();
     

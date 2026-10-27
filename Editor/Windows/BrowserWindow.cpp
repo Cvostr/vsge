@@ -91,6 +91,10 @@ FileBrowserWindow::FileBrowserWindow(std::string RootDir) {
     openRenameDialog = false;
 }
 
+const std::string& FileBrowserWindow::GetCurrentDir() {
+    return _currentDir;
+}
+
 void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
     VSGE::Resource* resource = nullptr;
     if (Entry.ext == ".scn" && MonoScriptStorage::Get()->IsScriptingReady() && !SceneLayer::Get()->IsSceneLoading()) {

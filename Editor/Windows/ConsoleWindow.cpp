@@ -5,9 +5,12 @@
 
 using namespace VSGEditor;
 
+ConsoleWindow::ConsoleWindow() {
+	_type = VSGE::LogType::LOG_TYPE_INFO;
+}
+
 void ConsoleWindow::OnDrawWindow() {
 	if (Draw("Console")) {
-
 
 		std::vector<VSGE::MessageEvent*>* msg_array = &_infoMessages;
 		if (_type == VSGE::LogType::LOG_TYPE_ERROR) {
@@ -52,18 +55,22 @@ void ConsoleWindow::OnDrawWindow() {
 }
 
 
-void ConsoleWindow::addMsg(VSGE::MessageEvent* msg_event) {
-	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_INFO) {
-		_infoMessages.push_back(msg_event);
-	}
-	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_ERROR) {
-		_errorMessages.push_back(msg_event);
-	}
-	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_WARN) {
-		_warnMessages.push_back(msg_event);
-	}
-	if (msg_event->GetMsgType() == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
-		_scriptErrors.push_back(msg_event);
+void ConsoleWindow::AddMessage(VSGE::MessageEvent* msg_event) 
+{
+	switch (msg_event->GetMsgType()) 
+	{
+		case VSGE::LogType::LOG_TYPE_INFO:
+			_infoMessages.push_back(msg_event);
+			break;
+		case VSGE::LogType::LOG_TYPE_ERROR:
+			_errorMessages.push_back(msg_event);
+			break;
+		case VSGE::LogType::LOG_TYPE_WARN:
+			_warnMessages.push_back(msg_event);
+			break;
+		case VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR:
+			_scriptErrors.push_back(msg_event);
+			break;
 	}
 }
 

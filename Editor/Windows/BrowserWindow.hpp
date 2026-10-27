@@ -74,8 +74,6 @@ namespace VSGEditor {
 		void UpdateDirectoryContent();
 		void OpenFile(const FileEntry& Entry);
 
-		const std::string& GetCurrentDir() {
-			return _currentDir;
-		}
+		const std::string& GetCurrentDir();
 	};
 }

@@ -12,9 +12,6 @@ namespace VSGEditor {
 		void OnDrawWindow();
 		void DrawEntityTreeHierarchy(VSGE::Entity* entity);
 
-		SceneWindow() {
-			_drawn_entities = 0;
-			_entityRemoved = false;
-		}
+		SceneWindow();
 	};
 }

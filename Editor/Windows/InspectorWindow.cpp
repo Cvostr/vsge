@@ -32,6 +32,23 @@ using namespace VSGE;
 
 InspectorWindow* InspectorWindow:: _this = nullptr;
 
+InspectorWindow::InspectorWindow() :
+	mShowingEntity(nullptr),
+	mShowingResource(nullptr)
+{
+	_this = this;
+}
+
+void InspectorWindow::SetShowingEntity(VSGE::Entity* entity) {
+	mShowingEntity = entity;
+	mShowingResource = nullptr;
+}
+
+void InspectorWindow::SetShowingResource(VSGE::Resource* resource) {
+	mShowingEntity = nullptr;
+	mShowingResource = resource;
+}
+
 template<class T>
 void InspectorWindow::DrawComponent() {
 	if (mShowingEntity->HasComponent<T>()) {

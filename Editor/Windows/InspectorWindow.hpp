@@ -13,15 +13,8 @@ namespace VSGEditor {
 		VSGE::Entity* mShowingEntity;
 		VSGE::Resource* mShowingResource;
 	public:
-		void SetShowingEntity(VSGE::Entity* entity) {
-			mShowingEntity = entity;
-			mShowingResource = nullptr;
-		}
-
-		void SetShowingResource(VSGE::Resource* resource) {
-			mShowingEntity = nullptr;
-			mShowingResource = resource;
-		}
+		void SetShowingEntity(VSGE::Entity* entity);
+		void SetShowingResource(VSGE::Resource* resource);
 
 		void OnDrawWindow();
 		void DrawEntityContents();
@@ -46,11 +39,6 @@ namespace VSGEditor {
 		template<class T>
 		void DrawComponent();
 
-		InspectorWindow() :
-			mShowingEntity(nullptr),
-			mShowingResource(nullptr)
-		{
-			_this = this;
-		}
+		InspectorWindow();
 	};
 }
