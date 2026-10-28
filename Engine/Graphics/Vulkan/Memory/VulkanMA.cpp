@@ -1,6 +1,6 @@
 #include "VulkanMA.hpp"
-#include "VulkanRAPI.hpp"
-#include "VulkanCommandBuffer.hpp"
+#include <Graphics/Vulkan/VulkanRAPI.hpp>
+#include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Core/Threading/Thread.hpp>
 #include <Graphics/Vulkan/VulkanCommandBuffer.hpp>
 #include <Core/Logger.hpp>
@@ -33,6 +33,12 @@ VulkanMA::VulkanMA(VulkanInstance* inst, VulkanDevice* device)
     }
 }
 
+VulkanMA::~VulkanMA()
+{
+    // TODO: ALL Rersources should be cleared first!!!
+    vmaDestroyAllocator(*((VmaAllocator*)allocator));
+}
+
 void VulkanMA::allocate(const VkBufferCreateInfo createInfo, VkBuffer* buffer) {
 
     VmaAllocationCreateInfo allocInfo = {};
@@ -53,7 +59,9 @@ void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 si
     vbAllocCreateInfo.flags = 0;
 
     VmaAllocationInfo stagingVertexBufferAllocInfo = {};
-    vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, &stagingVertexBufferAllocInfo);
+    if (vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, &stagingVertexBufferAllocInfo) != VK_SUCCESS) {
+        throw std::runtime_error("Error creating GPU Vulkan Buffer with size " + size);
+    }
 }
 
 void VulkanMA::allocateCpu(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size, void** mapped) {
@@ -125,13 +133,13 @@ void VulkanMA::allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, void* dat
     vbInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | flags;
     vbAllocCreateInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
     vbAllocCreateInfo.flags = 0;
-    //Create GPU buffer
-    if (vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, nullptr) != VK_SUCCESS) 
+    // Create GPU buffer
+    if (vmaCreateBuffer(*((VmaAllocator*)allocator), &vbInfo, &vbAllocCreateInfo, &buffer->Buffer, (VmaAllocation*)&buffer->_allocation, nullptr) != VK_SUCCESS)
     {
         throw std::runtime_error("Error creating GPU Vulkan Buffer with size " + size);
     }
 
-    //Copy data to GPU buffer
+    // Copy data to GPU buffer
     if(data != nullptr)
         copy(buffer->Buffer, 0, data, size);
 }

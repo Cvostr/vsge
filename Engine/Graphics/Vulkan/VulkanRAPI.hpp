@@ -5,7 +5,7 @@
 #include "VulkanInstance.hpp"
 #include "VulkanDevice.hpp"
 #include "VulkanSwapchain.hpp"
-#include "VulkanMA.hpp"
+#include "Memory/VulkanMA.hpp"
 
 namespace VSGE {
 	class VulkanRAPI : public IRenderingAPI {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../GpuBuffer.hpp"
-#include "VulkanMA.hpp"
+#include "Memory/VulkanMA.hpp"
 
 #define UNI_ALIGN ((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetUniformBufferMinAlignment())
 #define UNI_SBO_ALIGN ((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment())

@@ -86,7 +86,7 @@ VkFormat VSGE::GetFormatVK(TextureFormat format) {
 
 TextureFormat VSGE::GetTextureFormat(VkFormat format){
 	TextureFormat _format;
-    switch(format){
+    switch(format) {
         case VK_FORMAT_D24_UNORM_S8_UINT:
 		_format = FORMAT_DEPTH_24_STENCIL_8;
 		break;
@@ -116,10 +116,9 @@ VulkanTexture::VulkanTexture(
 	uint32 layers,
 	uint32 mips,
 	VkImageUsageFlags usage,
-	VkImageLayout layout)
+	VkImageLayout layout) :
+	_image(image, allocation)
 {
-	_image.Image = image;
-	_image._allocation = allocation;
 	_imageView = imageView;
 	_maxWidth = width;
 	_maxHeight = height;

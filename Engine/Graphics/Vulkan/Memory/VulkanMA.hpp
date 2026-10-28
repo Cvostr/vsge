@@ -1,32 +1,27 @@
 #pragma once
 
-#include "VulkanDevice.hpp"
-
+#include "../VulkanDevice.hpp"
 
 namespace VSGE {
+
+	class VulkanMA;
+
 	struct VmaVkBuffer {
 		VkBuffer Buffer;
 		void* _allocation;
 
-		VmaVkBuffer() :
-			Buffer(VK_NULL_HANDLE),
-			_allocation(nullptr)
-		{
-		}
-
+		VmaVkBuffer();
+		VmaVkBuffer(VmaVkBuffer&& old) noexcept;
 		VmaVkBuffer(const VmaVkBuffer& buffer) = delete;
 	};
 
 	struct VmaVkImage {
 		VkImage Image;
 		void* _allocation;
-		VmaVkImage() :
-			Image(VK_NULL_HANDLE),
-			_allocation(nullptr)
-		{
-			
-		}
 
+		VmaVkImage();
+		VmaVkImage(VkImage image, void* allocation);
+		VmaVkImage(VmaVkImage&& old) noexcept;
 		VmaVkImage(const VmaVkImage& image) = delete;
 	};
 
@@ -52,6 +47,7 @@ namespace VSGE {
 
 		VulkanMA(VulkanInstance* inst, VulkanDevice* device);
 		VulkanMA(const VulkanMA&) = delete;
+		~VulkanMA();
 
 		void allocate(const VkBufferCreateInfo createInfo, VkBuffer* buffer);
 		void allocate(VkBufferUsageFlags flags, VmaVkBuffer* buffer, uint32 size);

@@ -48,7 +48,9 @@ set(SRC_FILES
 				Graphics/Vulkan/VulkanDevice.cpp
 				Graphics/Vulkan/VulkanFramebuffer.cpp
 				Graphics/Vulkan/VulkanInstance.cpp
-				Graphics/Vulkan/VulkanMA.cpp
+				Graphics/Vulkan/Memory/VulkanMA.cpp
+				Graphics/Vulkan/Memory/VmaVirtualBlock.cpp
+				Graphics/Vulkan/Memory/VmaVkObjects.cpp
 				Graphics/Vulkan/VulkanMesh.cpp
 				Graphics/Vulkan/VulkanPipeline.cpp
 				Graphics/Vulkan/VulkanPipelineLayout.cpp
@@ -229,7 +231,8 @@ set(HEADER1_FILES	Audio/AudioBuffer.hpp
 					Graphics/Vulkan/VulkanDevice.hpp
 					Graphics/Vulkan/VulkanFramebuffer.hpp
 					Graphics/Vulkan/VulkanInstance.hpp
-					Graphics/Vulkan/VulkanMA.hpp
+					Graphics/Vulkan/Memory/VmaVirtualBlock.hpp
+					Graphics/Vulkan/Memory/VulkanMA.hpp
 					Graphics/Vulkan/VulkanMesh.hpp
 					Graphics/Vulkan/VulkanPipeline.hpp
 					Graphics/Vulkan/VulkanPipelineLayout.hpp

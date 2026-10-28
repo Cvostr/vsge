@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Texture.hpp"
-#include "VulkanMA.hpp"
+#include "Memory/VulkanMA.hpp"
 
 namespace VSGE {
 
