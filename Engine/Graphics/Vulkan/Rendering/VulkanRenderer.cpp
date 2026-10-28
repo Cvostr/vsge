@@ -18,6 +18,9 @@ using namespace VSGE;
 
 VulkanRenderer* VulkanRenderer::_this = nullptr;
 
+// Allocate 3 MiB for materials buffer
+#define MATERIALS_BUFFER_SIZE (3 * 1024 * 1024)
+
 VulkanRenderer::VulkanRenderer() : IRenderer()
 {
 	_this = this;
@@ -56,6 +59,10 @@ void VulkanRenderer::SetupRenderer()
 
 	_lights_buffer = new LightsBuffer;
 	_lights_buffer->Create();
+
+	// Allocate one buffer to store all material params
+	_materialsVirtBlock = new CVmaVirtualBlock();
+	_materialsVirtBlock->Create(MATERIALS_BUFFER_SIZE);
 
 	VulkanRenderingGenerics::Get()->Init();
 
@@ -213,6 +220,7 @@ void VulkanRenderer::DestroyRenderer()
 	SAFE_RELEASE(_ibl_map)
 	SAFE_RELEASE(_ui_renderer)
 	SAFE_RELEASE(_lights_buffer)
+	SAFE_RELEASE(_materialsVirtBlock)
 }
 
 uint32 VulkanRenderer::GetUniformTransformBufferElementSize()

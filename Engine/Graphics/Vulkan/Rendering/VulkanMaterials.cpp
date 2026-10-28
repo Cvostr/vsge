@@ -5,14 +5,16 @@
 
 using namespace VSGE;
 
+#define MATERIAL_BUFF_SIZE 512
+
 VulkanMaterial::VulkanMaterial() {
 	_fragmentDescriptorSet = nullptr;
-	_paramsBuffer = new VulkanBuffer(GpuBufferType::GPU_BUFFER_TYPE_UNIFORM);
+	_virtualBlock = nullptr;
+	_virtualOffset = 0;
 }
 
 VulkanMaterial::~VulkanMaterial() {
 	SAFE_RELEASE(_fragmentDescriptorSet);
-	SAFE_RELEASE(_paramsBuffer);
 }
 
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
@@ -52,13 +54,17 @@ VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
 
 	if (material->GetDescriptors() == nullptr) {
 		VulkanMaterial* mat = new VulkanMaterial;
-		//Create params buffer
-		mat->_paramsBuffer->Create(1024);
-		//Create descriptor from material template
+
+		// Allocate virtual memory block for that material
+		mat->_virtualBlock = _materialsVirtBlock->Allocate(MATERIAL_BUFF_SIZE, &mat->_virtualOffset, 16);
+		// Create descriptor from material template
 		mat->_fragmentDescriptorSet = CreateDescriptorSetFromMaterialTemplate(material->GetTemplate());
-		//Add buffer to descriptor
-		mat->_fragmentDescriptorSet->WriteDescriptorBuffer(0, mat->_paramsBuffer, 0, 1024);
-		//Store descriptor pointer in material
+		// Add buffer to descriptor
+		mat->_fragmentDescriptorSet->WriteDescriptorBuffer(0,
+			_materialsVirtBlock->GetBuffer(), 
+			mat->_virtualOffset, 
+			MATERIAL_BUFF_SIZE);
+		// Store descriptor pointer in material
 		material->SetDescriptors(mat);
 
 		return mat;
@@ -145,11 +151,13 @@ void VulkanRenderer::UpdateMaterialDescrSet(Material* mat) {
 			mat->_texturesDirty = false;
 	}
 
-	if (mat->_paramsDirty) {
-		char buffer[1024];
+	if (mat->_paramsDirty) 
+	{
+		char buffer[MATERIAL_BUFF_SIZE];
 		uint32 size = mat->CopyParamsToBuffer(buffer);
-
-		vmat->_paramsBuffer->WriteData(0, size, buffer);
+		// Update gpu buffer memory
+		_materialsVirtBlock->GetBuffer()->WriteData(vmat->_virtualOffset, MATERIAL_BUFF_SIZE, buffer);
+		// Clean dirty mark
 		mat->_paramsDirty = false;
 	}
 }

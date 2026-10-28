@@ -7,7 +7,8 @@ namespace VSGE {
 	class VulkanMaterial : public MaterialDescriptor {
 	public:
 		VulkanDescriptorSet* _fragmentDescriptorSet;
-		VulkanBuffer* _paramsBuffer;
+		VkDeviceSize _virtualOffset;
+		void* _virtualBlock;
 
 		VulkanMaterial();
 		~VulkanMaterial();

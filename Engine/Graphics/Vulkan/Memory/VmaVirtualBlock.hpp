@@ -13,7 +13,7 @@ namespace VSGE {
 		VulkanBuffer* GetBuffer();
 
 		void Create(size_t memsz);
-		VmaVirtualAllocation Allocate(size_t size, size_t alignment = 16);
+		VmaVirtualAllocation Allocate(size_t size, VkDeviceSize* offset, size_t alignment = 16);
 		void Free(VmaVirtualAllocation allocation);
 	};
 }

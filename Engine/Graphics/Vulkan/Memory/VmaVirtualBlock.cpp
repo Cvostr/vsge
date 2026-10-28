@@ -1,7 +1,5 @@
+//#define VMA_IMPLEMENTATION
 #include "VmaVirtualBlock.hpp"
-
-#define VMA_IMPLEMENTATION
-#include <vma/vk_mem_alloc.h>
 
 using namespace VSGE;
 
@@ -32,15 +30,15 @@ void CVmaVirtualBlock::Create(size_t memsz)
 
 	if (result != VK_SUCCESS) {
 		// TODO: handle
+		throw std::runtime_error("Error creating Vulkan Memory Allocator VirtualBlock");
 	}
 
 	// Create real buffer
 	_buffer->Create(memsz);
 }
 
-VmaVirtualAllocation CVmaVirtualBlock::Allocate(size_t size, size_t alignment)
+VmaVirtualAllocation CVmaVirtualBlock::Allocate(size_t size, VkDeviceSize* offset, size_t alignment)
 {
-	VkDeviceSize offset = 0;
 	VmaVirtualAllocation resultAlloc;
 
 	VmaVirtualAllocationCreateInfo allocCreateInfo = {};
@@ -50,10 +48,10 @@ VmaVirtualAllocation CVmaVirtualBlock::Allocate(size_t size, size_t alignment)
 	allocCreateInfo.pUserData = nullptr;		// Optional: debug label
 
 	VkResult result = vmaVirtualAllocate(
-		_vmaVirtualBlock,     // The block to allocate inside of
+		_vmaVirtualBlock,   // The block to allocate inside of
 		&allocCreateInfo,   // The allocation requirements
-		&resultAlloc,			// Output: The unique handle for this allocation
-		&offset           // Output: The calculated byte offset within the block
+		&resultAlloc,		// Output: The unique handle for this allocation
+		offset				// Output: The calculated byte offset within the block
 	);
 
 	return result == VK_SUCCESS ? resultAlloc : VK_NULL_HANDLE;

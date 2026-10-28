@@ -8,6 +8,7 @@
 #include "../VulkanSynchronization.hpp"
 #include "../VulkanCommandBuffer.hpp"
 #include "../VulkanPipeline.hpp"
+#include "../Memory/VmaVirtualBlock.hpp"
 
 #include <Scene/EntityComponents/LightProbeComponent.hpp>
 
@@ -23,8 +24,6 @@
 #include "PBR/VulkanIBL.hpp"
 #include <queue>
 #include <future>
-
-#define MATERIAL_SIZE 512
 
 namespace VSGE {
 
@@ -48,6 +47,8 @@ namespace VSGE {
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
 		VulkanBuffer* mParticlesTransformShaderBuffer;
 		LightsBuffer* _lights_buffer;
+
+		CVmaVirtualBlock* _materialsVirtBlock;
 
 		VulkanUiRenderer* _ui_renderer;
 		VulkanCamerasBuffer* _cameras_buffer;
