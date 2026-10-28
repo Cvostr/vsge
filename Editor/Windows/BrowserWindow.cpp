@@ -151,6 +151,9 @@ void FileBrowserWindow::OnDrawWindow() {
             }
             ImGui::EndMenu();
         }
+        if (ImGui::MenuItem("Open in Explorer")) {
+            Mpi::Desktop::openFile(Mpi::File(_currentDir));
+        }
 
         ImGui::EndPopup();
 
