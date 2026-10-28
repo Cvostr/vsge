@@ -31,9 +31,9 @@ void VSGEditor::DrawColliderComponent(VSGE::ColliderComponent* clc) {
 	Vec3 center = clc->GetCenter();
 	Vec3 size = clc->GetSize();
 
-	DrawVec3Control("Center", center);
-	DrawVec3Control("Size", size);
+	if (DrawVec3Control("Center", center))
+		clc->SetCenter(center);
 
-	clc->SetCenter(center);
-	clc->SetSize(size);
+	if (DrawVec3Control("Size", size))
+		clc->SetSize(size);
 }

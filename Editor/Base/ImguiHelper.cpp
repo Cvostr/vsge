@@ -48,13 +48,15 @@ void DrawControlHeader(const std::string& title) {
 	ImGui::PushID(title.c_str());
 }
 
-void VSGEditor::DrawVec3Control(const std::string& text, Vec3& value, bool drag) {
+bool VSGEditor::DrawVec3Control(const std::string& text, Vec3& value, bool drag) {
+	bool result;
 	DrawControlHeader(text);
 	if(drag)
-		ImGui::DragFloat3("##v", &value.x);
+		result = ImGui::DragFloat3("##v", &value.x);
 	else
-		ImGui::InputFloat3("##v", &value.x);
+		result = ImGui::InputFloat3("##v", &value.x);
 	ImGui::PopID();
+	return result;
 }
 
 void VSGEditor::DrawVec2Control(const std::string& text, Vec2& value, bool drag) {
@@ -101,10 +103,12 @@ void VSGEditor::DrawCheckboxControl(const std::string& text, bool& value) {
 	ImGui::PopID();
 }
 
-void VSGEditor::DrawStringControl(const std::string& text, std::string& value) {
+bool VSGEditor::DrawStringControl(const std::string& text, std::string& value) {
+	bool result;
 	DrawControlHeader(text);
-	ImGui::InputText("##v", &value);
+	result = ImGui::InputText("##v", &value);
 	ImGui::PopID();
+	return result;
 }
 
 bool VSGEditor::DrawComboControl(const std::string& text, const std::string& current) {

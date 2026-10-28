@@ -455,14 +455,14 @@ void Entity::RemoveScript(EntityScriptComponent* script) {
 	script->OnDestroy();
 }
 
-Entity* Entity::Dublicate()
+Entity* Entity::Duplicate()
 {
-	Entity* entity = DublicateInternal();
+	Entity* entity = DuplicateInternal();
 	GetParent()->AddChild(entity, false);
 	return entity;
 }
 
-Entity* Entity::DublicateInternal() {
+Entity* Entity::DuplicateInternal() {
 	Entity* new_entity = _scene->AddNewEntity(GetName());
 
 	//new_entity->SetPosition(GetAbsolutePosition());
@@ -501,7 +501,7 @@ Entity* Entity::DublicateInternal() {
 
 	// Duplicate children
 	for (uint32 child_i = 0; child_i < _children.size(); child_i ++) {
-		Entity* new_child = _children[child_i]->DublicateInternal();
+		Entity* new_child = _children[child_i]->DuplicateInternal();
 		new_entity->AddChild(new_child, false);
 	}
 

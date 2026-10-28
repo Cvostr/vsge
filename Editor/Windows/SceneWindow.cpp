@@ -167,7 +167,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
                 _entityRemoved = true;
             }
             if (ImGui::MenuItem("Duplicate")) {
-                entity->Dublicate();
+                entity->Duplicate();
             }
             if (ImGui::MenuItem("Save prefab")) {
                 unsigned char* prefab_data = nullptr;
