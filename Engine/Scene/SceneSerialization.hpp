@@ -14,12 +14,8 @@ namespace VSGE {
 		
 		SceneSerializer();
 
-		void SetScene(Scene* scn) {
-			_scene = scn;
-		}
-		void SetPermanentScene(Scene* scn) {
-			_permanentScene = scn;
-		}
+		void SetScene(Scene* scn);
+		void SetPermanentScene(Scene* scn);
 
 		void SerializeBinary(byte** data, uint32& size);
 		void SerializeBinary(const std::string& path);
@@ -30,7 +26,7 @@ namespace VSGE {
 		///DESERIALIZE
 
 		void DeserializeEntityComponentBinary(Entity* ent, ByteSolver& solver);
-		void DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id = nullptr);
+		void DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id = nullptr, bool addToParent = true);
 
 		void DeserializeBinary(const std::string& path);
 		void DeserializeBinary(byte* data, uint32 size);

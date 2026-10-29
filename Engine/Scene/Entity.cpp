@@ -462,7 +462,8 @@ Entity* Entity::Duplicate()
 	return entity;
 }
 
-Entity* Entity::DuplicateInternal() {
+Entity* Entity::DuplicateInternal() 
+{
 	Entity* new_entity = _scene->AddNewEntity(GetName());
 
 	//new_entity->SetPosition(GetAbsolutePosition());

@@ -11,6 +11,13 @@ SceneSerializer::SceneSerializer() :
 	_permanentScene(nullptr)
 {}
 
+void SceneSerializer::SetScene(Scene* scn) {
+	_scene = scn;
+}
+void SceneSerializer::SetPermanentScene(Scene* scn) {
+	_permanentScene = scn;
+}
+
 void SceneSerializer::SerializeBinary(const std::string& path) {
 	byte* data = nullptr;
 	uint32 size = 0;
@@ -136,7 +143,7 @@ void SceneSerializer::DeserializeBinary(byte* data, uint32 size)
 	}
 }
 
-void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id) 
+void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, Guid* parent_id, bool addToParent)
 {
 	ent->SetName(solver.ReadNextString());
 	ent->SetGuid(solver.GetValue<Guid>());
@@ -150,10 +157,13 @@ void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, G
 
 	uint32 components_count = solver.GetValue<uint32>();
 	uint32 scripts_count = solver.GetValue<uint32>();
-	//Deserialize components
+	
+	// Deserialize components
 	for (uint32 comp_i = 0; comp_i < components_count; comp_i++) {
 		DeserializeEntityComponentBinary(ent, solver);
 	}
+
+	// Deserialize scripts
 	for (uint32 script_i = 0; script_i < scripts_count; script_i++) {
 		EntityScriptComponent* script_ptr = new EntityScriptComponent;
 		script_ptr->Deserialize(solver);
@@ -163,11 +173,14 @@ void SceneSerializer::DeserializeEntityBinary(Entity* ent, ByteSolver& solver, G
 	if (parent_id != nullptr) {
 		*parent_id = parent;
 	}
-	//Find parent
-	Entity* parent_ent = _scene->GetEntityWithGuid(parent);
-	//Add child to parent without retransforming
-	if(parent_ent != nullptr)
-		parent_ent->AddChild(ent, false);
+
+	if (addToParent) {
+		// Find parent
+		Entity* parent_ent = _scene->GetEntityWithGuid(parent);
+		// Add child to parent without retransforming
+		if (parent_ent != nullptr)
+			parent_ent->AddChild(ent, false);
+	}
 }
 
 void SceneSerializer::DeserializeEntityComponentBinary(Entity* ent, ByteSolver& solver) {

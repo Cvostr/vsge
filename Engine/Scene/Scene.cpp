@@ -100,30 +100,42 @@ void Scene::AddFromPrefab(byte* data, uint32 size) {
 	SceneSerializer serializer;
 	serializer.SetScene(this);
 
+	// array of Entity ID mappings (OLD ID -> NEW ID)
 	std::vector<tGuidPair> aliases;
+	// Add first mapping Root -> Root
 	Guid zero_id = Guid(0, 0, 0, 0);
 	aliases.push_back(std::make_pair(zero_id, zero_id));
 
-	for (uint32 entity_i = 0; entity_i < entities_count; entity_i++) {
+	for (uint32 entity_i = 0; entity_i < entities_count; entity_i++) 
+	{
 		Entity* ent = new Entity;
 		Guid parent_id;
-		serializer.DeserializeEntityBinary(ent, solver, &parent_id);
+		serializer.DeserializeEntityBinary(ent, solver, &parent_id, false);
+
+		// old ID, which object had in prefab
 		Guid old_id = ent->GetGuid();
-		ent->SetGuid(Guid());
-		Guid new_id = ent->GetGuid();
+		
+		// new ID, which object will have after prefab restoring
+		Guid new_id = Guid();
+		ent->SetGuid(new_id);
+
+		// save mapping from prefab ID to actual scene new ID
 		aliases.push_back(std::make_pair(old_id, new_id));
 
+		// find ID of parent in new scene
 		Guid new_parent_id;
-
-		for (auto alias : aliases) {
+		for (auto& alias : aliases) {
 			if (alias.first == parent_id) {
 				new_parent_id = alias.second;
 			}
 		}
+
+		// reparent new object
 		Entity* parent = GetEntityWithGuid(new_parent_id);
 		if (!parent)
 			parent = _rootEntity;
-		parent->AddChild(ent);
+
+		parent->AddChild(ent, false);
 	}
 }
 
