@@ -10,7 +10,9 @@ VulkanFinalPass::VulkanFinalPass() :
 	_rp(nullptr),
 	_copy_shader(nullptr),
 	_render_to_swapchain(true),
-	_draw_ui(false)
+	_draw_ui(false),
+	_width(1280),
+	_height(720)
 {}
 
 VulkanFinalPass::~VulkanFinalPass() {
@@ -19,6 +21,7 @@ VulkanFinalPass::~VulkanFinalPass() {
 
 void VulkanFinalPass::Create() {
 	_rp = new VulkanRenderPass;
+	_rp->SetClearSize(_width, _height);
 	if (_render_to_swapchain)
 		_rp->PushColorOutputAttachment();
 	else
@@ -65,7 +68,7 @@ void VulkanFinalPass::Destroy()
 }
 void VulkanFinalPass::CreateFramebuffer() {
 	_fb = new VulkanFramebuffer;
-	_fb->SetSize(1280, 720);
+	_fb->SetSize(_width, _height);
 	_fb->AddAttachment(FORMAT_RGBA);
 	_fb->Create(_rp);
 }

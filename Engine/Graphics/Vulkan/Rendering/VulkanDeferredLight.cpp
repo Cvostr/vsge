@@ -141,7 +141,7 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	_deferred_descriptor->Create();
 
 	// Add Cameras buffer
-	_deferred_descriptor->WriteDescriptorBuffer(1, camerasBuffer->GetCamerasBuffer());
+	_deferred_descriptor->WriteDescriptorBuffer(1, camerasBuffer->GetCamerasBuffer(), 0, CAMERA_ELEM_SIZE);
 	// Add Light buffer
 	_deferred_descriptor->WriteDescriptorBuffer(2, (VulkanBuffer*)lightsBuffer->GetLightsGpuBuffer());
 	_deferred_descriptor->WriteDescriptorBuffer(15, lightProbesInfoBuffer);

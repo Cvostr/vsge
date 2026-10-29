@@ -83,7 +83,7 @@ void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuf
 
 	// Create all descriptor sets
 	_transforms_descriptor_set->Create();
-	_transforms_descriptor_set->WriteDescriptorBuffer(0, camerasBuffer->GetCamerasBuffer());
+	_transforms_descriptor_set->WriteDescriptorBuffer(0, camerasBuffer->GetCamerasBuffer(), 0, CAMERA_ELEM_SIZE);
 
 	_animations_descriptor_set->Create();
 	_particles_descriptor_set->Create();
