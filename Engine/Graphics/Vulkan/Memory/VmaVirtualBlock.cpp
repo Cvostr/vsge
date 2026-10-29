@@ -1,4 +1,3 @@
-//#define VMA_IMPLEMENTATION
 #include "VmaVirtualBlock.hpp"
 
 using namespace VSGE;
@@ -40,6 +39,7 @@ void CVmaVirtualBlock::Create(size_t memsz)
 VmaVirtualAllocation CVmaVirtualBlock::Allocate(size_t size, VkDeviceSize* offset, size_t alignment)
 {
 	VmaVirtualAllocation resultAlloc;
+	std::unique_lock<std::mutex> lock(_mtx);
 
 	VmaVirtualAllocationCreateInfo allocCreateInfo = {};
 	allocCreateInfo.size = size;				// Size of this data in bytes
@@ -59,5 +59,6 @@ VmaVirtualAllocation CVmaVirtualBlock::Allocate(size_t size, VkDeviceSize* offse
 
 void CVmaVirtualBlock::Free(VmaVirtualAllocation allocation)
 {
+	std::unique_lock<std::mutex> lock(_mtx);
 	vmaVirtualFree(_vmaVirtualBlock, allocation);
 }

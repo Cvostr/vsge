@@ -1,11 +1,13 @@
 #include "../VulkanBuffer.hpp"
 #include <vma/vk_mem_alloc.h>
+#include <mutex>
 
 namespace VSGE {
 	class CVmaVirtualBlock {
 	private:
 		VulkanBuffer* _buffer;
 		VmaVirtualBlock _vmaVirtualBlock;
+		std::mutex _mtx;
 	public:
 		CVmaVirtualBlock();
 		~CVmaVirtualBlock();

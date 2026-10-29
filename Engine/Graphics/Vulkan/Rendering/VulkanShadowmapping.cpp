@@ -457,12 +457,6 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 	{
 		Entity* entity = _entitiesToRender->at(e_i);
 		
-		MaterialComponent* material_comp = entity->GetComponent<MaterialComponent>();
-		if (material_comp) {
-			if (!material_comp->IsCastShadows())
-				continue;
-		}
-		
 		VulkanMesh* mesh = nullptr;
 
 		MeshComponent* mesh_component = entity->GetComponent<MeshComponent>();
@@ -470,15 +464,26 @@ void VulkanShadowmapping::ProcessShadowCaster(uint32 casterIndex, VulkanCommandB
 
 		if (mesh_component) 
 		{
+			// Obtain mesh resource
 			MeshResource* mesh_resource = mesh_component->GetMeshResource();
 			if (!mesh_resource)
 				continue;
+
+			// Get Material Component
+			MaterialComponent* material_comp = entity->GetComponent<MaterialComponent>();
 
 			if (mesh_resource->GetState() == RESOURCE_STATE_READY) 
 			{
 				// Mark mesh resource used in this frame
 				mesh_resource->Use();
 				mesh = (VulkanMesh*)mesh_resource->GetMesh();
+
+				// check, is shadow casting allowed
+				if (material_comp && !material_comp->IsCastShadows()) {
+					_writtenBones += (uint32)mesh->GetBones().size();
+					continue;
+				}
+
 				// Bind vulkan pipeline
 				BindPipeline(cmdbuf, light_type, MESH_TYPE_DEFAULT, shadowmap_offset);
 			}
