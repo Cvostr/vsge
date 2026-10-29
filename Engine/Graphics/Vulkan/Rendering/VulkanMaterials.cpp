@@ -11,10 +11,20 @@ VulkanMaterial::VulkanMaterial() {
 	_fragmentDescriptorSet = nullptr;
 	_virtualBlock = nullptr;
 	_virtualOffset = 0;
+	_virtualBlockPool = nullptr;
 }
 
 VulkanMaterial::~VulkanMaterial() {
 	SAFE_RELEASE(_fragmentDescriptorSet);
+
+	CVmaVirtualBlock* virtBlockPool = (CVmaVirtualBlock*)_virtualBlockPool;
+	VmaVirtualAllocation allocation = (VmaVirtualAllocation)_virtualBlock;
+
+	if (virtBlockPool && allocation) {
+		virtBlockPool->Free(allocation);
+		_virtualBlock = nullptr;
+		_virtualBlockPool = nullptr;
+	}
 }
 
 VulkanPipeline* VulkanRenderer::CreatePipelineFromMaterialTemplate(MaterialTemplate* mat_template) {
@@ -64,6 +74,9 @@ VulkanMaterial* VulkanRenderer::CreateVulkanMaterial(Material* material) {
 			_materialsVirtBlock->GetBuffer(), 
 			mat->_virtualOffset, 
 			MATERIAL_BUFF_SIZE);
+
+		mat->_virtualBlockPool = _materialsVirtBlock;
+
 		// Store descriptor pointer in material
 		material->SetDescriptors(mat);
 

@@ -14,7 +14,7 @@ Material::Material() :
 	_paramsDirty(true),
 	_texturesDirty(true),
 	_templateChanged(true),
-	_descriptors(nullptr)
+	_gpuMaterial(nullptr)
 {}
 
 Material::~Material() {
@@ -31,14 +31,13 @@ tMaterialParamsList& Material::GetParams()
 	return _materialParams;
 }
 
-void Material::SetDescriptors(MaterialDescriptor* descriptors) {
-	_descriptors = descriptors;
+void Material::SetDescriptors(MaterialRHI* gpuMaterial) {
+	_gpuMaterial = gpuMaterial;
 }
 
-MaterialDescriptor* Material::GetDescriptors() {
-	return _descriptors;
+MaterialRHI* Material::GetDescriptors() {
+	return _gpuMaterial;
 }
-
 
 void Material::SetTemplate(MaterialTemplate* mat_template) {
 	if (mat_template == nullptr)
@@ -153,7 +152,7 @@ void Material::Destroy() {
 }
 
 void Material::DestroyDescriptors() {
-	SAFE_RELEASE(_descriptors);
+	SAFE_RELEASE(_gpuMaterial);
 }
 
 bool Material::isFullyLoaded() const

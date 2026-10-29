@@ -2,13 +2,13 @@
 
 namespace VSGE {
 
-    class MaterialDescriptor {
+    class MaterialRHI {
     public:
-        MaterialDescriptor() {
+        MaterialRHI() {
 
         }
 
-        virtual ~MaterialDescriptor() {
+        virtual ~MaterialRHI() {
 
         }
     };

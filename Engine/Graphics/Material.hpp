@@ -20,7 +20,7 @@ namespace VSGE {
 		tMaterialParamsList _materialParams;
 		MaterialTemplate* _template;
 
-		MaterialDescriptor* _descriptors;
+		MaterialRHI* _gpuMaterial;
 
 		MaterialTexture* GetTextureByName(const std::string& texture_name);
 		MaterialParameter* GetParameterByName(const std::string& param_name);
@@ -64,9 +64,9 @@ namespace VSGE {
 		/// <param name="value"></param>
 		void SetParameter(const std::string& parameter_name, Variant value);
 		
-		void SetDescriptors(MaterialDescriptor* descriptors);
+		void SetDescriptors(MaterialRHI* gpuMaterial);
 
-		MaterialDescriptor* GetDescriptors();
+		MaterialRHI* GetDescriptors();
 
 		/// <summary>
 		/// Recreate material with new material template
