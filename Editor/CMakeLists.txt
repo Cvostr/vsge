@@ -37,6 +37,7 @@ set(SRC_FILES
                 InspectorInterfaces/ResourceTypes/TextureResource.cpp
                 Menus/File_Menu.cpp
                 Menus/Edit_Menu.cpp
+                Menus/View_Menu.cpp
                 Menus/Windows_Menu.cpp
                 Misc/AssimpMeshLoader.cpp
                 Misc/ResourceImporter.cpp
@@ -87,6 +88,7 @@ set(HEADER_FILES   Base/Events.hpp
                     InspectorInterfaces/VariantInput.hpp
                     InspectorInterfaces/ViewMaskEdit.hpp
                     
+                    Menus/View_Menu.hpp
                     Menus/Edit_Menu.hpp
                     Menus/File_Menu.hpp
                     Menus/Windows_Menu.hpp
