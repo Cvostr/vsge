@@ -109,6 +109,9 @@ void Scene::AddFromPrefab(byte* data, uint32 size) {
 	for (uint32 entity_i = 0; entity_i < entities_count; entity_i++) 
 	{
 		Entity* ent = new Entity;
+		ent->SetScene(this);
+
+		// Deserialize entity data
 		Guid parent_id;
 		serializer.DeserializeEntityBinary(ent, solver, &parent_id, false);
 

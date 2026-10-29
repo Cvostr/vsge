@@ -464,11 +464,11 @@ Entity* Entity::Duplicate()
 
 Entity* Entity::DuplicateInternal() 
 {
-	Entity* new_entity = _scene->AddNewEntity(GetName());
+	Entity* new_entity = new Entity;
+	new_entity->SetName(GetName());
+	new_entity->SetScene(_scene);
 
-	//new_entity->SetPosition(GetAbsolutePosition());
-	//new_entity->SetScale(GetAbsoluteScale());
-	//new_entity->SetRotation(GetAbsoluteRotation());
+
 	new_entity->SetPosition(GetPosition());
 	new_entity->SetScale(GetScale());
 	new_entity->SetRotation(GetRotation());
