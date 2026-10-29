@@ -59,5 +59,5 @@ void ProjectBuildingWindow::DrawBuildingInterface() {
         _building = false;
     }
 
-    ImGui::Text(_packer->GetOutput().c_str());
+    ImGui::TextUnformatted(_packer->GetOutput().c_str());
 }

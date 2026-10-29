@@ -13,7 +13,7 @@ using namespace VSGE;
 
 #define MEGS_2_BYTES 1024 * 1024
 
-ResourcePacker::ResourcePacker(){
+ResourcePacker::ResourcePacker() {
     _finished = true;
     _written_bytes = 0;
     _current_bundle = 0;
