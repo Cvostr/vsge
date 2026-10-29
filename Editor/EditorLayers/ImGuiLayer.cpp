@@ -199,7 +199,7 @@ void ImGuiLayer::OnUpdate() {
 
     uint32 img_index = VulkanRender(draw_data, renderer->GetBeginSemaphore());
 
-    if(presenter->IsRecreated()){
+    if (presenter->IsRecreated()) {
        return;
     } 
 

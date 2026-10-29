@@ -24,6 +24,7 @@
 
 #include "../Menus/File_Menu.hpp"
 #include "../Menus/Edit_Menu.hpp"
+#include "../Menus/View_Menu.hpp"
 #include "../Menus/Windows_Menu.hpp"
 
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
@@ -137,6 +138,7 @@ bool EditorLayer::OpenProject(const Project& project)
 
 	ImGuiLayer::Get()->AddMenu(new File_Menu);
 	ImGuiLayer::Get()->AddMenu(new Edit_Menu);
+	ImGuiLayer::Get()->AddMenu(new View_Menu);
 	ImGuiLayer::Get()->AddMenu(new Windows_Menu);
 
 	VulkanRenderer::Get()->SetScene(SceneLayer::Get()->GetScenes()[0]);
