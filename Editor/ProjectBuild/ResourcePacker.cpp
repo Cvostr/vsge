@@ -20,6 +20,9 @@ ResourcePacker::ResourcePacker() {
     _bundle_file_split_size = 100;
     _bundle_name_prefix = "bundle";
 
+    _total = 0;
+    _completed = 0;
+
     _bundle_stream.exceptions(std::ios::badbit | std::ios::failbit);
 
     SetThreadName("resource_packer");

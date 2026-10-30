@@ -99,6 +99,18 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     // Get physical device properties
     vkGetPhysicalDeviceProperties(Device, &this->DeviceProps);
+
+    // Get base features
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(Device, &deviceFeatures);
+
+    // Get Vulkan 1.2 Features
+    VkPhysicalDeviceVulkan12Features deviceFeatures12 = {};
+    deviceFeatures12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+    VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
+    deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    deviceFeatures2.pNext = &deviceFeatures12;
+    vkGetPhysicalDeviceFeatures2(Device, &deviceFeatures2);
     
     // Obtain queue family props
     vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, nullptr);
@@ -124,14 +136,16 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
         QueuesToCreate.push_back(QueueGraphicsCreateInfo);
     }
 
-    VkPhysicalDeviceFeatures features = {};
-    features.geometryShader = true;
-    features.multiViewport = true;
-    features.shaderSampledImageArrayDynamicIndexing = true;
-    features.imageCubeArray = true;
-    features.independentBlend = true;
-    features.samplerAnisotropy = true;
-    features.depthClamp = true;
+    // Requested base features
+    VkPhysicalDeviceFeatures requestedFeatures = {};
+    requestedFeatures.geometryShader = true;
+    requestedFeatures.multiViewport = true;
+    requestedFeatures.shaderSampledImageArrayDynamicIndexing = true;
+    requestedFeatures.imageCubeArray = true;
+    requestedFeatures.independentBlend = true;
+    requestedFeatures.samplerAnisotropy = true;
+    requestedFeatures.depthClamp = true;
+
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT eds_features = {};
     eds_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
     eds_features.extendedDynamicState = true;
@@ -144,7 +158,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     logical_gpu_create_info.pQueueCreateInfos = QueuesToCreate.data(); //pointer to start of queues vector
     logical_gpu_create_info.enabledExtensionCount = static_cast<uint32>(deviceExtensions.size());
     logical_gpu_create_info.ppEnabledExtensionNames = &deviceExtensions[0];
-    logical_gpu_create_info.pEnabledFeatures = &features;
+    logical_gpu_create_info.pEnabledFeatures = &requestedFeatures;
 
     if (true) {
         logical_gpu_create_info.enabledLayerCount = static_cast<uint32>(validationLayers.size());
