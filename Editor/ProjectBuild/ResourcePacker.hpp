@@ -21,6 +21,9 @@ namespace VSGEditor {
 	class ResourcePacker : public VSGE::Thread {
 	private:
 		std::string _output_log;
+		std::size_t _total;
+		std::size_t _completed;
+
 		std::ofstream _bundle_stream;
 
 		std::string _output_dir;
@@ -35,6 +38,8 @@ namespace VSGEditor {
 
 		void WriteFileToBundle(byte* data, uint32 size);
 		void CheckForBundleOverflow();
+
+		void ResetStageProgress(std::size_t total);
 
 		template<typename T>
 		ResourcePacker& operator<<(T value) {
@@ -55,5 +60,7 @@ namespace VSGEditor {
 		bool IsFinished();
 
 		const std::string& GetOutput();
+		size_t GetTotal();
+		size_t GetCompleted();
 	};
 }

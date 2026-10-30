@@ -47,17 +47,34 @@ void ProjectBuildingWindow::Build() {
 
 }
 
-void ProjectBuildingWindow::DrawPreBuildingInterface() {
+void ProjectBuildingWindow::DrawPreBuildingInterface() 
+{
     if (ImGui::Button("Build", ImVec2(_size.x, 0))) {
         Build();
     }
 }
 
-void ProjectBuildingWindow::DrawBuildingInterface() {
+void ProjectBuildingWindow::DrawBuildingInterface() 
+{
     if (_packer->IsFinished() && _building) {
         _packer->Stop();
         _building = false;
     }
 
+    float progressBarHeight = ImGui::GetFrameHeight(); // Progress Bar height
+    float spacing = ImGui::GetStyle().ItemSpacing.y;
+
+    ImGui::BeginChild("LogRegion", ImVec2(0, -(progressBarHeight + spacing)), false, ImGuiWindowFlags_HorizontalScrollbar);
     ImGui::TextUnformatted(_packer->GetOutput().c_str());
+
+    // Auto scroll to down
+    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+        ImGui::SetScrollHereY(1.0f);
+    }
+    ImGui::EndChild();
+
+    float frac = ((float)_packer->GetCompleted()) / _packer->GetTotal();
+    char message[120];
+    std::snprintf(message, sizeof(message), "%zu / %zu", _packer->GetCompleted(), _packer->GetTotal());
+    ImGui::ProgressBar(frac, ImVec2(-FLT_MIN, 0), message);
 }

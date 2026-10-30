@@ -58,7 +58,10 @@ void ResourcePacker::Write()
     Guid main_scene = el->GetProject().getSettings().getStartupSceneResource().GetId();
 
     ResourceCache* cache = ResourceCache::Get();
-    
+ 
+    // Reset progress on Writing resources stage
+    ResetStageProgress(cache->GetResourcesCount());
+
     for (uint32 resource_i = 0; resource_i < cache->GetResourcesCount(); resource_i++) {
         Resource* resource = cache->GetResources()[resource_i];
 
@@ -98,6 +101,8 @@ void ResourcePacker::Write()
             entry.bundle_index = _current_bundle - 1;
             _map_entries.push_back(entry);
         }
+
+        _completed++;
 
         SAFE_RELEASE_ARR(file_data);
     }
@@ -177,6 +182,14 @@ const std::string& ResourcePacker::GetOutput() {
     return _output_log;
 }
 
+size_t ResourcePacker::GetTotal() {
+    return _total;
+}
+
+size_t ResourcePacker::GetCompleted() {
+    return _completed;
+}
+
 void ResourcePacker::CheckForBundleOverflow() {
     if (_written_bytes >= _bundle_file_split_size * MEGS_2_BYTES || !_bundle_stream.is_open()) {
         //check, if stream opened, then close it
@@ -193,4 +206,10 @@ void ResourcePacker::CheckForBundleOverflow() {
 void ResourcePacker::WriteFileToBundle(byte* data, uint32 size) {
     _bundle_stream.write((char*)data, size);
     _written_bytes += size;
+}
+
+void ResourcePacker::ResetStageProgress(size_t total)
+{
+    _total = total;
+    _completed = 0;
 }
