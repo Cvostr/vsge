@@ -34,7 +34,7 @@ namespace VSGE {
 
 		Scene();
 		Scene(const Scene&) = delete;
-		Scene(Scene&&);
+		Scene(Scene&&) noexcept;
 		~Scene();
 
 		Scene& operator=(Scene&& other);

@@ -79,7 +79,11 @@ const tBonesList& Mesh::GetBones() const
 	return m_bones;
 }
 
-void Mesh::GetTriangle(uint32 triangle_index, Vec3& v0, Vec3& v1, Vec3& v2) {
+void Mesh::GetTriangle(uint32 triangle_index, Vec3& v0, Vec3& v1, Vec3& v2) 
+{
+	if (_positions_array == nullptr)
+		return;
+
 	if (m_indicesCount > 0) {
 		v0 = _positions_array[m_indexArray[triangle_index * 3]];
 		v1 = _positions_array[m_indexArray[triangle_index * 3 + 1]];

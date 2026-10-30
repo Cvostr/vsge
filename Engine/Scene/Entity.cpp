@@ -188,7 +188,7 @@ void Entity::Destroy() {
 		_parent->RemoveChild(this);
 	}
 	//Call Destroy() on each child
-	while(GetChildrenCount() > 0){
+	while (GetChildrenCount() > 0) {
 		_children[0]->Destroy();
 	}
 	//Destroy all entity components

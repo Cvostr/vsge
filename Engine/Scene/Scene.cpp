@@ -15,7 +15,7 @@ Scene::~Scene() {
 	Destroy();
 }
 
-Scene::Scene(Scene&& scene):
+Scene::Scene(Scene&& scene) noexcept:
 	_state(SCENE_STATE_IDLE)
 {
 	_rootEntity = scene._rootEntity;
