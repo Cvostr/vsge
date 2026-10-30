@@ -188,7 +188,7 @@ void RigidBodyComponent::AddToWorld()
 	_collision_shape->calculateLocalInertia(_mass, local_intertia);
 
 	btTransform startTransform = GetEntityTransform();
-	// Using motionstate is recommended, itprovides interpolation capabilities, and only synchronizes 'active' objects
+	// Using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 	_motionState = new btDefaultMotionState(startTransform);
 
 	// Info
@@ -249,6 +249,7 @@ void RigidBodyComponent::OnDestroy()
 		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidBody);
 		SAFE_RELEASE(_rigidBody)
 	}
+
 	SAFE_RELEASE(_collision_shape)
 	// Release old motion state
 	SAFE_RELEASE(_motionState)

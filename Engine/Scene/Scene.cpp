@@ -29,6 +29,7 @@ Scene::Scene(Scene&& scene) noexcept:
 Scene& Scene::operator=(Scene&& other)
 {
 	Destroy();
+	_state = other._state;
 	_rootEntity = other._rootEntity;
 	_environment_settings = other._environment_settings;
 	_physics_world = other._physics_world;
