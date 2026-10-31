@@ -149,7 +149,10 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     std::vector<VkDeviceQueueCreateInfo> QueuesToCreate;
     float priority = 1.0f;
-    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) {
+    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) 
+    {
+        Logger::Log(LogType::LOG_TYPE_INFO) << "Vulkan Queue Family " << i << ". Queues " << _vkQueueFamilyProps[i].queueCount << "\n";
+
         VkDeviceQueueCreateInfo QueueGraphicsCreateInfo = {};
         QueueGraphicsCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         QueueGraphicsCreateInfo.pNext = nullptr;
@@ -189,11 +192,9 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     logical_gpu_create_info.enabledExtensionCount = static_cast<uint32>(deviceExtensions.size());
     logical_gpu_create_info.ppEnabledExtensionNames = &deviceExtensions[0];
     logical_gpu_create_info.pEnabledFeatures = &requestedFeatures;
-
-    if (true) {
-        logical_gpu_create_info.enabledLayerCount = static_cast<uint32>(validationLayers.size());
-        logical_gpu_create_info.ppEnabledLayerNames = validationLayers.data();
-    }
+    // These fields are now deprecated, set them to 0
+    logical_gpu_create_info.enabledLayerCount = 0;
+    logical_gpu_create_info.ppEnabledLayerNames = nullptr;
 
     //create logical device
     if (vkCreateDevice(Device, &logical_gpu_create_info, nullptr, &mDevice) != VK_SUCCESS) //creating logical device
