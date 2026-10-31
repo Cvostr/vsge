@@ -43,6 +43,8 @@ namespace VSGE {
 		VkDescriptorSet mDescriptorSet;
 		VkDescriptorSetLayout _layout;
 
+		VkDescriptorSetLayoutCreateFlags _layoutCreateFlags;
+		// Descriptors
 		std::vector<VkDescriptorSetLayoutBinding> descriptors;
 		std::map<uint32, VkDescriptorType> bindings_types;
 
@@ -57,6 +59,7 @@ namespace VSGE {
 		void SetDescriptorPool(VulkanDescriptorPool* pool);
 
 		VkDescriptorSet GetDescriptorSet();
+		VkDescriptorSetLayout GetDescriptorSetLayout();
 
 		VkDescriptorSetLayout GetDescriptorSetLayout();
 
@@ -92,6 +95,12 @@ namespace VSGE {
 			VulkanSampler* sampler,
 			uint32 textures_count = 1,
 			uint32 first_texture = 0);
+
+		/// <summary>
+		/// Sets flags for descriptor set layout (VkDescriptorSetLayoutCreateInfo.flags)
+		/// </summary>
+		/// <param name="flags">bitflags to use</param>
+		void SetLayoutCreateFlags(VkDescriptorSetLayoutCreateFlags flags);
 
 		bool Create();
 		bool CreateLayout();

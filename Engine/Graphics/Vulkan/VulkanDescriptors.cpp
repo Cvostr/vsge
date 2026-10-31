@@ -6,7 +6,8 @@ using namespace VSGE;
 VulkanDescriptorSet::VulkanDescriptorSet(VulkanDescriptorPool* pool) :
     mDescriptorPool(pool),
     mDescriptorSet(VK_NULL_HANDLE),
-    _layout(VK_NULL_HANDLE)
+    _layout(VK_NULL_HANDLE),
+    _layoutCreateFlags(0)
 {
     pool->IncDescriptorSet();
 }
@@ -14,7 +15,9 @@ VulkanDescriptorSet::VulkanDescriptorSet(VulkanDescriptorPool* pool) :
 VulkanDescriptorSet::VulkanDescriptorSet() :
     mDescriptorSet(VK_NULL_HANDLE),
     _layout(VK_NULL_HANDLE),
-    mDescriptorPool(nullptr) {}
+    mDescriptorPool(nullptr),
+    _layoutCreateFlags(0)
+{}
 
 VulkanDescriptorSet::~VulkanDescriptorSet() {
     Destroy();
@@ -29,19 +32,22 @@ VkDescriptorSet VulkanDescriptorSet::GetDescriptorSet() {
 VkDescriptorSetLayout VulkanDescriptorSet::GetDescriptorSetLayout() { 
     return _layout; 
 }
-void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags, uint32 descriptorsCount) {
-    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding = binding;
-    samplerLayoutBinding.descriptorType = type;
-    samplerLayoutBinding.descriptorCount = descriptorsCount;
-    samplerLayoutBinding.stageFlags = stageFlags;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    //Push description
-    this->descriptors.push_back(samplerLayoutBinding);
-    //register this binding in descriptor pool
-    if(mDescriptorPool)
+void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags, uint32 descriptorsCount, VkFlags bindingFlags) 
+{
+    VkDescriptorSetLayoutBinding layoutBinding{};
+    layoutBinding.binding = binding;
+    layoutBinding.descriptorType = type;
+    layoutBinding.descriptorCount = descriptorsCount;
+    layoutBinding.stageFlags = stageFlags;
+    layoutBinding.pImmutableSamplers = nullptr;
+    // Push description
+    this->descriptors.push_back(layoutBinding);
+    // Register this binding in descriptor pool
+    if (mDescriptorPool) {
         mDescriptorPool->AddLayoutBinding(type, descriptorsCount);
+    }
 
+    // save binding type
     bindings_types.insert({binding, type});
 }
 
@@ -146,7 +152,13 @@ void VulkanDescriptorSet::WriteDescriptorImages(
     vkUpdateDescriptorSets(device->getVkDevice(), 1, &descriptorWrite, 0, nullptr);
 }
 
-bool VulkanDescriptorSet::CreateLayout() {
+void VulkanDescriptorSet::SetLayoutCreateFlags(VkDescriptorSetLayoutCreateFlags flags)
+{
+    _layoutCreateFlags = flags;
+}
+
+bool VulkanDescriptorSet::CreateLayout() 
+{
     VulkanRAPI* vulkan = VulkanRAPI::Get();
     VulkanDevice* device = vulkan->GetDevice();
 
@@ -154,7 +166,7 @@ bool VulkanDescriptorSet::CreateLayout() {
     cr_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     cr_info.bindingCount = static_cast<uint32>(descriptors.size());
     cr_info.pBindings = descriptors.data();
-    cr_info.pNext = nullptr;
+    cr_info.flags = _layoutCreateFlags;
 
     if (vkCreateDescriptorSetLayout(device->getVkDevice(), &cr_info, nullptr, &_layout) != VK_SUCCESS) {
         return false;
