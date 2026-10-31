@@ -100,18 +100,47 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     // Get physical device properties
     vkGetPhysicalDeviceProperties(Device, &this->DeviceProps);
 
+    VkPhysicalDeviceMemoryProperties memProps;
+    vkGetPhysicalDeviceMemoryProperties(Device, &memProps);
+
+    Logger::Log(LogType::LOG_TYPE_INFO) << "Important properties"
+        << "\n\tmaxBoundDescriptorSets: " << (uint32)DeviceProps.limits.maxBoundDescriptorSets
+        << "\n\tmaxMemoryAllocationCount: " << (uint32)DeviceProps.limits.maxMemoryAllocationCount
+        << "\n\tmaxSamplerAllocationCount: " << (uint32)DeviceProps.limits.maxSamplerAllocationCount
+        << "\n\tmaxPushConstantsSize: " << (uint32)DeviceProps.limits.maxPushConstantsSize
+        << "\n\tmaxUniformBufferRange: " << (uint32)DeviceProps.limits.maxUniformBufferRange
+        << "\n\tmaxStorageBufferRange: " << (uint32)DeviceProps.limits.maxStorageBufferRange
+        << "\n\tminUniformBufferOffsetAlignment: " << (uint32)DeviceProps.limits.minUniformBufferOffsetAlignment
+        << "\n\tminStorageBufferOffsetAlignment: " << (uint32)DeviceProps.limits.minStorageBufferOffsetAlignment
+        << "\n";
+
     // Get base features
     VkPhysicalDeviceFeatures deviceFeatures;
     vkGetPhysicalDeviceFeatures(Device, &deviceFeatures);
 
+    // Extended Dynamic State Features
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT edsFeatures = {};
+    edsFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
+
     // Get Vulkan 1.2 Features
     VkPhysicalDeviceVulkan12Features deviceFeatures12 = {};
     deviceFeatures12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+    deviceFeatures12.pNext = &edsFeatures;
+
+    // Root Request struct for other features
     VkPhysicalDeviceFeatures2 deviceFeatures2 = {};
     deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
     deviceFeatures2.pNext = &deviceFeatures12;
     vkGetPhysicalDeviceFeatures2(Device, &deviceFeatures2);
     
+    Logger::Log(LogType::LOG_TYPE_INFO) << "Important features"
+        << "\n\tgeometryShader: " << deviceFeatures.geometryShader
+        << "\n\tmultiViewport: " << deviceFeatures.multiViewport
+        << "\n\tshaderSampledImageArrayDynamicIndexing: " << deviceFeatures.shaderSampledImageArrayDynamicIndexing
+        << "\n\tbcTextureCompression: " << deviceFeatures.textureCompressionBC
+        << "\n\teds.extendedDynamicState: " << edsFeatures.extendedDynamicState
+        << "\n";
+
     // Obtain queue family props
     vkGetPhysicalDeviceQueueFamilyProperties(mPhysicalDevice, &vkQueueFamilyPropsCount, nullptr);
     _vkQueueFamilyProps.resize(vkQueueFamilyPropsCount);
