@@ -320,7 +320,7 @@ void VulkanDeferredLight::RecordCmdbuf(VulkanCommandBuffer* cmdbuf)
 		cmdbuf->SetViewport(0, 0, (float)_fb_width, (float)_fb_height);
 		uint32 cam_offset = _camera_index * CAMERA_ELEM_SIZE;
 		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 0, 1, _deferred_descriptor, 1, &cam_offset);
-		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 1, 1, _shadowmapDescriptorSet, 1, &cam_offset);
+		cmdbuf->BindDescriptorSets(*_deferred_pipeline_layout, 1, 1, _shadowmapDescriptorSet);
 		cmdbuf->BindMesh(*mesh, 0);
 		cmdbuf->DrawIndexed(6);
 		//draw entities with deferred materials
