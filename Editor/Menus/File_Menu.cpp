@@ -24,18 +24,22 @@ void SaveScene(const std::string& file) {
 	sc.SetScene(SceneLayer::Get()->GetMainScene());
 	sc.SerializeBinary(file);
 
-	el->GetOpenedSceneFile() = file;
+	el->SetOpenedSceneFile(file);
 }
 
-void SaveAs() {
+void SaveAs() 
+{
 	Mpi::FileDialogDesc desc;
 	desc.dialogTitle = "Save Scene As";
 	desc.addFileFilter({ "Scene", "*.scn" });
 	std::string save;
 	save = Mpi::Dialog::SaveFileDialog(desc);
-	save += ".scn";
 
-	SaveScene(save);
+	if (!save.empty())
+	{
+		save += ".scn";
+		SaveScene(save);
+	}
 }
 
 const std::string CreateProjectFiles(const VSGEditor::Project& proj);
@@ -44,6 +48,10 @@ void File_Menu::OnDrawMenu()
 {
 	if (ImGui::BeginMenu("File"))
 	{
+		if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
+			OnNewScene();
+		}
+
 		if (ImGui::MenuItem("Save", "Ctrl+S")) {
 			OnSave();
 		}
@@ -71,6 +79,28 @@ void File_Menu::OnDrawMenu()
 
 		ImGui::EndMenu();
 	}
+}	
+
+void File_Menu::OnNewScene()
+{
+	// Ask user to save current scene changes
+	Mpi::MessageDialogDesc desc;
+	desc.dialogTitle = "New Scene";
+	desc.dialogMessage = "Save current scene?";
+	desc.buttons = Mpi::MESSAGE_DIALOG_BTN_YES_NO;
+	desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_QUESTION;
+	Mpi::DialogUserAction action = Mpi::Dialog::MessageDialog(desc);
+	// Save current scene
+	if (action == Mpi::DIALOG_USER_ACTION_ACCEPT) {
+		OnSave();
+	}
+
+	// Clears current scene save path to prevent saving to old scene path
+	EditorLayer* el = EditorLayer::Get();
+	el->SetOpenedSceneFile("");
+
+	// Clear all scene to empty
+	SceneLayer::Get()->GetMainScene()->NewScene();
 }
 
 void File_Menu::OnSave() {

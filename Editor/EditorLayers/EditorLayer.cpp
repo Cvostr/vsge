@@ -156,8 +156,21 @@ Project& EditorLayer::GetProject() {
 	return _project;
 }
 
-std::string& EditorLayer::GetOpenedSceneFile() {
+const std::string& EditorLayer::GetOpenedSceneFile() {
 	return _openedSceneFile;
+}
+
+void EditorLayer::SetOpenedSceneFile(const std::string& path) {
+	_openedSceneFile = path;
+	std::string newTitle;
+	if (path.empty()) {
+		newTitle = "Editor";
+	}
+	else {
+		newTitle = "Editor - " + path;
+	}
+
+	Application::Get()->GetWindow().SetWindowTitle((BaseString) newTitle.c_str());
 }
 
 int EditorLayer::GetTransformMode() {
@@ -424,7 +437,11 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 			ImGuiLayer::Get()->GetMenu<File_Menu>()->OnSave();
 		}
 		break;
-
+	case KEY_CODE_N:
+		if (Input::Get()->IsKeyHold(KEY_CODE_LCTRL)) {
+			ImGuiLayer::Get()->GetMenu<File_Menu>()->OnNewScene();
+		}
+		break;
 	case KEY_CODE_Q:
 		if (Input::Get()->IsKeyHold(KEY_CODE_LCTRL)) {
 			if (_camera_mode == EDITOR_CAMERA_MODE_EDIT_CAMERA)

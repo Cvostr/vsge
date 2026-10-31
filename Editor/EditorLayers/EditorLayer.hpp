@@ -50,7 +50,9 @@ namespace VSGEditor {
 		}
 
 		VSGE::Camera* GetCamera();
-		std::string& GetOpenedSceneFile();
+
+		const std::string& GetOpenedSceneFile();
+		void SetOpenedSceneFile(const std::string& path);
 		
 		int GetTransformMode();
 		void SetTransformMode(int mode);

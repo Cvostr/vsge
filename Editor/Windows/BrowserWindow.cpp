@@ -103,7 +103,7 @@ void FileBrowserWindow::OpenFile(const FileEntry& Entry) {
 
         EditorLayer* el = EditorLayer::Get();
         el->SetPickedEntity(nullptr);
-        el->GetOpenedSceneFile() = Entry.abs_path;
+        el->SetOpenedSceneFile(Entry.abs_path);
 
         SceneLayer::Get()->GetMainScene()->NewScene();
         resource = ResourceCache::Get()->GetResourceWithFilePath(Entry.abs_path);
