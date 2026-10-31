@@ -143,8 +143,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
     }
 
     // Draw Tree Node
-    string _unique_name = entity->GetName().c_str() + string("##") + entity->GetGuid().toString();
-    bool tree_open = ImGui::TreeNodeEx(_unique_name.c_str(), flags);
+    bool tree_open = ImGui::TreeNodeEx(entity, flags, entity->GetName().c_str());
 
     // Return back to white color
     if (!entity->IsActive()) {
