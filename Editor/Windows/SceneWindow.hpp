@@ -6,7 +6,6 @@
 namespace VSGEditor {
 	class SceneWindow : public EditorWindow {
 	private:
-		int _drawn_entities;
 		bool _entityRemoved;
 	public:
 		void OnDrawWindow();

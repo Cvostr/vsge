@@ -21,7 +21,6 @@ using namespace VSGE;
 using namespace std;
 
 SceneWindow::SceneWindow() {
-    _drawn_entities = 0;
     _entityRemoved = false;
 }
 
@@ -29,8 +28,6 @@ void SceneWindow::OnDrawWindow() {
     Scene* scene = SceneLayer::Get()->GetMainScene();
     
     if (Draw("Scene Hierarchy")) {
-        //clear counter
-        _drawn_entities = 0;
         //Draw hierarchy from root object
         DrawEntityTreeHierarchy(scene->GetRootEntity());
 
@@ -122,7 +119,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
     if (_entityRemoved)
         return;
     
-    bool isRoot = entity->GetName().compare("Root") == 0;
+    bool isRoot = entity->GetName().compare("Root") == 0 && entity->GetParent() == nullptr;
     ImGuiTreeNodeFlags flags = 0;
     //If entity has no children, then remove arrow on the left side
     if (entity->GetChildrenCount() == 0)
@@ -146,7 +143,7 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
     }
 
     // Draw Tree Node
-    string _unique_name = entity->GetName().c_str() + string("##") + to_string(_drawn_entities);
+    string _unique_name = entity->GetName().c_str() + string("##") + entity->GetGuid().toString();
     bool tree_open = ImGui::TreeNodeEx(_unique_name.c_str(), flags);
 
     // Return back to white color
@@ -257,5 +254,4 @@ void SceneWindow::DrawEntityTreeHierarchy(Entity* entity) {
         }
         ImGui::TreePop();
     }
-    _drawn_entities++;
 }
