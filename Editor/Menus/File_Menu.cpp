@@ -62,11 +62,13 @@ void File_Menu::OnDrawMenu()
 		if (ImGui::MenuItem("Import", NULL)) {
 			Mpi::FileDialogDesc desc;
 			desc.dialogTitle = "Import resource";
-			desc.addFileFilters({ {"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}, {"COLLADA .DAE 3D Model", "*.dae"}});
+			desc.addFileFilters({ {"All Files", "*.*"}, {"DDS Texture", "*.dds"}, {"PNG Texture", "*.png"}, {"Autodesk FBX 3D Model", "*.fbx"}, {"COLLADA .DAE 3D Model", "*.dae"}});
 			std::string path;
 			path = Mpi::Dialog::OpenFileDialog(desc);
 
-			ImportFile(path);
+			if (!path.empty()) {
+				ImportFile(path);
+			}
 		}
 		if (ImGui::MenuItem("Open C# Project", NULL)) {
 			EditorLayer* el = EditorLayer::Get();

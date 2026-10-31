@@ -139,6 +139,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
         << "\n\tshaderSampledImageArrayDynamicIndexing: " << deviceFeatures.shaderSampledImageArrayDynamicIndexing
         << "\n\tbcTextureCompression: " << deviceFeatures.textureCompressionBC
         << "\n\teds.extendedDynamicState: " << edsFeatures.extendedDynamicState
+        << "\n\tshaderSampledImageArrayNonUniformIndexing: " << deviceFeatures12.shaderSampledImageArrayNonUniformIndexing
         << "\n";
 
     // Obtain queue family props
