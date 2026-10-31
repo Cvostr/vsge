@@ -140,7 +140,7 @@ bool CompileFromGLSL(const char* shader_data, ShaderStagesBits stage, unsigned c
     input.client = GLSLANG_CLIENT_VULKAN;
     input.client_version = GLSLANG_TARGET_VULKAN_1_2;
     input.target_language = GLSLANG_TARGET_SPV;
-    input.target_language_version = GLSLANG_TARGET_SPV_1_3;
+    input.target_language_version = GLSLANG_TARGET_SPV_1_5;
     input.code = (const char*)shader_data;
     input.default_version = 450;
     input.default_profile = GLSLANG_NO_PROFILE;
