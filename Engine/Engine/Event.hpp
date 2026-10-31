@@ -13,6 +13,7 @@ namespace VSGE {
 		EventKeyButtonUp,
 		
 		EventWindowMinimized,
+		EventWindowMaximized,
 		EventWindowRestored,
 		EventWindowFocus,
 		EventWindowFocusLost,

@@ -112,6 +112,15 @@ namespace VSGE {
 			
 		}
 	};
+	class EventWindowMaximized : public IEvent {
+	public:
+
+		EVENT_CLASS_TYPE(EventType::EventWindowMaximized)
+
+		EventWindowMaximized() {
+
+		}
+	};
 	class EventWindowRestored : public IEvent {
 	public:
 

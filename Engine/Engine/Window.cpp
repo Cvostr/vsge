@@ -44,6 +44,22 @@ void VSGE::Window::SetResizeable(bool resizeable) {
 		SDL_SetWindowResizable(mWindow, SDL_bool(resizeable));
 }
 
+int32 VSGE::Window::GetWindowWidth() { 
+    return mWindowWidth; 
+}
+
+int32 VSGE::Window::GetWindowHeight() {
+    return mWindowHeight; 
+}
+
+int32 VSGE::Window::GetWindowPositionX() {
+    return mWindowPosX; 
+}
+
+int32 VSGE::Window::GetWindowPositionY() {
+    return mWindowPosY; 
+}
+
 void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title) {
     mWindowWidth = width;
     mWindowHeight = height;
@@ -180,7 +196,7 @@ void VSGE::Window::PollEvents() {
 
                 mWindowWidth = event.window.data1;
                 mWindowHeight = event.window.data2;
-                
+
                 app->OnEvent(event_win_resized);
             }
             if (event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
@@ -188,7 +204,8 @@ void VSGE::Window::PollEvents() {
                 app->OnEvent(event_win_minimized);
             }
             if (event.window.event == SDL_WINDOWEVENT_MAXIMIZED) {
-
+                EventWindowMaximized event_win_maximized;
+                app->OnEvent(event_win_maximized);
             }
             if (event.window.event == SDL_WINDOWEVENT_RESTORED) {
                 EventWindowRestored event_win_restored;
