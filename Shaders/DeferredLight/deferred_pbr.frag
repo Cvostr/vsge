@@ -8,12 +8,11 @@ layout(binding = 3) uniform sampler2D color;
 layout(binding = 4) uniform sampler2D normal;
 layout(binding = 5) uniform sampler2D pos;
 layout(binding = 6) uniform sampler2D material;
-layout(binding = 7) uniform sampler2D shadows;
+layout(binding = 7) uniform sampler2D ssao_map;
 layout(binding = 8) uniform sampler2D depth;
 layout(binding = 9) uniform sampler2D brdf_lut;
 layout(binding = 10) uniform samplerCube env_cube;
 layout(binding = 11) uniform samplerCube env_cube_irradiance;
-layout(binding = 12) uniform sampler2D ssao_map;
 layout(binding = 13) uniform samplerCube ibl_specular[12];
 layout(binding = 14) uniform samplerCube ibl_irradiance[12];
 

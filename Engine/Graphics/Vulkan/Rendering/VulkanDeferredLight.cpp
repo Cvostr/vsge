@@ -117,8 +117,8 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 5, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// Material
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6, VK_SHADER_STAGE_FRAGMENT_BIT);
-	// Shadows (became unused in shader)
-	//_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// SSAO map
+	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 7, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// Depth
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 8, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// brdf lut
@@ -127,9 +127,6 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 10, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// irradiance env map
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 11, VK_SHADER_STAGE_FRAGMENT_BIT);
-	// SSAO map
-	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 12, VK_SHADER_STAGE_FRAGMENT_BIT);
-
 
 	// PROBES
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 13, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_PROBES);
@@ -148,17 +145,15 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 
 	//write base textures
 	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
-	// Shadowmap (became unused in shader)
-	//_deferred_descriptor->WriteDescriptorImage(7, VulkanRenderingGenerics::Get()->GetBlackTexture(), attachment_sampler);
+	// SSAO base texture
+	_deferred_descriptor->WriteDescriptorImage(
+		7,
+		VulkanRenderingGenerics::Get()->GetWhiteTexture(),
+		attachment_sampler);
 	// BRDF LUT base texture
 	_deferred_descriptor->WriteDescriptorImage(
 		9,
 		VulkanRenderingGenerics::Get()->GetBRDF()->GetTextureLut(),
-		attachment_sampler);
-	// SSAO base texture
-	_deferred_descriptor->WriteDescriptorImage(
-		12,
-		VulkanRenderingGenerics::Get()->GetWhiteTexture(),
 		attachment_sampler);
 
 	UnsetIBL();
@@ -285,9 +280,9 @@ void VulkanDeferredLight::SetIBL(VulkanTexture* specular, VulkanTexture* irradia
 void VulkanDeferredLight::SetSSAO(VulkanTexture* ssao_map) {
 	VulkanSampler* attachment_sampler = VulkanRenderingGenerics::Get()->GetAttachmentSampler();
 	if(ssao_map)
-		_deferred_descriptor->WriteDescriptorImage(12, ssao_map, attachment_sampler);
+		_deferred_descriptor->WriteDescriptorImage(7, ssao_map, attachment_sampler);
 	else
-		_deferred_descriptor->WriteDescriptorImage(12, 
+		_deferred_descriptor->WriteDescriptorImage(7, 
 			VulkanRenderingGenerics::Get()->GetWhiteTexture(), attachment_sampler);
 }
 
