@@ -107,7 +107,9 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	_deferred_pool = new VulkanDescriptorPool;
 
 	_deferred_descriptor = new VulkanDescriptorSet(_deferred_pool);
+	// Camera matrices (dynamic)
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Lights Array
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2, VK_SHADER_STAGE_FRAGMENT_BIT);
 	// Albedo
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -131,6 +133,7 @@ void VulkanDeferredLight::CreateDescriptorSet(LightsBuffer* lightsBuffer, Vulkan
 	// PROBES
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 13, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_PROBES);
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 14, VK_SHADER_STAGE_FRAGMENT_BIT, MAX_PROBES);
+	// Env Probes Info
 	_deferred_descriptor->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 15, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	// Create Pool and Descriptor set
@@ -231,7 +234,7 @@ void VulkanDeferredLight::UpdateLightProbeBuffer()
 		_deferred_descriptor->WriteDescriptorImage(
 			13, 
 			(VulkanTexture*) probeImage->GetSpmap(),
-			VulkanRenderingGenerics::Get()->GetAttachmentSampler(),
+			VulkanRenderingGenerics::Get()->GetSpecularIBLSampler(),
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			writtenProbes);
 
