@@ -100,8 +100,19 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     // Get physical device properties
     vkGetPhysicalDeviceProperties(Device, &this->DeviceProps);
 
+    // Get memory props
     VkPhysicalDeviceMemoryProperties memProps;
     vkGetPhysicalDeviceMemoryProperties(Device, &memProps);
+
+    // Calculate total VRAM
+    VkDeviceSize totalVRAM = 0;
+    for (uint32 i = 0; i < memProps.memoryHeapCount; i++) {
+        if (memProps.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+            totalVRAM += memProps.memoryHeaps[i].size;
+        }
+    }
+
+    Logger::Log(LogType::LOG_TYPE_INFO) << "VRAM: " << (uint32)(totalVRAM / (1024 * 1024)) << " MiB\n";
 
     Logger::Log(LogType::LOG_TYPE_INFO) << "Important properties"
         << "\n\tmaxBoundDescriptorSets: " << (uint32)DeviceProps.limits.maxBoundDescriptorSets
