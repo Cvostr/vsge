@@ -32,7 +32,7 @@ VkDescriptorSet VulkanDescriptorSet::GetDescriptorSet() {
 VkDescriptorSetLayout VulkanDescriptorSet::GetDescriptorSetLayout() { 
     return _layout; 
 }
-void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags, uint32 descriptorsCount, VkFlags bindingFlags) 
+void VulkanDescriptorSet::AddDescriptor(VkDescriptorType type, uint32 binding, VkShaderStageFlags stageFlags, uint32 descriptorsCount) 
 {
     VkDescriptorSetLayoutBinding layoutBinding{};
     layoutBinding.binding = binding;
