@@ -41,6 +41,8 @@ namespace VSGEditor {
 
 		void ResetStageProgress(std::size_t total);
 
+		void CompileAndWriteScripts();
+
 		template<typename T>
 		ResourcePacker& operator<<(T value) {
 			_output_log += value;
@@ -62,5 +64,8 @@ namespace VSGEditor {
 		const std::string& GetOutput();
 		size_t GetTotal();
 		size_t GetCompleted();
+
+		uint32 GetBundleFileSplitSizeMegs();
+		void SetBundleFileSplitSizeMegs(uint32 size);
 	};
 }

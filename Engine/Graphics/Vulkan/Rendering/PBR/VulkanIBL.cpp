@@ -121,6 +121,9 @@ void VulkanIBL::Execute(VulkanSemaphore* end_semaphore) {
 
 void VulkanIBL::RecordCmdBufs(VulkanLightProbeImage* destImage)
 {
+	if (destImage == nullptr)
+		return;
+
 	_env_cmdbuf->Begin();
 	_envmap->RecordCmdbuffer(_env_cmdbuf);
 	_env_cmdbuf->End();

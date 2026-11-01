@@ -43,6 +43,42 @@ void ResourcePacker::THRFunc() {
     }
 }
 
+void ResourcePacker::CompileAndWriteScripts()
+{
+    *this << "Compiling scripts\n";
+    while (!MonoScriptStorage::Get()->IsScriptingReady());
+
+    *this << "Writing scripts\n";
+    //write scripts dll
+    {
+        byte* file_data = nullptr;
+        uint64 file_size = 0;
+
+        bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
+        if (result) {
+            std::string output_file = _output_dir + "runtime.dll";
+            std::ofstream scripts_stream;
+            scripts_stream.exceptions(std::ios::badbit | std::ios::failbit);
+            scripts_stream.open(output_file, std::ios::binary);
+
+            scripts_stream.write((char*)file_data, file_size);
+            scripts_stream.close();
+        }
+
+        SAFE_RELEASE_ARR(file_data);
+
+        result = LoadFile(MonoScriptStorage::Get()->GetApiDllPath(), (char**)&file_data, &file_size);
+        if (result) {
+            std::string output_file = _output_dir + "api.dll";
+            std::ofstream scripts_stream(output_file, std::ios::binary);
+            scripts_stream.write((char*)file_data, file_size);
+            scripts_stream.close();
+        }
+
+        SAFE_RELEASE_ARR(file_data);
+    }
+}
+
 void ResourcePacker::Write()
 {
     _output_log.clear();
@@ -51,16 +87,14 @@ void ResourcePacker::Write()
     _current_bundle = 0;
     _map_entries.clear();
 
-    *this << "Compiling scripts\n";
-    while (!MonoScriptStorage::Get()->IsScriptingReady());
-
     Application* app = Application::Get();
+    ResourceCache* cache = ResourceCache::Get();
     EditorLayer* el = app->GetLayer<EditorLayer>();
+
+    CompileAndWriteScripts();
     
     std::string project_name = el->GetProject().getSettings().getProjectName();
     Guid main_scene = el->GetProject().getSettings().getStartupSceneResource().GetId();
-
-    ResourceCache* cache = ResourceCache::Get();
  
     // Reset progress on Writing resources stage
     ResetStageProgress(cache->GetResourcesCount());
@@ -110,35 +144,7 @@ void ResourcePacker::Write()
         SAFE_RELEASE_ARR(file_data);
     }
     _bundle_stream.close();
-    //write scripts dll
-    {
-        byte* file_data = nullptr;
-        uint64 file_size = 0;
-        
-        bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
-        if (result) {
-            std::string output_file = _output_dir + "runtime.dll";
-            std::ofstream scripts_stream;
-            scripts_stream.exceptions(std::ios::badbit | std::ios::failbit);
-            scripts_stream.open(output_file, std::ios::binary);
-
-            scripts_stream.write((char*)file_data, file_size);
-            scripts_stream.close();
-        }
-
-        SAFE_RELEASE_ARR(file_data);
-
-        result = LoadFile(MonoScriptStorage::Get()->GetApiDllPath(), (char**)&file_data, &file_size);
-        if (result) {
-            std::string output_file = _output_dir + "api.dll";
-            std::ofstream scripts_stream(output_file, std::ios::binary);
-            scripts_stream.write((char*)file_data, file_size);
-            scripts_stream.close();
-        }
-
-        SAFE_RELEASE_ARR(file_data);
-    }
-
+    
     *this << "Writing map file\n";
 
     ByteSerialize serializer;
@@ -191,6 +197,14 @@ size_t ResourcePacker::GetTotal() {
 
 size_t ResourcePacker::GetCompleted() {
     return _completed;
+}
+
+uint32 ResourcePacker::GetBundleFileSplitSizeMegs() {
+    return _bundle_file_split_size;
+}
+
+void ResourcePacker::SetBundleFileSplitSizeMegs(uint32 size) {
+    _bundle_file_split_size = size;
 }
 
 void ResourcePacker::CheckForBundleOverflow() {

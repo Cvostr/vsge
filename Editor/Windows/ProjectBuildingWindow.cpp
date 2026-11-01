@@ -2,24 +2,33 @@
 #include <MonoScripting/MonoScriptStorage.hpp>
 #include <EditorLayers/EditorLayer.hpp>
 #include <Engine/Application.hpp>
+#include <Base/ImguiHelper.hpp>
 
 using namespace VSGE;
 using namespace VSGEditor;
+
+static const std::unordered_map<uint32, const char*> bundleMaxSizeSettings = {
+       { 256,  "256 MiB" },
+       { 512,  "512 MiB" },
+       { 1024, "1 GiB" }
+};
 
 ProjectBuildingWindow::ProjectBuildingWindow() {
     _showCloseCross = true;
     _building = false;
 
     _packer = new ResourcePacker;
+    _packer->SetBundleFileSplitSizeMegs(256);
 }
 
 ProjectBuildingWindow::~ProjectBuildingWindow() {
     delete _packer;
 }
 
-void ProjectBuildingWindow::OnDrawWindow() {
-    if (Draw("Build project")) {
-        
+void ProjectBuildingWindow::OnDrawWindow() 
+{
+    if (Draw("Build project")) 
+    {        
         if (_building)
             DrawBuildingInterface();
         else
@@ -49,6 +58,30 @@ void ProjectBuildingWindow::Build() {
 
 void ProjectBuildingWindow::DrawPreBuildingInterface() 
 {
+    const char* currentMaxFileSizeStr = "Invalid";
+    auto it = bundleMaxSizeSettings.find(_packer->GetBundleFileSplitSizeMegs());
+    if (it != bundleMaxSizeSettings.end()) {
+        currentMaxFileSizeStr = it->second;
+    }
+
+    if (DrawComboControl("Bundle file max size", currentMaxFileSizeStr))
+    {
+        for (const auto& [fileSize, label] : bundleMaxSizeSettings) 
+        {
+            bool is_selected = (_packer->GetBundleFileSplitSizeMegs() == fileSize);
+
+            if (ImGui::Selectable(label, is_selected)) {
+                _packer->SetBundleFileSplitSizeMegs(fileSize);
+            }
+
+            if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+
     if (ImGui::Button("Build", ImVec2(_size.x, 0))) {
         Build();
     }
