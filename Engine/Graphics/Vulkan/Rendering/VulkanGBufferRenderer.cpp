@@ -92,7 +92,7 @@ void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuf
 void VulkanGBufferRenderer::SetBuffers(VulkanBuffer* transforms_buffer, VulkanBuffer* anims_buffer, VulkanBuffer* particles_buffer) {
 	if (transforms_buffer) {
 		_transforms_buffer = transforms_buffer;
-		_transforms_descriptor_set->WriteDescriptorBuffer(1, transforms_buffer, 0);
+		_transforms_descriptor_set->WriteDescriptorBuffer(1, transforms_buffer, 0, sizeof(Mat4));
 	}
 	if (anims_buffer) {
 		_animations_buffer = anims_buffer;

@@ -15,7 +15,7 @@ layout (location = 10) in vec4 Weights2;
 layout (location = 11) in uint bones;
 
 layout (std140, binding = 1) readonly buffer Transform{
-    mat4 obj_model[];
+    mat4 obj_transform;
 };
 
 layout (std140, set = 2, binding = 0) readonly buffer Animation{
@@ -67,7 +67,7 @@ void main(){
 	if(bones > 0)
 		bone_t = getBoneTransform();
 
-    vec4 pos = obj_model[0] * bone_t * vec4(position, 1.0);
+    vec4 pos = obj_transform * bone_t * vec4(position, 1.0);
 
 	gl_Position = pos;
 }

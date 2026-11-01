@@ -19,13 +19,13 @@ layout (std140, binding = 0) uniform CamMatrices{
 };
 
 layout (std140, binding = 1) readonly buffer Transform{
-    mat4 obj_model[4];
+    mat4 obj_transform;
 };
 
 void main() { 
     UVCoord = uv;
 
-    mat4 object_transform = obj_model[gl_InstanceIndex];
+    mat4 object_transform = obj_transform;
 
     InNormal = normalize(vec3(object_transform * vec4(normal, 0)));
     vec3 TangentVec = normalize(vec3(object_transform * vec4(tangent, 0)));

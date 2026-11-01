@@ -28,8 +28,8 @@ layout (std140, binding = 0) uniform CamMatrices{
     vec3 cam_position;
 };
 
-layout (std140, binding = 1) readonly buffer Transform{
-    mat4 obj_model[];
+layout (std140, binding = 1) readonly buffer Transform {
+    mat4 obj_transform;
 };
 
 layout (std140, set = 2, binding = 0) readonly buffer Animation{
@@ -82,7 +82,7 @@ void main() {
 	if(bones > 0)
 		bone_t = getBoneTransform();
 
-    mat4 object_transform = obj_model[gl_InstanceIndex];
+    mat4 object_transform = obj_transform;
 
     InNormal = normalize(vec3(object_transform * bone_t * vec4(normal, 0)));
     vec3 TangentVec = normalize(vec3(object_transform * vec4(tangent, 0)));

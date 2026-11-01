@@ -19,7 +19,7 @@ layout (std140, set = 0, binding = 0) uniform CamMatrices{
 };
 
 layout (std140, set = 0, binding = 1) readonly buffer Transform {
-    mat4 obj_model[1];
+    mat4 obj_transform;
 };
 
 layout (std140, set = 2, binding = 0) readonly buffer GrassTransforms {
@@ -27,7 +27,7 @@ layout (std140, set = 2, binding = 0) readonly buffer GrassTransforms {
 };
 
 void main(){
-    vec4 pos = obj_model[0] * transforms[gl_InstanceIndex] * vec4(position, 1.0);
+    vec4 pos = obj_transform * transforms[gl_InstanceIndex] * vec4(position, 1.0);
     FragPos = pos.xyz;
     UVCoord = uv;
     Normal = normal;
