@@ -41,7 +41,7 @@ namespace VSGEditor {
 
 		void ResetStageProgress(std::size_t total);
 
-		void CompileAndWriteScripts();
+		bool CompileAndWriteScripts();
 
 		template<typename T>
 		ResourcePacker& operator<<(T value) {

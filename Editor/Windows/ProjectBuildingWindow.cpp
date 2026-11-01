@@ -89,9 +89,12 @@ void ProjectBuildingWindow::DrawPreBuildingInterface()
 
 void ProjectBuildingWindow::DrawBuildingInterface() 
 {
-    if (_packer->IsFinished() && _building) {
+    // Resource Packer finished its work
+    bool finished = _packer->IsFinished() && _building;
+
+    // Stop thread work, if resource packer finished its work
+    if (finished && _packer->IsRunning()) {
         _packer->Stop();
-        _building = false;
     }
 
     float progressBarHeight = ImGui::GetFrameHeight(); // Progress Bar height
@@ -106,8 +109,19 @@ void ProjectBuildingWindow::DrawBuildingInterface()
     }
     ImGui::EndChild();
 
-    float frac = ((float)_packer->GetCompleted()) / _packer->GetTotal();
-    char message[120];
-    std::snprintf(message, sizeof(message), "%zu / %zu", _packer->GetCompleted(), _packer->GetTotal());
-    ImGui::ProgressBar(frac, ImVec2(-FLT_MIN, 0), message);
+    if (!finished)
+    {
+        // Draw progress bar
+        float frac = ((float)_packer->GetCompleted()) / _packer->GetTotal();
+        char message[120];
+        std::snprintf(message, sizeof(message), "%zu / %zu", _packer->GetCompleted(), _packer->GetTotal());
+        ImGui::ProgressBar(frac, ImVec2(-FLT_MIN, 0), message);
+    } 
+    else
+    {
+        // Draw OK button to switch interfaces
+        if (ImGui::Button("OK", ImVec2(_size.x, 0))) {
+            _building = false;
+        }
+    }
 }

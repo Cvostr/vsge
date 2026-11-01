@@ -43,7 +43,7 @@ void ResourcePacker::THRFunc() {
     }
 }
 
-void ResourcePacker::CompileAndWriteScripts()
+bool ResourcePacker::CompileAndWriteScripts()
 {
     *this << "Compiling scripts\n";
     while (!MonoScriptStorage::Get()->IsScriptingReady());
@@ -51,18 +51,24 @@ void ResourcePacker::CompileAndWriteScripts()
     *this << "Writing scripts\n";
     //write scripts dll
     {
+
         byte* file_data = nullptr;
         uint64 file_size = 0;
 
+        std::string output_file = _output_dir + "runtime.dll";
+
         bool result = LoadFile(MonoScriptStorage::Get()->GetDllOutputPath(), (char**)&file_data, &file_size);
         if (result) {
-            std::string output_file = _output_dir + "runtime.dll";
             std::ofstream scripts_stream;
             scripts_stream.exceptions(std::ios::badbit | std::ios::failbit);
             scripts_stream.open(output_file, std::ios::binary);
 
             scripts_stream.write((char*)file_data, file_size);
             scripts_stream.close();
+        }
+        else {
+            *this << "Error copying file \'" << MonoScriptStorage::Get()->GetDllOutputPath() << "\' to \'" << output_file << "\' !\n";
+            return false;
         }
 
         SAFE_RELEASE_ARR(file_data);
@@ -74,9 +80,15 @@ void ResourcePacker::CompileAndWriteScripts()
             scripts_stream.write((char*)file_data, file_size);
             scripts_stream.close();
         }
+        else {
+            *this << "Error copying file \'" << MonoScriptStorage::Get()->GetApiDllPath() << "\' to \'" << output_file << "\' !\n";
+            return false;
+        }
 
         SAFE_RELEASE_ARR(file_data);
     }
+
+    return true;
 }
 
 void ResourcePacker::Write()
@@ -91,7 +103,11 @@ void ResourcePacker::Write()
     ResourceCache* cache = ResourceCache::Get();
     EditorLayer* el = app->GetLayer<EditorLayer>();
 
-    CompileAndWriteScripts();
+    if (!CompileAndWriteScripts()) {
+        *this << "Error building project\n";
+        _finished = true;
+        return;
+    }
     
     std::string project_name = el->GetProject().getSettings().getProjectName();
     Guid main_scene = el->GetProject().getSettings().getStartupSceneResource().GetId();
