@@ -61,7 +61,6 @@ namespace VSGE {
 		VkDescriptorSet GetDescriptorSet();
 		VkDescriptorSetLayout GetDescriptorSetLayout();
 
-		VkDescriptorSetLayout GetDescriptorSetLayout();
 
 		void AddDescriptor(
 			VkDescriptorType type, 
