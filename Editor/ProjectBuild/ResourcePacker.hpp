@@ -20,14 +20,13 @@ namespace VSGEditor {
 
 	class ResourcePacker : public VSGE::Thread {
 	private:
+		// State
 		std::string _output_log;
 		std::size_t _total;
 		std::size_t _completed;
 
-		std::ofstream _bundle_stream;
-
+		// Settings
 		std::string _output_dir;
-
 		std::string _bundle_name_prefix;
 		uint32 _bundle_file_split_size;
 
@@ -35,6 +34,8 @@ namespace VSGEditor {
 		uint32 _current_bundle;
 		uint32 _written_bytes;
 		bool _finished;
+
+		std::ofstream _bundle_stream;
 
 		void WriteFileToBundle(byte* data, uint32 size);
 		void CheckForBundleOverflow();

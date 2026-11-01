@@ -10,9 +10,13 @@ namespace VSGEditor {
 
 		ResourcePacker* _packer;
 		bool _building;
+		std::string outputDirPath;
+
 		void Build();
 		void DrawPreBuildingInterface();
 		void DrawBuildingInterface();
+
+		std::string GetDefaultOutputDirectory();
 	public:
 
 		ProjectBuildingWindow();

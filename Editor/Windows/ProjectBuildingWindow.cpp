@@ -38,26 +38,38 @@ void ProjectBuildingWindow::OnDrawWindow()
     }
 }
 
-void ProjectBuildingWindow::Build() {
+std::string ProjectBuildingWindow::GetDefaultOutputDirectory()
+{
     Application* app = Application::Get();
     EditorLayer* el = app->GetLayer<EditorLayer>();
 
     Mpi::File outputDir(el->GetProject().GetRootDirectory() + "/built");
+    return outputDir.getAbsolutePath();
+}
 
-    if (!outputDir.isDirectory()) {
-        outputDir.mkdir();
+void ProjectBuildingWindow::Build() 
+{
+    Mpi::File outputDirFile(outputDirPath);
+
+    if (!outputDirFile.isDirectory()) {
+        outputDirFile.mkdir();
     }
 
-    _packer->SetOutputBundleDirectoryPath(outputDir.getAbsolutePath());
+    _packer->SetOutputBundleDirectoryPath(outputDirPath);
     MonoScriptStorage::Get()->Compile();
 
     _packer->Run();
     _building = true;
-
 }
 
 void ProjectBuildingWindow::DrawPreBuildingInterface() 
 {
+    // reset base directory, if it is empty
+    if (outputDirPath.empty())
+        outputDirPath = GetDefaultOutputDirectory();
+
+    DrawStringControl("Output Directory", outputDirPath);
+
     const char* currentMaxFileSizeStr = "Invalid";
     auto it = bundleMaxSizeSettings.find(_packer->GetBundleFileSplitSizeMegs());
     if (it != bundleMaxSizeSettings.end()) {
