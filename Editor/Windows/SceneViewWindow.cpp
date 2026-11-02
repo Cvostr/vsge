@@ -50,9 +50,12 @@ void SceneViewWindow::OnDrawWindow() {
             (void*)texture, bb.Min,
             bb.Max, ImVec2(0, 0), ImVec2(1, 1));
 
-        ImGui::GetWindowDrawList()->AddImage(
-            (void*)gizmo_texture, bb.Min,
-            bb.Max, ImVec2(0, 0), ImVec2(1, 1));
+        if (EditorLayer::Get()->GetEditorCameraMode() == EDITOR_CAMERA_MODE_EDIT_CAMERA)
+        {
+            ImGui::GetWindowDrawList()->AddImage(
+                (void*)gizmo_texture, bb.Min,
+                bb.Max, ImVec2(0, 0), ImVec2(1, 1));
+        }
         
         VSGE::Camera* cam = editor_layer->GetCamera();
         Mat4 proj = GetPerspectiveRH_Default(cam->GetFOV(), cam->GetAspectRatio(), cam->GetNearPlane(), cam->GetFarPlane());

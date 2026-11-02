@@ -161,6 +161,7 @@ void VkGizmos::PrepareBuffers()
 	Mat4* transforms = new Mat4[_picked_entities.size() * alignmentFactor];
 
 	uint32 writtenTransforms = 0;
+	uint32 writtenBones = 0;
 
 	for (auto& entity : _picked_entities) 
 	{
@@ -185,42 +186,34 @@ void VkGizmos::PrepareBuffers()
 		}
 
 		transforms[(writtenTransforms++) * alignmentFactor] = entity->GetWorldTransform();
-		/*
+		
+		VSGE::Mesh* mesh = meshResource->GetMesh();
 
-		MeshResource* mresource = mesh_component->GetMeshResource();
-		if (!mresource)
-			continue;
-
-		if (mresource->GetMesh()->GetBones().size() > 0) {
+		if (mesh->GetBones().size() > 0) {
 			Entity* rootNode = entity->GetRootSkinningEntity();
 			Mat4 rootNodeTransform;
 			if (rootNode != nullptr) {
-				//Get root transform
+				// Get root transform
 				rootNodeTransform = rootNode->GetLocalTransform().invert();
-				for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
-					//Берем указатель на очередную кость
-					const Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
-					//Находим дочерний объект с именем кости
+				for (uint32 bone_i = 0; bone_i < mesh->GetBones().size(); bone_i++) {
+					// Get next bone
+					const Bone* bone = &mesh->GetBones()[bone_i];
+					// Find entity with name as bone
 					Entity* node = rootNode->GetChildEntityWithLabel(bone->GetName());
-					//Проверяем, найден ли объект
 					if (node != nullptr) {
-						//Объект найден
-						//Calculate result matrix
+						// Calculate result matrix
 						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * rootNodeTransform;
-						//Send skinned matrix to skinning uniform buffer
-						anim[_writtenBones] = matrix;
-						_writtenBones++;
+						// Send skinned matrix to skinning uniform buffer
+						_animations_buffer->WriteData(sizeof(Mat4) * writtenBones, sizeof(Mat4), &matrix);
+						writtenBones++;
 					}
 				}
 			}
-		}*/
+		}
 	}
 
 	_transforms_buffer->WriteData(0, sizeof(Mat4) * alignmentFactor * (uint32)_picked_entities.size(), transforms);
 	delete[] transforms;
-
-	//mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
-	//delete[] anim;
 }
 
 void VkGizmos::AppendToCmdbuf(VSGE::VulkanCommandBuffer* cmdbuf) 
@@ -257,7 +250,7 @@ void VkGizmos::AppendToCmdbuf(VSGE::VulkanCommandBuffer* cmdbuf)
 			uint32 offsets[2] = { 0 * CAMERA_ELEM_SIZE, (entity_index++) * alignment };
 			uint32 animOffset = drawn_bones * sizeof(Mat4);
 			
-			//_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
+			drawn_bones += static_cast<uint32>(mesh->GetBones().size());
 
 			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _transforms_descriptor_set, 2, offsets);
 			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _animations_descriptor_set, 1, &animOffset);
