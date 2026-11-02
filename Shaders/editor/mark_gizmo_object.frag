@@ -6,5 +6,5 @@ layout(location = 2) in vec2 UVCoord;
 layout(location = 3) in mat3 TBN;
 
 void main() {
-    tColor = vec4(0.5, 0.5, 0.5, 1);
+    tColor = vec4(0.5, 0.5, 1, 1);
 }   

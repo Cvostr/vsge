@@ -1,16 +1,24 @@
 #include "VkGizmos.hpp"
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
+#include <Scene/EntityComponents/MeshComponent.hpp>
+
+#include "Graphics/Vulkan/VulkanRAPI.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
 
 VkGizmos* VkGizmos::_this = nullptr;
 
+#define GIZMO_MAX_ENTITIES 100
+
 VkGizmos::VkGizmos() :
 	_object_shader(nullptr),
 	_object_pipeline(nullptr),
 	_object_pipeline_layout(nullptr),
-	_draw_gizmos(false)
+	_draw_gizmos(false),
+
+	_fb_width(1280),
+	_fb_height(720)
 {
 	_this = this;
 }
@@ -41,11 +49,20 @@ void VkGizmos::Create() {
 	_object_shader->AddShaderFromFile("pbr.vert", SHADER_STAGE_VERTEX);
 	_object_shader->AddShaderFromFile("mark_gizmo_object.frag", SHADER_STAGE_FRAGMENT);
 
-	VulkanRenderPass* renderpass = 
-		VulkanRenderer::Get()->GetMainRenderTarget()->GetDeferredLightRenderer()->GetRenderPass();
+	_rp = new VulkanRenderPass;
+	_rp->SetClearSize(_fb_width, _fb_height);
+	_rp->PushColorAttachment(FORMAT_RGBA);
+	_rp->Create();
+	_rp->SetClearColor(0, Color(0, 0, 0, 0));
+
+	_framebuffer = new VulkanFramebuffer;
+	_framebuffer->SetSize(_fb_width, _fb_height);
+	_framebuffer->AddAttachment(FORMAT_RGBA); //Color
+	_framebuffer->Create(_rp);
+
 
 	_object_pipeline_layout = new VulkanPipelineLayout;
-	//Add common vertex descriptor
+	// Add common vertex descriptor
 
 	_object_pipeline_layout->PushDescriptorSet(
 		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetVertexDescriptorSet());
@@ -53,7 +70,7 @@ void VkGizmos::Create() {
 		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetVertexDescriptorSet());
 	_object_pipeline_layout->PushDescriptorSet(
 		VulkanRenderer::Get()->GetMainRenderTarget()->GetGBufferRenderer()->GetAnimationsDescriptorSet());
-	//Create pipeline layout
+	// Create pipeline layout
 	_object_pipeline_layout->Create();
 
 	// Main pipeline for rendering picked objects
@@ -61,7 +78,47 @@ void VkGizmos::Create() {
 	_object_pipeline->SetPolygonMode(POLYGON_MODE_LINE);
 	_object_pipeline->SetCullMode(CULL_MODE_NONE);
 	_object_pipeline->SetDepthTest(false);
-	_object_pipeline->Create(_object_shader, renderpass, vertexLayout, _object_pipeline_layout);
+	_object_pipeline->Create(_object_shader, _rp, vertexLayout, _object_pipeline_layout);
+	
+	// Create buffer for 1 camera
+	_cameras_buffer = new VulkanCamerasBuffer;
+
+	// Create transform buffers
+	uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
+	uint32 alignment = std::max((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
+
+	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
+	_transforms_buffer->Create(GIZMO_MAX_ENTITIES * transformMemoryBlockSize);
+
+	_animations_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
+	_animations_buffer->Create(sizeof(Mat4) * MAX_ANIMATION_MATRICES);
+
+	// Vulkan Descriptors stuff
+	_objects_descr_pool = new VulkanDescriptorPool;
+
+	// Create base vertex descriptors set
+	_transforms_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //Camera
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
+
+	_animations_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
+	_animations_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Animation
+	
+	// Create POOL
+	_objects_descr_pool->Create();
+
+	// Create all descriptor sets and set buffers to them
+	_transforms_descriptor_set->Create();
+	_transforms_descriptor_set->WriteDescriptorBuffer(0, _cameras_buffer->GetCamerasBuffer(), 0, CAMERA_ELEM_SIZE);
+	_transforms_descriptor_set->WriteDescriptorBuffer(1, _transforms_buffer, 0, sizeof(Mat4));
+
+	_animations_descriptor_set->Create();
+	_animations_descriptor_set->WriteDescriptorBuffer(0, _animations_buffer, 0);
+}
+
+VulkanTexture* VkGizmos::GetOutputTexture()
+{
+	return (VulkanTexture*)_framebuffer->GetColorAttachments()[0];
 }
 
 void VkGizmos::Destroy() {
@@ -70,18 +127,147 @@ void VkGizmos::Destroy() {
 	SAFE_RELEASE(_object_shader);
 }
 
-void VkGizmos::SetEntitiesToDraw(std::vector<VSGE::Entity*>& entities) {
-	_entities_to_draw = &entities;
+void VkGizmos::AddPickedEntity(VSGE::Entity* entity) 
+{
+	if (_picked_entities.size() >= GIZMO_MAX_ENTITIES)
+		return;
+
+	auto it = std::find(_picked_entities.begin(), _picked_entities.end(), entity);
+	if (it == _picked_entities.end()) {
+		_picked_entities.push_back(entity);
+	}
 }
-void VkGizmos::AddPickedEntity(VSGE::Entity* entity) {
-	_picked_entities.push_back(entity);
+
+void VkGizmos::RemovePickedEntity(VSGE::Entity* entity)
+{
+	_picked_entities.erase(std::remove(_picked_entities.begin(), _picked_entities.end(), entity), _picked_entities.end());
 }
+
 void VkGizmos::ClearPickedEntities() {
 	_picked_entities.clear();
 }
 
-void VkGizmos::AppendToCmdbuf(VSGE::VulkanCommandBuffer* cmdbuf) {
-	for (auto& entity : _picked_entities) {
-		//uint32 entity_index = 
+void VkGizmos::UpdateCamera(Camera* cam)
+{
+	_cameras_buffer->SetCamera(0, cam);
+	_cameras_buffer->UpdateGpuBuffer();
+}
+
+void VkGizmos::PrepareBuffers() 
+{
+	uint32 alignment = std::max((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
+	uint32 alignmentFactor = alignment / sizeof(Mat4);
+
+	Mat4* transforms = new Mat4[_picked_entities.size() * alignmentFactor];
+
+	uint32 writtenTransforms = 0;
+
+	for (auto& entity : _picked_entities) 
+	{
+		MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
+		if (meshComponent == nullptr)
+			continue;
+
+		MeshResource* meshResource = meshComponent->GetMeshResource();
+		if (!meshResource)
+			continue;
+
+		if (meshResource)
+		{
+			meshResource->Load();
+		}
+		else if (!meshComponent->GetResourceReference().GetResourceName().empty() && !meshComponent->GetResourceReference().GetParentResource()->GetName().empty())
+		{
+			Resource* parent = meshComponent->GetResourceReference().GetParentResource();
+			if (parent) {
+				parent->Load();
+			}
+		}
+
+		transforms[(writtenTransforms++) * alignmentFactor] = entity->GetWorldTransform();
+		/*
+
+		MeshResource* mresource = mesh_component->GetMeshResource();
+		if (!mresource)
+			continue;
+
+		if (mresource->GetMesh()->GetBones().size() > 0) {
+			Entity* rootNode = entity->GetRootSkinningEntity();
+			Mat4 rootNodeTransform;
+			if (rootNode != nullptr) {
+				//Get root transform
+				rootNodeTransform = rootNode->GetLocalTransform().invert();
+				for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
+					//Берем указатель на очередную кость
+					const Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
+					//Находим дочерний объект с именем кости
+					Entity* node = rootNode->GetChildEntityWithLabel(bone->GetName());
+					//Проверяем, найден ли объект
+					if (node != nullptr) {
+						//Объект найден
+						//Calculate result matrix
+						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * rootNodeTransform;
+						//Send skinned matrix to skinning uniform buffer
+						anim[_writtenBones] = matrix;
+						_writtenBones++;
+					}
+				}
+			}
+		}*/
 	}
+
+	_transforms_buffer->WriteData(0, sizeof(Mat4) * alignmentFactor * (uint32)_picked_entities.size(), transforms);
+	delete[] transforms;
+
+	//mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
+	//delete[] anim;
+}
+
+void VkGizmos::AppendToCmdbuf(VSGE::VulkanCommandBuffer* cmdbuf) 
+{
+	uint32 alignment = std::max((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
+	uint32 entity_index = 0;
+	uint32 drawn_bones = 0;
+
+	_rp->CmdBegin(*cmdbuf, *_framebuffer);
+	// Bind pipeline at the beginning
+	cmdbuf->BindPipeline(*_object_pipeline);
+	cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+	VulkanPipelineLayout* ppl = _object_pipeline->GetPipelineLayout();
+
+	for (auto& entity : _picked_entities) 
+	{
+		if (!entity->IsActive())
+			continue;
+
+		MeshComponent* meshComponent = entity->GetComponent<MeshComponent>();
+		if (meshComponent == nullptr)
+			continue;
+
+		MeshResource* meshResource = meshComponent->GetMeshResource();
+		if (meshResource == nullptr)
+			continue;
+
+		if (meshResource->GetState() == RESOURCE_STATE_READY) {
+			VulkanMesh* mesh = (VulkanMesh*)meshResource->GetMesh();
+
+			// Mark mesh resource used in this frame
+			meshResource->Use();
+
+			uint32 offsets[2] = { 0 * CAMERA_ELEM_SIZE, (entity_index++) * alignment };
+			uint32 animOffset = drawn_bones * sizeof(Mat4);
+			
+			//_drawn_bones += static_cast<uint32>(mesh->GetBones().size());
+
+			cmdbuf->BindDescriptorSets(*ppl, 0, 1, _transforms_descriptor_set, 2, offsets);
+			cmdbuf->BindDescriptorSets(*ppl, 2, 1, _animations_descriptor_set, 1, &animOffset);
+			cmdbuf->BindMesh(*mesh);
+			if (mesh->GetIndexCount() > 0)
+				cmdbuf->DrawIndexed(mesh->GetIndexCount());
+			else
+				cmdbuf->Draw(mesh->GetVerticesCount());
+		}
+	}
+
+	cmdbuf->EndRenderPass();
 }

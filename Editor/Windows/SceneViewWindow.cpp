@@ -6,12 +6,14 @@
 #include "../EditorLayers/EditorLayer.hpp"
 #include <Math/MatrixCamera.hpp>
 #include <Engine/Application.hpp>
+#include <Misc/VkGizmos.hpp>
 
 using namespace VSGEditor;
 
 SceneViewWindow::SceneViewWindow() {
     _transform_gizmo_used = false;
     texture = VK_NULL_HANDLE;
+    gizmo_texture = VK_NULL_HANDLE;
 }
 
 bool SceneViewWindow::IsTransformGizmoUsed() {
@@ -36,8 +38,20 @@ void SceneViewWindow::OnDrawWindow() {
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         }
 
+        if (gizmo_texture == nullptr)
+        {
+            VkGizmos* vkg = VkGizmos::Get();
+            gizmo_texture = ImGui_ImplVulkan_AddTexture(VSGE::VulkanRenderingGenerics::Get()->GetAttachmentSampler()->GetSampler(),
+                vkg->GetOutputTexture()->GetImageView(),
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
+
         ImGui::GetWindowDrawList()->AddImage(
             (void*)texture, bb.Min,
+            bb.Max, ImVec2(0, 0), ImVec2(1, 1));
+
+        ImGui::GetWindowDrawList()->AddImage(
+            (void*)gizmo_texture, bb.Min,
             bb.Max, ImVec2(0, 0), ImVec2(1, 1));
         
         VSGE::Camera* cam = editor_layer->GetCamera();
@@ -86,6 +100,24 @@ void SceneViewWindow::OnDrawWindow() {
                 _transform_gizmo_used = false;
             }
         }
+
+        // THIS UI STYLE IS PATENTED BY AUTODESK!!!
+        /*
+        float compassSize = 120;
+        float padding = 10;
+        float compassX = (_pos.x + _size.x) - compassSize - padding;
+        float compassY = _pos.y + padding;
+
+        ImGuizmo::SetRect(compassX, compassY, compassSize, compassSize);
+
+        ImGuizmo::ViewManipulate(
+            (float*)&cam->GetViewMatrix().M11,
+            100,
+            ImVec2(compassX, compassY),
+            ImVec2(compassSize, compassSize),
+            0
+        );*/
+
         ImGui::End();
     }
 }

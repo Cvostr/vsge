@@ -17,6 +17,7 @@
 #include "../Windows/ProjectSettingsWindow.hpp"
 #include "../Windows/ProjectBuildingWindow.hpp"
 #include <Misc/DialogWindows.hpp>
+#include <Misc/VkGizmos.hpp>
 
 #include <InspectorInterfaces/EntityComponents/EntityComponents.hpp>
 #include <Scene/EntityComponents/MeshComponent.hpp>
@@ -189,8 +190,14 @@ VSGE::Entity* EditorLayer::GetPickedEntity() {
 	return _pickedEntity;
 }
 
-void EditorLayer::SetPickedEntity(VSGE::Entity* entity) {
+void EditorLayer::SetPickedEntity(VSGE::Entity* entity) 
+{
+	VkGizmos::Get()->ClearPickedEntities();
+
 	_pickedEntity = entity;
+
+	if (entity)
+		VkGizmos::Get()->AddPickedEntity(entity);
 }
 
 EditorCameraMode EditorLayer::GetEditorCameraMode() {
@@ -428,7 +435,7 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 		if (_pickedEntity != nullptr) {
 			_pickedEntity->Destroy();
 			imgui->GetWindow<InspectorWindow>()->SetShowingEntity(nullptr);
-			_pickedEntity = nullptr;
+			SetPickedEntity(nullptr);
 		}
 		break;
 	

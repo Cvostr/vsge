@@ -5,6 +5,7 @@
 #include <Engine/Window.hpp>
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
+#include <Misc/VkGizmos.hpp>
 
 using namespace VSGEditor;
 
@@ -141,6 +142,7 @@ void ImGuiLayer::VulkanRecordCmdBuf(ImDrawData* draw_data, uint32 image_index) {
     cmdbuf.EndRenderPass();
 
     VkMaterialsThumbnails::Get()->RecordCmdBuffer(&cmdbuf);
+    VkGizmos::Get()->AppendToCmdbuf(&cmdbuf);
 
     cmdbuf.End();
 }
@@ -167,7 +169,7 @@ void ImGuiLayer::OnUpdate() {
     EditorLayer* editor_layer = EditorLayer::Get();
     VSGE::Application* app = VSGE::Application::Get();
     VSGE::Window* win = &app->GetWindow();
-
+    
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplSDL2_NewFrame(win->GetSdlWinPtr());
     ImGui::NewFrame();
@@ -194,6 +196,9 @@ void ImGuiLayer::OnUpdate() {
     ImGui::Render();
     
     ImDrawData* draw_data = ImGui::GetDrawData();
+
+    VkGizmos::Get()->PrepareBuffers();
+    VkGizmos::Get()->UpdateCamera(editor_layer->GetCamera());
 
     VSGE::VulkanRenderer* renderer = VSGE::VulkanRenderer::Get();
 
