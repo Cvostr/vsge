@@ -26,9 +26,20 @@ VkMaterialThumbnail::~VkMaterialThumbnail() {
 }
 
 VkMaterialsThumbnails::VkMaterialsThumbnails() :
+    _shadowmapper(nullptr),
     _gbuffer(nullptr),
+    _gamma_correction(nullptr),
+    _sampler(nullptr),
+
     _light(nullptr),
-    _camera(nullptr)
+    _camera(nullptr),
+    _thumb_scene(nullptr),
+    _thumb_entity(nullptr),
+
+    _lights_buffer(nullptr),
+    _cameras_buffer(nullptr),
+    _transform_buffer(nullptr),
+    _storage_buffer(nullptr)
 {
     _this = this;
 }

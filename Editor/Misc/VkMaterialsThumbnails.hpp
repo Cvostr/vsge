@@ -20,7 +20,7 @@ public:
 	bool deleted;
 
 	VkMaterialThumbnail(VSGE::VulkanSampler* sampler);
-
+	VkMaterialThumbnail(const VkMaterialThumbnail&) = delete;
 	~VkMaterialThumbnail();
 };
 
@@ -53,6 +53,7 @@ private:
 public:
 
 	VkMaterialsThumbnails();
+	VkMaterialsThumbnails(const VkMaterialsThumbnails&) = delete;
 	~VkMaterialsThumbnails();
 
 	static VkMaterialsThumbnails* Get() {
