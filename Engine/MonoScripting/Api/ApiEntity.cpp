@@ -91,6 +91,10 @@ static Quat GetRotation(Entity* ptr) {
 	return ptr->GetRotation();
 }
 
+static Entity* Duplicate(Entity* ptr) {
+	return ptr->Duplicate();
+}
+
 static void* WComponent(void* ptr, int type, int action) {
 	Entity* ent = (Entity*)ptr;
 	switch (type) {
@@ -169,6 +173,8 @@ void VSGE::BindEntityApi() {
 	MonoScriptingLayer::AddInternalCall("Entity::i_GetScale(ulong)", GetScale);
 	MonoScriptingLayer::AddInternalCall("Entity::i_SetRotation(ulong,Quat)", SetRotation);
 	MonoScriptingLayer::AddInternalCall("Entity::i_GetRotation(ulong)", GetRotation);
+
+	MonoScriptingLayer::AddInternalCall("Entity::i_Duplicate(ulong)", Duplicate);
 
 	MonoScriptingLayer::AddInternalCall("Entity::WComponent(ulong,int,int)", WComponent);
 	MonoScriptingLayer::AddInternalCall("Entity::i_GetScript(ulong,string)", GetScript);

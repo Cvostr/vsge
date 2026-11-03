@@ -80,6 +80,10 @@ public class Entity : InternalObject {
         i_SetRotation(handle, rotation);
     }
 
+    public Entity Duplicate() {
+        return new Entity(i_Duplicate(handle));
+    }
+
     public void AddComponent<T>() {
         int component_type = IEntityComponent.GetComponentID<T>();
         WComponent(handle, component_type, 1);
@@ -151,6 +155,9 @@ public class Entity : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern Quat i_SetRotation(ulong handle, Quat rotation);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_Duplicate(ulong handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong WComponent(ulong handle, int type, int action);
