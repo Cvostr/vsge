@@ -8,38 +8,50 @@ public class Scene : InternalObject {
     {
     }
 
-    public Entity GetRootEntity(){
+    public Entity GetRootEntity()
+    {
         return new Entity(i_GetRootNode(handle));
     }
 
-    public Entity AddNewEntity(string name){
+    public Entity AddNewEntity(string name)
+    {
         return new Entity(i_AddNewEntity(handle, name));
     }
 
-    public Entity GetEntityByName(string name){
-        return new Entity(i_GetEntity(handle, name));
+    public Entity GetEntityByName(string name) 
+    {
+        ulong entityHandle = i_GetEntity(handle, name);
+        if (entityHandle == 0)
+            return null;
+
+        return new Entity(entityHandle);
     }
 
-    public Entity[] GetAllEntitiesByName(string name){
+    public void QueueEntityDestroy(Entity entity) 
+    {
+        i_QueueEntityDestroy(handle, entity.GetHandle());
+    }
+
+    public Entity[] GetAllEntitiesByName(string name) {
         ulong[] pointers = i_GetAllEntitiesByName(handle, name);
         Entity[] result = new Entity[pointers.Length];
 
-        for(uint i = 0; i < result.Length; i ++){
+        for (uint i = 0; i < result.Length; i ++) {
             result[i] = new Entity(pointers[i]);
         }
 
         return result;
     } 
 
-    public void Run(){
+    public void Run() {
         i_Run(handle);
     }
 
-    public void Pause(){
+    public void Pause() {
         i_Pause(handle);
     }
 
-    public void Stop(){
+    public void Stop() {
         i_Stop(handle);
     }
 
@@ -70,6 +82,9 @@ public class Scene : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_AddNewEntity(ulong handle, string name);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern void i_QueueEntityDestroy(ulong scene, ulong entity);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong[] i_GetAllEntitiesByName(ulong handle, string name);

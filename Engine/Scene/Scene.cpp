@@ -260,6 +260,14 @@ void Scene::Update()
 	{
 		CallOnUpdate(GetRootEntity());
 	}
+
+	// Destroy all objects, which was queued for removal during upper call
+	while (!_destroyQueue.empty()) 
+	{
+		Entity* entity = _destroyQueue.front(); // Получаем доступ к первому элементу
+		entity->Destroy();
+		_destroyQueue.pop();
+	}
 }
 
 void Scene::UpdateSceneTree(const Vec3& size) {
@@ -287,6 +295,10 @@ void Scene::UpdateSceneTree(const Vec3& size) {
 	for (uint32 i = 0; i < _scene_tree.size(); i++) {
 		//GetEntitiesIntersects(_scene_tree.at());
 	}
+}
+
+void Scene::QueueEntityDestroy(Entity* entity) {
+	_destroyQueue.push(entity);
 }
 
 void Scene::GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, Entity* first) {

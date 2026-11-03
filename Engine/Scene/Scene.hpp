@@ -22,6 +22,7 @@ namespace VSGE {
 		Entity* _rootEntity;
 		SceneEnvironmentSettings _environment_settings;
 		std::map<AABB, std::vector<Entity*>> _scene_tree;
+		std::queue<Entity*> _destroyQueue;
 		PhysicsWorld* _physics_world;
 
 		SceneState _state;
@@ -102,12 +103,17 @@ namespace VSGE {
 		/// <returns></returns>
 		AABB GetSceneBoundingBox();
 		/// <summary>
-		/// Run this scene
+		/// Run this scene, if it is not running
 		/// </summary>
 		void Run();
-
+		/// <summary>
+		/// Pause scene execution, if it is currently running
+		/// </summary>
 		void Pause();
-
+		/// <summary>
+		/// Stop scene execution, if it is currently running
+		/// Calls OnDestroy() on each Entity
+		/// </summary>
 		void Stop();
 
 		void Update();
@@ -119,6 +125,8 @@ namespace VSGE {
 		void setLoading(bool loading);
 
 		bool isLoading();
+
+		void QueueEntityDestroy(Entity* entity);
 
 		void GetEntitiesIntersects(const AABB& bb, std::vector<Entity*>& array, Entity* first = nullptr);
 

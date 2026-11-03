@@ -26,6 +26,11 @@ static void* AddNewEntity(Scene* scene, MonoString* name)
 	return scene->AddNewEntity(sName);
 }
 
+static void QueueEntityDestroy(Scene* scene, Entity* ent)
+{
+	scene->QueueEntityDestroy(ent);
+}
+
 static void Run(Scene* scene) {
 	scene->Run();
 }
@@ -73,6 +78,7 @@ void VSGE::BindSceneApi() {
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetRootNode(ulong)", GetRootEntity);
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetEntity(ulong,string)", GetEntityByName);
 	MonoScriptingLayer::AddInternalCall("Scene::i_AddNewEntity(ulong,string)", AddNewEntity);
+	MonoScriptingLayer::AddInternalCall("Scene::i_QueueEntityDestroy(ulong,ulong)", QueueEntityDestroy);
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetAllEntitiesByName(ulong,string)", GetAllEntitiesByName);
 
 	MonoScriptingLayer::AddInternalCall("Scene::i_Run(ulong)", Run);
