@@ -55,8 +55,8 @@ void main() {
         vec4 material = texture(material, UVCoord);
 
         vec3 albedo = pow(diffuse.rgb, vec3(2.2));
-        float roughness = normal_map.a;
-        float metallic = material.a;
+        float roughness = material.r;
+        float metallic = material.g;
         float emission = material.b;
         float ao = diffuse.a;
 
