@@ -162,6 +162,7 @@ namespace VSGE {
 
 		bool IsVegetablesDirtyAndClear();
 		void SetVegetablesDirty();
+		void SetHeightMapChanged();
 
 		Vec2i GetRayIntersectionTraingle(const Ray& ray);
 		const AABB GetAABB();

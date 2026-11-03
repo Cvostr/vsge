@@ -83,7 +83,7 @@ void ToolbarWindow::PlayScene() {
         Mpi::MessageDialogDesc desc;
         desc.dialogTitle = "Error starting scene!";
         desc.dialogMessage = "Scene cannot be started.\nReason: " + std::string(ex.what());
-        desc.dialogTitle = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+        desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
         Mpi::Dialog::MessageDialog(desc);
     }
 }

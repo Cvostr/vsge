@@ -7,6 +7,12 @@
 #include <Base/ImguiHelper.hpp>
 #include "../ResourcePicker.hpp"
 
+#include <mpi/Desktop/Dialog.hpp>
+#include <mpi/Desktop/Desktop.hpp>
+
+//#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
+
 using namespace VSGEditor;
 
 #define TERRAIN_TEXTURE_BTN_SIZE 48
@@ -104,6 +110,57 @@ void DrawTerrainVegetableEditor(uint32 vegetable_index, VSGE::TerrainComponent* 
 	}
 }
 
+void ImportHeightmap(VSGE::TerrainComponent* tc) {
+	Mpi::FileDialogDesc desc;
+	desc.dialogTitle = "Import Heightmap";
+	desc.addFileFilters({ {"All Files", "*.*"}, {"PNG Texture", "*.png"}});
+	std::string path;
+	path = Mpi::Dialog::OpenFileDialog(desc);
+	if (path.empty()) {
+		return;
+	}
+
+	// Try to parse picture
+	int width, height, nChannels;
+	unsigned char* data = stbi_load(path.c_str(), &width, &height, &nChannels, 0);
+
+	if (data == nullptr)
+	{
+		Mpi::MessageDialogDesc desc;
+		desc.dialogTitle = "Error!";
+		desc.dialogMessage = "Heightmap file is incorrect";
+		desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+		Mpi::Dialog::MessageDialog(desc);
+		return;
+	}
+
+	// Update size
+	tc->SetWidth(width);
+	tc->SetLength(height);
+	// Clear everything from terrain
+	tc->Flat(0);
+
+	// Factor (currently unused)
+	float yScale = 64.0f / 256.0f, yShift = 16.0f;
+	// Iterate over all vertices
+	for (unsigned int y = 0; y < height; y++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			// retrieve texel for (i,j) tex coord
+			unsigned char* texel = data + (x * height + y) * nChannels;
+			// raw height at coordinate
+			unsigned char posY = texel[0];
+
+			//tc->GetVertices()[x * height + y].pos.y = (int) posY * yScale - yShift;
+			tc->GetVertices()[x * height + y].pos.y = posY;
+		}
+	}
+
+	stbi_image_free(data);
+	tc->SetHeightMapChanged();
+}
+
 void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc) 
 {
 	int width = tc->GetWidth();
@@ -140,8 +197,13 @@ void VSGEditor::DrawTerrainComponent(VSGE::TerrainComponent* tc)
 		edit_mode = TERRAIN_EDITOR_EDIT_MODE_VEGETABLES;
 	ImGui::Separator();
 
-
-	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_TEXTURES) 
+	if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_HEIGHT)
+	{
+		if (ImGui::Button("Import Heightmap", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			ImportHeightmap(tc);
+		}
+	}
+	else if (edit_mode == TERRAIN_EDITOR_EDIT_MODE_TEXTURES) 
 	{
 		Vec2i tileSize = tc->GetTexturesTileSize();
 		DrawVec2iControl("Tile Size", tileSize);

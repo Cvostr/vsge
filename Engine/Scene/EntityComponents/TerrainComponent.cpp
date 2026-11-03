@@ -424,6 +424,14 @@ void TerrainComponent::SetVegetablesDirty()
 	_vegetables_dirty = true;
 }
 
+void TerrainComponent::SetHeightMapChanged()
+{
+	// Queue mesh update
+	_mesh_dirty = true;
+	// Queue vegetables update, because some grass may be higher or lower
+	_vegetables_dirty = true;
+}
+
 void TerrainComponent::UpdateNormals() 
 {
 	CalculateNormalsWithSum(_heightmap, GetVerticesCount(), _indices, GetIndicesCount());
