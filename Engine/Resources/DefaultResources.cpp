@@ -137,6 +137,10 @@ void VSGE::AddDefaultMeshes() {
     cube_mesh->SetState(RESOURCE_STATE_READY);
 	ResourceCache::Get()->PushResource(cube_mesh);
 
+    // Calculate actual normals and tangent space for plane
+    CalculateNormalsWithSum(plane_vertices, 4, plane_indices, 6);
+    ProcessTangentSpace(plane_vertices, plane_indices, 6);
+
     plane_mesh = new MeshResource;
     plane_mesh->SetDefault();
     plane_mesh->SetName("Plane");
