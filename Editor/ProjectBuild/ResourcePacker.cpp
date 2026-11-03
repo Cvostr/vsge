@@ -6,7 +6,6 @@
 #include <Scene/SceneSerialization.hpp>
 #include <Engine/Application.hpp>
 #include <EditorLayers/EditorLayer.hpp>
-#include "TextureCompressor.hpp"
 
 using namespace VSGEditor;
 using namespace VSGE;
@@ -19,6 +18,7 @@ ResourcePacker::ResourcePacker() {
     _current_bundle = 0;
     _bundle_file_split_size = 100;
     _bundle_name_prefix = "bundle";
+    _textureCompressFormat = BC7;
 
     _total = 0;
     _completed = 0;
@@ -127,21 +127,21 @@ void ResourcePacker::Write()
         byte* file_data = nullptr;
         size_t file_size = 0;
         bool result = LoadFile(resource->GetDataDescription().file_path, (char**)&file_data, &file_size);
-        
-        if (resource->GetResourceType() == RESOURCE_TYPE_TEXTURE)
+        if (result) 
         {
-            // Convert to VSTX and compress
-            ProcessedTexture texture;
-            ProcessTexture(file_data, file_size, texture);
-            SAFE_RELEASE_ARR(file_data);
+            if (resource->GetResourceType() == RESOURCE_TYPE_TEXTURE)
+            {
+                // Convert to VSTX and compress
+                ProcessedTexture texture;
+                ProcessTexture(file_data, file_size, texture);
+                SAFE_RELEASE_ARR(file_data);
 
-            // Compress Texture to appropriate GPU format, if needed
-            CompressTexture(texture, BC7);
+                // Compress Texture to appropriate GPU format, if needed
+                CompressTexture(texture, _textureCompressFormat);
 
-            texture.DumpAsVSTX(&file_data, file_size);
-        }
+                texture.DumpAsVSTX(&file_data, file_size);
+            }
 
-        if (result) {
             CheckForBundleOverflow();
             MapEntry entry;
             entry.resource_name = resource->GetName();
@@ -221,6 +221,14 @@ uint32 ResourcePacker::GetBundleFileSplitSizeMegs() {
 
 void ResourcePacker::SetBundleFileSplitSizeMegs(uint32 size) {
     _bundle_file_split_size = size;
+}
+
+TargetTextureFormat ResourcePacker::GetTextureCompressFormat() {
+    return _textureCompressFormat;
+}
+
+void ResourcePacker::SetTextureCompressFormat(TargetTextureFormat format) {
+    _textureCompressFormat = format;
 }
 
 void ResourcePacker::CheckForBundleOverflow() {

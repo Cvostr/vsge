@@ -6,6 +6,7 @@
 #include <fstream>
 #include <mpi/Core/Guid.hpp>
 #include <Core/Threading/Thread.hpp>
+#include "TextureCompressor.hpp"
 
 namespace VSGEditor {
 
@@ -29,6 +30,7 @@ namespace VSGEditor {
 		std::string _output_dir;
 		std::string _bundle_name_prefix;
 		uint32 _bundle_file_split_size;
+		TargetTextureFormat _textureCompressFormat;
 
 		std::vector<MapEntry> _map_entries;
 		uint32 _current_bundle;
@@ -68,5 +70,8 @@ namespace VSGEditor {
 
 		uint32 GetBundleFileSplitSizeMegs();
 		void SetBundleFileSplitSizeMegs(uint32 size);
+
+		TargetTextureFormat GetTextureCompressFormat();
+		void SetTextureCompressFormat(TargetTextureFormat format);
 	};
 }

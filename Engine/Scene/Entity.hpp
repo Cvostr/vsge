@@ -45,6 +45,8 @@ namespace VSGE {
 		Quat _rotation;
 		Mat4 _localTransform;
 		Mat4 _worldTransform;
+
+		Entity* DuplicateInternal();
 	public:
 
 		Entity() :	_parent(nullptr),
@@ -192,7 +194,6 @@ namespace VSGE {
 		/// Create new entity with same content
 		/// </summary>
 		/// <returns>pointer to new entity</returns>
-		Entity* DuplicateInternal();
 		Entity* Duplicate();
 		/// <summary>
 		/// Store entity in prefab

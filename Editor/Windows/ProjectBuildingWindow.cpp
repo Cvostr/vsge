@@ -13,6 +13,10 @@ static const std::unordered_map<uint32, const char*> bundleMaxSizeSettings = {
        { 1024, "1 GiB" }
 };
 
+static const std::unordered_map<TargetTextureFormat, const char*> texFormatSettings = {
+       { BC7,  "BC7" }
+};
+
 ProjectBuildingWindow::ProjectBuildingWindow() {
     _showCloseCross = true;
     _building = false;
@@ -70,28 +74,58 @@ void ProjectBuildingWindow::DrawPreBuildingInterface()
 
     DrawStringControl("Output Directory", outputDirPath);
 
-    const char* currentMaxFileSizeStr = "Invalid";
-    auto it = bundleMaxSizeSettings.find(_packer->GetBundleFileSplitSizeMegs());
-    if (it != bundleMaxSizeSettings.end()) {
-        currentMaxFileSizeStr = it->second;
-    }
-
-    if (DrawComboControl("Bundle file max size", currentMaxFileSizeStr))
+    // Bundle file max size Setting
     {
-        for (const auto& [fileSize, label] : bundleMaxSizeSettings) 
-        {
-            bool is_selected = (_packer->GetBundleFileSplitSizeMegs() == fileSize);
-
-            if (ImGui::Selectable(label, is_selected)) {
-                _packer->SetBundleFileSplitSizeMegs(fileSize);
-            }
-
-            if (is_selected) {
-                ImGui::SetItemDefaultFocus();
-            }
+        const char* currentMaxFileSizeStr = "Invalid";
+        auto it = bundleMaxSizeSettings.find(_packer->GetBundleFileSplitSizeMegs());
+        if (it != bundleMaxSizeSettings.end()) {
+            currentMaxFileSizeStr = it->second;
         }
 
-        ImGui::EndCombo();
+        if (DrawComboControl("Bundle file max size", currentMaxFileSizeStr))
+        {
+            for (const auto& [fileSize, label] : bundleMaxSizeSettings)
+            {
+                bool is_selected = (_packer->GetBundleFileSplitSizeMegs() == fileSize);
+
+                if (ImGui::Selectable(label, is_selected)) {
+                    _packer->SetBundleFileSplitSizeMegs(fileSize);
+                }
+
+                if (is_selected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+    }
+
+    // Texture compression format Setting
+    {
+        const char* currentTextureFormatStr = "Invalid";
+        auto it = texFormatSettings.find(_packer->GetTextureCompressFormat());
+        if (it != texFormatSettings.end()) {
+            currentTextureFormatStr = it->second;
+        }
+
+        if (DrawComboControl("Texture Compression", currentTextureFormatStr))
+        {
+            for (const auto& [format, label] : texFormatSettings)
+            {
+                bool is_selected = (_packer->GetTextureCompressFormat() == format);
+
+                if (ImGui::Selectable(label, is_selected)) {
+                    _packer->SetTextureCompressFormat(format);
+                }
+
+                if (is_selected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+
+            ImGui::EndCombo();
+        }
     }
 
     if (ImGui::Button("Build", ImVec2(_size.x, 0))) {
