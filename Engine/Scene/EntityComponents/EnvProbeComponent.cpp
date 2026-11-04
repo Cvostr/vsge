@@ -70,7 +70,7 @@ void LightProbeComponent::SetRadius(float radius)
 	this->radius = radius;
 }
 
-void LightProbeComponent::Bake()
+void LightProbeComponent::QueueRender()
 {
 	LightProbeRenderRequest request = {image, GetEntity()->GetAbsolutePosition(), nearPlane, farPlane};
 

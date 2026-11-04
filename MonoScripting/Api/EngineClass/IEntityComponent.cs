@@ -28,30 +28,33 @@ public class IEntityComponent : InternalObject {
         return i_GetType(handle);
     }
 
-    public static int GetComponentID<T>() {
-        if(typeof(T).Equals(typeof(LightSourceComponent)))
+    public static int GetComponentID<T>()
+    {
+        if (typeof(T).Equals(typeof(LightSourceComponent)))
             return 1;
-        if(typeof(T).Equals(typeof(MaterialComponent)))
+        if (typeof(T).Equals(typeof(MaterialComponent)))
             return 2;
-        if(typeof(T).Equals(typeof(MeshComponent)))
+        if (typeof(T).Equals(typeof(MeshComponent)))
             return 3;
-        if(typeof(T).Equals(typeof(AnimatorComponent)))
+        if (typeof(T).Equals(typeof(AnimatorComponent)))
             return 4;
-        if(typeof(T).Equals(typeof(ParticleEmitterComponent)))
+        if (typeof(T).Equals(typeof(ParticleEmitterComponent)))
             return 5;
-        if(typeof(T).Equals(typeof(AudioSourceComponent)))
+        if (typeof(T).Equals(typeof(AudioSourceComponent)))
             return 6;
-        if(typeof(T).Equals(typeof(CameraComponent)))
+        if (typeof(T).Equals(typeof(CameraComponent)))
             return 7;
-        if(typeof(T).Equals(typeof(RigidBodyComponent)))
+        if (typeof(T).Equals(typeof(RigidBodyComponent)))
             return 8;
-        if(typeof(T).Equals(typeof(ColliderComponent)))
+        if (typeof(T).Equals(typeof(ColliderComponent)))
             return 9;
-        if(typeof(T).Equals(typeof(TerrainComponent)))
+        if (typeof(T).Equals(typeof(TerrainComponent)))
             return 11;
-        if(typeof(T).Equals(typeof(CharacterControllerComponent)))
+        if (typeof(T).Equals(typeof(CharacterControllerComponent)))
             return 13;
-        
+        if (typeof(T).Equals(typeof(EnvironmentProbeComponent)))
+            return 14;
+
         return -1;
     }
 

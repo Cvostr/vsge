@@ -34,6 +34,7 @@ set(API_SRC_FILES
     Api/EngineClass/EntityComponents/CharacterControllerComponent.cs
     Api/EngineClass/EntityComponents/ParticleEmitterComponent.cs
     Api/EngineClass/EntityComponents/TerrainComponent.cs
+    Api/EngineClass/EntityComponents/EnvironmentProbeComponent.cs
     Api/EngineClass/UI/UiRenderList.cs)
 
 set(COMPILER_ARGS -target:library -nologo -out:${CMAKE_CURRENT_BINARY_DIR}/api.dll)

@@ -37,4 +37,5 @@ void VSGE::BindEntityComponentsApi() {
 	BindMesh();
 	BindCharacterController();
 	BindParticleEmitter();
+	BindEnvProbe();
 }

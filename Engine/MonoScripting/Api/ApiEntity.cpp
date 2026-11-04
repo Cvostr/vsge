@@ -11,6 +11,7 @@
 #include <Scene/EntityComponents/ParticleEmitterComponent.hpp>
 #include <Scene/EntityComponents/CharacterControllerComponent.hpp>
 #include <Scene/EntityComponents/TerrainComponent.hpp>
+#include <Scene/EntityComponents/LightProbeComponent.hpp>
 
 using namespace VSGE;
 
@@ -130,6 +131,9 @@ static void* WComponent(void* ptr, int type, int action) {
 		break;
 	case ENTITY_COMPONENT_CHARACTER_CONTROLLER:
 		return _WComponent<CharacterControllerComponent>(ent, action);
+		break;
+	case ENTITY_COMPONENT_ENV_PROBE:
+		return _WComponent<LightProbeComponent>(ent, action);
 		break;
 	}
 	return nullptr;

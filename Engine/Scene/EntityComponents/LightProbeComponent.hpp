@@ -31,7 +31,7 @@ namespace VSGE {
 		void SetRadius(float radius);
 
 		bool LoadImage();
-		void Bake();
+		void QueueRender();
 
 		void Serialize(ByteSerialize& serializer);
 		void Deserialize(ByteSolver& solver);

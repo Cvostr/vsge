@@ -134,7 +134,7 @@ set(SRC_FILES
 				Scene/EntityComponents/ParticleEmitterComponent.cpp
 				Scene/EntityComponents/RigidBodyComponent.cpp
 				Scene/EntityComponents/CharacterControllerComponent.cpp
-				Scene/EntityComponents/LightProbeComponent.cpp
+				Scene/EntityComponents/EnvProbeComponent.cpp
 				Scene/EntityComponents/TerrainComponent.cpp
 				Scene/EntityComponents/TerrainTexturesFactors.cpp
 				Scene/EntityComponents/TerrainVegetable.cpp
@@ -164,6 +164,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/MeshComponent.cpp
 				MonoScripting/Api/EntityComponents/CharacterControllerComponent.cpp
 				MonoScripting/Api/EntityComponents/ParticleEmitterComponent.cpp
+				MonoScripting/Api/EntityComponents/EnvProbeComponent.cpp
 				MonoScripting/Api/UI/UiRenderList.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp

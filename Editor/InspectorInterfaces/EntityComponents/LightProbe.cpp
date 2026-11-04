@@ -21,6 +21,6 @@ void VSGEditor::DrawLightProbeComponent(VSGE::LightProbeComponent* ccc)
 	ImGui::Text(bakedText.c_str());
 
 	if (ImGui::Button("Bake", ImVec2(ImGui::GetWindowWidth(), 0))) {
-		ccc->Bake();
+		ccc->QueueRender();
 	}
 }
