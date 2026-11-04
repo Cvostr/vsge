@@ -162,17 +162,24 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     float priority = 1.0f;
     for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) 
     {
-        Logger::Log(LogType::LOG_TYPE_INFO) << "Vulkan Queue Family " << i << ". Queues " << _vkQueueFamilyProps[i].queueCount << "\n";
+        VkQueueFlags queueFlags = _vkQueueFamilyProps[i].queueFlags;
+        uint32 queueCount = _vkQueueFamilyProps[i].queueCount;
+
+        Logger::Log(LogType::LOG_TYPE_INFO) << "Vulkan Queue Family " << i << ". Queues " << queueCount
+            << "\n\tgraphics: " << ((queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
+            << ", compute: " << ((queueFlags & VK_QUEUE_COMPUTE_BIT) != 0)
+            << ", transfer: " << ((queueFlags & VK_QUEUE_TRANSFER_BIT) != 0)
+            << "\n";
 
         VkDeviceQueueCreateInfo QueueGraphicsCreateInfo = {};
         QueueGraphicsCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         QueueGraphicsCreateInfo.pNext = nullptr;
         QueueGraphicsCreateInfo.queueFamilyIndex = i;
-        QueueGraphicsCreateInfo.queueCount = _vkQueueFamilyProps[i].queueCount;
+        QueueGraphicsCreateInfo.queueCount = queueCount;
         QueueGraphicsCreateInfo.flags = 0;
        
-        float* priorities_array = new float[_vkQueueFamilyProps[i].queueCount];
-        for (uint32 _i = 0; _i < _vkQueueFamilyProps[i].queueCount; _i++)
+        float* priorities_array = new float[queueCount];
+        for (uint32 _i = 0; _i < queueCount; _i++)
             priorities_array[_i] = 1.f;
 
         QueueGraphicsCreateInfo.pQueuePriorities = priorities_array;
