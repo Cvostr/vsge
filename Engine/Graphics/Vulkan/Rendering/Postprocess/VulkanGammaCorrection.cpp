@@ -77,6 +77,7 @@ void VulkanGammaCorrection::Create() {
 	_pipeline = gamma_pipeline;
 
 	_rp = new VulkanRenderPass;
+	_rp->SetClearSize(_output_size.x, _output_size.y);
 	_rp->PushColorAttachment(FORMAT_RGBA);
 	_rp->Create();
 
