@@ -48,18 +48,37 @@ bool VulkanSwapChain::initSwapchain(VulkanDevice* Device) {
     vkGetPhysicalDeviceSurfacePresentModesKHR(Device->getPhysicalDevice(), instance->GetSurface(), &present_mode_count, result.presentModes.data());
 
 
+    if (result.formats.empty()) {
+        return false;
+    }
+
     for (unsigned int i = 0; i < result.formats.size(); i++) {
         VkSurfaceFormatKHR format = result.formats[i];
         if (format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR && format.format == VK_FORMAT_B8G8R8A8_UNORM) {
             chosenSurfaceFormat = format;
+            break;
         }
     }
-    //find best presentation mode
+    if (chosenSurfaceFormat.format == VK_FORMAT_UNDEFINED) {
+        chosenSurfaceFormat = result.formats[0];
+    }
+
+    if (result.presentModes.empty()) {
+        return false;
+    }
+
+    VkPresentModeKHR chosen = result.presentModes[0];
     for (unsigned int i = 0; i < result.presentModes.size(); i++) {
         VkPresentModeKHR pres_mode = result.presentModes[i];
-        if (pres_mode == VK_PRESENT_MODE_IMMEDIATE_KHR)
-            chosenPresentMode = pres_mode;
+        if (pres_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            chosen = pres_mode;
+            break;
+        }
+        if (pres_mode == VK_PRESENT_MODE_FIFO_KHR) {
+            chosen = pres_mode;
+        }
     }
+    chosenPresentMode = chosen;
 
     Window* win = Window::Get();
 

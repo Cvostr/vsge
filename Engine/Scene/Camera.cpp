@@ -13,7 +13,8 @@ Camera::Camera() :
 			_fov(45.f),
 			_viewMask(MAX_INT64),
 			_front(1.f, 0.f, 0.f),
-			_up(0.f, 1.f, 0.f)
+			_up(0.f, 1.f, 0.f),
+			_front_overridden(false)
 {
 
 }
@@ -65,6 +66,7 @@ void Camera::SetPosition(const Vec3& position) {
 }
 void Camera::SetFront(const Vec3& front) { 
 	_front = front; 
+	_front_overridden = true;
 }
 void Camera::SetUp(const Vec3& up) { 
 	_up = up; 
@@ -151,18 +153,20 @@ Vec2 Camera::WorldPointToScreenpoint(const Vec3& world_point) {
 void Camera::OnPreRender() {
 	Vec3 pos = _entity->GetAbsolutePosition();
 	SetPosition(pos);
-	Quat rot = _entity->GetAbsoluteRotation();
-	Vec3 rot_euler = rot.GetEulerAngles();
+	if (!_front_overridden) {
+		Quat rot = _entity->GetAbsoluteRotation();
+		Vec3 rot_euler = rot.GetEulerAngles();
 
-	float yaw = rot_euler.y;
-	float pitch = rot_euler.z;
+		float yaw = rot_euler.y;
+		float pitch = rot_euler.x;
 
-	Vec3 front;
-	front.x = cosf(to_radians(yaw)) * cosf(to_radians(pitch));
-	front.y = -sinf(to_radians(pitch));
-	front.z = sinf(to_radians(yaw)) * cosf(to_radians(pitch));
+		Vec3 front;
+		front.x = cosf(to_radians(yaw)) * cosf(to_radians(pitch));
+		front.y = sinf(to_radians(pitch));
+		front.z = sinf(to_radians(yaw)) * cosf(to_radians(pitch));
 
-	SetFront(front.GetNormalized());
+		_front = front.GetNormalized();
+	}
 }
 
 PostEffectsParams& Camera::GetPostEffectParams() {

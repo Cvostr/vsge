@@ -3,6 +3,7 @@
 #include "Api/ApiBindings.hpp"
 #include <optional>
 #include "mpi/Filesystem/File.hpp"
+#include <stdexcept>
 
 using namespace VSGE;
 
@@ -78,7 +79,7 @@ bool MonoScriptingLayer::CreateRootDomain() {
     }
 
     if (!monoRootDir.has_value()) {
-        throw std::exception("Can't find Mono directory\n");
+        throw std::runtime_error("Can't find Mono directory\n");
     }
 
     _monoDirectoryLocation = monoRootDir.value();
@@ -93,7 +94,7 @@ bool MonoScriptingLayer::CreateRootDomain() {
 	// Create domain
     _root_domain = mono_jit_init_version(MONO_ROOT_DOMAIN_NAME, RUNTIME_VERSION);
     if (!_root_domain) {
-        throw std::exception("Error creating mono domain");
+        throw std::runtime_error("Error creating mono domain");
     }
     bool is_domain_set = mono_domain_set(_root_domain, false);
     if (!is_domain_set) {

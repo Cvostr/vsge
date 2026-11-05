@@ -40,10 +40,10 @@ void InputLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
 }
 void InputLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 	Input::Get()->SetMouseBtnHold(mbd.GetMouseButton());
+	Input::Get()->SetMouseBtnPressed(mbd.GetMouseButton());
 }
 void InputLayer::OnMouseButtonUp(const VSGE::EventMouseButtonUp& mbu) {
 	Input::Get()->UnsetMouseBtnHold(mbu.GetMouseButton());
-	Input::Get()->SetMouseBtnPressed(mbu.GetMouseButton());
 }
 void InputLayer::OnKeyUp(const VSGE::EventKeyButtonUp& kbd) {
 	Input::Get()->RemoveHoldKey(kbd.GetKeyCode());

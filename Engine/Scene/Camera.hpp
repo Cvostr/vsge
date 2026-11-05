@@ -42,6 +42,7 @@ namespace VSGE {
 		Vec3 _position;
 		Vec3 _front;
 		Vec3 _up;
+		bool _front_overridden;
 
 		Mat4 _projectionMatrix;
 		Mat4 _vewMatrix;

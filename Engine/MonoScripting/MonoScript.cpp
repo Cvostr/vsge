@@ -2,6 +2,7 @@
 #include <mono/metadata/assembly.h>
 #include "MonoScriptingLayer.hpp"
 #include "Core/Logger.hpp"
+#include <stdexcept>
 
 using namespace VSGE;
 
@@ -47,7 +48,7 @@ bool MonoScriptInstance::CreateClassByName(const std::string& class_name)
 
     if (_mono_class_desc == nullptr) {
         Logger::Log(LogType::LOG_TYPE_ERROR) << "Can't find class " << class_name << " in mono script blob";
-        throw std::exception("No class in bundle");
+        throw std::runtime_error("No class in bundle");
     }
 
     _mono_class_instance = _mono_class_desc->CreateObjectInstance();

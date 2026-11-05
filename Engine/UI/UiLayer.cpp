@@ -20,6 +20,7 @@ UiLayer::~UiLayer() {
 
 void UiLayer::OnAttach() {
 }
+
 void UiLayer::OnUpdate() {
 	IRenderer* renderer = Application::Get()->GetRenderer();
 	if (renderer) {
@@ -38,6 +39,9 @@ void UiLayer::DrawAll() {
 }
 
 void UiLayer::DrawView(View* view) {
+	if (!view || !view->IsVisible())
+		return;
+
 	view->Draw();
 	for (auto& child : view->GetChildren()) {
 		DrawView(child);

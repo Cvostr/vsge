@@ -1,5 +1,7 @@
 #include "VulkanRAPI.hpp"
 #include "Engine/Application.hpp"
+#include <stdexcept>
+
 
 using namespace VSGE;
 
@@ -19,12 +21,18 @@ void VSGE::VulkanRAPI::Create(Window* window, bool debugGraphics)
 	Application* app = Application::Get();
 
 	Instance = new VulkanInstance;
-	Instance->init(debugGraphics, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion);
+	if (!Instance->init(debugGraphics, app->GetDescription().ApplicationName.c_str(), app->GetDescription().ApplicationVersion)) {
+		delete Instance;
+		throw std::runtime_error("Can't create Vulkan Instance");
+	}
 
-	Device = CreatePrimaryDevice();
+	Device = CreatePrimaryDevice(); // throws with a readable error if device creation fails
 
 	SwapChain = new VulkanSwapChain;
-	SwapChain->initSwapchain(Device);
+	if (!SwapChain->initSwapchain(Device)) {
+		delete SwapChain;
+		throw std::runtime_error("Can't create Vulkan Swapchain");
+	}
 	//Create vulkan memory allocator
 	Allocator = new VulkanMA(Instance, Device);
 }

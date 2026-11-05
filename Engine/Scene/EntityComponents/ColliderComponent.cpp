@@ -2,6 +2,7 @@
 #include "MeshComponent.hpp"
 #include <Scene/Entity.hpp>
 #include <Scene/Scene.hpp>
+#include <Core/Logger.hpp>
 #include <bullet/BulletCollision/CollisionShapes/btBoxShape.h>
 #include <bullet/BulletCollision/CollisionShapes/btSphereShape.h>
 #include <Physics/PhysicsLayer.hpp>
@@ -52,16 +53,16 @@ void ColliderComponent::AddToWorld() {
 
 	if (_rigidbody) 
 	{
-		//До этого был создан жесткий rigidbody объект, удаляем его со сцены
+		//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ rigidbody пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_rigidbody);
-		//Уничтожаем объект
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		SAFE_RELEASE(_rigidbody);
 	}
 	if (_trigger) 
 	{
-		//До этого был создан жесткий trigger объект, удаляем его со сцены
+		//пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ trigger пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		_entity->GetScene()->GetPhysicalWorld()->RemoveCollisionObject(_trigger);
-		//Уничтожаем объект
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		SAFE_RELEASE(_trigger);
 	}
 
@@ -70,14 +71,14 @@ void ColliderComponent::AddToWorld() {
 	// Release old collider shape
 	SAFE_RELEASE(_collision_shape);
 	// Create new collision shape
-	_collision_shape = GetBtShape();
-	// check new shape
-	if (_collision_shape == nullptr)
-	{
-		//Создать shape не получилось, выходим
-		return;
-	}
-
+    _collision_shape = GetBtShape();
+    // check new shape
+    if (_collision_shape == nullptr)
+    {
+        //??????? shape ?? ??????????, ???????
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "ColliderComponent::AddToWorld: shape is null for " << _entity->GetName() << "\n";
+        return;
+    }
 	btTransform startTransform = GetEntityTransform();
 	if (!_is_trigger) 
 	{
@@ -94,7 +95,7 @@ void ColliderComponent::AddToWorld() {
 	}
 	else 
 	{
-		//Создаем trigger объект
+		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ trigger пїЅпїЅпїЅпїЅпїЅпїЅ
 		_trigger = new btGhostObject();
 		_trigger->setCollisionFlags(_trigger->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		_trigger->setCollisionShape(_collision_shape);
@@ -106,7 +107,7 @@ void ColliderComponent::AddToWorld() {
 
 btCollisionShape* ColliderComponent::GetBtShape() {
 	btCollisionShape* shape = nullptr;
-	Vec3 scale = _entity->GetAbsoluteScale();
+	Vec3 scale = _entity->GetScale();
 
 	switch (_shape) {
 	case COLLIDER_SHAPE_CUBE:
@@ -157,7 +158,7 @@ btCollisionShape* ColliderComponent::GetBtShape() {
 btTransform ColliderComponent::GetEntityTransform() {
 	btTransform result;
 
-	Vec3 abs_pos = _entity->GetAbsolutePosition() + _center;
+	Vec3 abs_pos = _entity->GetPosition() + _center;
 	Quat abs_rot = _entity->GetAbsoluteRotation();
 	
 	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));

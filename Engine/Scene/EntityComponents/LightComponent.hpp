@@ -29,6 +29,8 @@ namespace VSGE {
 		float _shadowStrength;
 		float _shadowsBias;
 		uint32 _shadowsPCF;
+		Vec3 _direction;
+		bool _directionOverridden;
 	public:
 
 		LightsourceComponent();
@@ -54,6 +56,7 @@ namespace VSGE {
 		uint32 GetShadowPCF();
 		void SetShadowPCF(uint32 pcf);
 
+		void SetDirection(const Vec3& direction);
 		Vec3 GetDirection();
 
 		Mat4* GetShadowcastMatrices(Camera* cam);
