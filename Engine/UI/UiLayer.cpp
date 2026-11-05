@@ -22,19 +22,8 @@ UiLayer::~UiLayer() {
 }
 
 void UiLayer::OnAttach() {
-	SpriteView* img = new SpriteView;
-	//img->SetSprite("test_bc");
-	img->SetBounds(Rect(Vec2(100, 100), Vec2(100, 50)));
-	img->SetRotation(45);
-	_root->AddChild(img);
-
-	TextView* tv = new TextView;
-	tv->SetBounds(Rect(Vec2(300, 100), Vec2(100, 50)));
-	//tv->SetText(L"русский english,.&*#@!()=-_<;:^%$№");
-	tv->SetTextColor(Color(0.3f, 0.4f, 0.6f, 1.f));
-	_root->AddChild(tv);
-
 }
+
 void UiLayer::OnUpdate() {
 	IRenderer* renderer = Application::Get()->GetRenderer();
 	if (renderer) {
@@ -53,6 +42,9 @@ void UiLayer::DrawAll() {
 }
 
 void UiLayer::DrawView(View* view) {
+	if (!view || !view->IsVisible())
+		return;
+
 	view->Draw();
 	for (auto& child : view->GetChildren()) {
 		DrawView(child);

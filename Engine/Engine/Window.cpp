@@ -86,6 +86,33 @@ void VSGE::Window::CreateWindow(int32 width, int32 height, BaseString title) {
     }
 }
 
+KeyCode GetKeyCodeFromScancode(SDL_Scancode scancode) {
+    if (scancode >= SDL_SCANCODE_A && scancode <= SDL_SCANCODE_Z) {
+        return (KeyCode)('a' + (scancode - SDL_SCANCODE_A));
+    }
+
+    switch (scancode) {
+    case SDL_SCANCODE_LSHIFT:
+    case SDL_SCANCODE_RSHIFT:
+        return KEY_CODE_LSHIFT;
+    case SDL_SCANCODE_LCTRL:
+        return KEY_CODE_LCTRL;
+    case SDL_SCANCODE_RCTRL:
+        return KEY_CODE_RCTRL;
+    case SDL_SCANCODE_SPACE:
+        return KEY_CODE_SPACE;
+    case SDL_SCANCODE_ESCAPE:
+        return KEY_CODE_ESCAPE;
+    case SDL_SCANCODE_RETURN:
+        return KEY_CODE_ENTER;
+    case SDL_SCANCODE_TAB:
+        return KEY_CODE_TAB;
+    case SDL_SCANCODE_BACKSPACE:
+        return KEY_CODE_BACKSPACE;
+    default:
+        return (KeyCode)0;
+    }
+}
 KeyCode GetKeyCode(int sdl_code) {
     switch (sdl_code) {
     case SDLK_LCTRL:
@@ -158,6 +185,14 @@ void VSGE::Window::PollEvents() {
         libevent.ptr = &event;
         app->OnEvent(libevent);
 
+        if (event.type == SDL_QUIT
+            || (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)) {
+            EventWindowClose event_win_close;
+            app->OnEvent(event_win_close);
+            app->Stop();
+            break;
+        }
+
         if (event.type == SDL_MOUSEMOTION) {
             EventMouseMotion mouse_motion_event(event.motion.x,
                 event.motion.y,
@@ -178,11 +213,11 @@ void VSGE::Window::PollEvents() {
             app->OnEvent(mouse_scrolled_event);
         }
         if (event.type == SDL_KEYDOWN) {
-            EventKeyButtonDown keyboard_btndown_event(GetKeyCode(event.key.keysym.sym));
+            EventKeyButtonDown keyboard_btndown_event(GetKeyCodeFromScancode(event.key.keysym.scancode));
             app->OnEvent(keyboard_btndown_event);
         }
         if (event.type == SDL_KEYUP) { //if user pressed a key on keyboard
-            EventKeyButtonUp keyboard_btnup_event(GetKeyCode(event.key.keysym.sym));
+            EventKeyButtonUp keyboard_btnup_event(GetKeyCodeFromScancode(event.key.keysym.scancode));
             app->OnEvent(keyboard_btnup_event);
         }
         if (event.type == SDL_WINDOWEVENT) {
@@ -211,10 +246,6 @@ void VSGE::Window::PollEvents() {
                 EventWindowRestored event_win_restored;
                 app->OnEvent(event_win_restored);
             }
-        }
-        if (event.type == SDL_QUIT) {
-            EventWindowClose event_win_close;
-            app->OnEvent(event_win_close);
         }
     }
 

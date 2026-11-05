@@ -55,12 +55,13 @@ namespace VSGE {
 
 		const Vec2i& GetMouseCursorPos();
 		const Vec2i& GetMouseCursorDelta();
+		void ClearMouseCursorDelta();
 		bool IsMouseButtonPressed(MouseButton button);
 		bool IsMouseButtonHold(MouseButton button);
 		bool IsKeyPressed(KeyCode key);
 		bool IsKeyHold(KeyCode key);
 
-		void SetMouseCursorState(uint32 posX, uint32 posY, uint32 relX, uint32 relY);
+		void SetMouseCursorState(uint32 posX, uint32 posY, int32 relX, int32 relY);
 		void SetMouseBtnPressed(MouseButton btn);
 		void UnsetPressedMouseButtons();
 		void SetMouseBtnHold(MouseButton btn);

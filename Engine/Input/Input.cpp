@@ -26,6 +26,10 @@ const Vec2i& Input::GetMouseCursorPos() {
 const Vec2i& Input::GetMouseCursorDelta() {
 	return _mouse_cursor_state.cursor_delta;
 }
+
+void Input::ClearMouseCursorDelta() {
+	_mouse_cursor_state.cursor_delta = Vec2i(0, 0);
+}
 bool Input::IsMouseButtonPressed(MouseButton button) {
 	switch (button) {
 	case MOUSE_BUTTON_LEFT:
@@ -71,9 +75,10 @@ bool Input::IsKeyHold(KeyCode key) {
 	return false;
 }
 
-void Input::SetMouseCursorState(uint32 posX, uint32 posY, uint32 relX, uint32 relY) {
+void Input::SetMouseCursorState(uint32 posX, uint32 posY, int32 relX, int32 relY) {
 	_mouse_cursor_state.cursor_pos = Vec2i(posX, posY);
-	_mouse_cursor_state.cursor_delta = Vec2i(relX, relY);
+	_mouse_cursor_state.cursor_delta.x += relX;
+	_mouse_cursor_state.cursor_delta.y += relY;
 }
 void Input::SetMouseBtnPressed(MouseButton btn) {
 	switch (btn) {

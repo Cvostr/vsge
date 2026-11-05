@@ -386,9 +386,6 @@ Quat Entity::GetAbsoluteRotation() const {
 }
 
 void Entity::SetRotationEuler(const Vec3& rotation) {
-	Vec3 current = GetRotationEuler();
-	if ((rotation - current).Length() < 0.5f)
-		return;
 	Quat q;
 	q.CreateFromEulerAngles(rotation);
 	SetRotation(q);

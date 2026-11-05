@@ -11,12 +11,12 @@ AudioLayer::AudioLayer() {
 	_created = false;
 	_openal_context = nullptr;
 
-	_openal_device = alcOpenDevice(nullptr);
+    _openal_device = alcOpenDevice(nullptr);
 
-	if (!_openal_device) {
-		Logger::Log(LogType::LOG_TYPE_ERROR) << "OpenAL: Can't initialize OpenAL device\n";
-		return;
-	}
+    if (!_openal_device) {
+        Logger::Log(LogType::LOG_TYPE_ERROR) << "OpenAL: Can't initialize OpenAL device\n";
+        return;
+    }
 
 	_openal_context = alcCreateContext(_openal_device, nullptr);
 

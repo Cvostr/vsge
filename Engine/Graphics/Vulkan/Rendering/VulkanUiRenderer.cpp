@@ -5,6 +5,7 @@
 #include <Math/MatrixCamera.hpp>
 #include <Math/MatrixTransform.hpp>
 #include <Graphics/FontManager.hpp>
+#include <algorithm>
 
 using namespace VSGE;
 
@@ -34,9 +35,9 @@ void VulkanUiRenderer::Create()
 	VulkanDevice* device = rapi->GetDevice();
 
 	// Calculate alignment for transform matrices in buffer
-	_transformBufferElementSize = std::max(UNI_ALIGN, sizeof(Mat4));
+	_transformBufferElementSize = std::max<uint64>(UNI_ALIGN, (uint64)sizeof(Mat4));
 	// Calculate alignment for fragment data in buffer
-	_fragmentBufferElementSize = std::max(UNI_ALIGN, FRAGMENT_SIZE);
+	_fragmentBufferElementSize = std::max<uint64>(UNI_ALIGN, (uint64)FRAGMENT_SIZE);
 
 	// buffer for transforms in vertex shader
 	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
@@ -185,8 +186,11 @@ void VulkanUiRenderer::FillBuffers()
 
 			// Get size of string in pixels of original font scale
 			Vec2i pix_size = font->GetSizeOfString((uint32*)task._text.c_str(), task._text.Length());
-			// What scale factor should we add to fit string in bounds
-			Vec2 mult = Vec2(task.bounds.Size.x / pix_size.x, task.bounds.Size.y / pix_size.y);
+			if (pix_size.x <= 0 || pix_size.y <= 0)
+				continue;
+
+			float scale = std::min(task.bounds.Size.x / pix_size.x, task.bounds.Size.y / pix_size.y);
+			Vec2 mult = Vec2(scale, scale);
 			Vec2 drawn = Vec2(0);
 
 			for (uint32 i = 0; i < task._text.Length(); i++) 

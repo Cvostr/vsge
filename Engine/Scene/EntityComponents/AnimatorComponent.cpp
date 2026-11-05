@@ -45,7 +45,7 @@ void AnimatorComponent::Stop() {
 }
 
 void AnimatorComponent::UpdateNodeTransform(Entity* child) {
-    if (!child && !_playing) return;
+    if (!child || !_playing) return;
     //iterate over all loaded animations
     uint32 index = 0;
     for (auto animation : _anims_ready) {
@@ -98,7 +98,7 @@ void AnimatorComponent::OnPreRender() {
 
 void AnimatorComponent::Serialize(ByteSerialize& serializer) 
 {
-    //Записать количество анимационных групп
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     uint32 anims_count = static_cast<uint32>(_animations.size());
     serializer.Serialize(anims_count);
 
@@ -110,10 +110,10 @@ void AnimatorComponent::Serialize(ByteSerialize& serializer)
 }
 void AnimatorComponent::Deserialize(ByteSolver& solver)
 {
-    //Считать количество анимационных групп
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     uint32 count = solver.GetValue<uint32>();
 
-    //Считать анимационные группы
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     for (uint32 anim_i = 0; anim_i < count; anim_i++) 
     {
         Guid resourceId = solver.GetGuid();

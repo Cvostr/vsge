@@ -6,6 +6,7 @@
 #include <Misc/ManifestParser.hpp>
 #include <Resources/ResourceTypes/SceneResource.hpp>
 #include <Scene/SceneSerialization.hpp>
+#include <stdexcept>
 
 using namespace VSGE;
 
@@ -22,7 +23,7 @@ void MainLayer::OnAttach() {
 
 	SceneResource* sc_res = (SceneResource*)ResourceCache::Get()->GetResource(manifest.GetMainScene());
 	if (sc_res == nullptr) {
-		throw std::exception("No main scene resource in resource cache");
+		throw std::runtime_error("No main scene resource in resource cache");
 	}
 
 	MonoScriptingLayer::Get()->GetScriptsBlob()->LoadFromFile(app_dir + "/runtime.dll");

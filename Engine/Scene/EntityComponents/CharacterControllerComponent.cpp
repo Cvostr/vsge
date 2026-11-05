@@ -38,15 +38,40 @@ bool CharacterControllerComponent::IsOnGround() {
 	return _is_on_ground;
 }
 
+void CharacterControllerComponent::Teleport(const Vec3& position) {
+	if (!_character)
+		AddToWorld();
+
+	Vec3 abs_pos = position + _center;
+	Quat abs_rot = _entity->GetAbsoluteRotation();
+
+	btTransform transform;
+	transform.setIdentity();
+	transform.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));
+	transform.setRotation(btQuaternion(abs_rot.x, abs_rot.y, abs_rot.z, abs_rot.w));
+
+	_character->setWorldTransform(transform);
+	btDefaultMotionState* motion_state = static_cast<btDefaultMotionState*>(_character->getMotionState());
+	if (motion_state)
+		motion_state->setWorldTransform(transform);
+
+	_character->setLinearVelocity(btVector3(0, 0, 0));
+	_character->setAngularVelocity(btVector3(0, 0, 0));
+	_character->clearForces();
+	_character->activate(true);
+
+	_entity->SetPosition(position);
+}
+
 void CharacterControllerComponent::Move(const Vec2& direction) {
-	btVector3 current_vel_l = _character->getLinearVelocity();
-	_character->setLinearVelocity(btVector3(direction.x, current_vel_l.y(), direction.y));
+    btVector3 current_vel_l = _character->getLinearVelocity();
+    _character->setLinearVelocity(btVector3(direction.x, current_vel_l.y(), direction.y));
 }
 
 btTransform CharacterControllerComponent::GetEntityTransform() {
 	btTransform result;
 
-	Vec3 abs_pos = _entity->GetAbsolutePosition() + _center;
+	Vec3 abs_pos = _entity->GetPosition() + _center;
 	Quat abs_rot = _entity->GetAbsoluteRotation();
 
 	result.setOrigin(btVector3(abs_pos.x, abs_pos.y, abs_pos.z));
@@ -91,6 +116,11 @@ void CharacterControllerComponent::AddToWorld() {
 	_character = new btRigidBody(constructionInfo);
 	_character->setUserPointer(_entity);
 	_character->setGravity(GRAVITY);
+	_character->setAngularFactor(btVector3(0.f, 0.f, 0.f));
+	_character->setFriction(0.f);
+	_character->setRestitution(0.f);
+	_character->setCcdMotionThreshold(_size.x * 0.5f);
+	_character->setCcdSweptSphereRadius(_size.x * 0.8f);
 
 	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_character);
 }
@@ -105,8 +135,16 @@ void CharacterControllerComponent::OnUpdate() {
 	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
 	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
 
+	Entity* parent = GetEntity()->GetParent();
+	if (!parent) {
+		_entity->SetPosition(pos);
+		_entity->SetRotation(rot);
+		Activate();
+		return;
+	}
+
 	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
-	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
+	Mat4 parent_tranform = parent->GetWorldTransform();
 	Mat4 _new = mm * parent_tranform.invert();
 
 	_entity->SetPosition(_new.GetPosition());

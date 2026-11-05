@@ -1,5 +1,6 @@
 #include "AudioSourceComponent.hpp"
 #include <Resources/ResourceTypes/AudioClipResource.hpp>
+#include "../Entity.hpp"
 #include "Core/Time.hpp"
 #include <AL/al.h>
 
@@ -30,6 +31,10 @@ void AudioSourceComponent::Create() {
 		SetLoop(_loop);
 		SetPitch(_pitch);
 		SetVolume(_volume);
+		if (GetEntity()) {
+			Vec3 position = GetEntity()->GetAbsolutePosition();
+			alSource3f(_audio_source, AL_POSITION, position.x, position.y, position.z);
+		}
 	}
 }
 void AudioSourceComponent::Destroy() {
@@ -145,6 +150,11 @@ void AudioSourceComponent::SetAudioClip(AudioClipResource* resource) {
 }
 
 void AudioSourceComponent::OnPreRender() {
+	if (_created && GetEntity()) {
+		Vec3 position = GetEntity()->GetAbsolutePosition();
+		alSource3f(_audio_source, AL_POSITION, position.x, position.y, position.z);
+	}
+
 	if (_playing_queued) {
 		//playing queued
 		Play();

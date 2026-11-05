@@ -15,7 +15,9 @@ LightsourceComponent::LightsourceComponent() :
 	_castShadows(false),
 	_shadowStrength(0.6f),
 	_shadowsPCF(4),
-	_shadowsBias(0.005f)
+	_shadowsBias(0.005f),
+	_direction(0.f, 0.f, 1.f),
+	_directionOverridden(false)
 {}
 
 LightType& LightsourceComponent::GetLightType()
@@ -182,7 +184,7 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 			result = new Mat4[1];
 			Mat4 projection = GetPerspectiveRH_ZeroOne((_spot_angle + 12) * 2, 1, 0.1f, _range * 3);
 			Vec3 pos = GetEntity()->GetAbsolutePosition();
-			Vec3 lightDir = (GetDirection()).GetNormalized();
+			Vec3 lightDir = GetDirection().GetNormalized();
 
 			result[0] = GetViewRH(pos, pos + lightDir, Vec3(0, 1, 0)) * projection;
 		}
@@ -190,7 +192,15 @@ Mat4* LightsourceComponent::GetShadowcastMatrices(Camera* cam) {
 	return result;
 }
 
+void LightsourceComponent::SetDirection(const Vec3& direction) {
+	_direction = direction.GetNormalized();
+	_directionOverridden = true;
+}
+
 Vec3 LightsourceComponent::GetDirection() {
+	if (_directionOverridden)
+		return _direction;
+
 	Quat rotation = _entity->GetAbsoluteRotation();
 	return (rotation * Vec3(0, 0, 1)).GetNormalized();
 }

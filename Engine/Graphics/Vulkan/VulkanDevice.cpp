@@ -1,5 +1,6 @@
 #include "VulkanDevice.hpp"
 #include <Core/Logger.hpp>
+#include <stdexcept>
 #include "VulkanRAPI.hpp"
 
 using namespace VSGE;
@@ -34,18 +35,35 @@ VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
     }
     if (best != VK_NULL_HANDLE)
         return best;
-    else
-    {
-        for (auto device : devices) {
-            VkPhysicalDeviceProperties device_props;
-            vkGetPhysicalDeviceProperties(device, &device_props);
-            //check device name, it shouldnt be as "llvmpipe"
-            if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
-                return device;
-            }
+
+    // Fall back to the best non-discrete device instead of failing hard.
+    // llvmpipe is slow but can keep the game running without a hardware Vulkan driver.
+    VkPhysicalDevice fallback = VK_NULL_HANDLE;
+    int fallback_score = -1;
+    for (auto device : devices) {
+        VkPhysicalDeviceProperties device_props;
+        vkGetPhysicalDeviceProperties(device, &device_props);
+        int score = 0;
+        switch (device_props.deviceType) {
+        case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+            score = 50;
+            break;
+        case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+            score = 30;
+            break;
+        case VK_PHYSICAL_DEVICE_TYPE_CPU:
+            score = 10;
+            break;
+        default:
+            score = 20;
+            break;
+        }
+        if (score > fallback_score) {
+            fallback = device;
+            fallback_score = score;
         }
     }
-    return VK_NULL_HANDLE;
+    return fallback;
 }
 
 VulkanDevice* VSGE::CreatePrimaryDevice() {
@@ -68,11 +86,13 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
 
         VulkanDevice* Device = new VulkanDevice;
         Logger::Log(LogType::LOG_TYPE_INFO) << "Creating Vulkan GPU " << device_props.deviceName << "\n";
-        Device->initDevice(device);
+        if (!Device->initDevice(device)) {
+            delete Device;
+            throw std::runtime_error("Failed to initialize Vulkan device");
+        }
         return Device;
     }
-
-    return nullptr;
+    throw std::runtime_error("No Vulkan device found");
 }
 
 VulkanDevice::VulkanDevice() :
@@ -239,7 +259,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
                 queueInfo->supportsPresent = true;
             }
 
-            //Проверить, подходит ли эта очередь на роль общей
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             if (_generic_queue == nullptr &&
                 queueInfo->supportsPresent &&
                 queueInfo->GetFlags() & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT))

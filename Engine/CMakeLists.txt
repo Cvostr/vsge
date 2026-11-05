@@ -18,6 +18,7 @@ set(SRC_FILES
 				Core/Time.cpp
 				Core/Threading/Thread.cpp
 				Core/Threading/AsyncWorker.cpp
+				Core/MpiCompatibility.cpp
 				Core/VarTypes/String.cpp
 				Core/VarTypes/Variant.cpp
 				Core/VarTypes/StringHash.cpp

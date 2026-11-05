@@ -1,6 +1,7 @@
 #include "MonoScriptBlob.hpp"
 #include "MonoScriptingLayer.hpp"
 #include <Core/Logger.hpp>
+#include <stdexcept>
 
 using namespace VSGE;
 
@@ -74,7 +75,7 @@ int MonoScriptBlob::LoadFromFile(const std::string& path)
 MonoMethod* MonoScriptBlob::GetMethodByDescription(MonoMethodDesc* method_desc) 
 {
 	if (m_image == nullptr) {
-		throw std::exception("m_image is null");
+		throw std::runtime_error("m_image is null");
 	}
 
 	return mono_method_desc_search_in_image(method_desc, m_image);

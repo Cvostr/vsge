@@ -27,6 +27,7 @@ namespace VSGE {
 		void SetCenter(const Vec3& center);
 
 		bool IsOnGround();
+		void Teleport(const Vec3& position);
 
 		void Move(const Vec2& direction);
 
