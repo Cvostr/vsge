@@ -62,4 +62,30 @@ public struct Quat
             (a.w * num) - num9
         );
     }
+
+    public static Quat FromEuler(float x, float y, float z)
+    {
+        float RADS = (MathF.PI / 180.0f);
+        float pitch = x * RADS;
+        float yaw = y * RADS;
+        float roll = z * RADS;
+
+        float halfRoll = roll * 0.5f;
+        float halfPitch = pitch * 0.5f;
+        float halfYaw = yaw * 0.5f;
+
+        float sinRoll = MathF.Sin(halfRoll);
+        float cosRoll = MathF.Cos(halfRoll);
+        float sinPitch = MathF.Sin(halfPitch);
+        float cosPitch = MathF.Cos(halfPitch);
+        float sinYaw = MathF.Sin(halfYaw);
+        float cosYaw = MathF.Cos(halfYaw);
+
+        return new Quat(
+            cosYaw * sinPitch * cosRoll + sinYaw * cosPitch * sinRoll,
+            sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll,
+            cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll,
+            cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll
+        );
+    }
 }

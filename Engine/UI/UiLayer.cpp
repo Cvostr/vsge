@@ -2,9 +2,6 @@
 
 #include <Engine/Application.hpp>
 #include <Graphics/Renderer.hpp>
-//TEMPORARY
-#include "Widgets/ImageView.hpp"
-#include "Widgets/TextView.hpp"
 
 using namespace VSGE;
 
@@ -22,7 +19,6 @@ UiLayer::~UiLayer() {
 }
 
 void UiLayer::OnAttach() {
-	
 }
 void UiLayer::OnUpdate() {
 	IRenderer* renderer = Application::Get()->GetRenderer();
