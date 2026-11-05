@@ -17,10 +17,11 @@ VulkanRenderTarget::~VulkanRenderTarget() {
 void VulkanRenderTarget::Create() 
 {
 	VulkanCamerasBuffer* camBuffer = VulkanRenderer::Get()->GetCamerasBuffer();
+	VulkanBuffer* envGeneralBuffer = VulkanRenderer::Get()->GetGeneralEnvBuffer();
 
 	m_gbufferRenderer = new VulkanGBufferRenderer;
 	m_gbufferRenderer->CreateFramebuffer();
-	m_gbufferRenderer->CreateDescriptorSets(camBuffer);
+	m_gbufferRenderer->CreateDescriptorSets(camBuffer, envGeneralBuffer);
 	m_gbufferRenderer->SetCameraIndex(0);
 
 	_shadowmapper = new VulkanShadowmapping(

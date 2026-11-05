@@ -51,7 +51,7 @@ namespace VSGE {
 		~VulkanGBufferRenderer();
 
 		void CreateFramebuffer();
-		void CreateDescriptorSets(VulkanCamerasBuffer* camerasBuffer);
+		void CreateDescriptorSets(VulkanCamerasBuffer* camerasBuffer, VulkanBuffer* generalEnvBuffer);
 		void SetCameraIndex(uint32 camera_index);
 		void EnableReverseCull();
 

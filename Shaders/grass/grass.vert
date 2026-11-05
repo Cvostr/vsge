@@ -26,8 +26,39 @@ layout (std140, set = 2, binding = 0) readonly buffer GrassTransforms {
     mat4 transforms[];
 };
 
-void main(){
-    vec4 pos = obj_transform * transforms[gl_InstanceIndex] * vec4(position, 1.0);
+layout (std140, set = 0, binding = 2) readonly buffer GeneralEnv {
+    float timeSec;
+};
+
+void main()
+{
+    // TODO: Settings
+    float windSpeed = 1.0;
+    float windStrength = 0.3;
+    vec2 windDirection = normalize(vec2(1.0, 0.5));
+
+
+
+    mat4 instanceMatrix = transforms[gl_InstanceIndex];
+    
+    // mask to apply wind. 
+    // Root of grass should stay on place
+    float windMask = 1 - uv.y; 
+    
+    vec3 worldInstancePos = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
+
+    // wave generation
+    float wave = sin(timeSec * windSpeed + worldInstancePos.x * 0.5 + worldInstancePos.z * 0.5);
+    wave += sin(timeSec * windSpeed * 2.0 + worldInstancePos.y) * 0.3; 
+
+    // Apply wave
+    float finalMask = pow(windMask, 2.0); 
+
+    // Calc vectors
+    vec4 pos = obj_transform * instanceMatrix * vec4(position, 1.0);
+    pos.x += windDirection.x * wave * windStrength * finalMask;
+    pos.z += windDirection.y * wave * windStrength * finalMask;
+
     FragPos = pos.xyz;
     UVCoord = uv;
     Normal = normal;

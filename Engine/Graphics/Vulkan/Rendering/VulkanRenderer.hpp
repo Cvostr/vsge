@@ -25,6 +25,8 @@
 #include <queue>
 #include <future>
 
+#define GENERAL_ENV_BUFFER_SIZE		(1024)
+
 namespace VSGE {
 
 	class VulkanRenderer : public IRenderer {
@@ -46,6 +48,7 @@ namespace VSGE {
 		VulkanBuffer* mTransformsShaderBuffer;
 		VulkanBuffer* mAnimationTransformsShaderBuffer;
 		VulkanBuffer* mParticlesTransformShaderBuffer;
+		VulkanBuffer* _general_env_buffer;
 		LightsBuffer* _lights_buffer;
 
 		CVmaVirtualBlock* _materialsVirtBlock;
@@ -90,19 +93,18 @@ namespace VSGE {
 
 		VulkanSemaphore* GetEndSemaphore();
 
-		VulkanCamerasBuffer* GetCamerasBuffer();
-
 		VulkanRenderPass* GetMaterialsRenderPass();
 
 		VulkanRenderTarget* GetMainRenderTarget();
 
 		VulkanUiRenderer* GetUiRenderer();
-
 		VulkanFinalPass* GetFinalPass();
 
 		VulkanTexture* GetUiAttachment();
 
+		VulkanCamerasBuffer* GetCamerasBuffer();
 		LightsBuffer* GetLightsBuffer();
+		VulkanBuffer* GetGeneralEnvBuffer();
 
 		void SetupRenderer();
 		void DestroyRenderer();

@@ -30,6 +30,8 @@ void VulkanEnvMap::Create()
 {
 	VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
+	VulkanBuffer* envGeneralBuffer = VulkanRenderer::Get()->GetGeneralEnvBuffer();
+
 	camerasBuffer = new VulkanCamerasBuffer;
 
 	for (uint32 i = 0; i < 6; i++) {
@@ -43,7 +45,7 @@ void VulkanEnvMap::Create()
 
 		_sides[i]._gbuffer->SetCameraIndex(i);
 		_sides[i]._gbuffer->CreateFramebuffer();
-		_sides[i]._gbuffer->CreateDescriptorSets(camerasBuffer);
+		_sides[i]._gbuffer->CreateDescriptorSets(camerasBuffer, envGeneralBuffer);
 		_sides[i]._gbuffer->SetBuffers(_transforms_buffer, _animations_buffer, _particles_buffer);
 		_sides[i]._gbuffer->SetEntitiesToRender(*_entities_to_render, *_particles_to_render);
 		_sides[i]._gbuffer->SetScene(VulkanRenderer::Get()->GetScene());

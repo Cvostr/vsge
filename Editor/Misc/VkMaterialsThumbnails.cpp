@@ -50,6 +50,7 @@ VkMaterialsThumbnails::~VkMaterialsThumbnails() {
 void VkMaterialsThumbnails::Create() 
 {
     VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
+    VulkanBuffer* envGeneralBuffer = VulkanRenderer::Get()->GetGeneralEnvBuffer();
 
     _thumb_scene = new Scene;
     _thumb_scene->NewScene();
@@ -92,7 +93,7 @@ void VkMaterialsThumbnails::Create()
 
     _gbuffer = new VulkanGBufferRenderer;
     _gbuffer->CreateFramebuffer();
-    _gbuffer->CreateDescriptorSets(_cameras_buffer);
+    _gbuffer->CreateDescriptorSets(_cameras_buffer, envGeneralBuffer);
     _gbuffer->SetEntitiesToRender(_entities_to_render, _particles_to_render);
     _gbuffer->SetCameraIndex(CAMERA_INDEX);
     _gbuffer->Resize(THUMBNAIL_TEXTURE_SIZE, THUMBNAIL_TEXTURE_SIZE);

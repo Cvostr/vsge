@@ -210,8 +210,8 @@ void VulkanTerrainRenderer::DrawTerrain(
 
 		cmdbuffer->SetViewport(0, 0, (float)output_width, (float)output_height);
 		VulkanPipelineLayout* ppl = pipeline->GetPipelineLayout();
-		cmdbuffer->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 		cmdbuffer->BindDescriptorSets(*ppl, 0, 1, entity_descr_set, 2, offsets);
+		cmdbuffer->BindDescriptorSets(*ppl, 1, 1, vmat->_fragmentDescriptorSet);
 		cmdbuffer->BindDescriptorSets(*ppl, 2, 1, vk_vegetable._descr_set, 1, &veg_transform_offset);
 		cmdbuffer->BindMesh(*mesh);
 		if (mesh->GetIndexCount() > 0)

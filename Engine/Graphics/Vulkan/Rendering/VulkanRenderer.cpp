@@ -60,6 +60,12 @@ void VulkanRenderer::SetupRenderer()
 	_lights_buffer = new LightsBuffer;
 	_lights_buffer->Create();
 
+	// Buffer for general and environment information, independent of current camera or render target
+	// - Current Time in secs (float)
+	// - Wind (strength, speed, direction)
+	_general_env_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
+	_general_env_buffer->Create(GENERAL_ENV_BUFFER_SIZE);
+
 	// Allocate one buffer to store all material params
 	_materialsVirtBlock = new CVmaVirtualBlock();
 	_materialsVirtBlock->Create(MATERIALS_BUFFER_SIZE);
@@ -235,6 +241,13 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 		VulkanRenderTarget* target = _render_targets[target_i];
 		target->GetShadowmapper()->ResetCasters();
 	}
+
+	// Fill General + Env buffer
+	uint64 timeSec = TimePerf::Get()->GetCurrentTime();
+	float timeInSecFrac = static_cast<float>(timeSec) / 1000.f;
+	// To avoid precision lost on higher float values
+	timeInSecFrac = fmod(timeInSecFrac, 3600.0f);
+	_general_env_buffer->WriteData(0, sizeof(float), &timeInSecFrac);
 
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
@@ -606,6 +619,10 @@ VulkanTexture* VulkanRenderer::GetUiAttachment() {
 
 LightsBuffer* VulkanRenderer::GetLightsBuffer() {
 	return _lights_buffer;
+}
+
+VulkanBuffer* VulkanRenderer::GetGeneralEnvBuffer() {
+	return _general_env_buffer;
 }
 
 VulkanCommandPool* VulkanRenderer::GetCommandPool() {

@@ -60,21 +60,25 @@ void VulkanGBufferRenderer::EnableReverseCull() {
 	_reverseCull = true;
 }
 
-void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuffer)
+void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuffer, VulkanBuffer* generalEnvBuffer)
 {
 	_objects_descr_pool = new VulkanDescriptorPool;
 
 	this->camerasBuffer = camerasBuffer;
 
-	//Create base vertex descriptors set
+	// Create base vertex descriptors set
 	_transforms_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
-	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT); //Camera
-	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT); //Transform
+	// Camera
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	// Transform
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT);
+	// General + Environment
+	_transforms_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2, VK_SHADER_STAGE_VERTEX_BIT);
 
 	_animations_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
 	_animations_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT); //Animation
 
-	//Create base particles descriptors sets
+	// Create base particles descriptors sets
 	_particles_descriptor_set = new VulkanDescriptorSet(_objects_descr_pool);
 	_particles_descriptor_set->AddDescriptor(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 0, VK_SHADER_STAGE_VERTEX_BIT);
 
@@ -84,6 +88,7 @@ void VulkanGBufferRenderer::CreateDescriptorSets(VulkanCamerasBuffer* camerasBuf
 	// Create all descriptor sets
 	_transforms_descriptor_set->Create();
 	_transforms_descriptor_set->WriteDescriptorBuffer(0, camerasBuffer->GetCamerasBuffer(), 0, CAMERA_ELEM_SIZE);
+	_transforms_descriptor_set->WriteDescriptorBuffer(2, generalEnvBuffer, 0, GENERAL_ENV_BUFFER_SIZE);
 
 	_animations_descriptor_set->Create();
 	_particles_descriptor_set->Create();
