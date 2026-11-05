@@ -30,6 +30,11 @@ public struct Vec2
         return x == other.x && y == other.y;
     }
 
+    public override string ToString()
+    {
+        return $"({x}, {y})";
+    }   
+
     public float x;
     public float y;
 }
@@ -40,6 +45,16 @@ public struct Vec2i
     {
         this.x = x;
         this.y = y;
+    }
+
+    public bool Equals(Vec2i other)
+    {
+        return x == other.x && y == other.y;
+    }
+
+    public override string ToString()
+    {
+        return $"({x}, {y})";
     }
 
     public int x;

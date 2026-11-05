@@ -21,6 +21,11 @@ public struct Vec4
         return x == other.x && y == other.y && z == other.z && w == other.w;
     }
 
+    public override string ToString()
+    {
+        return $"({x}, {y}, {z}, {w})";
+    }
+
     public float x;
     public float y;
     public float z;

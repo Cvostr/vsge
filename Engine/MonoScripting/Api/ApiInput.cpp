@@ -16,11 +16,11 @@ static bool IsKeyPressed(KeyCode key) {
 static bool IsKeyHold(KeyCode key) {
 	return Input::Get()->IsKeyHold(key);
 }
-static Vec2i GetMouseCursorPos() {
-	return Input::Get()->GetMouseCursorPos();
+static void GetMouseCursorPos(Vec2i* out) {
+	*out = Input::Get()->GetMouseCursorPos();
 }
-static Vec2i GetMouseCursorDelta() {
-	return Input::Get()->GetMouseCursorDelta();
+static void GetMouseCursorDelta(Vec2i* out) {
+	*out = Input::Get()->GetMouseCursorDelta();
 }
 
 void VSGE::BindInputApi() {
@@ -28,6 +28,6 @@ void VSGE::BindInputApi() {
 	MonoScriptingLayer::AddInternalCall("Input::IsMouseButtonHold(MouseButton)", IsMouseButtonHold);
 	MonoScriptingLayer::AddInternalCall("Input::IsKeyPressed(KeyCode)", IsKeyPressed);
 	MonoScriptingLayer::AddInternalCall("Input::IsKeyHold(KeyCode)", IsKeyHold);
-	MonoScriptingLayer::AddInternalCall("Input::GetMouseCursorPos()", GetMouseCursorPos);
-	MonoScriptingLayer::AddInternalCall("Input::GetMouseCursorDelta()", GetMouseCursorDelta);
+	MonoScriptingLayer::AddInternalCall("Input::i_GetMouseCursorPos(Vec2i&)", GetMouseCursorPos);
+	MonoScriptingLayer::AddInternalCall("Input::i_GetMouseCursorDelta(Vec2i&)", GetMouseCursorDelta);
 }

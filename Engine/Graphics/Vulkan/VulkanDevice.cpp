@@ -198,6 +198,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     requestedFeatures.samplerAnisotropy = true;
     requestedFeatures.depthClamp = true;
 
+    // For vkCmdSetCullModeEXT, ...
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT requestedEdsFeatures = {};
     requestedEdsFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
     requestedEdsFeatures.extendedDynamicState = true;
@@ -212,7 +213,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     VkDeviceCreateInfo logical_gpu_create_info = {};
     logical_gpu_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    logical_gpu_create_info.pNext = &requestedDeviceFeatures2;
+    logical_gpu_create_info.pNext = nullptr; // &requestedDeviceFeatures2;
     logical_gpu_create_info.flags = 0;
     logical_gpu_create_info.queueCreateInfoCount = static_cast<uint32>(QueuesToCreate.size()); //size of queues vector
     logical_gpu_create_info.pQueueCreateInfos = QueuesToCreate.data(); //pointer to start of queues vector
