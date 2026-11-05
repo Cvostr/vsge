@@ -67,7 +67,8 @@ public enum KeyCode {
 	KEY_CODE_RIGHT
 };
 
-public class Input{
+public class Input
+{
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern Vec2i GetMouseCursorPos();
     [MethodImpl(MethodImplOptions.InternalCall)]

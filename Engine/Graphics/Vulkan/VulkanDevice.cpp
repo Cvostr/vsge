@@ -19,7 +19,7 @@ const std::vector<const char*> validationLayers = {
 
 VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
 {
-    if(devices.size() == 0)
+    if (devices.size() == 0)
         return VK_NULL_HANDLE;
 
     //Try to find discrete gpu with highest performance
@@ -28,7 +28,7 @@ VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
         VkPhysicalDeviceProperties device_props;
         vkGetPhysicalDeviceProperties(device, &device_props);
 
-        if (device_props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU){
+        if (device_props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
             best = device;
         }
     }
@@ -40,7 +40,7 @@ VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
             VkPhysicalDeviceProperties device_props;
             vkGetPhysicalDeviceProperties(device, &device_props);
             //check device name, it shouldnt be as "llvmpipe"
-            if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
+            if (device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l') {
                 return device;
             }
         }
@@ -161,7 +161,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 
     std::vector<VkDeviceQueueCreateInfo> QueuesToCreate;
     float priority = 1.0f;
-    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++) 
+    for (uint32 i = 0; i < _vkQueueFamilyProps.size(); i++)
     {
         VkQueueFlags queueFlags = _vkQueueFamilyProps[i].queueFlags;
         uint32 queueCount = _vkQueueFamilyProps[i].queueCount;
@@ -198,13 +198,21 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     requestedFeatures.samplerAnisotropy = true;
     requestedFeatures.depthClamp = true;
 
-    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT eds_features = {};
-    eds_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
-    eds_features.extendedDynamicState = true;
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT requestedEdsFeatures = {};
+    requestedEdsFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT;
+    requestedEdsFeatures.extendedDynamicState = true;
+
+    VkPhysicalDeviceVulkan12Features requestedFeatures12 = {};
+    requestedFeatures12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+    requestedFeatures12.shaderSampledImageArrayNonUniformIndexing = true;
+
+    VkPhysicalDeviceFeatures2 requestedDeviceFeatures2 = {};
+    requestedDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    requestedDeviceFeatures2.pNext = &requestedFeatures12;
 
     VkDeviceCreateInfo logical_gpu_create_info = {};
     logical_gpu_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    logical_gpu_create_info.pNext = nullptr;// &eds_features;
+    logical_gpu_create_info.pNext = &requestedDeviceFeatures2;
     logical_gpu_create_info.flags = 0;
     logical_gpu_create_info.queueCreateInfoCount = static_cast<uint32>(QueuesToCreate.size()); //size of queues vector
     logical_gpu_create_info.pQueueCreateInfos = QueuesToCreate.data(); //pointer to start of queues vector
@@ -215,23 +223,23 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     logical_gpu_create_info.enabledLayerCount = 0;
     logical_gpu_create_info.ppEnabledLayerNames = nullptr;
 
-    // Create logical device
+    // create logical device
     if (vkCreateDevice(Device, &logical_gpu_create_info, nullptr, &mDevice) != VK_SUCCESS) //creating logical device
         return false;
 
     // Iterate over all queue families
-    for (uint32 family_i = 0; family_i < _vkQueueFamilyProps.size(); family_i++) 
+    for (uint32 family_i = 0; family_i < _vkQueueFamilyProps.size(); family_i++)
     {
         const VkQueueFamilyProperties& familyProps = _vkQueueFamilyProps[family_i];
-        
+
         // iterate over all queues in this family
-        for (uint32 q_i = 0; q_i < _vkQueueFamilyProps[family_i].queueCount; q_i++) 
+        for (uint32 q_i = 0; q_i < _vkQueueFamilyProps[family_i].queueCount; q_i++)
         {
             VkQueue queue;
             vkGetDeviceQueue(mDevice, family_i, q_i, &queue);
 
             VulkanQueueInfo* queueInfo = new VulkanQueueInfo(queue, family_i, familyProps.queueFlags);
-            
+
             // Check, is queue support presenting on screen
             VkBool32 canPresent = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice, family_i, instance->GetSurface(), &canPresent);
@@ -298,18 +306,18 @@ uint32 VulkanDevice::GetMaxBoundDescriptorSets() {
     return DeviceProps.limits.maxBoundDescriptorSets;
 }
 
-VkFormat VulkanDevice::GetSuitableDepthFormat(VkImageTiling tiling){
-    std::vector<VkFormat> depthFormats = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
+VkFormat VulkanDevice::GetSuitableDepthFormat(VkImageTiling tiling) {
+    std::vector<VkFormat> depthFormats = { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT };
 
-    for (VkFormat format : depthFormats){
-        if(IsCompatibleDepthFormatTiling(format, tiling)){
+    for (VkFormat format : depthFormats) {
+        if (IsCompatibleDepthFormatTiling(format, tiling)) {
             return format;
         }
     }
     return VK_FORMAT_D32_SFLOAT;
 }
 
-bool VulkanDevice::IsCompatibleDepthFormatTiling(VkFormat format, VkImageTiling tiling){
+bool VulkanDevice::IsCompatibleDepthFormatTiling(VkFormat format, VkImageTiling tiling) {
     VkFormatProperties props;
     vkGetPhysicalDeviceFormatProperties(mPhysicalDevice, format, &props);
     VkFormatFeatureFlags features = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;

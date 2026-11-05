@@ -406,7 +406,7 @@ VSGE::ByteSerialize* FileBrowserWindow::GetBaseContentToWrite(VSGE::ResourceType
     ByteSerialize* serializer = new ByteSerialize;
     if (res_type == RESOURCE_TYPE_SCRIPT) {
         std::string result =
-            "using System; \nclass " + res_name + " : EntityScript{\n\tpublic void OnStart() {\n\t}\n\tpublic void OnUpdate() {\n\t}\n}";
+            "using System; \nclass " + res_name + " : EntityScript {\n\tpublic void OnStart() {\n\t}\n\tpublic void OnUpdate() {\n\t}\n}";
         serializer->Serialize(result);
         serializer->PopBack();
     }

@@ -154,7 +154,7 @@ public class Entity : InternalObject {
     private static extern Quat i_GetRotation(ulong handle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    private static extern Quat i_SetRotation(ulong handle, Quat rotation);
+    private static extern void i_SetRotation(ulong handle, Quat rotation);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong i_Duplicate(ulong handle);
