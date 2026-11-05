@@ -22,23 +22,25 @@ layout (std140, set = 0, binding = 1) readonly buffer Transform {
     mat4 obj_transform;
 };
 
+layout (std140, set = 0, binding = 2) uniform GeneralEnv {
+    // Time params
+    float timeSec;
+    float reserved1;
+    float reserved2;
+    float reserved3;
+
+    // Wind settings
+    float windSpeed;
+    float windStrength;
+    vec2 windDirection;
+};
+
 layout (std140, set = 2, binding = 0) readonly buffer GrassTransforms {
     mat4 transforms[];
 };
 
-layout (std140, set = 0, binding = 2) readonly buffer GeneralEnv {
-    float timeSec;
-};
-
 void main()
 {
-    // TODO: Settings
-    float windSpeed = 1.0;
-    float windStrength = 0.3;
-    vec2 windDirection = normalize(vec2(1.0, 0.5));
-
-
-
     mat4 instanceMatrix = transforms[gl_InstanceIndex];
     
     // mask to apply wind. 

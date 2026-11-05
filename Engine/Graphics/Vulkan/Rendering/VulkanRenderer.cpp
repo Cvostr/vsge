@@ -249,6 +249,14 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 	timeInSecFrac = fmod(timeInSecFrac, 3600.0f);
 	_general_env_buffer->WriteData(0, sizeof(float), &timeInSecFrac);
 
+	// TODO: to params
+	float windSpeed = 1.0;
+	float windStrength = 0.3;
+	Vec2 windDirection = Vec2(1.0, 0.5).GetNormalized();
+	_general_env_buffer->WriteData(16, sizeof(float), &windSpeed);
+	_general_env_buffer->WriteData(20, sizeof(float), &windStrength);
+	_general_env_buffer->WriteData(24, sizeof(Vec2), &windDirection);
+
 	if (mScene) {
 		SceneEnvironmentSettings& env_settings = mScene->GetEnvironmentSettings();
 		// send lights to gpu buffer
