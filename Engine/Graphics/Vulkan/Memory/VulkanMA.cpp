@@ -183,12 +183,9 @@ ThreadCmdbufPair* VulkanMA::GetTransferCmdbufThreaded() {
     VulkanDevice* device = VulkanRAPI::Get()->GetDevice();
 
     uint32 used_queues = (uint32)_threaded_cmdbufs.size();
-    VulkanQueueInfo* queueInfo = device->GetFreeQueue(VK_QUEUE_GRAPHICS_BIT);
+    VulkanQueueInfo* queueInfo = device->AcquireFreeQueue(VK_QUEUE_GRAPHICS_BIT);
     if (queueInfo == nullptr) {
         queueInfo = device->GetGenericQueue();
-    }
-    else {
-        queueInfo->Acquire();
     }
 
     VkQueue queue = queueInfo->GetQueue();

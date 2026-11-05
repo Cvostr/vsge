@@ -34,16 +34,16 @@ VkPhysicalDevice GetBestDevice(std::vector<VkPhysicalDevice>& devices)
     }
     if (best != VK_NULL_HANDLE)
         return best;
-    else 
+    else
     {
-       for (auto device : devices) {
-           VkPhysicalDeviceProperties device_props;
-           vkGetPhysicalDeviceProperties(device, &device_props);
-           //check device name, it shouldnt be as "llvmpipe"
-           if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
-               return device;
-           }
-       }
+        for (auto device : devices) {
+            VkPhysicalDeviceProperties device_props;
+            vkGetPhysicalDeviceProperties(device, &device_props);
+            //check device name, it shouldnt be as "llvmpipe"
+            if(device_props.deviceName[0] != 'l' && device_props.deviceName[1] != 'l'){
+                return device;
+            }
+        }
     }
     return VK_NULL_HANDLE;
 }
@@ -59,9 +59,9 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
     //resize vectors
     phys_devices_list.resize(gpus_count);
     vkEnumeratePhysicalDevices(instance->GetInstance(), &gpus_count, phys_devices_list.data());
-    
+
     VkPhysicalDevice device = GetBestDevice(phys_devices_list);
-    if (device != VK_NULL_HANDLE) 
+    if (device != VK_NULL_HANDLE)
     {
         VkPhysicalDeviceProperties device_props;
         vkGetPhysicalDeviceProperties(device, &device_props);
@@ -71,13 +71,14 @@ VulkanDevice* VSGE::CreatePrimaryDevice() {
         Device->initDevice(device);
         return Device;
     }
-    
+
     return nullptr;
 }
 
 VulkanDevice::VulkanDevice() :
     mPhysicalDevice(VK_NULL_HANDLE),
-    mDevice(VK_NULL_HANDLE)
+    mDevice(VK_NULL_HANDLE),
+    _generic_queue(nullptr)
 {
     DeviceProps = {};
 }
@@ -86,8 +87,8 @@ VkDevice VulkanDevice::getVkDevice() {
     return mDevice;
 }
 
-VkPhysicalDevice VulkanDevice::getPhysicalDevice() { 
-    return mPhysicalDevice; 
+VkPhysicalDevice VulkanDevice::getPhysicalDevice() {
+    return mPhysicalDevice;
 }
 
 bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
@@ -143,7 +144,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
     deviceFeatures2.pNext = &deviceFeatures12;
     vkGetPhysicalDeviceFeatures2(Device, &deviceFeatures2);
-    
+
     Logger::Log(LogType::LOG_TYPE_INFO) << "Important features"
         << "\n\tgeometryShader: " << deviceFeatures.geometryShader
         << "\n\tmultiViewport: " << deviceFeatures.multiViewport
@@ -177,7 +178,7 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
         QueueGraphicsCreateInfo.queueFamilyIndex = i;
         QueueGraphicsCreateInfo.queueCount = queueCount;
         QueueGraphicsCreateInfo.flags = 0;
-       
+
         float* priorities_array = new float[queueCount];
         for (uint32 _i = 0; _i < queueCount; _i++)
             priorities_array[_i] = 1.f;
@@ -214,30 +215,37 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
     logical_gpu_create_info.enabledLayerCount = 0;
     logical_gpu_create_info.ppEnabledLayerNames = nullptr;
 
-    //create logical device
+    // Create logical device
     if (vkCreateDevice(Device, &logical_gpu_create_info, nullptr, &mDevice) != VK_SUCCESS) //creating logical device
-        return false;                                                           
-  
-    for (uint32 family_i = 0; family_i < _vkQueueFamilyProps.size(); family_i++) {
-        VkQueueFamilyProperties familyProps = _vkQueueFamilyProps[family_i];
-        for (uint32 q_i = 0; q_i < _vkQueueFamilyProps[family_i].queueCount; q_i++) {
+        return false;
+
+    // Iterate over all queue families
+    for (uint32 family_i = 0; family_i < _vkQueueFamilyProps.size(); family_i++) 
+    {
+        const VkQueueFamilyProperties& familyProps = _vkQueueFamilyProps[family_i];
+        
+        // iterate over all queues in this family
+        for (uint32 q_i = 0; q_i < _vkQueueFamilyProps[family_i].queueCount; q_i++) 
+        {
             VkQueue queue;
             vkGetDeviceQueue(mDevice, family_i, q_i, &queue);
+
+            VulkanQueueInfo* queueInfo = new VulkanQueueInfo(queue, family_i, familyProps.queueFlags);
             
-            VulkanQueueInfo queueInfo(queue, family_i, familyProps.queueFlags);
+            // Check, is queue support presenting on screen
             VkBool32 canPresent = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(mPhysicalDevice, family_i, instance->GetSurface(), &canPresent);
             if (canPresent) {
-                queueInfo.supportsPresent = true;
+                queueInfo->supportsPresent = true;
             }
 
             //Проверить, подходит ли эта очередь на роль общей
-            if (!_generic_queue.IsAcquired() && 
-                queueInfo.supportsPresent &&
-                queueInfo.GetFlags() & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT))
+            if (_generic_queue == nullptr &&
+                queueInfo->supportsPresent &&
+                queueInfo->GetFlags() & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT))
             {
                 _generic_queue = queueInfo;
-                _generic_queue.Acquire();
+                _generic_queue->Acquire();
             }
 
             _queues.push_back(queueInfo);
@@ -250,17 +258,20 @@ bool VulkanDevice::initDevice(VkPhysicalDevice Device) {
 }
 
 uint32 VulkanDevice::GetGenericQueueFamilyIndex() {
-    return _generic_queue.GetFamilyIndex();
+    return _generic_queue->GetFamilyIndex();
 }
 
 VulkanQueueInfo* VulkanDevice::GetGenericQueue() {
-    return &_generic_queue;
+    return _generic_queue;
 }
 
-VulkanQueueInfo* VulkanDevice::GetFreeQueue(VkQueueFlags flags) {
+VulkanQueueInfo* VulkanDevice::AcquireFreeQueue(VkQueueFlags flags)
+{
     for (auto& queue : _queues) {
-        if (!queue.IsAcquired() && (queue.GetFlags() & flags)) {
-            return &queue;
+        if ((queue->GetFlags() & flags)) {
+            if (queue->TryAcquire()) {
+                return queue;
+            }
         }
     }
 

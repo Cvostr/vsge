@@ -13,9 +13,8 @@ namespace VSGE {
         VkDevice mDevice; //logical device, created from physical device
         std::vector<VkQueueFamilyProperties> _vkQueueFamilyProps;
 
-        VulkanQueueInfo _generic_queue; //This Queue can either present, draw graphics, compute and transfer
-
-        std::vector<VulkanQueueInfo> _queues;
+        VulkanQueueInfo* _generic_queue; //This Queue can either present, draw graphics, compute and transfer
+        std::vector<VulkanQueueInfo*> _queues;
 
         VkPhysicalDeviceProperties DeviceProps;
 
@@ -39,8 +38,7 @@ namespace VSGE {
 
         uint32 GetGenericQueueFamilyIndex();
         VulkanQueueInfo* GetGenericQueue();
-
-        VulkanQueueInfo* GetFreeQueue(VkQueueFlags flags);
+        VulkanQueueInfo* AcquireFreeQueue(VkQueueFlags flags);
 
         std::vector<VkQueueFamilyProperties>& GetQueueFamilyProperties();
 

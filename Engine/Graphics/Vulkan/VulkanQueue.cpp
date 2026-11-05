@@ -7,14 +7,14 @@ VulkanQueueInfo::VulkanQueueInfo() :
     familyIndex(0),
     queueFlags(0),
     supportsPresent(false),
-    acquiredByThread(false) {}
+    acquired(false) {}
 
 VulkanQueueInfo::VulkanQueueInfo(VkQueue queue, uint32 familyIndex, VkQueueFlags queueFlags) :
     queue(queue),
     familyIndex(familyIndex),
     queueFlags(queueFlags),
     supportsPresent(false),
-    acquiredByThread(false) {}
+    acquired(false) {}
 
 VkQueue VulkanQueueInfo::GetQueue() {
     return queue;
@@ -29,9 +29,21 @@ uint32 VulkanQueueInfo::GetFamilyIndex() {
 }
 
 void VulkanQueueInfo::Acquire() {
-    acquiredByThread = true;
+    acquired = true;
 }
 
 bool VulkanQueueInfo::IsAcquired() {
-    return acquiredByThread;
+    return acquired;
+}
+
+bool VulkanQueueInfo::TryAcquire()
+{
+    bool expected = false;
+    bool desired = true;
+    return acquired.compare_exchange_strong(expected, desired);
+}
+
+void VulkanQueueInfo::Release()
+{
+    acquired = false;
 }

@@ -12,7 +12,7 @@ namespace VSGE {
         VkQueue queue;
         VkQueueFlags queueFlags;
         uint32 familyIndex;
-        bool acquiredByThread;
+        std::atomic<bool> acquired;
     public:
 
         bool supportsPresent;
@@ -22,6 +22,9 @@ namespace VSGE {
         uint32 GetFamilyIndex();
         void Acquire();
         bool IsAcquired();
+
+        bool TryAcquire();
+        void Release();
 
         VulkanQueueInfo();
         VulkanQueueInfo(VkQueue queue, uint32 familyIndex, VkQueueFlags queueFlags);
