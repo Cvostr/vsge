@@ -41,7 +41,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	VulkanRAPI* vk = new VulkanRAPI;
 	vk->Create(&app->GetWindow());
 
-	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
+	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer(true);
 	app->AddLayer(mono_scripting_layer);
 
 	PhysicsLayer* phys_layer = new PhysicsLayer;

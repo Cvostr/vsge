@@ -11,9 +11,10 @@ MonoScriptingLayer* MonoScriptingLayer::_this = nullptr;
 
 #define RUNTIME_VERSION "v4.0.30319"
 
-MonoScriptingLayer::MonoScriptingLayer() :
+MonoScriptingLayer::MonoScriptingLayer(bool enableDebug) :
     _root_domain(nullptr),
 	_domain(nullptr),
+    _enableDebugging(enableDebug),
     _scripts_blob(new MonoScriptBlob)
 {
 	_this = this;
@@ -89,7 +90,9 @@ bool MonoScriptingLayer::CreateRootDomain() {
     mono_set_dirs(monoLibDir.c_str(), monoEtcDir.c_str());
 
     // Init debugging, should be done before domain creation
-    SetupDebugging();
+    if (_enableDebugging) {
+        SetupDebugging();
+    }
 
 	// Create domain
     _root_domain = mono_jit_init_version(MONO_ROOT_DOMAIN_NAME, RUNTIME_VERSION);

@@ -31,12 +31,13 @@ namespace VSGE {
 		MonoDomain* _domain;
 		MonoScriptBlob* _scripts_blob;
 		std::string _monoDirectoryLocation;
+		bool _enableDebugging;
 
 		void SetupDebugging();
 
 	public:
 
-		MonoScriptingLayer();
+		MonoScriptingLayer(bool enableDebug);
 		~MonoScriptingLayer();
 
 		static MonoScriptingLayer* Get() {

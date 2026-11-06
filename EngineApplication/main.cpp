@@ -38,7 +38,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	PhysicsLayer* phys_layer = new PhysicsLayer;
 
-	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer;
+	MonoScriptingLayer* mono_scripting_layer = new MonoScriptingLayer(false);
 	
 	app->AddLayer(mono_scripting_layer);
 	app->AddLayer(new SceneLayer);
