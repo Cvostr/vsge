@@ -156,12 +156,10 @@ void Quat::CreateFromYawPitchRoll(float yaw, float pitch, float roll) {
     const float sinYaw = sin(halfYaw);
     const float cosYaw = cos(halfYaw);
 
-    *this = Quat(
-        cosYaw * sinPitch * cosRoll + sinYaw * cosPitch * sinRoll,
-        sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll,
-        cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll,
-        cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll
-    );
+    this->x = cosYaw * sinPitch * cosRoll + sinYaw * cosPitch * sinRoll;
+    this->y = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
+    this->z = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
+    this->w = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
 }
 
 void Quat::CreateFromEulerAngles(const Vec3& euler) {

@@ -88,4 +88,54 @@ public struct Quat
             cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll
         );
     }
+
+    public static Quat LookRotation(Vec3 forward, Vec3 up)
+    {
+        // Forward (Z axis)
+        Vec3 zAxis = forward.GetNormalized();
+
+        // Right (X axis)
+        Vec3 xAxis = up.Cross(zAxis).GetNormalized();
+
+        // UP (Y axis)
+        Vec3 yAxis = zAxis.Cross(xAxis);
+
+        float trace = xAxis.x + yAxis.y + zAxis.z;
+        float x, y, z, w;
+
+        if (trace > 0.0f)
+        {
+            float s = MathF.Sqrt(trace + 1.0f) * 2.0f;
+            w = 0.25f * s;
+            x = (zAxis.y - yAxis.z) / s;
+            y = (xAxis.z - zAxis.x) / s;
+            z = (yAxis.x - xAxis.y) / s;
+        }
+        else if ((xAxis.x > yAxis.y) && (xAxis.x > zAxis.z))
+        {
+            float s = MathF.Sqrt(1.0f + xAxis.x - yAxis.y - zAxis.z) * 2.0f;
+            w = (zAxis.y - yAxis.z) / s;
+            x = 0.25f * s;
+            y = (xAxis.y + yAxis.x) / s;
+            z = (zAxis.x + xAxis.z) / s;
+        }
+        else if (yAxis.y > zAxis.z)
+        {
+            float s = MathF.Sqrt(1.0f + yAxis.y - xAxis.x - zAxis.z) * 2.0f;
+            w = (xAxis.z - zAxis.x) / s;
+            x = (xAxis.y + yAxis.x) / s;
+            y = 0.25f * s;
+            z = (yAxis.z + zAxis.y) / s;
+        }
+        else
+        {
+            float s = MathF.Sqrt(1.0f + zAxis.z - xAxis.x - yAxis.y) * 2.0f;
+            w = (yAxis.x - xAxis.y) / s;
+            x = (zAxis.x + xAxis.z) / s;
+            y = (yAxis.z + zAxis.y) / s;
+            z = 0.25f * s;
+        }
+
+        return new Quat(x, y, z, w);
+    }
 }
