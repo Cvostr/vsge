@@ -231,7 +231,7 @@ void VulkanRenderer::DestroyRenderer()
 
 uint32 VulkanRenderer::GetUniformTransformBufferElementSize()
 {
-	return std::max(UNI_ALIGN, sizeof(Mat4));
+	return std::max<uint64>(UNI_ALIGN, sizeof(Mat4));
 }
 
 void VulkanRenderer::StoreWorldObjects(Camera* cam) 

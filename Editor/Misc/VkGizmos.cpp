@@ -85,7 +85,7 @@ void VkGizmos::Create() {
 
 	// Create transform buffers
 	uint32 transformMemoryBlockSize = VulkanRenderer::GetUniformTransformBufferElementSize();
-	uint32 alignment = std::max((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
+	uint32 alignment = std::max<uint64>((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
 
 	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_STORAGE);
 	_transforms_buffer->Create(GIZMO_MAX_ENTITIES * transformMemoryBlockSize);
@@ -155,7 +155,7 @@ void VkGizmos::UpdateCamera(Camera* cam)
 
 void VkGizmos::PrepareBuffers() 
 {
-	uint32 alignment = std::max((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
+	uint32 alignment = std::max<uint64>((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
 	uint32 alignmentFactor = alignment / sizeof(Mat4);
 
 	Mat4* transforms = new Mat4[_picked_entities.size() * alignmentFactor];
@@ -218,7 +218,7 @@ void VkGizmos::PrepareBuffers()
 
 void VkGizmos::AppendToCmdbuf(VSGE::VulkanCommandBuffer* cmdbuf) 
 {
-	uint32 alignment = std::max((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
+	uint32 alignment = std::max<uint64>((uint64)VSGE::VulkanRAPI::Get()->GetDevice()->GetStorageBufferMinAlignment(), sizeof(Mat4));
 	uint32 entity_index = 0;
 	uint32 drawn_bones = 0;
 

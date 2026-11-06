@@ -1,5 +1,5 @@
 #include "TextureCompressor.hpp"
-
+#include <cstring>
 #include <bc7enc.h>
 
 using namespace VSGEditor;

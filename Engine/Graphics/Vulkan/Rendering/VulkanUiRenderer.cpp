@@ -34,9 +34,9 @@ void VulkanUiRenderer::Create()
 	VulkanDevice* device = rapi->GetDevice();
 
 	// Calculate alignment for transform matrices in buffer
-	_transformBufferElementSize = std::max(UNI_ALIGN, sizeof(Mat4));
+	_transformBufferElementSize = std::max<uint64>(UNI_ALIGN, sizeof(Mat4));
 	// Calculate alignment for fragment data in buffer
-	_fragmentBufferElementSize = std::max(UNI_ALIGN, FRAGMENT_SIZE);
+	_fragmentBufferElementSize = std::max<uint64>(UNI_ALIGN, FRAGMENT_SIZE);
 
 	// buffer for transforms in vertex shader
 	_transforms_buffer = new VulkanBuffer(GPU_BUFFER_TYPE_UNIFORM);
