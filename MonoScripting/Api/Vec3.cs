@@ -14,11 +14,18 @@ public struct Vec3
     public float y;
     public float z;
 
-    void Normalize() {
+    public void Normalize()
+    {
         float len = Length();
         x /= len;
         y /= len;
         z /= len;
+    }
+
+    public Vec3 GetNormalized()
+    {
+        float len = Length();
+        return new Vec3(x / len, y / len, z / len);
     }
 
     public float Dot(Vec3 v)

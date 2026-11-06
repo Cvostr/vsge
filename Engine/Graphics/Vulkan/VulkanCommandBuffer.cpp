@@ -159,8 +159,7 @@ void VulkanCommandBuffer::SetViewport(float x, float y, float width, float heigh
 }
 
 void VulkanCommandBuffer::SetCullMode(VkCullModeFlags cull_mode) {
-    PFN_vkCmdSetCullModeEXT vkCmdSetCullModeEXT = (PFN_vkCmdSetCullModeEXT)vkGetInstanceProcAddr(VulkanRAPI::Get()->GetInstance()->GetInstance(), "vkCmdSetCullModeEXT");
-    vkCmdSetCullModeEXT(mCommandBuffer, cull_mode);
+    vkCmdSetCullMode(mCommandBuffer, cull_mode);
 }
 
 void VulkanCommandBuffer::CopyBuffer(VkBuffer src, VkBuffer dst, uint32 size, uint32 src_offset, uint32 dst_offset) {
