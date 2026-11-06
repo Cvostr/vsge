@@ -71,9 +71,15 @@ bool Input::IsKeyHold(KeyCode key) {
 	return false;
 }
 
+void Input::ClearMouseCursorDelta() {
+	_mouse_cursor_state.cursor_delta.x = 0;
+	_mouse_cursor_state.cursor_delta.y = 0;
+}
+
 void Input::SetMouseCursorState(uint32 posX, uint32 posY, int32 relX, int32 relY) {
 	_mouse_cursor_state.cursor_pos = Vec2i(posX, posY);
-	_mouse_cursor_state.cursor_delta = Vec2i(relX, relY);
+	_mouse_cursor_state.cursor_delta.x += relX;
+	_mouse_cursor_state.cursor_delta.y += relY;
 }
 void Input::SetMouseBtnPressed(MouseButton btn) {
 	switch (btn) {

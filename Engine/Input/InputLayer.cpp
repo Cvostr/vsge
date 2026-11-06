@@ -14,6 +14,7 @@ void InputLayer::OnAttach() {
 
 }
 void InputLayer::OnUpdate() {
+	Input::Get()->ClearMouseCursorDelta();
 	Input::Get()->ClearPressedKeys();
 	Input::Get()->UnsetPressedMouseButtons();
 }

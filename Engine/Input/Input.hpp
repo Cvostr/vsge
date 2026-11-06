@@ -62,14 +62,15 @@ namespace VSGE {
 
 		void SetMouseCursorState(uint32 posX, uint32 posY, int32 relX, int32 relY);
 		void SetMouseBtnPressed(MouseButton btn);
-		void UnsetPressedMouseButtons();
 		void SetMouseBtnHold(MouseButton btn);
 		void UnsetMouseBtnHold(MouseButton btn);
 
 		void AddHoldKey(KeyCode key);
+		void RemoveHoldKey(KeyCode key);
 		void AddPressedKey(KeyCode key);
 
 		void ClearPressedKeys();
-		void RemoveHoldKey(KeyCode key);
+		void ClearMouseCursorDelta();
+		void UnsetPressedMouseButtons();
 	};
 }
