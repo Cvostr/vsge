@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.hpp>
 #include <Core/VarTypes/Base.hpp>
+#include <atomic>
 
 namespace VSGE {
 
