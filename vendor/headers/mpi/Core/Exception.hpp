@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 namespace Mpi {
 
@@ -11,7 +11,7 @@ namespace Mpi {
         ERRC_OTHER_ERROR
     };
 
-    class Exception : public std::exception {
+    class Exception : public std::runtime_error {
     private:
         int m_errCode;
     public:

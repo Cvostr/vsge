@@ -22,7 +22,7 @@ namespace Mpi
 		JsonToken* ReadPunct();
 	public:
 		JsonLexer(CharBuffer& buffer);
-		~JsonLexer() {}
+		~JsonLexer();
 
 		void SkipSpaces();
 		std::string ReadToDivisor();
