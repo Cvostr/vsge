@@ -13,6 +13,7 @@ namespace VSGE {
 		int32 mWindowPosX;
 		int32 mWindowPosY;
 
+		bool mGenerateLibEvent;
 		SDL_Window* mWindow;
 	public:
 		Window() : mWindow(nullptr),
@@ -20,7 +21,9 @@ namespace VSGE {
 					mWindowPosY(SDL_WINDOWPOS_CENTERED),
 
 					mWindowWidth(1024),
-					mWindowHeight(768)
+					mWindowHeight(768),
+					// Default to false for in-game optimization
+					mGenerateLibEvent(false)
 		{
 			_this = this;
 		}
@@ -29,7 +32,9 @@ namespace VSGE {
 			return _this;
 		}
 
-		SDL_Window* GetSdlWinPtr() { return mWindow; }
+
+		void SetGenerateLibEvent(bool generate);
+		SDL_Window* GetSdlWinPtr();
 		/// <summary>
 		/// Get ms windows platform specific HWND of the window
 		/// </summary>

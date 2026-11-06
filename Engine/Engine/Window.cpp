@@ -154,9 +154,12 @@ void VSGE::Window::PollEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        LibraryWindowEvent libevent;
-        libevent.ptr = &event;
-        app->OnEvent(libevent);
+        if (mGenerateLibEvent)
+        {
+            LibraryWindowEvent libevent;
+            libevent.ptr = &event;
+            app->OnEvent(libevent);
+        }
 
         if (event.type == SDL_MOUSEMOTION) {
             EventMouseMotion mouse_motion_event(event.motion.x,
@@ -236,4 +239,14 @@ void* VSGE::Window::GetHWND() {
 	result = wmInfo.info.win.window;
 #endif
     return result;
+}
+
+void VSGE::Window::SetGenerateLibEvent(bool generate)
+{
+    mGenerateLibEvent = generate;
+}
+
+SDL_Window* VSGE::Window::GetSdlWinPtr() 
+{
+    return mWindow; 
 }

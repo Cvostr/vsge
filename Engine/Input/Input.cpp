@@ -71,7 +71,7 @@ bool Input::IsKeyHold(KeyCode key) {
 	return false;
 }
 
-void Input::SetMouseCursorState(uint32 posX, uint32 posY, uint32 relX, uint32 relY) {
+void Input::SetMouseCursorState(uint32 posX, uint32 posY, int32 relX, int32 relY) {
 	_mouse_cursor_state.cursor_pos = Vec2i(posX, posY);
 	_mouse_cursor_state.cursor_delta = Vec2i(relX, relY);
 }

@@ -35,6 +35,8 @@ Application* VSGEMain(int argc, char* argv[]) {
 	EditorSettingsLayer* settings = new EditorSettingsLayer;
 	app->AddLayer(settings);
 	app->GetWindow().CreateWindow(settings->_windowWidth, settings->_windowHeight, "Editor");
+	// For IMGUI
+	app->GetWindow().SetGenerateLibEvent(true);
 
 	VulkanRAPI* vk = new VulkanRAPI;
 	vk->Create(&app->GetWindow());
