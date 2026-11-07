@@ -4,8 +4,12 @@
 
 using namespace VSGE;
 
-void DrawSprite(Rect bounds, float rotation, Resource* sprite, Vec2 uv_min, Vec2 uv_max) {
+void DrawSprite(Rect bounds, float rotation, Resource* sprite, Vec2 uv_min, Vec2 uv_max) 
+{
+	if (sprite->GetResourceType() != RESOURCE_TYPE_TEXTURE)
+		return;
 
+	UiLayer::Get()->GetRenderList()->DrawSprite(bounds, rotation, (TextureResource*) sprite, uv_min, uv_max);
 }
 
 void DrawText(Rect bounds, float rotation, MonoString* text, MonoString* font, Color color) 
@@ -24,5 +28,5 @@ void DrawText(Rect bounds, float rotation, MonoString* text, MonoString* font, C
 
 void VSGE::BindUiRenderList() {
 	MonoScriptingLayer::AddInternalCall("UiRenderList::DrawText(Rect,single,string,string,Color)", DrawText);
-	MonoScriptingLayer::AddInternalCall("UiRenderList::DrawText(Rect,single,ulong,Vec2,Vec2)", DrawSprite);
+	MonoScriptingLayer::AddInternalCall("UiRenderList::i_DrawSprite(Rect,single,ulong,Vec2,Vec2)", DrawSprite);
 }

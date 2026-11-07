@@ -167,10 +167,14 @@ void VulkanUiRenderer::FillBuffers()
 				return;
 			}
 
+			// Load texture, if it is not loaded
 			if (!task._sprite->IsReady()) {
 				task._sprite->Load();
 				continue;
 			}
+
+			// Keep texture loaded
+			task._sprite->Use();
 
 			Mat4 transform = GetTransform(task.bounds, Vec2(0.5f), task.rotation);
 			WriteTransform(written_elements, transform);
