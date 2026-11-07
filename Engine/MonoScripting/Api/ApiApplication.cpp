@@ -25,6 +25,10 @@ static void SetResizable(bool resizable) {
 	Application::Get()->GetWindow().SetResizable(resizable);
 }
 
+static void SetCursorMode(CursorMode mode) {
+	Application::Get()->GetWindow().SetCursorMode(mode);
+}
+
 void VSGE::BindApplicationApi() {
 	MonoScriptingLayer::AddInternalCall("Application::Quit()", Quit);
 	MonoScriptingLayer::AddInternalCall("Application::IsHeadless()", IsHeadless);
@@ -32,4 +36,6 @@ void VSGE::BindApplicationApi() {
 
 	MonoScriptingLayer::AddInternalCall("Screen::SetResolution(int,int)", SetScreenResolution);
 	MonoScriptingLayer::AddInternalCall("Screen::SetResizable(bool)", SetResizable);
+
+	MonoScriptingLayer::AddInternalCall("Cursor::SetMode(CursorMode)", SetCursorMode);
 }

@@ -17,6 +17,7 @@ set(API_SRC_FILES
     Api/Logger.cs
     Api/Application.cs
     Api/Screen.cs
+    Api/Cursor.cs
     Api/Scenes.cs
     Api/EngineClass/Entity.cs
     Api/EngineClass/Scene.cs

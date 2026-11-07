@@ -46,7 +46,7 @@ void VSGE::Window::SetCursorMode(CursorMode mode) {
         SDL_SetRelativeMouseMode(SDL_FALSE);
         SDL_SetWindowGrab(mWindow, SDL_FALSE);
 
-        switch (mCursorMode) 
+        switch (mode)
         {
             case CursorMode::Locked:
                 // Automatically hides cursor

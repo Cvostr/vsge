@@ -19,7 +19,6 @@ namespace VSGE {
 		int32 mWindowHeight;
 		int32 mWindowPosX;
 		int32 mWindowPosY;
-		CursorMode mCursorMode;
 
 		bool mGenerateLibEvent;
 		SDL_Window* mWindow;
@@ -30,8 +29,6 @@ namespace VSGE {
 
 					mWindowWidth(1024),
 					mWindowHeight(768),
-
-					mCursorMode(CursorMode::Free),
 						
 					// Default to false for in-game optimization
 					mGenerateLibEvent(false)
