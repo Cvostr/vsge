@@ -68,3 +68,31 @@ target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mono/libmono-static-s
 ENDIF()
 
 target_link_libraries(EngineApplication Engine)
+
+IF(UNIX)
+set(STATIC_LIBS_DIR  ${CMAKE_SOURCE_DIR}/vendor/static-x64/linux)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/openal/libopenal.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/SDL2/libSDL2.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/SDL2/libSDL2main.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/vulkan/vulkan-1.lib)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/freetype/libfreetype.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/assimp/libassimp.a)
+
+#bullet3 libs should be in this correct order
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/libBulletSoftBody.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/libBulletDynamics.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/libBulletCollision.a)
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/bullet/libLinearMath.a)
+
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mpi/libmpi.a)
+
+target_link_libraries(EngineApplication sndio)
+target_link_libraries(EngineApplication ${CMAKE_DL_LIBS})
+target_link_libraries(EngineApplication pthread)
+#Freetype2 dependency
+target_link_libraries(EngineApplication harfbuzz)
+
+target_link_libraries(EngineApplication ${STATIC_LIBS_DIR}/mono/libmonosgen-2.0.a)
+target_link_libraries(EngineApplication z)
+
+ENDIF()

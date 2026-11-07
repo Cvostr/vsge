@@ -45,7 +45,15 @@ set(COMPILER_CMD "MonoBinaries/bin/csc.bat")
 ENDIF()
 
 IF(UNIX)
-set(COMPILER_CMD "csc")
+find_program(MONO_EXECUTABLE mono)
+if(NOT MONO_EXECUTABLE)
+    message(FATAL_ERROR "mono runtime is required to build the scripting API")
+endif()
+set(VENDORED_CSC "${CMAKE_CURRENT_SOURCE_DIR}/MonoBinaries/lib/mono/4.5/csc.exe")
+if(NOT EXISTS "${VENDORED_CSC}")
+    message(FATAL_ERROR "Vendored Roslyn compiler not found: ${VENDORED_CSC}")
+endif()
+set(COMPILER_CMD "${MONO_EXECUTABLE}" "${VENDORED_CSC}")
 ENDIF()
 
 
