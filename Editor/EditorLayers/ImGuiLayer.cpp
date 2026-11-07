@@ -57,7 +57,7 @@ void ImGuiLayer::OnAttach() {
     ImGui::StyleColorsDark();
     ImGui_ApplyStyle();
 
-    win->SetResizeable(true);
+    win->SetResizable(true);
 
     VkDescriptorPoolSize pool_sizes[] =
     {

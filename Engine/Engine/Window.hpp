@@ -4,6 +4,13 @@
 #include <SDL2/SDL.h>
 
 namespace VSGE {
+
+	enum class CursorMode {
+		Free = 0,		// Default
+		Locked = 1,     // for FPS games
+		Confined = 2    // for RTS games
+	};
+
 	class Window {
 	private:
 		static Window* _this;
@@ -12,6 +19,7 @@ namespace VSGE {
 		int32 mWindowHeight;
 		int32 mWindowPosX;
 		int32 mWindowPosY;
+		CursorMode mCursorMode;
 
 		bool mGenerateLibEvent;
 		SDL_Window* mWindow;
@@ -22,6 +30,9 @@ namespace VSGE {
 
 					mWindowWidth(1024),
 					mWindowHeight(768),
+
+					mCursorMode(CursorMode::Free),
+						
 					// Default to false for in-game optimization
 					mGenerateLibEvent(false)
 		{
@@ -58,16 +69,21 @@ namespace VSGE {
 		/// <param name="title">new title of the window</param>
 		void SetWindowTitle(BaseString title);
 		/// <summary>
-		/// Set window resizeable or not
+		/// Set window resizable or not
 		/// </summary>
-		/// <param name="resizeable"></param>
-		void SetResizeable(bool resizeable);
+		/// <param name="resizable"></param>
+		void SetResizable(bool resizable);
 		/// <summary>
 		/// Change mode of window
 		/// Fullscreen, borderless, common
 		/// </summary>
 		/// <param name="mode">new mode of window</param>
 		void SetWindowMode(uint32 mode);
+		/// <summary>
+		/// Change cursor movement behavior
+		/// </summary>
+		/// <param name="mode">new mode of cursor</param>
+		void SetCursorMode(CursorMode mode);
 		/// <summary>
 		/// Get width of the window
 		/// </summary>

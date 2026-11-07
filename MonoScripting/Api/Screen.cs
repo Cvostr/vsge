@@ -15,5 +15,5 @@ public class Screen {
     public static extern void SetFullscreenMode(FullscreenMode mode);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern void SetWindowResizeable(bool resizeable);
+    public static extern void SetResizable(bool resizable);
 }

@@ -35,13 +35,34 @@ void VSGE::Window::SetWindowTitle(BaseString title) {
 }
 
 void VSGE::Window::SetWindowMode(uint32 mode) {
-	if(mWindow)
+	if (mWindow)
 		SDL_SetWindowFullscreen(this->mWindow, mode);
 }
 
-void VSGE::Window::SetResizeable(bool resizeable) {
+void VSGE::Window::SetCursorMode(CursorMode mode) {
+    if (mWindow) 
+    {
+        // Reset cursor mode in SDL
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        SDL_SetWindowGrab(mWindow, SDL_FALSE);
+
+        switch (mCursorMode) 
+        {
+            case CursorMode::Locked:
+                // Automatically hides cursor
+                SDL_SetRelativeMouseMode(SDL_TRUE);
+                break;
+            case CursorMode::Confined:
+                // TODO: show or hide cursor?
+                SDL_SetWindowGrab(mWindow, SDL_TRUE);
+                break;
+        }
+    }
+}
+
+void VSGE::Window::SetResizable(bool resizable) {
 	if(mWindow)
-		SDL_SetWindowResizable(mWindow, SDL_bool(resizeable));
+		SDL_SetWindowResizable(mWindow, SDL_bool(resizable));
 }
 
 int32 VSGE::Window::GetWindowWidth() { 
