@@ -226,6 +226,7 @@ void VkGizmos::AppendToCmdbuf(VSGE::VulkanCommandBuffer* cmdbuf)
 	// Bind pipeline at the beginning
 	cmdbuf->BindPipeline(*_object_pipeline);
 	cmdbuf->SetViewport(0, 0, _fb_width, _fb_height);
+	cmdbuf->SetCullMode(VK_CULL_MODE_NONE);
 	VulkanPipelineLayout* ppl = _object_pipeline->GetPipelineLayout();
 
 	for (auto& entity : _picked_entities) 
