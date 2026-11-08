@@ -49,6 +49,16 @@ void VSGE::Window::SetWindowMode(WindowMode mode) {
             SDL_SetWindowFullscreen(mWindow, SDL_TRUE);
             SDL_SetWindowBordered(mWindow, SDL_TRUE);
             break;
+        case WindowMode::Borderless:
+            SDL_SetWindowFullscreen(mWindow, SDL_FALSE);
+            SDL_SetWindowBordered(mWindow, SDL_FALSE);
+            // Restore saved size
+            SDL_SetWindowSize(this->mWindow, mWindowWidth, mWindowHeight);
+            // Window in center of screen
+            mWindowPosX = SDL_WINDOWPOS_CENTERED;
+            mWindowPosY = SDL_WINDOWPOS_CENTERED;
+            SDL_SetWindowPosition(this->mWindow, mWindowPosX, mWindowPosY);
+            break;
     }
 }
 
