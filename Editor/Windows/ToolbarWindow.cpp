@@ -68,6 +68,15 @@ void ToolbarWindow::PlayScene() {
     if (!MonoScriptStorage::Get()->IsScriptingReady())
         return;
 
+    if (MonoScriptStorage::Get()->HasCompilationErrors()) {
+        Mpi::MessageDialogDesc desc;
+        desc.dialogTitle = "Error starting scene!";
+        desc.dialogMessage = "Script compilation error!\nFix errors in order to start scene.";
+        desc.dialogType = Mpi::MESSAGE_DIALOG_TYPE_ERROR;
+        Mpi::Dialog::MessageDialog(desc);
+        return;
+    }
+
     EditorLayer::Get()->SetEditorCameraMode(EDITOR_CAMERA_MODE_GAME_CAMERA);
 
     try {

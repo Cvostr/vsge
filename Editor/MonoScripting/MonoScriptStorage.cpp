@@ -69,6 +69,10 @@ void MonoScriptStorage::SetScriptingReady() {
 	_is_scripting_ready = true;
 }
 
+bool MonoScriptStorage::HasCompilationErrors() {
+	return _compiler->IsCompilationError();
+}
+
 MonoScript* MonoScriptStorage::GetScriptWithFilePath(const std::string& file_path) {
 	std::string _file_path = Mpi::File(file_path).getPath();
 	for (auto& script : _scripts) {

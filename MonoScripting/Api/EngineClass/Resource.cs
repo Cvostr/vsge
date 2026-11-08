@@ -3,26 +3,26 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 public enum ResourceState {
-	RESOURCE_STATE_UNLOADED = 0,
-	RESOURCE_STATE_QUEUED,
-	RESOURCE_STATE_LOADING,
-	RESOURCE_STATE_LOADED,
-	RESOURCE_STATE_READY,
-	RESOURCE_STATE_LOADING_FAILED
+	Unloaded = 0,
+	Queued,
+	Loading,
+	Loaded,
+	Ready,
+	LoadingFailed
 };
 
 
 public enum ResourceType {
-	RESOURCE_TYPE_NONE = 0,
-	RESOURCE_TYPE_TEXTURE,
-	RESOURCE_TYPE_MESHGROUP,
-	RESOURCE_TYPE_MESH,
-	RESOURCE_TYPE_AUDIOCLIP,
-	RESOURCE_TYPE_ANIMATION,
-	RESOURCE_TYPE_MATERIAL,
-	RESOURCE_TYPE_SCRIPT,
-	RESOURCE_TYPE_SCENE,
-	RESOURCE_TYPE_PREFAB
+	None = 0,
+	Texture,
+	MeshGroup,
+	Mesh,
+	AudioClip,
+	Animation,
+	Material,
+	Script,
+	Scene,
+	Prefab
 };
 
 public class Resource : InternalObject {

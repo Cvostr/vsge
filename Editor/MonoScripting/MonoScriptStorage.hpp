@@ -50,6 +50,7 @@ namespace VSGEditor {
 		void Compile();
 		void CompileAndWait();
 		bool IsScriptingReady();
+		bool HasCompilationErrors();
 		void SetScriptingReady();
 	};
 }

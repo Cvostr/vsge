@@ -2,11 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-enum UiRenderTaskType {
-	UI_RENDER_TASK_TYPE_SPRITE,
-	UI_RENDER_TASK_TYPE_TEXT
-}
-
 public class UiRenderList{
 
     public static void DrawSprite(Rect bounds, float rotation, Resource sprite, Vec2 uv_min, Vec2 uv_max){

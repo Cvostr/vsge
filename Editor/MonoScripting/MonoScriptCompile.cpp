@@ -85,7 +85,8 @@ void MonoScriptCompiler::THRFunc() {
             while (_output.find_first_of('\n') != std::string::npos) {
                 uint32 pos = (uint32)_output.find_first_of('\n');
                 std::string message = _output.substr(0, pos);
-                if (message.find("error"))
+                // if message contains 'error' - thats an error of compilation
+                if (message.find("error") != std::string::npos)
                     _compilation_error = true;
                 _output = _output.substr((uint64)pos + 1);
                 Logger::Log(LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) << message << "\n";
