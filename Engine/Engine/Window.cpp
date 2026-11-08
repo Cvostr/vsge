@@ -34,9 +34,22 @@ void VSGE::Window::SetWindowTitle(BaseString title) {
 		SDL_SetWindowTitle(mWindow, title);
 }
 
-void VSGE::Window::SetWindowMode(uint32 mode) {
-	if (mWindow)
-		SDL_SetWindowFullscreen(this->mWindow, mode);
+void VSGE::Window::SetWindowMode(WindowMode mode) {
+	if (mWindow == nullptr)
+        return;
+
+    switch (mode) {
+        case WindowMode::Windowed:
+            SDL_SetWindowFullscreen(mWindow, SDL_FALSE);
+            SDL_SetWindowBordered(mWindow, SDL_TRUE);
+            // Restore saved size
+            SDL_SetWindowSize(this->mWindow, mWindowWidth, mWindowHeight);
+            break;
+        case WindowMode::Fullscreen:
+            SDL_SetWindowFullscreen(mWindow, SDL_TRUE);
+            SDL_SetWindowBordered(mWindow, SDL_TRUE);
+            break;
+    }
 }
 
 void VSGE::Window::SetCursorMode(CursorMode mode) {

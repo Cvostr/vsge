@@ -147,6 +147,7 @@ set(SRC_FILES
 				MonoScripting/MonoMethodDesc.cpp
 				MonoScripting/Api/ApiLogger.cpp
 				MonoScripting/Api/ApiApplication.cpp
+				MonoScripting/Api/ApiScreen.cpp
 				MonoScripting/Api/ApiMaterial.cpp
 				MonoScripting/Api/ApiEntity.cpp
 				MonoScripting/Api/ApiScene.cpp

@@ -1,13 +1,15 @@
 using System;
 using System.Runtime.CompilerServices;
 
-public enum FullscreenMode{
-    MODE_WINDOWED,
-    MODE_FULLSCREEN,
-    MODE_FULLSCREEN_DESKTOP
+public enum FullscreenMode
+{
+    Windowed = 0,
+    Fullscreen = 1,
+    Borderless = 2
 }
 
-public class Screen {
+public class Screen 
+{
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern void SetResolution(int width, int height);
 

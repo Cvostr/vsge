@@ -11,6 +11,12 @@ namespace VSGE {
 		Confined = 2    // for RTS games
 	};
 
+	enum class WindowMode {
+		Windowed = 0,
+		Fullscreen = 1,
+		Borderless = 2
+	};
+
 	class Window {
 	private:
 		static Window* _this;
@@ -75,7 +81,7 @@ namespace VSGE {
 		/// Fullscreen, borderless, common
 		/// </summary>
 		/// <param name="mode">new mode of window</param>
-		void SetWindowMode(uint32 mode);
+		void SetWindowMode(WindowMode mode);
 		/// <summary>
 		/// Change cursor movement behavior
 		/// </summary>

@@ -3,6 +3,7 @@
 namespace VSGE {
 	void BindLoggerApi();
 	void BindApplicationApi();
+	void BindScreenApi();
 	void BindEntityApi();
 	void BindSceneApi();
 	void BindScenesApi();

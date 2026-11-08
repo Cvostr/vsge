@@ -1,7 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 
-class Application{
+public class Application
+{
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern void Quit();
 
