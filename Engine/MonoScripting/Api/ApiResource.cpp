@@ -18,18 +18,20 @@ static ResourceType GetType(void* ptr) {
 	return ((Resource*)ptr)->GetResourceType();
 }
 
-static Resource* GetPtrByName(MonoString* name) 
+static Resource* GetResourcePtrByName(MonoString* name, ResourceType type)
 {
 	char* pName = mono_string_to_utf8(name);
 	std::string sName = std::string(pName);
 	mono_free(pName);
 
-	return ResourceCache::Get()->GetResource(sName);
+	return ResourceCache::Get()->GetResource(sName, type);
 }
 
 void VSGE::BindResourcesApi() {
 	MonoScriptingLayer::AddInternalCall("Resource::i_GetName(ulong)", GetName);
 	MonoScriptingLayer::AddInternalCall("Resource::i_GetState(ulong)", GetState);
 	MonoScriptingLayer::AddInternalCall("Resource::i_GetResourceType(ulong)", GetType);
-	MonoScriptingLayer::AddInternalCall("Resource::i_GetPointerByName(string)", GetPtrByName);
+	
+	// Resources
+	MonoScriptingLayer::AddInternalCall("Resources::i_GetResource(string,ResourceType)", GetResourcePtrByName);
 }

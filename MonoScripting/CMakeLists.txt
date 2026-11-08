@@ -19,6 +19,7 @@ set(API_SRC_FILES
     Api/Screen.cs
     Api/Cursor.cs
     Api/Scenes.cs
+    Api/Resources.cs
     Api/EngineClass/Entity.cs
     Api/EngineClass/Scene.cs
     Api/EngineClass/Resource.cs

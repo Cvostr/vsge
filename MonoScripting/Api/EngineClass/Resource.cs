@@ -31,24 +31,20 @@ public class Resource : InternalObject {
     {
     }
 
-    public Resource(string name){
-        handle = i_GetPointerByName(name);
-    }
-
-    public ResourceState GetState(){
+    public ResourceState GetState()
+    {
         return i_GetState(handle);
     }
 
-    public ResourceType GetResourceType(){
+    public ResourceType GetResourceType()
+    {
         return i_GetType(handle);
     }
 
-    public string GetName(){
+    public string GetName()
+    {
         return i_GetName(handle);
     }
-
-    [MethodImpl(MethodImplOptions.InternalCall)]
-    private static extern ulong i_GetPointerByName(string name);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern string i_GetName(ulong handle);

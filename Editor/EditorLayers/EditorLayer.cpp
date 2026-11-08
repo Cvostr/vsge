@@ -436,6 +436,7 @@ void EditorLayer::OnKeyDown(const VSGE::EventKeyButtonDown& kbd) {
 			_pickedEntity->Destroy();
 			imgui->GetWindow<InspectorWindow>()->SetShowingEntity(nullptr);
 			SetPickedEntity(nullptr);
+			_terrain_editor->SetTerrain(nullptr);
 		}
 		break;
 	
