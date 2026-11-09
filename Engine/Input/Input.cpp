@@ -26,6 +26,9 @@ const Vec2i& Input::GetMouseCursorPos() {
 const Vec2i& Input::GetMouseCursorDelta() {
 	return _mouse_cursor_state.cursor_delta;
 }
+const Vec2& Input::GetMouseScroll() {
+	return _mouse_scroll_state;
+}
 bool Input::IsMouseButtonPressed(MouseButton button) {
 	switch (button) {
 	case MOUSE_BUTTON_LEFT:
@@ -125,6 +128,10 @@ void Input::UnsetMouseBtnHold(MouseButton btn) {
 		break;
 	}
 }
+void Input::AppendMouseScroll(float x, float y) {
+	_mouse_scroll_state.x += x;
+	_mouse_scroll_state.y += y;
+}
 
 void Input::AddHoldKey(KeyCode key) {
 	if (!IsKeyHold(key) && _hold_key_count < KEY_QUEUE_MAX_SIZE) {
@@ -149,4 +156,9 @@ void Input::RemoveHoldKey(KeyCode key) {
 			break;
 		}
 	}
+}
+
+void Input::ClearMouseScrollState() {
+	_mouse_scroll_state.x = 0;
+	_mouse_scroll_state.y = 0;
 }

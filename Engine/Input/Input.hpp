@@ -39,6 +39,7 @@ namespace VSGE {
 	private:
 		static Input* _this;
 
+		Vec2 _mouse_scroll_state;
 		MouseCursorState _mouse_cursor_state;
 		MouseButtonState _mouse_btn_state;
 
@@ -55,6 +56,7 @@ namespace VSGE {
 
 		const Vec2i& GetMouseCursorPos();
 		const Vec2i& GetMouseCursorDelta();
+		const Vec2& GetMouseScroll();
 		bool IsMouseButtonPressed(MouseButton button);
 		bool IsMouseButtonHold(MouseButton button);
 		bool IsKeyPressed(KeyCode key);
@@ -64,6 +66,7 @@ namespace VSGE {
 		void SetMouseBtnPressed(MouseButton btn);
 		void SetMouseBtnHold(MouseButton btn);
 		void UnsetMouseBtnHold(MouseButton btn);
+		void AppendMouseScroll(float x, float y);
 
 		void AddHoldKey(KeyCode key);
 		void RemoveHoldKey(KeyCode key);
@@ -72,5 +75,6 @@ namespace VSGE {
 		void ClearPressedKeys();
 		void ClearMouseCursorDelta();
 		void UnsetPressedMouseButtons();
+		void ClearMouseScrollState();
 	};
 }

@@ -17,6 +17,7 @@ void InputLayer::OnUpdate() {
 	Input::Get()->ClearMouseCursorDelta();
 	Input::Get()->ClearPressedKeys();
 	Input::Get()->UnsetPressedMouseButtons();
+	Input::Get()->ClearMouseScrollState();
 }
 void InputLayer::OnDetach() {
 
@@ -37,7 +38,10 @@ void InputLayer::OnMouseMotion(const VSGE::EventMouseMotion& motion) {
 		motion.GetMouseRelativeY());
 }
 void InputLayer::OnMouseScroll(const VSGE::EventMouseScrolled& scroll) {
-
+	Input::Get()->AppendMouseScroll(
+		static_cast<float>(scroll.GetOffsetX()),
+		static_cast<float>(scroll.GetOffsetY())
+	);
 }
 void InputLayer::OnMouseButtonDown(const VSGE::EventMouseButtonDown& mbd) {
 	Input::Get()->SetMouseBtnHold(mbd.GetMouseButton());

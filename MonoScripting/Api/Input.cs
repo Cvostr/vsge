@@ -81,17 +81,30 @@ public class Input
         return result;
     }
 
+    public static Vec2 GetMouseScroll()
+	{
+		i_GetMouseScroll(out Vec2 result);
+		return result;
+    }
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern void i_GetMouseCursorPos(out Vec2i res);
+
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern void i_GetMouseCursorDelta(out Vec2i res);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
+    public static extern void i_GetMouseScroll(out Vec2 res);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern bool IsMouseButtonPressed(MouseButton button);
+
     [MethodImpl(MethodImplOptions.InternalCall)]
 	public static extern bool IsMouseButtonHold(MouseButton button);
+
     [MethodImpl(MethodImplOptions.InternalCall)]
 	public static extern bool IsKeyPressed(KeyCode key);
+
     [MethodImpl(MethodImplOptions.InternalCall)]
 	public static extern bool IsKeyHold(KeyCode key);
 }

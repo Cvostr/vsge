@@ -24,10 +24,9 @@ public:
 		if (rayResult.m_collisionObject == m_me)
 			return 1.0;
 
-		return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace
-		);
+		return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
 	}
-protected:
+private:
 	btRigidBody* m_me;
 };
 
@@ -59,7 +58,7 @@ bool CharacterControllerComponent::IsOnGround() {
 	float height = _size.y;
 	btVector3 current_pos = _character->getCenterOfMassPosition();
 	Vec3 pos = Vec3(current_pos.getX(), current_pos.getY(), current_pos.getZ());
-	Vec3 target = pos + Vec3(0.f, (-height) * 1.2f, 0.f);
+	Vec3 target = pos + Vec3(0.f, (-height) * 1.12f, 0.f);
 
 	ClosestNotMe result(_character);
 	GetEntity()->GetScene()->GetPhysicalWorld()->RayTest(pos, target, result);
@@ -69,7 +68,7 @@ bool CharacterControllerComponent::IsOnGround() {
 
 void CharacterControllerComponent::Move(const Vec3& direction) {
 	btVector3 current_vel_l = _character->getLinearVelocity();
-	_character->setLinearVelocity(btVector3(direction.x, current_vel_l.y(), direction.z));
+	_character->setLinearVelocity(btVector3(direction.x, direction.y, direction.z));
 }
 
 btTransform CharacterControllerComponent::GetEntityTransform() {
@@ -125,7 +124,7 @@ void CharacterControllerComponent::AddToWorld()
 
 	// Info
 	btRigidBody::btRigidBodyConstructionInfo constructionInfo(mass, _motionState, _character_collision, localInertia);
-	//constructionInfo.m_friction = _friction;
+	constructionInfo.m_friction = 0;
 	//constructionInfo.m_rollingFriction = _rolling_friction;
 	//constructionInfo.m_restitution = _restitution;
 
@@ -133,6 +132,9 @@ void CharacterControllerComponent::AddToWorld()
 	_character = new btRigidBody(constructionInfo);
 	_character->setUserPointer(_entity);
 	_character->setGravity(gravity);
+	// Block rotation over X and Z for non-kinematic mode
+	if (!isKinematic)
+		_character->setAngularFactor(btVector3(0, 1, 0));
 
 	int collisionFlags = _character->getCollisionFlags();
 	if (isKinematic)
