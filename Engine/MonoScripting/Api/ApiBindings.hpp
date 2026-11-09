@@ -8,6 +8,7 @@ namespace VSGE {
 	void BindSceneApi();
 	void BindScenesApi();
 	void BindResourcesApi();
+	void BindTimeApi();
 	void BindInputApi();
 	void BindEntityComponentsApi();
 	void BindUiRenderList();

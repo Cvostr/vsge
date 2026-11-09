@@ -151,6 +151,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiMaterial.cpp
 				MonoScripting/Api/ApiEntity.cpp
 				MonoScripting/Api/ApiScene.cpp
+				MonoScripting/Api/ApiTime.cpp
 				MonoScripting/Api/ApiScenes.cpp
 				MonoScripting/Api/ApiResource.cpp
 				MonoScripting/Api/ApiInput.cpp

@@ -14,6 +14,7 @@ set(API_SRC_FILES
     Api/InternalObject.cs
     Api/EntityScript.cs
     Api/Input.cs
+    Api/Time.cs
     Api/Logger.cs
     Api/Application.cs
     Api/Screen.cs

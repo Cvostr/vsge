@@ -10,6 +10,7 @@
 #include "EntityComponents/ColliderComponent.hpp"
 #include "EntityComponents/LightProbeComponent.hpp"
 #include "EntityComponents/TerrainComponent.hpp"
+#include "EntityComponents/CharacterControllerComponent.hpp"
 
 using namespace VSGE;
 
@@ -71,6 +72,9 @@ IEntityComponent* VSGE::CreateEntityComponent(EntityComponentType type) {
 			break;
 		case ENTITY_COMPONENT_CAMERA:
 			component = new Camera;
+			break;
+		case ENTITY_COMPONENT_CHARACTER_CONTROLLER:
+			component = new CharacterControllerComponent;
 			break;
 		case ENTITY_COMPONENT_ENV_PROBE:
 			component = new LightProbeComponent;
