@@ -5,6 +5,7 @@
 #include <Math/Vec2.hpp>
 #include <bullet/BulletDynamics/Dynamics/btRigidBody.h>
 #include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <bullet/LinearMath/btDefaultMotionState.h>
 
 namespace VSGE {
 
@@ -12,6 +13,8 @@ namespace VSGE {
 	private:
 		btCollisionShape* _character_collision;
 		btRigidBody* _character;
+		btDefaultMotionState* _motionState;
+
 		Vec2 _size;
 		Vec3 _center;
 		bool _is_on_ground;
@@ -28,7 +31,7 @@ namespace VSGE {
 
 		bool IsOnGround();
 
-		void Move(const Vec2& direction);
+		void Move(const Vec3& direction);
 
 		void OnUpdate();
 		void OnDestroy();

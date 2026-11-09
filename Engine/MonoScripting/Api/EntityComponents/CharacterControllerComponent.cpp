@@ -8,11 +8,11 @@ bool IsOnGround(CharacterControllerComponent* ptr) {
 	return ptr->IsOnGround();
 }
 
-void Move(CharacterControllerComponent* ptr, Vec2 direction) {
+void Move(CharacterControllerComponent* ptr, Vec3 direction) {
 	ptr->Move(direction);
 }
 
 void VSGE::BindCharacterController() {
 	MonoScriptingLayer::AddInternalCall("CharacterControllerComponent::i_IsOnGround(ulong)", IsOnGround);
-	MonoScriptingLayer::AddInternalCall("CharacterControllerComponent::i_Move(ulong,Vec2)", Move);
+	MonoScriptingLayer::AddInternalCall("CharacterControllerComponent::i_Move(ulong,Vec3)", Move);
 }

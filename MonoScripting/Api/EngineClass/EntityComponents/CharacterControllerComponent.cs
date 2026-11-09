@@ -11,19 +11,23 @@ public class CharacterControllerComponent : IEntityComponent {
     {
     }
 
-    public bool IsOnGround(){
+    public bool IsOnGround()
+    {
         return i_IsOnGround(handle);
     }
 
-    public void Move(Vec2 direction){
+    public void Move(Vec3 direction)
+    {
         i_Move(handle, direction);
     }
     
-    public Vec3 GetCenter(){
+    public Vec3 GetCenter()
+    {
         return i_GetCenter(handle);
     }
 
-    public Vec2 GetSize(){
+    public Vec2 GetSize()
+    {
         return i_GetSize(handle);
     }
 
@@ -31,7 +35,7 @@ public class CharacterControllerComponent : IEntityComponent {
     private static extern bool i_IsOnGround(ulong handle);
    
     [MethodImpl(MethodImplOptions.InternalCall)]
-    private static extern void i_Move(ulong handle, Vec2 dir);
+    private static extern void i_Move(ulong handle, Vec3 dir);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern Vec3 i_GetCenter(ulong handle);
