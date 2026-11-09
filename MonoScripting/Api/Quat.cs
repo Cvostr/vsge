@@ -15,9 +15,23 @@ public struct Quat
     public float z;
     public float w;
 
-    public Quat Inverse()
+    public Quat Conjugate()
     {
         return new Quat(-x, -y, -z, w);
+    }
+
+    public Quat Inverse()
+    {
+        float length2 = (x * x) + (y * y) + (z * z) + (w * w);
+
+        // Division by 0 protection
+        if (length2 <= 0.000001f)
+        {
+            return new Quat(0.0f, 0.0f, 0.0f, 1.0f);
+        }
+
+        float invLength2 = 1.0f / length2;
+        return new Quat(-x * invLength2, -y * invLength2, -z * invLength2, w * invLength2);
     }
 
     public float Length()
