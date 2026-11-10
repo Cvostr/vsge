@@ -7,3 +7,4 @@
 *.map
 *.bundle
 /MonoScripting/api.dll
+/vendor/headers/bullet/**/*.cpp
