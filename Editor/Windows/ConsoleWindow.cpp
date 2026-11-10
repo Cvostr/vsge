@@ -62,16 +62,20 @@ std::vector<VSGE::MessageEvent>* ConsoleWindow::GetVectorByType(VSGE::LogType ty
 		return &_warnMessages;
 	case VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR:
 		return &_scriptErrors;
+	default:
+		return nullptr;
 	}
 }
 
 void ConsoleWindow::AddMessage(VSGE::MessageEvent* msg_event) 
 {
 	auto vec = GetVectorByType(msg_event->GetMsgType());
-	vec->push_back(*msg_event);
+	if (vec != nullptr)
+		vec->push_back(*msg_event);
 }
 
 void ConsoleWindow::ClearMessages(VSGE::LogType type) {
 	auto vec = GetVectorByType(type);
-	vec->clear();
+	if (vec != nullptr)
+		vec->clear();
 }

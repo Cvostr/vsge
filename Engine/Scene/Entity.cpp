@@ -183,16 +183,25 @@ const std::string& Entity::GetName() const {
 }
 
 void Entity::Destroy() {
-	//Remove child from entity's parent
+	// Remove child from entity's parent
 	if (_parent) {
 		_parent->RemoveChild(this);
 	}
-	//Call Destroy() on each child
+	// Call Destroy() on each child
 	while (GetChildrenCount() > 0) {
 		_children[0]->Destroy();
 	}
-	//Destroy all entity components
+	// Destroy all entity components
 	RemoveAllComponents();
+
+	// Destroy all scripts
+	while (GetScriptsCount() > 0)
+	{
+		auto script = _scripts[0];
+		auto& it = std::remove(_scripts.begin(), _scripts.end(), script);
+		_scripts.pop_back();
+		SAFE_RELEASE(script)
+	}
 
 	delete this;
 }

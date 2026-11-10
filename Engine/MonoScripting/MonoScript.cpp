@@ -10,7 +10,8 @@ MonoScriptInstance::MonoScriptInstance() :
     _mono_class_desc(nullptr),
     _mono_class_instance(nullptr),
     _update_method(nullptr),
-    _trigger_stay_method(nullptr)
+    _trigger_stay_method(nullptr),
+    _gchandle(0)
 {
 
 }
@@ -56,6 +57,10 @@ bool MonoScriptInstance::CreateClassByName(const std::string& class_name)
     _update_method = GetMethod("OnUpdate()");
     // this method can be called frequently
     _trigger_stay_method = GetMethod("OnTriggerStay(ulong)");
+
+    // Pin this object to forbid GC
+    // Overwise, after GC, _mono_class_instance will point to invalid memory
+    _gchandle = mono_gchandle_new(_mono_class_instance, 1);
 
     return true;
 }
@@ -123,10 +128,17 @@ void MonoScriptInstance::CallOnTriggerExit(void* entity) {
 }
 
 void MonoScriptInstance::Release() {
-    if (_mono_class_instance) {
+
+    // Releasing GC handle
+    // Object will be destroyed automatically
+    if (_gchandle != 0) {
+        mono_gchandle_free(_gchandle);
+    }
+
+    /*if (_mono_class_instance) {
         mono_free(_mono_class_instance);
         _mono_class_instance = nullptr;
-    }
+    }*/
 }
 
 const std::string& MonoScriptInstance::GetClassName() {

@@ -21,6 +21,8 @@ namespace VSGE {
 		MonoMethod* _update_method;
 		MonoMethod* _trigger_stay_method;
 
+		uint32_t _gchandle;
+
 		MonoMethodDesc* GetMethodDesc(const std::string& method);
 		MonoMethod* GetMethod(const std::string& method);
 		MonoObject* CallMethod(MonoMethod* method_desc, void** params);
