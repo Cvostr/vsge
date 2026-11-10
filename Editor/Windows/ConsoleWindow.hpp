@@ -6,12 +6,14 @@
 namespace VSGEditor {
 	class ConsoleWindow : public EditorWindow {
 	private:
-		std::vector<VSGE::MessageEvent*> _infoMessages;
-		std::vector<VSGE::MessageEvent*> _warnMessages;
-		std::vector<VSGE::MessageEvent*> _errorMessages;
-		std::vector<VSGE::MessageEvent*> _scriptErrors;
+		std::vector<VSGE::MessageEvent> _infoMessages;
+		std::vector<VSGE::MessageEvent> _warnMessages;
+		std::vector<VSGE::MessageEvent> _errorMessages;
+		std::vector<VSGE::MessageEvent> _scriptErrors;
 
 		VSGE::LogType _type;
+
+		std::vector<VSGE::MessageEvent>* GetVectorByType(VSGE::LogType type);
 	public:
 
 		ConsoleWindow();

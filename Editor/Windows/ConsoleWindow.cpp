@@ -12,16 +12,7 @@ ConsoleWindow::ConsoleWindow() {
 void ConsoleWindow::OnDrawWindow() {
 	if (Draw("Console")) {
 
-		std::vector<VSGE::MessageEvent*>* msg_array = &_infoMessages;
-		if (_type == VSGE::LogType::LOG_TYPE_ERROR) {
-			msg_array = &_errorMessages;
-		}
-		if (_type == VSGE::LogType::LOG_TYPE_WARN) {
-			msg_array = &_warnMessages;
-		}
-		if (_type == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
-			msg_array = &_scriptErrors;
-		}
+		std::vector<VSGE::MessageEvent>* msg_array = GetVectorByType(_type);
 
 		if (ImGui::Button("Clear")) {
 			ClearMessages(_type);
@@ -43,11 +34,11 @@ void ConsoleWindow::OnDrawWindow() {
 			_type = VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR;
 		}
 		
-		for (auto msg : *msg_array) {
+		for (auto& msg : *msg_array) {
 			ImGui::Separator();
-			time_t time = msg->GetTime();
+			time_t time = msg.GetTime();
 			char* tm = std::ctime(&time);
-			ImGui::Text("%s %s", tm, msg->GetContent().c_str());
+			ImGui::Text("%s %s", tm, msg.GetContent().c_str());
 		}
 
 		// Auto scroll to down
@@ -59,36 +50,28 @@ void ConsoleWindow::OnDrawWindow() {
 	}
 }
 
-
-void ConsoleWindow::AddMessage(VSGE::MessageEvent* msg_event) 
+std::vector<VSGE::MessageEvent>* ConsoleWindow::GetVectorByType(VSGE::LogType type)
 {
-	switch (msg_event->GetMsgType()) 
+	switch (type)
 	{
-		case VSGE::LogType::LOG_TYPE_INFO:
-			_infoMessages.push_back(msg_event);
-			break;
-		case VSGE::LogType::LOG_TYPE_ERROR:
-			_errorMessages.push_back(msg_event);
-			break;
-		case VSGE::LogType::LOG_TYPE_WARN:
-			_warnMessages.push_back(msg_event);
-			break;
-		case VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR:
-			_scriptErrors.push_back(msg_event);
-			break;
+	case VSGE::LogType::LOG_TYPE_INFO:
+		return &_infoMessages;
+	case VSGE::LogType::LOG_TYPE_ERROR:
+		return &_errorMessages;
+	case VSGE::LogType::LOG_TYPE_WARN:
+		return &_warnMessages;
+	case VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR:
+		return &_scriptErrors;
 	}
 }
 
+void ConsoleWindow::AddMessage(VSGE::MessageEvent* msg_event) 
+{
+	auto vec = GetVectorByType(msg_event->GetMsgType());
+	vec->push_back(*msg_event);
+}
+
 void ConsoleWindow::ClearMessages(VSGE::LogType type) {
-	std::vector<VSGE::MessageEvent*>* msg_array = &_infoMessages;
-	if (_type == VSGE::LogType::LOG_TYPE_ERROR) {
-		msg_array = &_errorMessages;
-	}
-	if (_type == VSGE::LogType::LOG_TYPE_WARN) {
-		msg_array = &_warnMessages;
-	}
-	if (_type == VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR) {
-		msg_array = &_scriptErrors;
-	}
-	msg_array->clear();
+	auto vec = GetVectorByType(type);
+	vec->clear();
 }

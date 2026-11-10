@@ -16,7 +16,6 @@ using namespace std;
 #define ERROR_PREFIX string("{ERROR} ")
 #define DEBUG_PREFIX string("{DEBUG} ")
 
-OpLogger Logger::mOpLogger = OpLogger();
 
 void SetConsoleColor(int color) {
 #ifdef _WIN32
@@ -54,29 +53,37 @@ void Logger::Log(const std::string& msg, LogType type)
 	PrintText(msg + "\n");
 }
 
-OpLogger& Logger::Log(LogType type) 
+OpLogger Logger::Log(LogType type) 
 {
 	time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	MessageEvent* _event = new MessageEvent(type, now);
-
-	mOpLogger.SetEvent(_event);
-	Application::Get()->OnEvent(*_event);
+	
+	OpLogger mOpLogger;
+	mOpLogger.NewEvent(type, now);
 
 	PrintPrefix(type);
 
 	return mOpLogger;
 }
 
-OpLogger& Logger::GetOpLogger() {
-	return mOpLogger;
-}
-
 OpLogger::OpLogger() {
-	_lastEvent = nullptr;
 	_print_to_stdout = true;
 }
-void OpLogger::SetEvent(MessageEvent* _event) {
-	_lastEvent = _event;
+
+OpLogger::~OpLogger() {
+	if (!_pendingContent.empty())
+		SendEvent();
+}
+
+void OpLogger::SendEvent() {
+	MessageEvent _event(_pendingType, _pendingTime, _pendingContent);
+	Application::Get()->OnEvent(std::move(_event));
+	_pendingContent.clear();
+}
+
+void OpLogger::NewEvent(LogType pendingType, time_t pendingTime) {
+	this->_pendingType = pendingType;
+	this->_pendingTime = pendingTime;
+	this->_pendingContent.clear();
 }
 void OpLogger::SetPrintToStdout(bool print) {
 	_print_to_stdout = print;
@@ -84,36 +91,36 @@ void OpLogger::SetPrintToStdout(bool print) {
 OpLogger& OpLogger::operator<<(int var) {
 	if(_print_to_stdout)
 		printf("%i", var);
-	_lastEvent->GetContent() += std::to_string(var);
+	_pendingContent += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(char var) {
 	if (_print_to_stdout)
 		printf("%c", var);
-	_lastEvent->GetContent() += std::to_string(var);
+	_pendingContent += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(unsigned int var) {
 	if (_print_to_stdout)
 		printf("%u", var);
-	_lastEvent->GetContent() += std::to_string(var);
+	_pendingContent += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(float var) {
 	if (_print_to_stdout)
 		printf("%f", var);
-	_lastEvent->GetContent() += std::to_string(var);
+	_pendingContent += std::to_string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(const char* var) {
 	if (_print_to_stdout)
 		printf("%s", var);
-	_lastEvent->GetContent() += std::string(var);
+	_pendingContent += std::string(var);
 	return *this;
 }
 OpLogger& OpLogger::operator<<(std::string var) {
 	if (_print_to_stdout)
 		printf("%s", var.c_str());
-	_lastEvent->GetContent() += var;
+	_pendingContent += var;
 	return *this;
 }

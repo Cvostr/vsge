@@ -15,6 +15,7 @@ set(SRC_FILES
 				Core/ByteSolver.cpp
 				Core/FileLoader.cpp
 				Core/Logger.cpp
+				Core/MessageEvent.cpp
 				Core/Time.cpp
 				Core/Threading/Thread.cpp
 				Core/Threading/AsyncWorker.cpp

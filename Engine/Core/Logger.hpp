@@ -27,41 +27,39 @@ namespace VSGE {
 
 		EVENT_CLASS_TYPE(EventType::EventMessage)
 
-		MessageEvent(LogType type, time_t time) :
-			_type(type),
-			_msg_time(time)
-		{}
+		MessageEvent(LogType type, time_t time);
+		MessageEvent(LogType type, time_t time, const std::string& msg);
 
-		LogType GetMsgType() {
-			return _type;
-		}
-		std::string& GetContent() {
-			return _content;
-		}
-		time_t GetTime() {
-			return _msg_time;
-		}
+		MessageEvent(const MessageEvent& other);
+		MessageEvent(MessageEvent&& other) noexcept;
+
+		LogType GetMsgType();
+		const std::string& GetContent() const;
+		time_t GetTime() const;
 	};
 
 	class Logger {
 	private:
-		static OpLogger mOpLogger;
-
 		static void PrintPrefix(LogType type);
 	public:
 		static void Log(const std::string& msg, LogType type = LogType::LOG_TYPE_INFO);
-		static OpLogger& Log(LogType type = LogType::LOG_TYPE_INFO);
-		static OpLogger& GetOpLogger();
+		static OpLogger Log(LogType type = LogType::LOG_TYPE_INFO);
 	};
 
 	class OpLogger {
 	private:
 		bool _print_to_stdout;
-		MessageEvent* _lastEvent;
+
+		LogType _pendingType;
+		time_t _pendingTime;
+		std::string _pendingContent;
+
+		void SendEvent();
 	public:
 		OpLogger();
+		~OpLogger();
 
-		void SetEvent(MessageEvent* _event);
+		void NewEvent(LogType pendingType, time_t pendingTime);
 		void SetPrintToStdout(bool print);
 
 		OpLogger& operator<<(int var);
