@@ -88,13 +88,13 @@ public class Input
     }
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern void i_GetMouseCursorPos(out Vec2i res);
+    private static extern void i_GetMouseCursorPos(out Vec2i res);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern void i_GetMouseCursorDelta(out Vec2i res);
+    private static extern void i_GetMouseCursorDelta(out Vec2i res);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern void i_GetMouseScroll(out Vec2 res);
+    private static extern void i_GetMouseScroll(out Vec2 res);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     public static extern bool IsMouseButtonPressed(MouseButton button);

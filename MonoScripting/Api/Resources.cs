@@ -21,5 +21,5 @@ public class Resources
     }
 
     [MethodImpl(MethodImplOptions.InternalCall)]
-    public static extern ulong i_GetResource(string name, ResourceType type);
+    private static extern ulong i_GetResource(string name, ResourceType type);
 }

@@ -50,6 +50,11 @@ void ConsoleWindow::OnDrawWindow() {
 			ImGui::Text("%s %s", tm, msg->GetContent().c_str());
 		}
 
+		// Auto scroll to down
+		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+			ImGui::SetScrollHereY(1.0f);
+		}
+
 		ImGui::End();
 	}
 }
