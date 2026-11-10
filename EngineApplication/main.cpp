@@ -64,6 +64,9 @@ Application* VSGEMain(int argc, char* argv[]) {
 
 	GlyphManager* glyph_manager = new GlyphManager;
 	glyph_manager->AddFontContainer("c:\\Windows\\Fonts\\Arial.ttf", "arial");
+#ifdef __linux__
+	glyph_manager->AddFontContainer("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", "arial");
+#endif
 
 	app->AddLayer(new MainLayer);
 	if(!descr.headless)
