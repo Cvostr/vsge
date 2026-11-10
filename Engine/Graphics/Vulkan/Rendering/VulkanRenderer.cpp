@@ -349,7 +349,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 	mTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * alignmentFactor * (uint32)_entitiesToRender.size(), transforms);
 	delete[] transforms;
 
-	mAnimationTransformsShaderBuffer->WriteData(0, mAnimationTransformsShaderBuffer->GetSize(), anim);
+	mAnimationTransformsShaderBuffer->WriteData(0, sizeof(Mat4) * _writtenBones, anim);
 	delete[] anim;
 
 	for (size_t e_i = 0; e_i < _entitiesToRender.size(); e_i++) {
