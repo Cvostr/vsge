@@ -195,10 +195,10 @@ void Entity::Destroy() {
 	RemoveAllComponents();
 
 	// Destroy all scripts
-	while (GetScriptsCount() > 0)
+	while (_scripts.size() > 0)
 	{
 		auto script = _scripts[0];
-		auto& it = std::remove(_scripts.begin(), _scripts.end(), script);
+		auto it = std::remove(_scripts.begin(), _scripts.end(), script);
 		_scripts.pop_back();
 		SAFE_RELEASE(script)
 	}
