@@ -114,8 +114,18 @@ Entity* PhysicsWorld::RayTestFirstEntity(const Vec3& position, const Vec3& direc
         return nullptr;
 }
 
-void PhysicsWorld::RayTest(const Vec3& position, const Vec3& direction, btCollisionWorld::RayResultCallback& callback) {
+void PhysicsWorld::RayTest(const Vec3& position, const Vec3& direction, btCollisionWorld::RayResultCallback& callback) 
+{
     btVector3 bvpos = btVector3(position.x, position.y, position.z);
     btVector3 bvdir = btVector3(direction.x, direction.y, direction.z);
     _world->rayTest(bvpos, bvdir, callback);
+}
+
+void PhysicsWorld::ConvexSweepTest(const btConvexShape* shape,
+    const btTransform& from,
+    const btTransform& to,
+    btCollisionWorld::ConvexResultCallback& callback,
+    float allowedCcdPenetration)
+{
+    return _world->convexSweepTest(shape, from, to, callback, allowedCcdPenetration);
 }

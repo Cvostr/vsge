@@ -69,5 +69,10 @@ namespace VSGE {
 
 		void RayTest(const Vec3& position, const Vec3& direction, btCollisionWorld::RayResultCallback& callback);
 
+		void ConvexSweepTest(const btConvexShape *shape,
+			const btTransform& from,
+			const btTransform& to,
+			btCollisionWorld::ConvexResultCallback& callback,
+			float allowedCcdPenetration = 0);
 	};
 }

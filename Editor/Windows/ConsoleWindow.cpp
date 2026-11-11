@@ -34,16 +34,22 @@ void ConsoleWindow::OnDrawWindow() {
 			_type = VSGE::LogType::LOG_TYPE_SCRIPT_COMPILE_ERROR;
 		}
 		
-		for (auto& msg : *msg_array) {
-			ImGui::Separator();
-			time_t time = msg.GetTime();
-			char* tm = std::ctime(&time);
-			ImGui::Text("%s %s", tm, msg.GetContent().c_str());
-		}
+		{
+			// Draw Logs
+			ImGui::BeginChild("LogRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-		// Auto scroll to down
-		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
-			ImGui::SetScrollHereY(1.0f);
+			for (auto& msg : *msg_array) {
+				ImGui::Separator();
+				time_t time = msg.GetTime();
+				char* tm = std::ctime(&time);
+				ImGui::Text("%s %s", tm, msg.GetContent().c_str());
+			}
+
+			// Auto scroll to down
+			if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+				ImGui::SetScrollHereY(1.0f);
+			}
+			ImGui::EndChild();
 		}
 
 		ImGui::End();
