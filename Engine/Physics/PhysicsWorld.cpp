@@ -68,6 +68,12 @@ void PhysicsWorld::AddRigidbody(btRigidBody* rigidbody) {
 
     _world->addRigidBody(rigidbody);
 }
+void PhysicsWorld::AddRigidbody(btRigidBody* rigidbody, int group, int mask) {
+    if (!_world || !rigidbody)
+        return;
+
+    _world->addRigidBody(rigidbody, group, mask);
+}
 void PhysicsWorld::RemoveRigidbody(btRigidBody* rigidbody) {
     if (!_world || !rigidbody)
         return;

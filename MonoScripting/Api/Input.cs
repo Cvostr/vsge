@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 public enum MouseButton {
-	MOUSE_BUTTON_LEFT = 1,
-	MOUSE_BUTTON_MIDDLE,
-	MOUSE_BUTTON_RIGHT
+	Left = 1,
+	Middle,
+	Right
 };
 
 public enum KeyCode {

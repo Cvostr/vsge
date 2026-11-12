@@ -40,6 +40,13 @@ namespace VSGE {
 		/// </summary>
 		void AddRigidbody(btRigidBody* rigidbody);
 		/// <summary>
+		/// add created rigidbody to world with custom flags specified
+		/// </summary>
+		/// <param name="rigidbody"></param>
+		/// <param name="group"></param>
+		/// <param name="mask"></param>
+		void AddRigidbody(btRigidBody* rigidbody, int group, int mask);
+		/// <summary>
 		/// remove rigidbody from world
 		/// </summary>
 		/// <param name="softbody"></param>
