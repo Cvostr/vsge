@@ -26,7 +26,7 @@ public struct Quat
 
         // Division by 0 protection
         if (length2 <= 0.000001f)
-        {
+        {   
             return new Quat(0.0f, 0.0f, 0.0f, 1.0f);
         }
 
@@ -57,6 +57,15 @@ public struct Quat
     public float Dot(Quat q)
     {
         return (x * q.x + y * q.y + z * q.z + w * q.w);
+    }
+
+    public static Vec3 operator *(Quat q, Vec3 v) 
+    { 
+        Vec3 qvec = new Vec3(q.x, q.y, q.z);
+        Vec3 cross1 = qvec.Cross(v);
+        Vec3 cross2 = qvec.Cross(cross1);
+
+        return v + (cross1 * q.w + cross2) * 2.0f;
     }
 
     public static Quat operator *(Quat a, Quat b)

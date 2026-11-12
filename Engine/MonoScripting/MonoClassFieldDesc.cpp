@@ -29,7 +29,7 @@ ValueType VSGE::ConvertStrToType(const std::string& str_type) {
 		return VALUE_TYPE_INT32;
 	else if (str_type == "Boolean")
 		return VALUE_TYPE_BOOL;
-	else if (str_type == "Float")
+	else if (str_type == "Float" || str_type == "Single")
 		return VALUE_TYPE_FLOAT;
 	else if (str_type == "double")
 		return VALUE_TYPE_DOUBLE;

@@ -154,14 +154,16 @@ void EntityScriptComponent::Deserialize(ByteSolver& solver) {
 		std::string field_name = solver.ReadNextString();
 		ValueType type = solver.GetValue<ValueType>();
 		MonoScriptField* field = GetFieldByNameType(field_name, type);
-		if (!field)
-			continue;
+		// We should read field value, even if field in class is absent
 		if (type != VALUE_TYPE_STRING) {
 			MultitypeData data = solver.GetValue<MultitypeData>();
-			field->GetValue().SetData(type, data);
+			if (field)
+				field->GetValue().SetData(type, data);
 		}
 		else {
-			field->GetStringValue() = solver.ReadNextString();
+			std::string strValue = solver.ReadNextString();
+			if (field)
+				field->GetStringValue() = strValue;
 		}
 	}
 }
