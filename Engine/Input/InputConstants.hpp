@@ -34,7 +34,7 @@ enum KeyCode {
 	KEY_CODE_Y = 'y',
 	KEY_CODE_Z = 'z',
 
-	KEY_CODE_F1,
+	KEY_CODE_F1 = 123,
 	KEY_CODE_F2,
 	KEY_CODE_F3,
 	KEY_CODE_F4,
