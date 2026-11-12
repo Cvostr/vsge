@@ -6,6 +6,7 @@
 #include <Graphics/Vulkan/Rendering/VulkanRenderer.hpp>
 #include <Misc/VkMaterialsThumbnails.hpp>
 #include <Misc/VkGizmos.hpp>
+#include <filesystem>
 
 using namespace VSGEditor;
 
@@ -100,12 +101,10 @@ void ImGuiLayer::OnAttach() {
     init_info.ImageCount = vk->GetSwapChain()->GetSwapChainImagesCount();
 
     ImGui_ImplVulkan_Init(&init_info, presenter->GetRenderPass()->GetRenderPass());
-#ifdef _WIN32
-    AddImGuiFont("c:\\Windows\\Fonts\\Arial.ttf");
-#endif
-#ifdef __linux__
-    AddImGuiFont("/usr/share/fonts/truetype/freefont/FreeSans.ttf");
-#endif
+
+    // Setup TrueType fonts for ImGui, OS dependent
+    SetupFonts();
+
     cmdbuf.Begin();
     ImGui_ImplVulkan_CreateFontsTexture(cmdbuf.GetCommandBuffer());
     cmdbuf.End();
@@ -113,6 +112,32 @@ void ImGuiLayer::OnAttach() {
 
     mHoldOnWindow = new HoldOnWindow;
     mHoldOnWindow->Hide();
+}
+
+void ImGuiLayer::SetupFonts() 
+{
+#ifdef _WIN32
+    AddImGuiFont("c:\\Windows\\Fonts\\Arial.ttf");
+#endif
+#ifdef __linux__
+
+    const std::vector<std::string> linuxFontPaths = {
+        "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", 
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",          
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/TTF/DejaVuSans.ttf"
+    };
+  
+    for (const auto& path : linuxFontPaths) {
+        if (std::filesystem::exists(path) && std::filesystem::is_regular_file(path)) {
+            AddImGuiFont(path);
+            return;
+        }
+    }
+
+#endif
 }
 
 void ImGuiLayer::AddImGuiFont(const std::string& path, float size) {

@@ -39,6 +39,7 @@ namespace VSGEditor {
 		VSGE::VulkanCommandPool cmdpool;
 		VSGE::VulkanCommandBuffer cmdbuf;
 
+		void SetupFonts();
 		void AddImGuiFont(const std::string& path, float size = 15.f);
 	public:
 
