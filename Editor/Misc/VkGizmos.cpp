@@ -196,10 +196,9 @@ void VkGizmos::PrepareBuffers()
 
 		if (mesh->GetBones().size() > 0) {
 			Entity* rootNode = entity->GetRootSkinningEntity();
-			Mat4 rootNodeTransform;
 			if (rootNode != nullptr) {
-				// Get root transform
-				rootNodeTransform = rootNode->GetLocalTransform().invert();
+				// Discard entity transform from bone offset matrix
+				Mat4 entityInvTransform = entity->GetWorldTransform().invert();
 				for (uint32 bone_i = 0; bone_i < mesh->GetBones().size(); bone_i++) {
 					// Get next bone
 					const Bone* bone = &mesh->GetBones()[bone_i];
@@ -207,7 +206,7 @@ void VkGizmos::PrepareBuffers()
 					Entity* node = rootNode->GetChildEntityWithLabel(bone->GetName());
 					if (node != nullptr) {
 						// Calculate result matrix
-						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * rootNodeTransform;
+						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * entityInvTransform;
 						// Send skinned matrix to skinning uniform buffer
 						_animations_buffer->WriteData(sizeof(Mat4) * writtenBones, sizeof(Mat4), &matrix);
 						writtenBones++;

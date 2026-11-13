@@ -323,10 +323,9 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 
 		if (mresource->GetMesh()->GetBones().size() > 0) {
 			Entity* rootNode = entity->GetRootSkinningEntity();
-			Mat4 rootNodeTransform;
 			if (rootNode != nullptr) {
-				//Get root transform
-				rootNodeTransform = rootNode->GetLocalTransform().invert();
+				// Discard entity transform from bone offset matrix
+				Mat4 entityInvTransform = entity->GetWorldTransform().invert();
 				for (uint32 bone_i = 0; bone_i < mresource->GetMesh()->GetBones().size(); bone_i++) {
 					//Берем указатель на очередную кость
 					const Bone* bone = &mresource->GetMesh()->GetBones()[bone_i];
@@ -336,7 +335,7 @@ void VulkanRenderer::StoreWorldObjects(Camera* cam)
 					if (node != nullptr) {
 						//Объект найден
 						//Calculate result matrix
-						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * rootNodeTransform;
+						Mat4 matrix = bone->GetOffsetMatrix() * node->GetWorldTransform() * entityInvTransform;
 						//Send skinned matrix to skinning uniform buffer
 						anim[_writtenBones] = matrix;
 						_writtenBones++;
