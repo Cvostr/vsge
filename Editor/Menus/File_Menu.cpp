@@ -10,7 +10,10 @@
 
 #include <Scene/SceneSerialization.hpp>
 #include "../EditorLayers/ImGuiLayer.hpp"
+
 #include <Windows/ProjectBuildingWindow.hpp>
+#include <Windows/InspectorWindow.hpp>
+
 #include <mpi/Desktop/Dialog.hpp>
 #include <mpi/Desktop/Desktop.hpp>
 
@@ -99,7 +102,12 @@ void File_Menu::OnNewScene()
 
 	// Clears current scene save path to prevent saving to old scene path
 	EditorLayer* el = EditorLayer::Get();
+	ImGuiLayer* imgui = ImGuiLayer::Get();
+
 	el->SetOpenedSceneFile("");
+	// Clear entity pick state
+	el->SetPickedEntity(nullptr);
+	imgui->GetWindow<InspectorWindow>()->SetShowingEntity(nullptr);
 
 	// Clear all scene to empty
 	SceneLayer::Get()->GetMainScene()->NewScene();
