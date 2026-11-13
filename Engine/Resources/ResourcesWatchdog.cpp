@@ -44,7 +44,10 @@ void ResourcesWatchdog::THRFunc(){
                 resource->Use();
             }
 
-            if(resource->IsReady() && !resource->IsDefault()){
+            bool allowUnload = (resource->GetFlags() & (RESOURCE_FLAG_DEFAULT | RESOURCE_FLAG_KEEP_LOADED)) == 0;
+
+            if (resource->IsReady() && allowUnload)
+            {
                 uint64 time_delta = TimePerf::Get()->GetCurrentTime() - resource->GetLastUseTime();
                 if(time_delta > _resource_lifetime && (
                     resource->GetResourceType() == RESOURCE_TYPE_MESH
@@ -52,7 +55,8 @@ void ResourcesWatchdog::THRFunc(){
                     || resource->GetResourceType() == RESOURCE_TYPE_AUDIOCLIP
                     || resource->GetResourceType() == RESOURCE_TYPE_ANIMATION
                     || resource->GetResourceType() == RESOURCE_TYPE_MATERIAL
-                    )){
+                    ))
+                {
                     resource->Release();
                 }
             }
