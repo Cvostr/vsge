@@ -5,6 +5,11 @@
 #include <vector>
 #include <mpi/Core/Guid.hpp>
 
+// Internal resource, created inside Engine (Cube, Sphere, Plane, ...)
+#define RESOURCE_FLAG_DEFAULT		(1 << 0)
+// Do not automatically unload a resource that has not been used for a long time
+#define RESOURCE_FLAG_KEEP_LOADED	(1 << 1)
+
 namespace VSGE {
 	
 	class ResourceCache;
@@ -51,6 +56,7 @@ namespace VSGE {
 		uint64 _lastUseTime;
 		std::string m_name;
 		Guid m_id;
+		uint32 _flags;
 
 		byte* _loadedData;
 		DataDescription _description;
@@ -151,6 +157,16 @@ namespace VSGE {
 		/// Release memory, occupied by resource in cpu or gpu
 		/// </summary>
 		void Release();
+		/// <summary>
+		/// Get all flags, which set to this resource
+		/// </summary>
+		/// <returns>flags bitmask</returns>
+		uint32 GetFlags() const;
+		/// <summary>
+		/// Set flags bitmask to this resource
+		/// </summary>
+		/// <param name="flags">flags bitmask</param>
+		void SetFlags(uint32 flags);
 
 		void SetDefault();
 		bool IsDefault() const;

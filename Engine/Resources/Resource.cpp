@@ -13,7 +13,8 @@ Resource::Resource() :
 	m_resourceState(RESOURCE_STATE_UNLOADED),
 	_memoryUse(0),
 	_lastUseTime(0),
-	_loadedData(nullptr)
+	_loadedData(nullptr),
+	_flags(0)
 {
 }
 
@@ -160,9 +161,21 @@ void Resource::Release(){
 
 bool Resource::IsDefault() const 
 {
-	return _description.file_path == DEFAULT_RESOURCE_PATH_STRING;
+	return (_flags & RESOURCE_FLAG_DEFAULT) == RESOURCE_FLAG_DEFAULT;
 }
 
-void Resource::SetDefault() {
+void Resource::SetDefault() 
+{
 	_description.file_path = DEFAULT_RESOURCE_PATH_STRING;
+	_flags |= RESOURCE_FLAG_DEFAULT;
+}
+
+uint32 Resource::GetFlags() const
+{
+	return _flags;
+}
+
+void Resource::SetFlags(uint32 flags)
+{
+	_flags = flags;
 }
