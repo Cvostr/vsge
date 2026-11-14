@@ -92,6 +92,8 @@ void VulkanUiRenderer::Create()
 	ui_blend_desc._blending = true;
 	ui_blend_desc._srcColor = BLEND_FACTOR_SRC_ALPHA;
 	ui_blend_desc._dstColor = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	ui_blend_desc._srcAlpha = BLEND_FACTOR_ONE;
+	ui_blend_desc._dstAlpha = BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 
 	_ui_pipeline = new VulkanPipeline;
 	_ui_pipeline->SetCullMode(CULL_MODE_NONE);
