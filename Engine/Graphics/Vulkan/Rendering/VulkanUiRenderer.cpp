@@ -209,7 +209,7 @@ void VulkanUiRenderer::FillBuffers()
 				CharacterGlyph* glyph = font->GetGlyph(sym);
 
 				Rect bounds = task.bounds;
-				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, -glyph->mGlyphBearing.y) * mult;
+				bounds.Pos += drawn + Vec2(glyph->mGlyphBearing.x, pix_size.y - glyph->mGlyphBearing.y) * mult;
 				bounds.Size = glyph->mGlyphSize * mult;
 				//calculate uvs from size
 				Vec2 uv_start = glyph->mGlyphTextureStart / fontTextureMapSize;
