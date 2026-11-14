@@ -189,6 +189,9 @@ void VulkanUiRenderer::FillBuffers()
 
 			// Get size of string in pixels of original font scale
 			Vec2i pix_size = font->GetSizeOfString((uint32*)task._text.c_str(), task._text.Length());
+			if (pix_size.x <= 0 || pix_size.y <= 0)
+				continue;
+
 			// What scale factor should we add to fit string in bounds
 			Vec2 mult = Vec2(task.bounds.Size.x / pix_size.x, task.bounds.Size.y / pix_size.y);
 			Vec2 drawn = Vec2(0);
