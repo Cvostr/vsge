@@ -1,7 +1,6 @@
 #include "ApiBindings.hpp"
 #include <Engine/Application.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
-#include <Engine/Window.hpp>
 
 using namespace VSGE;
 
@@ -17,15 +16,8 @@ static bool IsServer() {
 	return Application::Get()->GetDescription().server;
 }
 
-// Cursor
-static void SetCursorMode(CursorMode mode) {
-	Application::Get()->GetWindow().SetCursorMode(mode);
-}
-
 void VSGE::BindApplicationApi() {
 	MonoScriptingLayer::AddInternalCall("Application::Quit()", Quit);
 	MonoScriptingLayer::AddInternalCall("Application::IsHeadless()", IsHeadless);
 	MonoScriptingLayer::AddInternalCall("Application::IsServer()", IsServer);
-
-	MonoScriptingLayer::AddInternalCall("Cursor::SetMode(CursorMode)", SetCursorMode);
 }

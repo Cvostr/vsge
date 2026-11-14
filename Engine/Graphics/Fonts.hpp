@@ -10,7 +10,6 @@
 #include <ft2build.h>
 
 #include FT_FREETYPE_H
-#define texSize 2048
 
 namespace VSGE {
 
@@ -78,7 +77,12 @@ namespace VSGE {
         /// <param name="strlen">- length of string</param>
         /// <returns></returns>
         Vec2i GetSizeOfString(uint32* str, uint32 strlen);
-        uint32 GetFontSize() const;
+        /// <summary>
+        /// Get size of square font texture, created from font
+        /// </summary>
+        /// <returns></returns>
         uint32 GetTextureMapSize() const;
+
+        uint32 GetFontSize() const;
     };
 }

@@ -5,6 +5,8 @@
 
 using namespace VSGE;
 
+#define texSize 2048
+
 GlyphFontContainer::GlyphFontContainer(byte* data, uint32 bsize, uint32 size) {
     //Load font by freetype
     FT_New_Memory_Face(GlyphManager::Get()->getFreetypeLibraryInstance(), data, bsize, 0, &_ft_font);

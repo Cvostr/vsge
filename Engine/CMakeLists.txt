@@ -156,6 +156,7 @@ set(SRC_FILES
 				MonoScripting/Api/ApiScenes.cpp
 				MonoScripting/Api/ApiResource.cpp
 				MonoScripting/Api/ApiInput.cpp
+				MonoScripting/Api/ApiCursor.cpp
 				MonoScripting/Api/ApiEntityComponentsApi.cpp
 				MonoScripting/Api/EntityComponents/LightsourceComponent.cpp
 				MonoScripting/Api/EntityComponents/AudioSourceComponent.cpp
