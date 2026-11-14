@@ -5,6 +5,8 @@
 
 using namespace VSGEditor;
 
+#define MAX_MESSAGES 2500
+
 ConsoleWindow::ConsoleWindow() {
 	_type = VSGE::LogType::LOG_TYPE_INFO;
 }
@@ -76,8 +78,16 @@ std::vector<VSGE::MessageEvent>* ConsoleWindow::GetVectorByType(VSGE::LogType ty
 void ConsoleWindow::AddMessage(VSGE::MessageEvent* msg_event) 
 {
 	auto vec = GetVectorByType(msg_event->GetMsgType());
-	if (vec != nullptr)
-		vec->push_back(*msg_event);
+	if (vec != nullptr) 
+	{
+		if (vec->size() < MAX_MESSAGES) {
+			vec->push_back(*msg_event);
+		}
+		else if (vec->size() == MAX_MESSAGES) {
+			VSGE::MessageEvent m(VSGE::LogType::LOG_TYPE_NONE, "Logs limit exceeded");
+			vec->push_back(std::move(m));
+		}
+	}
 }
 
 void ConsoleWindow::ClearMessages(VSGE::LogType type) {

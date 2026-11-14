@@ -29,6 +29,7 @@ namespace VSGE {
 
 		MessageEvent(LogType type, time_t time);
 		MessageEvent(LogType type, time_t time, const std::string& msg);
+		MessageEvent(LogType type, const std::string& msg);
 
 		MessageEvent(const MessageEvent& other);
 		MessageEvent(MessageEvent&& other) noexcept;
