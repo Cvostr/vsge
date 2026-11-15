@@ -1,4 +1,5 @@
 #include "UiLayer.hpp"
+#include <Input/Input.hpp>
 
 #include <Engine/Application.hpp>
 #include <Graphics/Renderer.hpp>
@@ -53,4 +54,11 @@ UiRenderList* UiLayer::GetRenderList() {
 
 View* UiLayer::GetRootView() {
 	return _root;
+}
+
+Vec2 UiLayer::GetMouseCursorPos() 
+{
+	Vec2i ires = Input::Get()->GetMouseCursorPos();
+	// TODO: Add virtual resolution support
+	return Vec2(ires.x, ires.y);
 }

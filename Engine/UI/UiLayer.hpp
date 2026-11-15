@@ -28,5 +28,11 @@ namespace VSGE {
 		void OnDetach();
 
 		View* GetRootView();
+		/// <summary>
+		/// Gets virtual pixel aware cursor position in float values
+		/// This method should be used for UI checks
+		/// </summary>
+		/// <returns></returns>
+		Vec2 GetMouseCursorPos();
 	};
 }
