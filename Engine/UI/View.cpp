@@ -60,11 +60,47 @@ void View::SetVisible(bool visible) {
 bool View::IsVisible() {
 	return _visible;
 }
-const Rect& View::GetBounds() {
-	return _bounds;
+
+void View::SetAnchors(const Vec2& min, const Vec2& max) {
+	anchorMin = min;
+	anchorMax = max;
 }
-void View::SetBounds(const Rect& bounds) {
-	_bounds = bounds;
+void View::SetPivot(const Vec2& pivot) {
+	this->pivot = pivot;
+}
+void View::SetPosition(const Vec2& position) {
+	this->position = position;
+}
+void View::SetSize(const Vec2& size) {
+	this->size = size;
+}
+
+const Rect& View::GetGlobalBounds() {
+	return _global_bounds;
+}
+
+void View::UpdateGlobalRect(const Rect& parent) 
+{
+	Vec2 anchorMinPos = parent.Pos + parent.Size * anchorMin;
+	Vec2 anchorMaxPos = parent.Pos + parent.Size * anchorMax;
+	Vec2 anchorBoxSize = anchorMaxPos - anchorMinPos;
+
+	// Absolute size of element
+	_global_bounds.Size = anchorBoxSize + size;
+
+	// Pivot
+	Vec2 anchorPivotPos = anchorMinPos + anchorBoxSize * pivot;
+	Vec2 widgetPivotPos = anchorPivotPos + position;
+
+	// Pos - Upper Left corner
+	_global_bounds.Pos = widgetPivotPos - _global_bounds.Size * pivot;
+
+	// Update children
+	for (auto child : _children) {
+		if (child->IsVisible()) {
+			child->UpdateGlobalRect(_global_bounds);
+		}
+	}
 }
 
 const float View::GetRotation() {

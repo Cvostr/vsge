@@ -11,6 +11,8 @@ UiLayer::UiLayer() {
 	_this = this;
 
 	_root = new View();
+	_root->SetAnchors(Vec2(0,0), Vec2(1,1));
+
 	_render_list = new UiRenderList;
 }
 UiLayer::~UiLayer() {
@@ -24,7 +26,8 @@ void UiLayer::OnUpdate() {
 	IRenderer* renderer = Application::Get()->GetRenderer();
 	if (renderer) {
 		Vec2i sizes = renderer->GetOutputSizes();
-		_root->SetBounds(Rect(Vec2(0, 0), Vec2(sizes.x, sizes.y)));
+		Rect screenRect(Vec2(0, 0), Vec2(sizes.x, sizes.y));
+		_root->UpdateGlobalRect(screenRect);
 		DrawAll();
 	}
 }
