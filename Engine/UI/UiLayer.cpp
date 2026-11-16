@@ -11,6 +11,9 @@ UiLayer* UiLayer::_this = nullptr;
 UiLayer::UiLayer() {
 	_this = this;
 
+	// Full HD by default
+	_referenceResolution = Vec2i(1920, 1080);
+
 	_root = new View();
 	_root->SetAnchors(Vec2(0,0), Vec2(1,1));
 
@@ -50,6 +53,10 @@ void UiLayer::DrawView(View* view) {
 
 UiRenderList* UiLayer::GetRenderList() {
 	return _render_list;
+}
+
+void UiLayer::SetReferenceResolution(const Vec2i& resolution) {
+	_referenceResolution = resolution;
 }
 
 View* UiLayer::GetRootView() {
