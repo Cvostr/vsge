@@ -1,12 +1,14 @@
 #include "Button.hpp"
 #include "../UiLayer.hpp"
+#include <Input/Input.hpp>
 #include <Resources/ResourceTypes/TextureResource.hpp>
 #include <Graphics/FontManager.hpp>
 
 using namespace VSGE;
 
 Button::Button() :
-	_font_name("arial")
+	_font_name("arial"),
+	_state(ButtonState::NORMAL)
 {
 
 }
@@ -26,21 +28,16 @@ void Button::SetHoveredSprite(const std::string& sprite) {
 	_hovered_reference.SetResource(ResourceCache::Get()->GetResource(sprite));
 }
 
-void Button::SetPressedSprite(const std::string& sprite) {
-	_pressed_reference.SetResource(ResourceCache::Get()->GetResource(sprite));
-}
-
-bool Button::IsHovered() const {
-	return false;
+void Button::SetHoldSprite(const std::string& sprite) {
+	_hold_reference.SetResource(ResourceCache::Get()->GetResource(sprite));
 }
 
 bool Button::IsPressed() const {
-	return false;
+	return _state == ButtonState::HOLD;
 }
 
 void Button::Draw() 
 {
-
 	UpdateState();
 
 	GlyphManager* glyph_manager = GlyphManager::Get();
@@ -52,7 +49,22 @@ void Button::Draw()
 		return;
 	}
 
-	TextureResource* spriteToDraw = _normal_reference.GetResource<TextureResource>();
+	TextureResource* spriteToDraw = nullptr;
+	
+	switch (_state) {
+		case ButtonState::NORMAL:
+			spriteToDraw = _normal_reference.GetResource<TextureResource>();
+			break;
+		case ButtonState::HOVERED:
+			spriteToDraw = _hovered_reference.GetResource<TextureResource>();
+			break;
+		case ButtonState::HOLD:
+			spriteToDraw = _hold_reference.GetResource<TextureResource>();
+			break;
+	}
+
+	if (spriteToDraw == nullptr)
+		return;
 
 	float scaleX = _global_bounds.Size.x / (float)stringPixSize.x;
 	float scaleY = _global_bounds.Size.y / (float)stringPixSize.y;
@@ -83,5 +95,40 @@ void Button::UpdateState()
 		(cursorPos.x >= _global_bounds.Pos.x) && (cursorPos.x <= _global_bounds.Pos.x + _global_bounds.Size.x) &&
 		(cursorPos.y >= _global_bounds.Pos.y) && (cursorPos.y <= _global_bounds.Pos.y + _global_bounds.Size.y);
 
-	
+	bool isMouseHold = Input::Get()->IsMouseButtonHold(MOUSE_BUTTON_LEFT);
+
+	if (isInside) 
+	{
+		// Cursor is inside
+		switch (_state) {
+			case ButtonState::NORMAL:
+				_state = ButtonState::HOVERED;
+				break;
+			case ButtonState::HOVERED:
+				if (isMouseHold)
+					_state = ButtonState::HOLD;
+				break;
+			case ButtonState::HOLD:
+				if (!isMouseHold) {
+					_state = ButtonState::HOVERED;
+					// TODO: call click() listener
+				}
+				break;
+		}
+	}
+	else
+	{
+		// cursor is outside
+		switch (_state) {
+			case ButtonState::HOVERED:
+				_state = ButtonState::NORMAL;
+				break;
+			case ButtonState::HOLD:
+				if (!isMouseHold) {
+					_state = ButtonState::HOVERED;
+					// TODO: call click() listener
+				}
+				break;
+		}
+	}
 }
