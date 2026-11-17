@@ -11,6 +11,7 @@ namespace VSGE {
 		UiRenderList* _render_list;
 
 		Vec2i _referenceResolution;
+		float _resolutionScale;
 
 		void DrawAll();
 		void DrawView(View* view);

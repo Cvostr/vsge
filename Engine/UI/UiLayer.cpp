@@ -13,9 +13,10 @@ UiLayer::UiLayer() {
 
 	// Full HD by default
 	_referenceResolution = Vec2i(1920, 1080);
+	_resolutionScale = 1.f;
 
 	_root = new View();
-	_root->SetAnchors(Vec2(0,0), Vec2(1,1));
+	_root->SetAnchors(Vec2(0, 0), Vec2(1, 1));
 
 	_render_list = new UiRenderList;
 }
@@ -26,15 +27,22 @@ UiLayer::~UiLayer() {
 
 void UiLayer::OnAttach() {
 }
+
 void UiLayer::OnUpdate() {
 	IRenderer* renderer = Application::Get()->GetRenderer();
 	if (renderer) {
+		// Real rendering size
 		Vec2i sizes = renderer->GetOutputSizes();
-		Rect screenRect(Vec2(0, 0), Vec2(sizes.x, sizes.y));
+		// Calculate UI height scale
+		_resolutionScale = static_cast<float>(sizes.y) / _referenceResolution.y;
+		_render_list->SetScale(_resolutionScale);
+
+		Rect screenRect(Vec2(0, 0), Vec2(_referenceResolution.x, _referenceResolution.y));
 		_root->UpdateGlobalRect(screenRect);
 		DrawAll();
 	}
 }
+
 void UiLayer::OnDetach() {
 
 }
@@ -66,6 +74,6 @@ View* UiLayer::GetRootView() {
 Vec2 UiLayer::GetMouseCursorPos() 
 {
 	Vec2i ires = Input::Get()->GetMouseCursorPos();
-	// TODO: Add virtual resolution support
-	return Vec2(ires.x, ires.y);
+	float dScale = 1.f / _resolutionScale;
+	return Vec2(dScale * ires.x, dScale * ires.y);
 }

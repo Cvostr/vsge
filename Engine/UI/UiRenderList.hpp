@@ -31,6 +31,7 @@ namespace VSGE {
 	class UiRenderList {
 	private:
 		std::vector<UiRenderTask> _tasks;
+		float _scale;
 	public:
 		/// <summary>
 		/// Get queued tasks list
@@ -41,6 +42,8 @@ namespace VSGE {
 		/// Clear all pending tasks
 		/// </summary>
 		void ClearTasks();
+
+		void SetScale(float scale);
 
 		void DrawSprite(const Rect& bounds, 
 						float rotation, 
@@ -53,5 +56,7 @@ namespace VSGE {
 			const String& text, 
 			const std::string& fontName, 
 			const Color& text_color);
+
+		UiRenderList();
 	};
 }

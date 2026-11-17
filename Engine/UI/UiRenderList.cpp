@@ -4,11 +4,20 @@
 
 using namespace VSGE;
 
+UiRenderList::UiRenderList() {
+	_scale = 1.f;
+}
+
 std::vector<UiRenderTask>& UiRenderList::GetTasks() {
 	return _tasks;
 }
+
 void UiRenderList::ClearTasks() {
 	_tasks.clear();
+}
+
+void UiRenderList::SetScale(float scale) {
+	_scale = scale;
 }
 
 void UiRenderList::DrawSprite(const Rect& bounds, 
@@ -24,8 +33,14 @@ void UiRenderList::DrawSprite(const Rect& bounds,
 	task._sprite = sprite;
 	task.uv_min = uv_min;
 	task.uv_max = uv_max;
+
+	// Apply a general scale
+	task.bounds.Pos *= _scale;
+	task.bounds.Size *= _scale;
+
 	_tasks.push_back(task);
 }
+
 void UiRenderList::DrawText(const Rect& bounds, float rotation, const String& text, const std::string& fontName, const Color& color) 
 {
 	GlyphManager* glyph_manager = GlyphManager::Get();
@@ -42,5 +57,10 @@ void UiRenderList::DrawText(const Rect& bounds, float rotation, const String& te
 	task._text = text;
 	task.font = font;
 	task._color = color;
+
+	// Apply a general scale
+	task.bounds.Pos *= _scale;
+	task.bounds.Size *= _scale;
+
 	_tasks.push_back(task);
 }
