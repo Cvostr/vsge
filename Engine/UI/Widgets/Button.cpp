@@ -87,6 +87,10 @@ void Button::Draw()
 	UiLayer::Get()->GetRenderList()->DrawText(actualBounds, _rotation, _text, _font_name, Color(1,1,1,1));
 }
 
+void Button::SetOnClick(click_callback callback) {
+	_callback = std::move(callback);
+}
+
 void Button::UpdateState()
 {
 	Vec2 cursorPos = UiLayer::Get()->GetMouseCursorPos();
@@ -111,7 +115,9 @@ void Button::UpdateState()
 			case ButtonState::HOLD:
 				if (!isMouseHold) {
 					_state = ButtonState::HOVERED;
-					// TODO: call click() listener
+					if (_callback) {
+						_callback();
+					}
 				}
 				break;
 		}
@@ -126,7 +132,9 @@ void Button::UpdateState()
 			case ButtonState::HOLD:
 				if (!isMouseHold) {
 					_state = ButtonState::HOVERED;
-					// TODO: call click() listener
+					if (_callback) {
+						_callback();
+					}
 				}
 				break;
 		}

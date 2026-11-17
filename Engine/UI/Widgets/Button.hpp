@@ -3,6 +3,7 @@
 #include "../View.hpp"
 #include <Core/VarTypes/String.hpp>
 #include <Resources/ResourceReference.hpp>
+#include <functional>
 
 namespace VSGE {
 
@@ -12,7 +13,10 @@ namespace VSGE {
 		HOLD
 	};
 
+	using click_callback = std::function<void()>;
+
 	class Button : public View {
+
 	private:
 		String _text;
 		std::string _font_name;
@@ -21,6 +25,8 @@ namespace VSGE {
 		ResourceReference _hold_reference;
 
 		ButtonState _state;
+
+		click_callback _callback;
 
 		void UpdateState();
 	public:
@@ -35,6 +41,8 @@ namespace VSGE {
 		void SetHoldSprite(const std::string& sprite);
 
 		bool IsPressed() const;
+
+		void SetOnClick(click_callback callback);
 
 		void Draw();
 	};
