@@ -3,20 +3,46 @@
 #include "../View.hpp"
 #include <Core/VarTypes/String.hpp>
 #include <Resources/ResourceReference.hpp>
+#include <functional>
 
 namespace VSGE {
+
+	enum class ButtonState {
+		NORMAL,
+		HOVERED,
+		HOLD
+	};
+
+	using click_callback = std::function<void()>;
+
 	class Button : public View {
+
 	private:
 		String _text;
+		std::string _font_name;
 		ResourceReference _normal_reference;
 		ResourceReference _hovered_reference;
-		ResourceReference _pressed_reference;
+		ResourceReference _hold_reference;
+
+		ButtonState _state;
+
+		click_callback _callback;
+
+		void UpdateState();
 	public:
 
 		Button();
 		~Button();
 		
 		void SetText(const String& text);
+
+		void SetCommonSprite(const std::string& sprite);
+		void SetHoveredSprite(const std::string& sprite);
+		void SetHoldSprite(const std::string& sprite);
+
+		bool IsPressed() const;
+
+		void SetOnClick(click_callback callback);
 
 		void Draw();
 	};

@@ -12,9 +12,9 @@ SpriteView::~SpriteView() {
 
 }
 void SpriteView::Draw() {
-	UiLayer::Get()->GetRenderList()->DrawSprite(_bounds, _rotation, _texture_reference.GetResource<TextureResource>());
+	UiLayer::Get()->GetRenderList()->DrawSprite(_global_bounds, _rotation, _texture_reference.GetResource<TextureResource>());
 }
 
 void SpriteView::SetSprite(const std::string& sprite) {
-	_texture_reference.SetResource(sprite);
+	_texture_reference.SetResource(ResourceCache::Get()->GetResource(sprite));
 }

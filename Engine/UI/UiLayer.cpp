@@ -1,4 +1,5 @@
 #include "UiLayer.hpp"
+#include <Input/Input.hpp>
 
 #include <Engine/Application.hpp>
 #include <Graphics/Renderer.hpp>
@@ -10,7 +11,13 @@ UiLayer* UiLayer::_this = nullptr;
 UiLayer::UiLayer() {
 	_this = this;
 
+	// Full HD by default
+	_referenceResolution = Vec2i(1920, 1080);
+	_resolutionScale = 1.f;
+
 	_root = new View();
+	_root->SetAnchors(Vec2(0, 0), Vec2(1, 1));
+
 	_render_list = new UiRenderList;
 }
 UiLayer::~UiLayer() {
@@ -20,14 +27,22 @@ UiLayer::~UiLayer() {
 
 void UiLayer::OnAttach() {
 }
+
 void UiLayer::OnUpdate() {
 	IRenderer* renderer = Application::Get()->GetRenderer();
 	if (renderer) {
+		// Real rendering size
 		Vec2i sizes = renderer->GetOutputSizes();
-		_root->SetBounds(Rect(Vec2(0, 0), Vec2(sizes.x, sizes.y)));
+		// Calculate UI height scale
+		_resolutionScale = static_cast<float>(sizes.y) / _referenceResolution.y;
+		_render_list->SetScale(_resolutionScale);
+
+		Rect screenRect(Vec2(0, 0), Vec2(_referenceResolution.x, _referenceResolution.y));
+		_root->UpdateGlobalRect(screenRect);
 		DrawAll();
 	}
 }
+
 void UiLayer::OnDetach() {
 
 }
@@ -48,6 +63,17 @@ UiRenderList* UiLayer::GetRenderList() {
 	return _render_list;
 }
 
+void UiLayer::SetReferenceResolution(const Vec2i& resolution) {
+	_referenceResolution = resolution;
+}
+
 View* UiLayer::GetRootView() {
 	return _root;
+}
+
+Vec2 UiLayer::GetMouseCursorPos() 
+{
+	Vec2i ires = Input::Get()->GetMouseCursorPos();
+	float dScale = 1.f / _resolutionScale;
+	return Vec2(dScale * ires.x, dScale * ires.y);
 }
