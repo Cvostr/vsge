@@ -67,6 +67,10 @@ void UiLayer::SetReferenceResolution(const Vec2i& resolution) {
 	_referenceResolution = resolution;
 }
 
+const Vec2i& UiLayer::GetReferenceResolution() const {
+	return _referenceResolution;
+}
+
 View* UiLayer::GetRootView() {
 	return _root;
 }

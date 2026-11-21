@@ -37,6 +37,11 @@ namespace VSGE {
 		/// </summary>
 		void SetReferenceResolution(const Vec2i& resolution);
 		/// <summary>
+		/// Get current reference resolution
+		/// </summary>
+		/// <returns></returns>
+		const Vec2i& GetReferenceResolution() const;
+		/// <summary>
 		/// Obtain a root UI element for placing other elements
 		/// </summary>
 		/// <returns></returns>

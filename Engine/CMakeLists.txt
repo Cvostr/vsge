@@ -170,6 +170,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/ParticleEmitterComponent.cpp
 				MonoScripting/Api/EntityComponents/EnvProbeComponent.cpp
 				MonoScripting/Api/UI/UiRenderList.cpp
+				MonoScripting/Api/UI/UI.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp
