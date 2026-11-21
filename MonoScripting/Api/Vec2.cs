@@ -30,10 +30,31 @@ public struct Vec2
         return x == other.x && y == other.y;
     }
 
+    public static Vec2 operator +(Vec2 a, Vec2 b)
+    {
+        a.x += b.x;
+        a.y += b.y;
+        return a;
+    }
+
+    public static Vec2 operator -(Vec2 a, Vec2 b)
+    {
+        a.x -= b.x;
+        a.y -= b.y;
+        return a;
+    }
+
+    public static Vec2 operator *(Vec2 a, Vec2 b)
+    {
+        a.x *= b.x;
+        a.y *= b.y;
+        return a;
+    }
+
     public override string ToString()
     {
         return $"({x}, {y})";
-    }   
+    }
 
     public float x;
     public float y;
