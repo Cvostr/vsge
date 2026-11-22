@@ -21,16 +21,21 @@ void GlyphManager::AddFontContainer(GlyphFontContainer* ptr) {
     this->m_fonts.push_back(ptr);
 }
 
-void GlyphManager::AddFontContainer(const std::string& filePath, const std::string& name) {
+bool GlyphManager::AddFontContainer(const std::string& filePath, const std::string& name) {
     byte* data = nullptr;
     uint64 size = 0;
     bool result = LoadFile(filePath, (char**)&data, &size);
     if (result)
     {
-        GlyphFontContainer* container = new GlyphFontContainer(data, size, 64);
+        GlyphFontContainer* container = new GlyphFontContainer();
+        container->Create(data, size, 64);
         container->SetName(name);
         AddFontContainer(container);
+
+        return true;
     }
+    
+    return false;
 }
 
 GlyphFontContainer* GlyphManager::GetFontByName(const std::string& name) {

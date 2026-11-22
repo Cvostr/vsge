@@ -30,25 +30,34 @@ namespace VSGE {
     class GlyphFontContainer {
     private:
         std::string _name;
-        byte* _glyph_texture_buffer;
         Texture* _glyph_texture;
 
         FT_Face _ft_font;
         uint32 _font_size;
 
         std::map<uint32, CharacterGlyph*> _characters;
-    public:
-        GlyphFontContainer(byte* data, uint32 bsize, uint32 size);
-        ~GlyphFontContainer();
 
-        void loadGlyphs(uint32& WorkX,
+        void loadGlyphs(byte* glyphTextureBuffer, 
+            uint32& WorkX,
             uint32& WorkY,
             uint32& MaxY);
         void loadGlyph(uint32 index,
-                uint32& WorkX,
-                uint32& WorkY,
-                uint32& MaxY);
+            byte* glyphTextureBuffer,
+            uint32& WorkX,
+            uint32& WorkY,
+            uint32& MaxY);
+    public:
+        GlyphFontContainer();
+        ~GlyphFontContainer();
 
+        /// <summary>
+        /// Create from TTF data in memory
+        /// </summary>
+        /// <param name="data">TTF data</param>
+        /// <param name="bsize">TTF data size</param>
+        /// <param name="size">pixel height</param>
+        /// <returns>true if success</returns>
+        bool Create(byte* data, uint32 bsize, uint32 size);
         /// <summary>
         /// Set font name
         /// </summary>
@@ -82,7 +91,10 @@ namespace VSGE {
         /// </summary>
         /// <returns></returns>
         uint32 GetTextureMapSize() const;
-
+        /// <summary>
+        /// Get created font pixel height
+        /// </summary>
+        /// <returns></returns>
         uint32 GetFontSize() const;
     };
 }

@@ -29,7 +29,7 @@ Application* VSGEMain(int argc, char* argv[]) {
 	descr.server = parser.IsServer();
 	const auto& appDirOpt = parser.GetApplicationDirPath();
 	// if argument not provided, use current workdir
-	descr.application_dir = parser.GetApplicationDirPath().value_or(".");
+	descr.application_dir = parser.GetApplicationDirPath().value_or("C:\\Other\\vsge_test_assets\\built");
 
 	auto app = new Application(descr);
 	app->GetWindow().CreateWindow(1280, 720, "Test");
@@ -68,11 +68,11 @@ Application* VSGEMain(int argc, char* argv[]) {
 	glyph_manager->AddFontContainer("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", "arial");
 #endif
 
+	app->AddLayer(new UiLayer);
+
 	app->AddLayer(new MainLayer);
 	if(!descr.headless)
 		app->AddLayer(new VulkanLayer);
-
-	app->AddLayer(new UiLayer);
 
 	return app;
 }

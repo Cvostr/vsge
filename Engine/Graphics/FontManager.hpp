@@ -15,7 +15,7 @@ namespace VSGE {
             return _this;
         }
 
-        void AddFontContainer(const std::string& filePath, const std::string& name);
+        bool AddFontContainer(const std::string& filePath, const std::string& name);
         void AddFontContainer(GlyphFontContainer* ptr); //add font container to vector
 
         GlyphFontContainer* GetFontByName(const std::string& name);
