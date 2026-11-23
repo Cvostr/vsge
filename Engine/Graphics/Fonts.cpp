@@ -132,19 +132,28 @@ void GlyphFontContainer::loadGlyph(uint32 index,
     _characters.insert(std::pair<uint32, CharacterGlyph*>(index, character));
 }
 
-void GlyphFontContainer::SetName(const std::string& name) {
+void GlyphFontContainer::SetName(const std::string& name) 
+{
     _name = name;
 }
-const std::string& GlyphFontContainer::GetName() {
+
+const std::string& GlyphFontContainer::GetName() 
+{
     return _name;
 }
-Texture* GlyphFontContainer::GetTexture() {
+
+Texture* GlyphFontContainer::GetTexture() 
+{
     return _glyph_texture;
 }
-CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character) {
+
+CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character)
+{
     return _characters.at(static_cast<uint32>(character));
 }
-Vec2i GlyphFontContainer::GetSizeOfString(uint32* str, uint32 strlen) { 
+
+Vec2i GlyphFontContainer::GetSizeOfString(const uint32* str, uint32 strlen) 
+{ 
     Vec2i result = 0;
     for (uint32 i = 0; i < strlen; i++) {
         CharacterGlyph* glyph = GetGlyph(str[i]);

@@ -85,7 +85,7 @@ namespace VSGE {
         /// <param name="str">- string</param>
         /// <param name="strlen">- length of string</param>
         /// <returns></returns>
-        Vec2i GetSizeOfString(uint32* str, uint32 strlen);
+        Vec2i GetSizeOfString(const uint32* str, uint32 strlen);
         /// <summary>
         /// Get size of square font texture, created from font
         /// </summary>
