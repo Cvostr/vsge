@@ -1,10 +1,12 @@
 using System;
 
-public struct AABB{
+public struct AABB
+{
     private Vec3 _min;
     private Vec3 _max;
 
-    public void Extend(AABB box){
+    public void Extend(AABB box)
+    {
         if (box._min.x < _min.x)
 		    _min.x = box._min.x;
         if (box._min.y < _min.y)
@@ -20,7 +22,8 @@ public struct AABB{
             _max.z = box._max.z;
     }
 
-    public void Extend(Vec3 point){
+    public void Extend(Vec3 point)
+    {
     	if (_min.x > point.x) _min.x = point.x;
 	    if (_min.y > point.y) _min.y = point.y;
 	    if (_min.z > point.z) _min.z = point.z;
@@ -30,11 +33,13 @@ public struct AABB{
 	    if (_max.z < point.z) _max.z = point.z;
     }
 
-    public Vec3 GetCenter(){
+    public Vec3 GetCenter()
+    {
         return (_min + _max) * 0.5f;
     }
 
-    public Vec3 GetSize(){
+    public Vec3 GetSize()
+    {
         return (_max - _min) * 0.5f;
     }
 
