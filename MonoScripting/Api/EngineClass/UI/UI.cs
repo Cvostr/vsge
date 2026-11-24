@@ -1,9 +1,26 @@
 using System;
+using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 public class UI
 {
+    private static Canvas _root = new Canvas();
+
+    public static Canvas GetRootCanvas()
+    {
+        return _root;
+    }
+
+    public static void Render()
+    {
+        Vec2i res = UI.GetReferenceResolution();
+        Rect screen = new Rect(0, 0, res.x, res.y);
+
+        _root.UpdateGlobalRect(screen);
+        _root.Process();
+    }
+
     public static void SetReferenceResolution(int width, int height) 
     {
         i_SetReferenceResolution(width, height);
