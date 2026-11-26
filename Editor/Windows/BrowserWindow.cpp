@@ -131,7 +131,10 @@ void FileBrowserWindow::OnDrawWindow() {
         if (ImGui::MenuItem("Refresh")) {
             UpdateDirectoryContent();
         }
+
         bool create_new_resource = false;
+        bool create_new_dir = false;
+
         if (ImGui::BeginMenu("Create")) {
             if (ImGui::MenuItem("Scene")) {
                 new_resource_type = RESOURCE_TYPE_SCENE;
@@ -149,6 +152,9 @@ void FileBrowserWindow::OnDrawWindow() {
                 create_new_resource = true;
                 new_resource_type = RESOURCE_TYPE_SCRIPT;
             }
+            if (ImGui::MenuItem("Directory")) {
+                create_new_dir = true;
+            }
             ImGui::EndMenu();
         }
         if (ImGui::MenuItem("Open in Explorer")) {
@@ -161,9 +167,14 @@ void FileBrowserWindow::OnDrawWindow() {
             rename_file_name = "";
             ImGui::OpenPopup("Resource creation");
         }
+
+        if (create_new_dir) {
+            rename_file_name = "";
+            ImGui::OpenPopup("New Directory");
+        }
     }
 
-    bool renameFile = false;
+    //bool renameFile = false;
 
     if (ImGui::ImageButton(EditorIcons::Get()->GetBackBtnIcon(), ImVec2(20, 20)))
         cd_up();
@@ -315,6 +326,8 @@ void FileBrowserWindow::OnDrawWindow() {
     if (renaming_entry) {
         RenameFileDialog(renaming_entry);
     }
+
+    CreateDirectoryDialog();
     CreateResourceDialog();
 
     //End Window
@@ -337,6 +350,31 @@ void FileBrowserWindow::RenameFileDialog(FileEntry* Entry) {
             if (fs::exists(metaAbsPath)) {
                 fs::rename(metaAbsPath, Entry->directory + "/" + rename_file_name + ".meta");
             }
+
+            ImGui::CloseCurrentPopup();
+            UpdateDirectoryContent();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SetItemDefaultFocus();
+        ImGui::EndPopup();
+    }
+}
+
+void FileBrowserWindow::CreateDirectoryDialog() {
+    if (ImGui::BeginPopupModal("New Directory", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Enter new name for directory");
+        ImGui::InputText("##New Name", &rename_file_name);
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0))) {
+            // new dir
+            std::string new_dir_path = _currentDir + "/" + rename_file_name;
+            fs::create_directories(new_dir_path);
 
             ImGui::CloseCurrentPopup();
             UpdateDirectoryContent();

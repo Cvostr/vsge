@@ -60,6 +60,7 @@ namespace VSGEditor {
 
 		void RemoveFile(const std::string& path);
 		void RenameFileDialog(FileEntry* Entry);
+		void CreateDirectoryDialog();
 		void CreateResourceDialog();
 		VSGE::ByteSerialize* GetBaseContentToWrite(VSGE::ResourceType res_type, const std::string& res_name);
 	public:
