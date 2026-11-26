@@ -99,9 +99,6 @@ public abstract class View
         if (_visible == false)
             return;
 
-        // Recalculate self bounds
-        //UpdateGlobalRect(_parent._globalBounds);
-
         // Graphics
         Render();
 
@@ -139,9 +136,4 @@ public abstract class View
     }
 
     public abstract void Render();
-
-    private Rect GetGlobalBounds()
-    {
-        return _globalBounds;
-    }
 }
