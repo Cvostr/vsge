@@ -21,10 +21,12 @@ set(API_SRC_FILES
     Api/Cursor.cs
     Api/Scenes.cs
     Api/Resources.cs
+    Api/Fonts.cs
     Api/EngineClass/Entity.cs
     Api/EngineClass/Scene.cs
     Api/EngineClass/Resource.cs
     Api/EngineClass/Material.cs
+    Api/EngineClass/Font.cs
     Api/EngineClass/IEntityComponent.cs
     Api/EngineClass/EntityComponents/MaterialComponent.cs
     Api/EngineClass/EntityComponents/MeshComponent.cs
@@ -39,7 +41,12 @@ set(API_SRC_FILES
     Api/EngineClass/EntityComponents/TerrainComponent.cs
     Api/EngineClass/EntityComponents/EnvironmentProbeComponent.cs
     Api/EngineClass/UI/UiRenderList.cs
-    Api/EngineClass/UI/UI.cs)
+    Api/EngineClass/UI/UI.cs
+    Api/EngineClass/UI/View.cs
+    Api/EngineClass/UI/Elements/Canvas.cs
+    Api/EngineClass/UI/Elements/TextView.cs
+    Api/EngineClass/UI/Elements/ImageView.cs
+    Api/EngineClass/UI/Elements/Button.cs)
 
 set(COMPILER_ARGS -target:library -nologo -out:${CMAKE_CURRENT_BINARY_DIR}/api.dll)
 

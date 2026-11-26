@@ -171,6 +171,7 @@ set(SRC_FILES
 				MonoScripting/Api/EntityComponents/EnvProbeComponent.cpp
 				MonoScripting/Api/UI/UiRenderList.cpp
 				MonoScripting/Api/UI/UI.cpp
+				MonoScripting/Api/ApiFonts.cpp
 				UI/UiLayer.cpp
 				UI/View.cpp
 				UI/UiRenderList.cpp

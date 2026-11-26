@@ -13,6 +13,7 @@ namespace VSGE {
 	void BindCursorApi();
 	void BindEntityComponentsApi();
 	void BindUi();
+	void BindFonts();
 	void BindUiRenderList();
 	void BindMaterialObjectApi();
 

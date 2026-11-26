@@ -125,6 +125,7 @@ bool MonoScriptingLayer::CreateRootDomain() {
 
     BindUiRenderList();
     BindUi();
+    BindFonts();
 
     return true;
 }

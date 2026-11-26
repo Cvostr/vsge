@@ -228,7 +228,11 @@ void VulkanUiRenderer::FillBuffers()
 			}
 		}
 	}
+
+	// Clear performed tasks
+	ui_layer->GetRenderList()->ClearTasks();
 }
+
 void VulkanUiRenderer::RecordCommandBuffer(VulkanCommandBuffer* cmdbuffer) {
 	_ui_rp->CmdBegin(*cmdbuffer, *_ui_framebuffer);
 	cmdbuffer->BindPipeline(*_ui_pipeline);
