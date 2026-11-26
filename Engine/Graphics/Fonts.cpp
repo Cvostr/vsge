@@ -1,5 +1,6 @@
 #include "Fonts.hpp"
 #include <algorithm>
+#include <stdexcept>
 #include <Engine/Application.hpp>
 #include <Graphics/FontManager.hpp>
 
@@ -149,7 +150,14 @@ Texture* GlyphFontContainer::GetTexture()
 
 CharacterGlyph* GlyphFontContainer::GetGlyph(uint32 character)
 {
-    return _characters.at(static_cast<uint32>(character));
+    try 
+    {
+        return _characters.at(static_cast<uint32>(character));
+    } 
+    catch (...)
+    {
+        throw std::runtime_error("Font container does not contain character " + std::to_string(character));
+    }
 }
 
 Vec2i GlyphFontContainer::GetSizeOfString(const uint32* str, uint32 strlen) 
