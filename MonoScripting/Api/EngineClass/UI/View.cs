@@ -19,7 +19,7 @@ public abstract class View
     protected Rect _globalBounds;
 
     private bool _visible;
-    private float _rotation;
+    protected float _rotation;
 
     // Normalized
     private Vec2 _anchorMin;

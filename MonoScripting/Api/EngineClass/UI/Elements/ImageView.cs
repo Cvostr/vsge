@@ -27,6 +27,6 @@ public class ImageView : View
         if (_sprite == null)
             return;
 
-        UiRenderList.DrawSprite(_globalBounds, 0, _sprite, new Vec2(0, 0), new Vec2(1, 1));
+        UiRenderList.DrawSprite(_globalBounds, _rotation, _sprite, new Vec2(0, 0), new Vec2(1, 1));
     }
 }
