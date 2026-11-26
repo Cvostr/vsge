@@ -48,7 +48,6 @@ void UiLayer::OnDetach() {
 }
 
 void UiLayer::DrawAll() {
-	_render_list->ClearTasks();
 	DrawView(_root);
 }
 
