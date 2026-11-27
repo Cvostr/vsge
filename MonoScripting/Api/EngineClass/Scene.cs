@@ -32,6 +32,15 @@ public class Scene : InternalObject {
         i_QueueEntityDestroy(handle, entity.GetHandle());
     }
 
+    public Entity AddFromPrefab(Resource prefabResource)
+    {
+        ulong entityHandle = i_AddFromPrefab(handle, prefabResource.GetHandle());
+        if (entityHandle == 0)
+            return null;
+
+        return new Entity(entityHandle);
+    }
+
     public Entity[] GetAllEntitiesByName(string name) {
         ulong[] pointers = i_GetAllEntitiesByName(handle, name);
         Entity[] result = new Entity[pointers.Length];
@@ -85,6 +94,9 @@ public class Scene : InternalObject {
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern void i_QueueEntityDestroy(ulong scene, ulong entity);
+
+    [MethodImpl(MethodImplOptions.InternalCall)]
+    private static extern ulong i_AddFromPrefab(ulong handle, ulong prefabResourceHandle);
 
     [MethodImpl(MethodImplOptions.InternalCall)]
     private static extern ulong[] i_GetAllEntitiesByName(ulong handle, string name);

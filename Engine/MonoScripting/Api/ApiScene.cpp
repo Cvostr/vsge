@@ -1,6 +1,7 @@
 #include "ApiBindings.hpp"
 #include <Scene/Scene.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -29,6 +30,29 @@ static void* AddNewEntity(Scene* scene, MonoString* name)
 static void QueueEntityDestroy(Scene* scene, Entity* ent)
 {
 	scene->QueueEntityDestroy(ent);
+}
+
+static Entity* AddFromPrefab(Scene *scene, Resource* prefabResource)
+{
+	Entity* result = nullptr;
+
+	if (prefabResource->GetResourceType() != RESOURCE_TYPE_PREFAB)
+		return nullptr;
+
+	// Try to load resource in this thread
+	try
+	{
+		std::vector<byte> prefabData;
+		prefabResource->ReadDataImmediate(prefabData);
+		result = scene->AddFromPrefab(prefabData.data(), prefabData.size());
+	}
+	catch (const std::exception& e)
+	{
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error adding prefab " << e.what() << "\n";
+		return nullptr;
+	}
+
+	return result;
 }
 
 static void Run(Scene* scene) {
@@ -79,6 +103,7 @@ void VSGE::BindSceneApi() {
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetEntity(ulong,string)", GetEntityByName);
 	MonoScriptingLayer::AddInternalCall("Scene::i_AddNewEntity(ulong,string)", AddNewEntity);
 	MonoScriptingLayer::AddInternalCall("Scene::i_QueueEntityDestroy(ulong,ulong)", QueueEntityDestroy);
+	MonoScriptingLayer::AddInternalCall("Scene::i_AddFromPrefab(ulong,ulong)", AddFromPrefab);
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetAllEntitiesByName(ulong,string)", GetAllEntitiesByName);
 
 	MonoScriptingLayer::AddInternalCall("Scene::i_Run(ulong)", Run);

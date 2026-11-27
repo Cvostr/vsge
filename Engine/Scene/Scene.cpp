@@ -94,7 +94,9 @@ uint32 Scene::GetEntitiesCount() {
 	return _rootEntity->GetTotalChildrenCount();
 }
 
-void Scene::AddFromPrefab(byte* data, uint32 size) {
+Entity* Scene::AddFromPrefab(byte* data, uint32 size) 
+{
+	Entity* rootNewEntity = nullptr;
 	ByteSolver solver(data, size);
 
 	uint32 entities_count = solver.GetValue<uint32>();
@@ -111,6 +113,9 @@ void Scene::AddFromPrefab(byte* data, uint32 size) {
 	{
 		Entity* ent = new Entity;
 		ent->SetScene(this);
+
+		if (entity_i == 0)
+			rootNewEntity = ent;
 
 		// Deserialize entity data
 		Guid parent_id;
@@ -141,6 +146,8 @@ void Scene::AddFromPrefab(byte* data, uint32 size) {
 
 		parent->AddChild(ent, false);
 	}
+
+	return rootNewEntity;
 }
 
 AudioListenerComponent* Scene::GetAudioListener(Entity* ent) {
