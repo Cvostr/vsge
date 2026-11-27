@@ -119,30 +119,33 @@ void Resource::Load(bool just_read)
 void Resource::ReadData()
 {
 	SetState(RESOURCE_STATE_LOADING);
-	//Declare blob loader stream
+	// Declare blob loader stream
 	std::ifstream stream;
-	//Get absolute path to blob file
+	// Get absolute path to blob file
 	std::string file_path = _description.file_path;
-	//Check, if size explicitly specified
+	// Check, if size explicitly specified
 	if (_description.size == 0) {
 		//Если размер не указан (равен 0)
 		Mpi::File file(file_path);
 		_description.size = static_cast<uint32>(file.getFileSize());
 	}
 
-	stream.open(file_path, std::ofstream::binary);
-	stream.seekg(static_cast<long>(_description.offset));
-
+	// Open file (or bundle)
+	stream.open(file_path, std::ifstream::binary);
 	if (!stream.is_open()) {
 		SetState(RESOURCE_STATE_LOADING_FAILED);
 		throw std::runtime_error("Error loading resource: " + GetName());
 	}
 
+	// Seek to resource offset
+	stream.seekg(static_cast<long>(_description.offset));
+
+	// Actually, read resource data
 	_loadedData = new byte[_description.size];
 	stream.read(reinterpret_cast<char*>(_loadedData), _description.size);
 	stream.close();
 
-	//Set resource state to loaded
+	// Set resource state to loaded
 	SetState(RESOURCE_STATE_LOADED);
 }
 
