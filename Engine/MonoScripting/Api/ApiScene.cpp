@@ -31,6 +31,28 @@ static void QueueEntityDestroy(Scene* scene, Entity* ent)
 	scene->QueueEntityDestroy(ent);
 }
 
+static Entity* AddFromPrefab(Scene *scene, Resource* prefabResource)
+{
+	Entity* result = nullptr;
+
+	if (prefabResource->GetResourceType() != RESOURCE_TYPE_PREFAB)
+		return nullptr;
+
+	// Try to load resource in this thread
+	if (prefabResource->IsUnloaded())
+	{
+		prefabResource->ReadData();
+	}
+
+	if (prefabResource->GetState() == RESOURCE_STATE_LOADED) 
+	{
+		result = scene->AddFromPrefab(prefabResource->GetLoadedData(), prefabResource->GetDataDescription().size);
+		prefabResource->Release();
+	}
+
+	return result;
+}
+
 static void Run(Scene* scene) {
 	scene->Run();
 }
@@ -79,6 +101,7 @@ void VSGE::BindSceneApi() {
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetEntity(ulong,string)", GetEntityByName);
 	MonoScriptingLayer::AddInternalCall("Scene::i_AddNewEntity(ulong,string)", AddNewEntity);
 	MonoScriptingLayer::AddInternalCall("Scene::i_QueueEntityDestroy(ulong,ulong)", QueueEntityDestroy);
+	MonoScriptingLayer::AddInternalCall("Scene::i_AddFromPrefab(ulong,ulong)", AddFromPrefab);
 	MonoScriptingLayer::AddInternalCall("Scene::i_GetAllEntitiesByName(ulong,string)", GetAllEntitiesByName);
 
 	MonoScriptingLayer::AddInternalCall("Scene::i_Run(ulong)", Run);

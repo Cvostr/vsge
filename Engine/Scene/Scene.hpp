@@ -83,7 +83,7 @@ namespace VSGE {
 		/// </summary>
 		/// <param name="data">- prefab data</param>
 		/// <param name="size">- prefab data size</param>
-		void AddFromPrefab(byte* data, uint32 size);
+		Entity* AddFromPrefab(byte* data, uint32 size);
 		/// <summary>
 		/// Get AudioListener
 		/// </summary>
