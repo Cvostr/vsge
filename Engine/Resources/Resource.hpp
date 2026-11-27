@@ -173,6 +173,7 @@ namespace VSGE {
 
 		virtual void Load(bool just_read = false);
 		void ReadData();
+		void ReadDataImmediate(std::vector<byte>& data);
 		/// <summary>
 		/// Work to do on resource release
 		/// </summary>

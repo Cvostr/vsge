@@ -1,6 +1,7 @@
 #include "ApiBindings.hpp"
 #include <Scene/Scene.hpp>
 #include <MonoScripting/MonoScriptingLayer.hpp>
+#include <Core/Logger.hpp>
 
 using namespace VSGE;
 
@@ -39,15 +40,16 @@ static Entity* AddFromPrefab(Scene *scene, Resource* prefabResource)
 		return nullptr;
 
 	// Try to load resource in this thread
-	if (prefabResource->IsUnloaded())
+	try
 	{
-		prefabResource->ReadData();
+		std::vector<byte> prefabData;
+		prefabResource->ReadDataImmediate(prefabData);
+		result = scene->AddFromPrefab(prefabData.data(), prefabData.size());
 	}
-
-	if (prefabResource->GetState() == RESOURCE_STATE_LOADED) 
+	catch (const std::exception& e)
 	{
-		result = scene->AddFromPrefab(prefabResource->GetLoadedData(), prefabResource->GetDataDescription().size);
-		prefabResource->Release();
+		Logger::Log(LogType::LOG_TYPE_ERROR) << "Error adding prefab " << e.what() << "\n";
+		return nullptr;
 	}
 
 	return result;

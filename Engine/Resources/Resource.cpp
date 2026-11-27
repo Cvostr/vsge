@@ -125,7 +125,7 @@ void Resource::ReadData()
 	std::string file_path = _description.file_path;
 	// Check, if size explicitly specified
 	if (_description.size == 0) {
-		//Если размер не указан (равен 0)
+		// If size is not specified (zero), then set resource size as whole file size
 		Mpi::File file(file_path);
 		_description.size = static_cast<uint32>(file.getFileSize());
 	}
@@ -147,6 +147,35 @@ void Resource::ReadData()
 
 	// Set resource state to loaded
 	SetState(RESOURCE_STATE_LOADED);
+}
+
+void Resource::ReadDataImmediate(std::vector<byte>& data)
+{
+	// Declare blob loader stream
+	std::ifstream stream;
+	// Get absolute path to blob file
+	std::string file_path = _description.file_path;
+	size_t size = _description.size;
+
+	// Check, if size explicitly specified
+	if (size == 0) {
+		// If size is not specified (zero), then set resource size as whole file size
+		Mpi::File file(file_path);
+		size = file.getFileSize();
+	}
+
+	// Open file (or bundle)
+	stream.open(file_path, std::ifstream::binary);
+	if (!stream.is_open()) {
+		throw std::runtime_error("Error loading resource: " + GetName());
+	}
+
+	// Seek to resource offset
+	stream.seekg(static_cast<long>(_description.offset));
+
+	data.resize(size);
+	stream.read(reinterpret_cast<char*>(data.data()), size);
+	stream.close();
 }
 
 void Resource::FreeLoadedData() {
