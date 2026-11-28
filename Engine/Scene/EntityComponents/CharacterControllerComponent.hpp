@@ -31,6 +31,9 @@ namespace VSGE {
 		const Vec3& GetCenter();
 		void SetCenter(const Vec3& center);
 
+		float GetSkinWidth();
+		void SetSkinWidth(float skinWidth);
+
 		bool IsOnGround();
 
 		void Move(const Vec3& displacement);

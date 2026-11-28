@@ -85,6 +85,13 @@ void CharacterControllerComponent::SetCenter(const Vec3& center) {
 	_center = center;
 }
 
+float CharacterControllerComponent::GetSkinWidth() {
+	return _skinWidth;
+}
+void CharacterControllerComponent::SetSkinWidth(float skinWidth) {
+	_skinWidth = skinWidth;
+}
+
 bool CharacterControllerComponent::IsOnGround()
 {
 	float height = _size.y;
@@ -287,8 +294,10 @@ void CharacterControllerComponent::OnDeactivate() {
 void CharacterControllerComponent::Serialize(ByteSerialize& serializer) {
 	serializer.Serialize(_size);
 	serializer.Serialize(_center);
+	serializer.Serialize(_skinWidth);
 }
 void CharacterControllerComponent::Deserialize(ByteSolver& solver) {
 	_size = solver.GetValue<Vec2>();
 	_center = solver.GetValue<Vec3>();
+	_skinWidth = solver.GetValue<float>();
 }
