@@ -99,7 +99,7 @@ bool CharacterControllerComponent::IsOnGround()
 	btTransform currentTransform = _character->getWorldTransform();
 	btVector3 current_pos = currentTransform.getOrigin();
 	Vec3 pos = Vec3(current_pos.getX(), current_pos.getY(), current_pos.getZ());
-	Vec3 target = pos + Vec3(0.f, -height - 0.05f, 0.f);
+	Vec3 target = pos + Vec3(0.f, -(height / 2) - 0.05f, 0.f);
 	
 	ClosestNotMe result(_character);
 	GetEntity()->GetScene()->GetPhysicalWorld()->RayTest(pos, target, result);
