@@ -146,6 +146,7 @@ void CharacterControllerComponent::Move(const Vec3& displacement)
 			// Move character to that safe point
 			current.setOrigin(start + direction * travelDist);
 			_motionState->setWorldTransform(current);
+			_character->setWorldTransform(current);
 			// Update Entity position
 			UpdateEntityPosition(current);
 
@@ -162,6 +163,7 @@ void CharacterControllerComponent::Move(const Vec3& displacement)
 			// Path is free — move by all remaining distance
 			current.setOrigin(start + btDisplacement);
 			_motionState->setWorldTransform(current);
+			_character->setWorldTransform(current);
 			// Update Entity position
 			UpdateEntityPosition(current);
 			break;
