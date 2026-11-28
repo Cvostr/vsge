@@ -22,6 +22,7 @@ namespace VSGE {
 		bool _is_on_ground;
 
 		btTransform GetEntityTransform();
+		void UpdateEntityPosition(const btTransform& transform);
 	public:
 		CharacterControllerComponent();
 

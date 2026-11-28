@@ -151,6 +151,8 @@ void CharacterControllerComponent::Move(const Vec3& displacement)
 			// Move character to that safe point
 			current.setOrigin(start + direction * travelDist);
 			_motionState->setWorldTransform(current);
+			// Update Entity position
+			UpdateEntityPosition(current);
 
 			// Remaining vector and its normal
 			float remainingDist = distance - travelDist;
@@ -165,6 +167,8 @@ void CharacterControllerComponent::Move(const Vec3& displacement)
 			// Path is free — перемещаем на всю оставшуюся дистанцию
 			current.setOrigin(start + btDisplacement);
 			_motionState->setWorldTransform(current);
+			// Update Entity position
+			UpdateEntityPosition(current);
 			break;
 		}
 	}
@@ -180,6 +184,23 @@ btTransform CharacterControllerComponent::GetEntityTransform() {
 	result.setRotation(btQuaternion(abs_rot.x, abs_rot.y, abs_rot.z, abs_rot.w));
 
 	return result;
+}
+
+void CharacterControllerComponent::UpdateEntityPosition(const btTransform& transform)
+{
+	btVector3 bullet_pos = transform.getOrigin();
+	btQuaternion bullet_rot = transform.getRotation();
+
+	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
+	pos = pos - _center;
+
+	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
+
+	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
+	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
+	Mat4 _new = mm * parent_tranform.invert();
+
+	_entity->SetPosition(_new.GetPosition());
 }
 
 void CharacterControllerComponent::AddToWorld()
