@@ -95,17 +95,12 @@ void CharacterControllerComponent::SetSkinWidth(float skinWidth) {
 bool CharacterControllerComponent::IsOnGround()
 {
 	float height = _size.y;
-
-	btVector3 current_pos = _character->getCenterOfMassPosition();
+	
+	btTransform currentTransform = _character->getWorldTransform();
+	btVector3 current_pos = currentTransform.getOrigin();
 	Vec3 pos = Vec3(current_pos.getX(), current_pos.getY(), current_pos.getZ());
 	Vec3 target = pos + Vec3(0.f, -height - 0.05f, 0.f);
 	
-	//btTransform currentTransform = _character->getWorldTransform();
-	//btVector3 current_pos = currentTransform.getOrigin();
-	//Vec3 pos = Vec3(current_pos.getX(), current_pos.getY(), current_pos.getZ());
-	//pos = pos - _center;
-	
-
 	ClosestNotMe result(_character);
 	GetEntity()->GetScene()->GetPhysicalWorld()->RayTest(pos, target, result);
 
@@ -164,7 +159,7 @@ void CharacterControllerComponent::Move(const Vec3& displacement)
 		}
 		else 
 		{
-			// Path is free Ч перемещаем на всю оставшуюс€ дистанцию
+			// Path is free Ч move by all remaining distance
 			current.setOrigin(start + btDisplacement);
 			_motionState->setWorldTransform(current);
 			// Update Entity position
@@ -258,23 +253,6 @@ void CharacterControllerComponent::AddToWorld()
 void CharacterControllerComponent::OnUpdate() {
 	if (!_character)
 		AddToWorld();
-
-	btTransform currentTransform = _character->getWorldTransform();
-	btVector3 bullet_pos = currentTransform.getOrigin();
-	btQuaternion bullet_rot = currentTransform.getRotation();
-
-	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
-	pos = pos - _center;
-	
-	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
-
-	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
-	Mat4 parent_tranform = GetEntity()->GetParent()->GetWorldTransform();
-	Mat4 _new = mm * parent_tranform.invert();
-
-	_entity->SetPosition(_new.GetPosition());
-
-	Activate();
 }
 void CharacterControllerComponent::OnDestroy() {
 	if (_character) {
