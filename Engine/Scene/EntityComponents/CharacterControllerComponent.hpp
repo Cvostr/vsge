@@ -11,12 +11,14 @@ namespace VSGE {
 
 	class CharacterControllerComponent : public IEntityComponent {
 	private:
-		btCollisionShape* _character_collision;
+		btConvexShape* _character_collision;
 		btRigidBody* _character;
 		btDefaultMotionState* _motionState;
 
 		Vec2 _size;
 		Vec3 _center;
+		float _skinWidth;
+
 		bool _is_on_ground;
 
 		btTransform GetEntityTransform();
@@ -31,7 +33,7 @@ namespace VSGE {
 
 		bool IsOnGround();
 
-		void Move(const Vec3& direction);
+		void Move(const Vec3& displacement);
 
 		void OnUpdate();
 		void OnDestroy();

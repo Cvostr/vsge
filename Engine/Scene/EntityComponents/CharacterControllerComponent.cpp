@@ -8,9 +8,6 @@
 
 using namespace VSGE;
 
-#define MASS 1.f
-#define GRAVITY btVector3(0, -9.8f, 0)
-
 class ClosestNotMe : public btCollisionWorld::ClosestRayResultCallback
 {
 public:
@@ -24,10 +21,43 @@ public:
 		if (rayResult.m_collisionObject == m_me)
 			return 1.0;
 
+		if (!rayResult.m_collisionObject->hasContactResponse()) {
+			return 1.0;
+		}
+
 		return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
 	}
 private:
 	btRigidBody* m_me;
+};
+
+class CharacterSweepCallback : public btCollisionWorld::ClosestConvexResultCallback {
+public:
+	const btCollisionObject* m_me;
+
+	CharacterSweepCallback(const btCollisionObject* me, const btVector3& from, const btVector3& to)
+		: ClosestConvexResultCallback(from, to), m_me(me) {
+	}
+
+	bool needsCollision(btBroadphaseProxy* proxy0) const override {
+
+		if (!ClosestConvexResultCallback::needsCollision(proxy0)) {
+			return false;
+		}
+
+		// »гнорируем собственный Rigidbody персонажа
+		if (proxy0->m_clientObject == m_me) {
+			return false;
+		}
+
+		const btCollisionObject* hitObj = static_cast<const btCollisionObject*>(proxy0->m_clientObject);
+
+		if (!hitObj->hasContactResponse()) {
+			return false;
+		}
+
+		return ClosestConvexResultCallback::needsCollision(proxy0);
+	}
 };
 
 CharacterControllerComponent::CharacterControllerComponent() :
@@ -35,7 +65,8 @@ CharacterControllerComponent::CharacterControllerComponent() :
 	_character_collision(nullptr),
 	_motionState(nullptr),
 	_is_on_ground(false),
-	_size(1, 2)
+	_size(1, 2),
+	_skinWidth(0.02f)
 {
 
 }
@@ -54,11 +85,19 @@ void CharacterControllerComponent::SetCenter(const Vec3& center) {
 	_center = center;
 }
 
-bool CharacterControllerComponent::IsOnGround() {
+bool CharacterControllerComponent::IsOnGround()
+{
 	float height = _size.y;
+
 	btVector3 current_pos = _character->getCenterOfMassPosition();
 	Vec3 pos = Vec3(current_pos.getX(), current_pos.getY(), current_pos.getZ());
-	Vec3 target = pos + Vec3(0.f, (-height) * 1.12f, 0.f);
+	Vec3 target = pos + Vec3(0.f, -height - 0.05f, 0.f);
+	
+	//btTransform currentTransform = _character->getWorldTransform();
+	//btVector3 current_pos = currentTransform.getOrigin();
+	//Vec3 pos = Vec3(current_pos.getX(), current_pos.getY(), current_pos.getZ());
+	//pos = pos - _center;
+	
 
 	ClosestNotMe result(_character);
 	GetEntity()->GetScene()->GetPhysicalWorld()->RayTest(pos, target, result);
@@ -66,9 +105,62 @@ bool CharacterControllerComponent::IsOnGround() {
 	return result.hasHit();
 }
 
-void CharacterControllerComponent::Move(const Vec3& direction) {
-	btVector3 current_vel_l = _character->getLinearVelocity();
-	_character->setLinearVelocity(btVector3(direction.x, direction.y, direction.z));
+void CharacterControllerComponent::Move(const Vec3& displacement)
+{
+	const int maxIterations = 4;
+	// Protection
+	const float skinWidth = _skinWidth;
+	btVector3 btDisplacement = btVector3(displacement.x, displacement.y, displacement.z);
+	PhysicsWorld* world = GetEntity()->GetScene()->GetPhysicalWorld();
+
+	for (int i = 0; i < maxIterations; ++i)
+	{
+		float distance = displacement.Length();
+		if (distance < 0.0001f)
+			break;
+
+		btTransform from = _character->getWorldTransform();
+
+		btVector3 direction = btDisplacement / distance;
+		btVector3 start = from.getOrigin();
+		// Calculating destination vector with skinWidth
+		btVector3 end = start + direction * (distance + skinWidth);
+
+		btTransform to = from;
+		to.setOrigin(end);
+
+		btTransform current = from;
+
+		// Perform ConvexSweepTest itself
+		CharacterSweepCallback callback(_character, start, end);
+		world->ConvexSweepTest(_character_collision, from, to, callback);
+
+		if (callback.hasHit()) 
+		{
+			// Safe distance to collision point
+			float travelDist = callback.m_closestHitFraction * (distance + skinWidth) - skinWidth;
+			travelDist = std::max(0.0f, travelDist);
+
+			// Move character to that safe point
+			current.setOrigin(start + direction * travelDist);
+			_motionState->setWorldTransform(current);
+
+			// Remaining vector and its normal
+			float remainingDist = distance - travelDist;
+			btVector3 remainingVec = direction * remainingDist;
+			btVector3 normal = callback.m_hitNormalWorld;
+
+			// Projection: V_slide = V - (V Ј N) * N
+			btDisplacement = remainingVec - normal * remainingVec.dot(normal);
+		}
+		else 
+		{
+			// Path is free Ч перемещаем на всю оставшуюс€ дистанцию
+			current.setOrigin(start + btDisplacement);
+			_motionState->setWorldTransform(current);
+			break;
+		}
+	}
 }
 
 btTransform CharacterControllerComponent::GetEntityTransform() {
@@ -83,41 +175,32 @@ btTransform CharacterControllerComponent::GetEntityTransform() {
 	return result;
 }
 
-void CharacterControllerComponent::AddToWorld() 
+void CharacterControllerComponent::AddToWorld()
 {
-	btVector3 prevLocalInertia(0, 0, 0);
 	btVector3 localInertia(0, 0, 0);
-
-	// TODO: to settings?
-	bool isKinematic = false;
 
 	// Kinematic preset
 	float mass = 0;
 	btVector3 gravity = btVector3(0, 0, 0);
 
-	// Save previous localInertia
-	if (_character_collision && _character) {
-		prevLocalInertia = _character->getLocalInertia();
+	// release old rigidbody BEFORE collision shape
+	if (_character)
+	{
+		// remove it from scene, first
+		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_character);
+		// destroy object itself
+		SAFE_RELEASE(_character);
 	}
 
 	// release old collider shape
 	SAFE_RELEASE(_character_collision);
-	// release old rigidbody
-	SAFE_RELEASE(_character);
 	// Release old motion state
 	SAFE_RELEASE(_motionState)
 
 	// Create collision shape
-	_character_collision = new btCapsuleShape(_size.x, _size.y);
-
-	// For non-kinematic mode, currently unused.
-	// TODO: implement???
-	if (!_character && isKinematic == false)
-	{
-		mass = MASS;
-		gravity = GRAVITY;
-		_character_collision->calculateLocalInertia(mass, localInertia);
-	}
+	float radius = _size.x;
+	float cylinderHeight = _size.y - 2.0f * radius;
+	_character_collision = new btCapsuleShape(radius, cylinderHeight);
 
 	btTransform startTransform = GetEntityTransform();
 	_motionState = new btDefaultMotionState(startTransform);
@@ -125,34 +208,36 @@ void CharacterControllerComponent::AddToWorld()
 	// Info
 	btRigidBody::btRigidBodyConstructionInfo constructionInfo(mass, _motionState, _character_collision, localInertia);
 	constructionInfo.m_friction = 0;
-	//constructionInfo.m_rollingFriction = _rolling_friction;
-	//constructionInfo.m_restitution = _restitution;
 
 	// Create rigidbody
 	_character = new btRigidBody(constructionInfo);
 	_character->setUserPointer(_entity);
 	_character->setGravity(gravity);
-	// Block rotation over X and Z for non-kinematic mode
-	if (!isKinematic)
-		_character->setAngularFactor(btVector3(0, 1, 0));
+	// Block rotation over X and Z
+	_character->setAngularFactor(btVector3(0, 1, 0));
 
 	int collisionFlags = _character->getCollisionFlags();
-	if (isKinematic)
-		collisionFlags |= btCollisionObject::CF_KINEMATIC_OBJECT;
+	collisionFlags |= btCollisionObject::CF_KINEMATIC_OBJECT;
+	collisionFlags &= ~btCollisionObject::CF_STATIC_OBJECT;
 	_character->setCollisionFlags(collisionFlags);
+	_character->setActivationState(DISABLE_DEACTIVATION);
 
-	// add to world
-	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_character);
+	// Add to world
+	// Overriding flags, overwise kinematic objects won't work with triggers
+	_entity->GetScene()->GetPhysicalWorld()->AddRigidbody(_character, btBroadphaseProxy::DefaultFilter, btBroadphaseProxy::AllFilter);
 }
 
 void CharacterControllerComponent::OnUpdate() {
 	if (!_character)
 		AddToWorld();
 
-	btVector3 bullet_pos = _character->getCenterOfMassPosition();
-	btQuaternion bullet_rot = _character->getOrientation();
+	btTransform currentTransform = _character->getWorldTransform();
+	btVector3 bullet_pos = currentTransform.getOrigin();
+	btQuaternion bullet_rot = currentTransform.getRotation();
 
 	Vec3 pos = Vec3(bullet_pos.getX(), bullet_pos.getY(), bullet_pos.getZ());
+	pos = pos - _center;
+	
 	Quat rot = Quat(bullet_rot.getX(), bullet_rot.getY(), bullet_rot.getZ(), bullet_rot.getW());
 
 	Mat4 mm = GetTransform(pos, GetEntity()->GetScale(), rot);
@@ -160,7 +245,6 @@ void CharacterControllerComponent::OnUpdate() {
 	Mat4 _new = mm * parent_tranform.invert();
 
 	_entity->SetPosition(_new.GetPosition());
-	_entity->SetRotation(GetRotationFromQuat(_new));
 
 	Activate();
 }
@@ -169,6 +253,7 @@ void CharacterControllerComponent::OnDestroy() {
 		_entity->GetScene()->GetPhysicalWorld()->RemoveRigidbody(_character);
 		SAFE_RELEASE(_character)
 	}
+
 	SAFE_RELEASE(_character_collision)
 	// Release old motion state
 	SAFE_RELEASE(_motionState)
